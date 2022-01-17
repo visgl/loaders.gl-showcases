@@ -18,7 +18,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    // TODO added only for local deck.gl support
+    // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
+    "noImplicitAny": false
   },
   "include": [
     "src"

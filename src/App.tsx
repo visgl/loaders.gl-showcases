@@ -1,26 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import * as Pages from "./pages";
 
-function App() {
+export const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path={"/"}
+          element={<Navigate to="dashboard" replace={true} />}
+        />
+        <Route path={"dashboard"} element={<Pages.Dashboard />} />
+        <Route path={"i3s-app"} element={<Pages.I3SApp />} />
+        <Route path={"i3s-debug-app"} element={<Pages.I3SDebugApp />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
-
-export default App;
+};
