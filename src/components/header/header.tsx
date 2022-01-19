@@ -10,9 +10,11 @@ const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 100;
+  background-color: white;
 `;
 
-const HeaderLogo = styled.img`
+const HeaderLogo = styled.h2`
   margin-left: 15px;
   height: 30px;
 `;
@@ -32,15 +34,12 @@ const MenuLink = styled(Link)`
 export const Header = () => {
   return (
     <HeaderContainer>
-      <HeaderLogo
-        className="header-log"
-        alt={"ESRI Logo"}
-        src="esri-logo.jpg"
-      ></HeaderLogo>
+      <HeaderLogo>I3S Explorer</HeaderLogo>
       <MenuContainer>
         <MenuLink to="dashboard">Home</MenuLink>
-        <MenuLink to="i3s-app">I3S Explorer</MenuLink>
-        <MenuLink to="i3s-debug-app">I3S Debug App</MenuLink>
+        <MenuLink to="viewer">Viewer</MenuLink>
+        <MenuLink to="debug">Debug</MenuLink>
+        <MenuLink to="comparison">Comparison</MenuLink>
         <MenuLink to="about-us">About Us</MenuLink>
       </MenuContainer>
     </HeaderContainer>
