@@ -4,16 +4,6 @@ import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { MapView, LinearInterpolator } from "@deck.gl/core";
-import styled from "styled-components";
-
-// Temp dicision while controller can't be disabled while animation in deck.gl.
-const MapHideLayout = styled.div`
-  position: absolute;
-  top: 60px;
-  height: calc(100% - 60px);
-  width: 100%;
-  opacity: 1;
-`;
 
 const TILESET_URL = `https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
@@ -33,7 +23,12 @@ const INITIAL_VIEW_STATE = {
 
 const VIEW = new MapView({
   id: "main",
-  controller: { inertia: true },
+  controller: {
+    inertia: true,
+    dragPan: false,
+    dragRotate: false,
+    scrollZoom: false,
+  },
   farZMultiplier: 2.02,
 });
 
@@ -58,7 +53,7 @@ export const Dashboard = () => {
       ...INITIAL_VIEW_STATE,
       longitude: -122.39840061627255,
       latitude: 37.79059304582377,
-      zoom: 16,
+      zoom: 17,
     });
     rotateCamera();
   };
@@ -71,16 +66,14 @@ export const Dashboard = () => {
   });
 
   return (
-    <>
-      <DeckGL
-        controller={false}
-        views={[VIEW]}
-        layers={[tile3DLayer]}
-        initialViewState={viewState}
-      >
-        <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
-      </DeckGL>
-      <MapHideLayout />
-    </>
+    <DeckGL
+      id={'dashboard-app'}
+      controller={false}
+      views={[VIEW]}
+      layers={[tile3DLayer]}
+      initialViewState={viewState}
+    >
+      <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+    </DeckGL>
   );
 };
