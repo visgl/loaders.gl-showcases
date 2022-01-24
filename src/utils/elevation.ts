@@ -18,10 +18,16 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
   if (!centralTile) {
     return null;
   }
-  
+
   const {
     // @ts-expect-error
-    content: [{attributes: {POSITION: { value }}}],
+    content: [
+      {
+        attributes: {
+          POSITION: { value },
+        },
+      },
+    ],
   } = centralTile;
   let currentElevation = value[2] || 0;
   let currentDistance = calculateDistance(

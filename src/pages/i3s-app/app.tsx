@@ -4,7 +4,7 @@ import { StaticMap } from "react-map-gl";
 import styled from "styled-components";
 
 import { load } from "@loaders.gl/core";
-// import { lumaStats } from "@luma.gl/core";
+import { lumaStats } from "@luma.gl/core";
 import DeckGL from "@deck.gl/react";
 import {
   MapController,
@@ -18,7 +18,7 @@ import {
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
 } from "@loaders.gl/i3s";
-// import { StatsWidget } from "@probe.gl/stats-widget";
+import { StatsWidget } from "@probe.gl/stats-widget";
 
 import {
   ControlPanel,
@@ -75,16 +75,14 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
 
 const StatsWidgetWrapper = styled.div`
   display: flex;
-  @media (max-width: 768px) {
-    display: none;
-  }
 `;
 
 const StatsWidgetContainer = styled.div`
-  display: flex;
+  display: ${(props) => (props.showBuildingExplorer ? "none" : "flex")};
   flex-direction: column;
   align-items: flex-start;
   position: absolute;
+  top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
   background: #0e111a;
   color: white;
   font-family: "Uber Move" sans-serif;
@@ -104,60 +102,55 @@ const StatsWidgetContainer = styled.div`
   bottom: auto;
   width: 277px;
   left: 10px;
-  max-height: calc(100% - 125px);
+  max-height: calc(100% - 280px);
   overflow: auto;
 `;
 
 export const I3SApp = () => {
-  const statsWidgetContainer = useRef(null);
+  let statsWidgetContainer = useRef(null);
 
-  let loadedTilesets = [];
   // TODO init types
-  let tilesetStatsWidget = { setStats: (stats) => {}, update: () => {} };
-  let memWidget = { update: () => {} };
   let currentViewport = null;
 
   const [tileset, setTileset] = useState(null);
-  const [url, setUrl] = useState(null);
   const [token, setToken] = useState(null);
   const [name, setName] = useState(INITIAL_EXAMPLE_NAME);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
-  const [selectedFeatureAttributes, setSelectedFeatureAttributes] = useState(
-    null
-  );
+  const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
+    useState(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState([]);
   const [sublayers, setSublayers] = useState([]);
-  const [sublayersUpdateCounter, setSublayersUpdateCounter] = useState(0);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
   const [metadata, setMetadata] = useState({ layers: [] });
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
+  const [memWidget, setMemWidget] = useState(null);
+  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
+  const [loadedTilesets, setLoadedTilesets] = useState([]);
   const tilesetUrl = parseTilesetUrlFromUrl();
 
   useEffect(() => {
-    // memWidget = new StatsWidget(lumaStats.get("Memory Usage"), {
-    //   framesPerUpdate: 1,
-    //   formatters: {
-    //     "GPU Memory": "memory",
-    //     "Buffer Memory": "memory",
-    //     "Renderbuffer Memory": "memory",
-    //     "Texture Memory": "memory",
-    //   },
-    //   // @ts-expect-error
-    //   container: statsWidgetContainer,
-    // });
-
-    // // @ts-expect-error
-    // tilesetStatsWidget = new StatsWidget(null, {
-    //   container: statsWidgetContainer,
-    // });
+    const memoryUsage = lumaStats.get("Memory Usage");
+    const memWidget = new StatsWidget(memoryUsage, {
+      framesPerUpdate: 1,
+      formatters: {
+        "GPU Memory": "memory",
+        "Buffer Memory": "memory",
+        "Renderbuffer Memory": "memory",
+        "Texture Memory": "memory",
+      },
+      // @ts-expect-error
+      container: statsWidgetContainer,
+    });
+    // @ts-expect-error
+    setMemWidget(memWidget);
 
     // Check if a tileset is specified in the query params
     let tileset;
@@ -167,7 +160,13 @@ export const I3SApp = () => {
       tileset = EXAMPLES[INITIAL_EXAMPLE_NAME];
     }
 
-    // tilesetUrl && setTilesetsStats(initStats(tilesetUrl));
+    // @ts-expect-error
+    const tilesetStatsWidget = new StatsWidget(null, {
+      container: statsWidgetContainer,
+    });
+    // @ts-expect-error
+    setTilesetStatsWidget(tilesetStatsWidget);
+
     onSelectTileset(tileset);
   }, []);
 
@@ -187,11 +186,13 @@ export const I3SApp = () => {
     setSelectedFeatureAttributes(null);
     setFlattenedSublayers(flattenedSublayers);
 
-    loadedTilesets = [];
+    setLoadedTilesets([]);
     setNeedTransitionToTileset(true);
+
     const tilesetsStats = initStats(tilesetUrl);
-    tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
+    // @ts-expect-error
+    !!tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setShowBuildingExplorer(false);
   };
 
@@ -219,15 +220,17 @@ export const I3SApp = () => {
    * Updates stats, called every frame
    */
   const updateStatWidgets = () => {
+    // @ts-expect-error
     memWidget.update();
 
     sumTilesetsStats(loadedTilesets, tilesetsStats);
+    // @ts-expect-error
     tilesetStatsWidget.update();
   };
 
   const onTilesetLoad = (tileset) => {
     // @ts-expect-error
-    loadedTilesets = [...loadedTilesets, tileset];
+    setLoadedTilesets((prevValues) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
       const { zoom, cartographicCenter } = tileset;
@@ -457,18 +460,14 @@ export const I3SApp = () => {
   };
 
   const renderStats = () => {
-    const style = {
-      display: "flex",
-      top: "150px",
-    };
-    if (showBuildingExplorer) {
-      style.display = "none";
-    }
-    if (sublayers.length) {
-      style.top = "200px";
-    }
     // TODO - too verbose, get more default styling from stats widget?
-    return <StatsWidgetContainer style={style} ref={statsWidgetContainer} />;
+    return (
+      <StatsWidgetContainer
+        hasSublayers={Boolean(sublayers.length)}
+        showBuildingExplorer={showBuildingExplorer}
+        ref={(_) => (statsWidgetContainer = _)}
+      />
+    );
   };
 
   const updateSublayerVisibility = (sublayer) => {
@@ -480,12 +479,13 @@ export const I3SApp = () => {
       if (flattenedSublayer) {
         // @ts-expect-error
         flattenedSublayer.visibility = sublayer.visibility;
-        setSublayersUpdateCounter((prevValue) => prevValue + 1);
 
         if (!sublayer.visibility) {
-          loadedTilesets = loadedTilesets.filter(
-            // @ts-expect-error
-            (tileset) => tileset.basePath !== flattenedSublayer.url
+          setLoadedTilesets((prevValues) =>
+            prevValues.filter(
+              // @ts-expect-error
+              (tileset) => tileset.basePath !== flattenedSublayer.url
+            )
           );
         }
       }
@@ -563,7 +563,7 @@ export const I3SApp = () => {
       {renderControlPanel()}
       {selectedFeatureAttributes && renderAttributesPanel()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
-      {/* {renderMemory()} */}
+      {renderMemory()}
       <DeckGL
         layers={layers}
         viewState={viewState}

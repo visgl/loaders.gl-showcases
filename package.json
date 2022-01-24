@@ -6,7 +6,9 @@
     "start": "node scripts/start.js",
     "start-local-deck": "USE_LOCAL_DECK='true' node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "lint": "npx eslint src",
+    "format": "npx prettier --write . && npm run lint -- --fix"
   },
   "dependencies": {
     "@babel/core": "^7.16.0",

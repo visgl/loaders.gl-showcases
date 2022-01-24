@@ -1,9 +1,9 @@
-import {Stats} from '@probe.gl/stats';
+import { Stats } from "@probe.gl/stats";
 
-export const initStats = (url = '') => {
-  const stats = new Stats({id: url});
+export const initStats = (url = "") => {
+  const stats = new Stats({ id: url });
   return stats;
-}
+};
 
 export const sumTilesetsStats = (tilesets, stats) => {
   stats.reset();
@@ -12,4 +12,4 @@ export const sumTilesetsStats = (tilesets, stats) => {
       stats.get(stat.name).addCount(stat.count);
     });
   }
-}
+};

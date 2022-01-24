@@ -67,7 +67,7 @@ export const Dashboard = () => {
 
   return (
     <DeckGL
-      id={'dashboard-app'}
+      id={"dashboard-app"}
       controller={false}
       views={[VIEW]}
       layers={[tile3DLayer]}
