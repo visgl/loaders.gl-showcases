@@ -40,26 +40,26 @@ const NoIssuesItem = styled.h4`
 `;
 
 const TableButton = styled.button`
-  display: 'flex',
-  position: 'absolute',
-  top: '0',
-  right: '0',
-  width: '90px',
-  align-items: 'center',
-  justify-content: 'center',
-  background: 'transparent',
-  padding: '4px 16px',
-  margin: '0 10px',
-  color: 'rgba(255,255,255,.6)',
-  font-weight: '500px',
-  border-radius: '4px',
-  margin: '8px',
-  cursor: 'pointer'
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 4px 16px;
+  margin: 0 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500px;
+  border-radius: 4px;
+  margin: 8px;
+  cursor: pointer;
 `;
 
 const Row = styled.tr`
-  color: "rgba(255, 255, 255, .3)",
-  margin: "8px 0",
+  color: "rgba(255, 255, 255, .3)";
+  margin: "8px 0";
 `;
 
 const NO_ISSUES = "No Issues";

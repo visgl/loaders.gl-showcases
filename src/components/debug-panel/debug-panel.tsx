@@ -1,13 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import {
-  DebugOptionGroup,
-  ToggleSwitch,
-  CheckboxOption,
-  Checkbox,
-  CheckboxSpan,
-} from "../";
+import { DebugOptionGroup, ToggleSwitch, Checkbox } from "../";
 
 import { Color, Font, DropDownStyle } from "../../constants/common";
 
@@ -102,6 +96,20 @@ const DebugTextureContainer = styled.div`
     transition: all 1s;
     width: 85%;
   }
+`;
+
+const CheckboxOption = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 246px;
+  padding-bottom: 8px;
+`;
+
+const CheckboxTitle = styled.span`
+  margin-left: 5;
+  cursor: pointer;
 `;
 
 const CHECKBOX_STYLE = {
@@ -231,7 +239,7 @@ export const DebugPanel = ({
               checked={loadTiles}
               onChange={() => onDebugOptionsChange({ loadTiles: !loadTiles })}
             />
-            <CheckboxSpan>Load tiles</CheckboxSpan>
+            <CheckboxTitle>Load tiles</CheckboxTitle>
           </label>
         </CheckboxOption>
         <CheckboxOption>
@@ -242,7 +250,7 @@ export const DebugPanel = ({
               checked={pickable}
               onChange={() => onDebugOptionsChange({ pickable: !pickable })}
             ></Checkbox>
-            <CheckboxSpan>Picking</CheckboxSpan>
+            <CheckboxTitle>Picking</CheckboxTitle>
           </label>
         </CheckboxOption>
         <CheckboxOption>
@@ -257,7 +265,7 @@ export const DebugPanel = ({
                 })
               }
             />
-            <CheckboxSpan>Texture UVs</CheckboxSpan>
+            <CheckboxTitle>Texture UVs</CheckboxTitle>
           </label>
         </CheckboxOption>
         {showUVDebugTexture ? renderDebugTextureImage() : null}
@@ -269,7 +277,7 @@ export const DebugPanel = ({
               checked={wireframe}
               onChange={() => onDebugOptionsChange({ wireframe: !wireframe })}
             />
-            <CheckboxSpan>Wireframe</CheckboxSpan>
+            <CheckboxTitle>Wireframe</CheckboxTitle>
           </label>
         </CheckboxOption>
         <CheckboxOption>
@@ -310,7 +318,7 @@ export const DebugPanel = ({
               onDebugOptionsChange({ minimapViewport: !minimapViewport })
             }
           />
-          <CheckboxSpan>Different viewports</CheckboxSpan>
+          <CheckboxTitle>Different viewports</CheckboxTitle>
         </label>
       </CheckboxOption>
     );

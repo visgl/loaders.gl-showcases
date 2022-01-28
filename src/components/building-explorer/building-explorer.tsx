@@ -1,10 +1,5 @@
 import styled from "styled-components";
-import {
-  Checkbox,
-  CheckboxOption,
-  CheckboxSpan,
-  ToggleSwitch,
-} from "../../components";
+import { Checkbox, ToggleSwitch } from "../../components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
@@ -77,6 +72,20 @@ const Label = styled.h3`
   font-weight: normal;
 `;
 
+const CheckboxOption = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 246px;
+  padding-bottom: 8px;
+`;
+
+const SublayerName = styled.span`
+  margin-left: 5;
+  cursor: pointer;
+`;
+
 export const BuildingExplorer = ({
   sublayers,
   isShown,
@@ -146,7 +155,7 @@ export const BuildingExplorer = ({
                 checked={sublayer.visibility}
                 onChange={() => toggleSublayer(sublayer)}
               />
-              <CheckboxSpan>{sublayer.name}</CheckboxSpan>
+              <SublayerName>{sublayer.name}</SublayerName>
             </label>
           </CheckboxOption>
           {sublayer.expanded ? renderSublayers(childLayers) : null}

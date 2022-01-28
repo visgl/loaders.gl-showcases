@@ -51,17 +51,3 @@ export const Checkbox = ({ checked, ...props }) => (
     </StyledCheckbox>
   </CheckboxContainer>
 );
-
-export const CheckboxOption = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 246px;
-  padding-bottom: 8px;
-`;
-
-export const CheckboxSpan = styled.span`
-  margin-left: 5;
-  cursor: pointer;
-`;
