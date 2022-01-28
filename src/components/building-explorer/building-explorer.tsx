@@ -17,7 +17,12 @@ import { useForceUpdate } from "../../utils";
 const BuildingExplorerContainer = styled.div`
   position: absolute;
   z-index: 100;
-  top: 200px;
+  top: ${(props) =>
+    props.debugMode
+      ? props.isControlPanelShown
+        ? "250px"
+        : "120px"
+      : "200px"};
   left: 10px;
   display: flex;
   align-items: center;
@@ -55,7 +60,6 @@ const CollapseContainer = styled.div`
 const CheckboxContainer = styled.div`
   background: #0e111a;
   color: white;
-  font-family: "Uber Move" sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -78,6 +82,8 @@ export const BuildingExplorer = ({
   isShown,
   onUpdateSublayerVisibility,
   onToggleBuildingExplorer,
+  isControlPanelShown = false,
+  debugMode = false,
 }) => {
   const forceUpdate = useForceUpdate();
 
@@ -150,7 +156,11 @@ export const BuildingExplorer = ({
   };
 
   return (
-    <BuildingExplorerContainer isShown={isShown}>
+    <BuildingExplorerContainer
+      isShown={isShown}
+      isControlPanelShown={isControlPanelShown}
+      debugMode={debugMode}
+    >
       <ExplorerWraper>
         <Label htmlFor="BuildingExplorerToggle">BuildingExplorer</Label>
         <ToggleSwitch

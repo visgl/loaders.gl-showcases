@@ -3,6 +3,7 @@ import styled from "styled-components";
 const Switch = styled.div`
   position: relative;
   width: 28px;
+  height: 18px;
 `;
 
 const Input = styled.input`
@@ -69,7 +70,7 @@ export const ToggleSwitch = ({
   title = "",
 }) => {
   return (
-    <Switch onClick={onChange}>
+    <Switch>
       <Label htmlFor={id} title={title}>
         <Input
           id={id}

@@ -6,7 +6,6 @@ import { MAP_STYLES } from "../../constants/map-styles";
 import { ToggleSwitch } from "../../components";
 
 const Font = `
-  font-family: "Uber Move" sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -18,7 +17,7 @@ const Container = styled.div`
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
-  top: 70px;
+  top: ${(props) => (props.debugMode ? "120px" : "70px")};
   left: 10px;
   background: #0e111a;
   border-radius: 8px;
@@ -118,9 +117,7 @@ export const ControlPanel = ({
   selectedMapStyle,
   mapStyles = MAP_STYLES,
   useTerrainLayer,
-  onUpdateSublayerVisibility,
   toggleTerrain,
-  sublayers,
   debugMode = false,
 }) => {
   const [example, setExample] = useState(name || CUSTOM_EXAMPLE);
@@ -183,7 +180,11 @@ export const ControlPanel = ({
     return (
       <TerrainContainer>
         <TerrainName>Terrain</TerrainName>
-        <ToggleSwitch checked={useTerrainLayer} onChange={toggleTerrain} />
+        <ToggleSwitch
+          id="terrain-layer-switch"
+          checked={useTerrainLayer}
+          onChange={toggleTerrain}
+        />
       </TerrainContainer>
     );
   };

@@ -52,7 +52,7 @@ const INITIAL_VIEW_STATE = {
   maxZoom: 30,
   zoom: 14.5,
   transitionDuration: 0,
-  // transitionInterpolator: null,
+  transitionInterpolator: null,
 };
 
 const VIEW = new MapView({
@@ -85,7 +85,6 @@ const StatsWidgetContainer = styled.div`
   top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
   background: #0e111a;
   color: white;
-  font-family: "Uber Move" sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -293,7 +292,6 @@ export const I3SApp = () => {
       setViewState({
         ...newViewState,
         transitionDuration: TRANSITION_DURAITON,
-        // @ts-expect-error
         transitionInterpolator: new FlyToInterpolator(),
       });
       setNeedTransitionToTileset(false);
@@ -502,9 +500,7 @@ export const I3SApp = () => {
         name={name}
         onExampleChange={onSelectTileset}
         onMapStyleChange={onSelectMapStyle}
-        onUpdateSublayerVisibility={updateSublayerVisibility}
         selectedMapStyle={selectedMapStyle}
-        sublayers={sublayers}
         useTerrainLayer={useTerrainLayer}
         toggleTerrain={toggleTerrain}
       ></ControlPanel>
