@@ -101,6 +101,10 @@ const DECK_LINK_ALIASES = {
   "@deck.gl/react": path.resolve(ROOT_DIR, "../deck.gl/modules/react/src"),
 };
 
+const LOADERS_LINK_ALIASES = {
+  "@loaders.gl/i3s": path.resolve(ROOT_DIR, "../loaders.gl/modules/i3s/src"),
+};
+
 function getAliasesForLocalDependencies() {
   let aliases = {};
 
@@ -112,7 +116,7 @@ function getAliasesForLocalDependencies() {
     if (shouldAddLocaldependency) {
       switch (dependency) {
         case "USE_LOCAL_LOADERS":
-          // TODO add needed loaders here
+          aliases = { ...aliases, ...LOADERS_LINK_ALIASES };
           break;
         case "USE_LOCAL_DECK":
           aliases = { ...aliases, ...DECK_LINK_ALIASES };
@@ -449,7 +453,6 @@ module.exports = function (webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include: paths.appSrc,
               loader: require.resolve("babel-loader"),
               options: {
                 customize: require.resolve(
@@ -477,6 +480,9 @@ module.exports = function (webpackEnv) {
                 cacheCompression: false,
                 compact: isEnvProduction,
               },
+              resolve: {
+                fullySpecified: false,
+              },
             },
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.
@@ -503,12 +509,6 @@ module.exports = function (webpackEnv) {
                 // show incorrect code and set breakpoints on the wrong lines.
                 sourceMaps: shouldUseSourceMap,
                 inputSourceMap: shouldUseSourceMap,
-              },
-            },
-            {
-              test: /\.m?js/,
-              resolve: {
-                fullySpecified: false,
               },
             },
             // "postcss" loader applies autoprefixer to our CSS.
