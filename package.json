@@ -1,7 +1,8 @@
 {
-  "name": "i3s-esri",
+  "name": "i3s-explorer",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "homepage": "https://visgl.github.io/loaders.gl-showcases",
   "scripts": {
     "start": "node scripts/start.js",
     "start-local-deck": "USE_LOCAL_DECK='true' node scripts/start.js",
@@ -9,7 +10,9 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "lint": "npx eslint src",
-    "format": "npx prettier --write . && npm run lint -- --fix"
+    "format": "npx prettier --write . && npm run lint -- --fix",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@babel/core": "^7.16.12",
@@ -45,6 +48,7 @@
     "eslint-webpack-plugin": "^3.1.1",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
+    "gh-pages": "^3.2.3",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.4.3",
