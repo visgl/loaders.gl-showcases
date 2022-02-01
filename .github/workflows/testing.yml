@@ -1,6 +1,5 @@
-name: Testing
+name: Tests
 
-# Controls when the workflow will run
 on: 
   pull_request: 
   # Allows you to run this workflow manually from the Actions tab
@@ -16,6 +15,7 @@ jobs:
       # Run all unit tests
       - name: Check all files into container
         run: ls -la
+
       - name: Go to the project directory
         working-directory: ./loaders.gl-showcases
         run: |
