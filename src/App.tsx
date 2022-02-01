@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { Route, Routes, Navigate, HashRouter } from "react-router-dom";
 import styled from "styled-components";
 import { Header } from "./components";
 import * as Pages from "./pages";
@@ -16,7 +11,7 @@ const ContentWrapper = styled.div`
 
 export const App = () => {
   return (
-    <Router>
+    <HashRouter>
       <Header />
       <ContentWrapper>
         <Routes>
@@ -29,6 +24,6 @@ export const App = () => {
           <Route path={"debug"} element={<Pages.I3SDebugApp />} />
         </Routes>
       </ContentWrapper>
-    </Router>
+    </HashRouter>
   );
 };
