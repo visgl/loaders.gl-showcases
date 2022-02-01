@@ -14,9 +14,10 @@ jobs:
       - uses: actions/checkout@v2
 
       # Run all unit tests
-      - name: Running unit tests
+      - name: Check all files into container
+        run: ls -la
+      - name: Go to the project directory
+        working-directory: ./loaders.gl-showcases
         run: |
-          cd loaders.gl-showcases
           yarn
           yarn test:nowatch
-
