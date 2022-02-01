@@ -1,7 +1,8 @@
 name: Testing
 
-on:[pull_request]
-
+# Controls when the workflow will run
+on: 
+  pull_request: 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -14,7 +15,8 @@ jobs:
 
       # Run all unit tests
       - name: Running unit tests
-        run: cd loaders.gl-showcases
-        run: yarn
-        run: yarn test:nowatch
+        run: |
+          cd loaders.gl-showcases
+          yarn
+          yarn test:nowatch
 
