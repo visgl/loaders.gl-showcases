@@ -13,12 +13,15 @@ const Input = styled.input`
   z-index: -1;
 `;
 
-const Label = styled.label`
+const Label = styled.label<{
+  title?: string;
+  htmlFor?: string;
+}>`
   font-size: 6px;
   width: 28px;
   height: 18px;
   border-radius: 8px;
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  cursor: pointer;
   ${Input} {
     opacity: 0;
     width: 0;
@@ -62,6 +65,9 @@ const Slider = styled.span`
   }
 `;
 
+/**
+ * TODO: Add types to component
+ */
 export const ToggleSwitch = ({
   checked,
   onChange,

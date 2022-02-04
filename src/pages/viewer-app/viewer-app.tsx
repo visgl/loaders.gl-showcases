@@ -73,11 +73,14 @@ const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
 };
 const TERRAIN_LAYER_MAX_ZOOM = 15;
 
-const StatsWidgetWrapper = styled.div`
+const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
 `;
 
-const StatsWidgetContainer = styled.div`
+const StatsWidgetContainer = styled.div<{
+  showBuildingExplorer: boolean;
+  hasSublayers: boolean;
+}>`
   display: ${(props) => (props.showBuildingExplorer ? "none" : "flex")};
   flex-direction: column;
   align-items: flex-start;
@@ -105,7 +108,10 @@ const StatsWidgetContainer = styled.div`
   overflow: auto;
 `;
 
-export const I3SApp = () => {
+/**
+ * TODO: Add types to component
+ */
+export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
 
   // TODO init types
@@ -158,7 +164,6 @@ export const I3SApp = () => {
     } else {
       tileset = EXAMPLES[INITIAL_EXAMPLE_NAME];
     }
-
     // @ts-expect-error
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
@@ -220,11 +225,11 @@ export const I3SApp = () => {
    */
   const updateStatWidgets = () => {
     // @ts-expect-error
-    memWidget.update();
+    memWidget && memWidget.update();
 
     sumTilesetsStats(loadedTilesets, tilesetsStats);
     // @ts-expect-error
-    tilesetStatsWidget.update();
+    tilesetStatsWidget && tilesetStatsWidget.update();
   };
 
   const onTilesetLoad = (tileset) => {
@@ -463,6 +468,7 @@ export const I3SApp = () => {
       <StatsWidgetContainer
         hasSublayers={Boolean(sublayers.length)}
         showBuildingExplorer={showBuildingExplorer}
+        // @ts-expect-error
         ref={(_) => (statsWidgetContainer = _)}
       />
     );

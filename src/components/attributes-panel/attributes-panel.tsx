@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const Container = styled.div`
+const Container = styled.div<{ isControlPanelShown: boolean }>`
   position: absolute;
   top: 70px;
   right: 10px;
@@ -73,6 +73,9 @@ const Title = styled.h3`
 
 const NO_DATA = "No Data";
 
+/**
+ * TODO: Add types to component
+ */
 export const AttributesPanel = ({
   title,
   attributesObject,
@@ -81,12 +84,11 @@ export const AttributesPanel = ({
   children = null,
 }) => {
   const prepareTable = () => {
-    const tableColumns = [];
+    const tableColumns: JSX.Element[] = [];
 
     for (const key in attributesObject) {
       const value = formatValue(attributesObject[key]);
       const column = createTableColumn(key, value);
-      // @ts-expect-error
       tableColumns.push(column);
     }
 

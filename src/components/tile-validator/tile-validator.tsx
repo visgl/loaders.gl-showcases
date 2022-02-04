@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import {
@@ -6,7 +7,6 @@ import {
   isGeometryBoundingVolumeMoreSuitable,
 } from "../../utils";
 import { Checkbox } from "../";
-import { useEffect, useState } from "react";
 
 const TileValidatorContainer = styled.div`
   display: flex;
@@ -103,6 +103,9 @@ interface ITriangleMessage {
   text: string;
 }
 
+/**
+ * TODO: Add types to component
+ */
 export const TileValidator = ({
   tile,
   handleShowNormals,

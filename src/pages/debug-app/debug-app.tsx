@@ -190,11 +190,11 @@ const CURSOR_STYLE = {
   cursor: "pointer",
 };
 
-const StatsWidgetWrapper = styled.div`
+const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: ${(props) => (props.showMemory ? "inherit" : "none")};
 `;
 
-const StatsWidgetContainer = styled.div`
+const StatsWidgetContainer = styled.div<{ renderControlPanel: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -214,7 +214,10 @@ const StatsWidgetContainer = styled.div`
   overflow: auto;
 `;
 
-export const I3SDebugApp = () => {
+/**
+ * TODO: Add types to component
+ */
+export const DebugApp = () => {
   let statsWidgetContainer = useRef(null);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
   const [metadata, setMetadata] = useState(null);
@@ -754,6 +757,7 @@ export const I3SDebugApp = () => {
     return (
       <StatsWidgetContainer
         renderControlPanel={controlPanel}
+        // @ts-expect-error
         ref={(_) => (statsWidgetContainer = _)}
       />
     );

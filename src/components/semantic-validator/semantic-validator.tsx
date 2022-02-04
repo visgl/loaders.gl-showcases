@@ -83,6 +83,9 @@ const defaultProps = {
   warnings: [],
 };
 
+/**
+ * TODO: Add types to component
+ */
 export const SemanticValidator = ({ warnings, clearWarnings }) => {
   const renderColumns = (warnings) =>
     warnings.map((warning, index) => (

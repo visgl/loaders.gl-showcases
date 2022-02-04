@@ -24,7 +24,7 @@ const Container = styled.div`
   background: #0e111a;
 `;
 
-const ToolButton = styled.button`
+const ToolButton = styled.button<{ active: boolean }>`
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
@@ -117,6 +117,9 @@ const defaultProps = {
   onDebugOptionsChange: () => {},
 };
 
+/**
+ * TODO: Add types to component
+ */
 export const ToolBar = ({
   debugOptions: {
     showMemory,

@@ -1,3 +1,4 @@
+import * as React from "react";
 import styled from "styled-components";
 import { Checkbox, ToggleSwitch } from "../../components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +10,11 @@ import {
 
 import { useForceUpdate } from "../../utils";
 
-const BuildingExplorerContainer = styled.div`
+const BuildingExplorerContainer = styled.div<{
+  debugMode: boolean;
+  isControlPanelShown: boolean;
+  isShown: boolean;
+}>`
   position: absolute;
   z-index: 100;
   top: ${(props) =>
@@ -64,7 +69,7 @@ const CheckboxContainer = styled.div`
   margin-left: 10px;
 `;
 
-const Label = styled.h3`
+const Label = styled.h3<{ htmlFor: string }>`
   margin: 0;
   padding: 0;
   cursor: pointer;
@@ -86,6 +91,9 @@ const SublayerName = styled.span`
   cursor: pointer;
 `;
 
+/**
+ * TODO: Add types to component
+ */
 export const BuildingExplorer = ({
   sublayers,
   isShown,

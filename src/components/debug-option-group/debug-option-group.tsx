@@ -20,6 +20,9 @@ const propTypes = {
 
 const defaultProps = {};
 
+/**
+ * TODO: Add types to component
+ */
 export const DebugOptionGroup = ({ children }) => {
   return <OptionGroup>{children}</OptionGroup>;
 };

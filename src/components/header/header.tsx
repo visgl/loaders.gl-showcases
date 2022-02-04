@@ -31,6 +31,9 @@ const MenuLink = styled(Link)`
   text-decoration: inherit;
 `;
 
+/**
+ * TODO: Add types to component
+ */
 export const Header = () => {
   return (
     <HeaderContainer>

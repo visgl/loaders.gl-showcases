@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const CheckboxContainer = styled.div`
+const CheckboxContainer = styled.div<{ disabled: boolean }>`
   display: inline-block;
   vertical-align: middle;
   cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
@@ -22,7 +22,7 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   white-space: nowrap;
   width: 1px;
 `;
-const StyledCheckbox = styled.div`
+const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
   display: inline-block;
   width: 22px;
   height: 22px;
@@ -41,6 +41,10 @@ const StyledCheckbox = styled.div`
     visibility: ${(props) => (props.checked ? "visible" : "hidden")};
   }
 `;
+
+/**
+ * TODO: Add types to component
+ */
 export const Checkbox = ({ checked, ...props }) => (
   <CheckboxContainer disabled={props.disabled}>
     <HiddenCheckbox checked={checked} {...props} />

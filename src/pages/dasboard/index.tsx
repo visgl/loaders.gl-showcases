@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useCallback } from "react";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
@@ -32,6 +33,9 @@ const VIEW = new MapView({
   farZMultiplier: 2.02,
 });
 
+/**
+ * TODO: Add types to component
+ */
 export const Dashboard = () => {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 

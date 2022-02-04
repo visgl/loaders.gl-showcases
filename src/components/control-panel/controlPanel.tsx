@@ -11,7 +11,7 @@ const Font = `
   font-weight: 500;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ debugMode: boolean }>`
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
@@ -110,6 +110,9 @@ const DropDown = styled.select`
 
 const CUSTOM_EXAMPLE = "Custom example";
 
+/**
+ * TODO: Add types to component
+ */
 export const ControlPanel = ({
   name,
   onExampleChange,

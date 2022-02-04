@@ -1,3 +1,4 @@
+import * as React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -11,7 +12,10 @@ import {
   BOUNDING_VOLUME_TYPE,
 } from "../../constants/map-styles";
 
-const Container = styled.div`
+const Container = styled.div<{
+  renderControlPanel: boolean;
+  hasBuildingExplorer: boolean;
+}>`
   ${Color}
   ${Font}
   position: absolute;
@@ -42,13 +46,6 @@ const Container = styled.div`
   max-height: 540px;
   overflow-y: auto;
   overflow-x: hidden;
-
-  @media (max-width: 768px) {
-    top: auto;
-    bottom: 60px;
-    left: 0;
-    border-radius: 0;
-  }
 `;
 
 const Header = styled.h6`
@@ -98,7 +95,7 @@ const DebugTextureContainer = styled.div`
   }
 `;
 
-const CheckboxOption = styled.div`
+const CheckboxOption = styled.div<{ style?: any }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -131,6 +128,9 @@ const defaultProps = {
   hasBuildingExplorer: false,
 };
 
+/**
+ * TODO: Add types to component
+ */
 export const DebugPanel = ({
   debugOptions,
   debugTextureImage,

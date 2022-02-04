@@ -26,6 +26,9 @@ const TableHeader = styled.th`
   font-weight: '400'
 `;
 
+/**
+ * TODO: Add types to component
+ */
 export const AttributesTooltip = ({ data }) => {
   const prepareRows = () => {
     const rows: JSX.Element[] = [];

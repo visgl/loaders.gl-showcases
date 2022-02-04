@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const FrameWrap = styled.div`
+const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
   position: absolute;
   right: 1%;
   height: calc(75% - 85px);
@@ -47,6 +47,9 @@ const defaultProps = {
   showFullInfo: false,
 };
 
+/**
+ * TODO: Add types to component
+ */
 export const MapInfoPanel = ({
   metadata,
   token,
