@@ -198,7 +198,7 @@ const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: ${(props) => (props.showMemory ? "inherit" : "none")};
 `;
 
-const StatsWidgetContainer = styled.div<{ renderControlPanel: boolean }>`
+const StatsWidgetContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -223,6 +223,7 @@ const StatsWidgetContainer = styled.div<{ renderControlPanel: boolean }>`
  */
 export const DebugApp = () => {
   const colorMap = new ColorMap();
+  const forceUpdate = useForceUpdate();
   let statsWidgetContainer = useRef(null);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
   const [metadata, setMetadata] = useState(null);
@@ -780,7 +781,6 @@ export const DebugApp = () => {
     // TODO - too verbose, get more default styling from stats widget?
     return (
       <StatsWidgetContainer
-        renderControlPanel={controlPanel}
         // @ts-expect-error
         ref={(_) => (statsWidgetContainer = _)}
       />
@@ -819,7 +819,9 @@ export const DebugApp = () => {
       );
 
       if (flattenedSublayer) {
-        useForceUpdate();
+        // @ts-expect-error
+        flattenedSublayer.visibility = sublayer.visibility;
+        forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>

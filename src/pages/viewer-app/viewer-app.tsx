@@ -32,6 +32,7 @@ import {
   initStats,
   sumTilesetsStats,
   getElevationByCentralTile,
+  useForceUpdate,
 } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -113,7 +114,7 @@ const StatsWidgetContainer = styled.div<{
  */
 export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
-
+  const forceUpdate = useForceUpdate();
   // TODO init types
   let currentViewport = null;
 
@@ -139,8 +140,21 @@ export const ViewerApp = () => {
   const [memWidget, setMemWidget] = useState(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
   const [loadedTilesets, setLoadedTilesets] = useState([]);
-  const tilesetUrl = parseTilesetUrlFromUrl();
 
+  const initMainTileset = () => {
+    const tilesetUrl = parseTilesetUrlFromUrl();
+
+    if (tilesetUrl) {
+      return { url: tilesetUrl };
+    }
+    return EXAMPLES[INITIAL_EXAMPLE_NAME];
+  };
+
+  const [mainTileset, setMainTileset] = useState(initMainTileset());
+
+  /**
+   * Initialize stats widgets
+   */
   useEffect(() => {
     const memoryUsage = lumaStats.get("Memory Usage");
     const memWidget = new StatsWidget(memoryUsage, {
@@ -157,48 +171,53 @@ export const ViewerApp = () => {
     // @ts-expect-error
     setMemWidget(memWidget);
 
-    // Check if a tileset is specified in the query params
-    let tileset;
-    if (tilesetUrl) {
-      tileset = { url: tilesetUrl };
-    } else {
-      tileset = EXAMPLES[INITIAL_EXAMPLE_NAME];
-    }
     // @ts-expect-error
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
     });
     // @ts-expect-error
     setTilesetStatsWidget(tilesetStatsWidget);
-
-    onSelectTileset(tileset);
   }, []);
 
   /**
-   * Calls on tileset is selected
-   * @param tileset
+   * Hook for start using tilesets stats.
    */
-  const onSelectTileset = async (tileset) => {
-    const params = parseTilesetUrlParams(tileset.url, tileset);
+  useEffect(() => {
+    const tilesetsStats = initStats(mainTileset.url);
+
+    // @ts-expect-error
+    tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
+    setTilesetsStats(tilesetsStats);
+  }, [loadedTilesets]);
+
+  /**
+   * Hook to call multiple changing function based on selected tileset.
+   */
+  useEffect(() => {
+    async function fetchMetadata(metadataUrl) {
+      const metadata = await fetch(metadataUrl).then((resp) => resp.json());
+      setMetadata(metadata);
+    }
+
+    async function fetchFlattenedSublayers(tilesetUrl) {
+      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      setFlattenedSublayers(flattenedSublayers);
+    }
+
+    const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
     const { tilesetUrl, token, name, metadataUrl } = params;
+
+    fetchMetadata(metadataUrl);
+    fetchFlattenedSublayers(tilesetUrl);
+
     setName(name);
     setToken(token);
     setSublayers([]);
-    const metadata = await fetch(metadataUrl).then((resp) => resp.json());
-    const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
-    setMetadata(metadata);
-    setSelectedFeatureAttributes(null);
-    setFlattenedSublayers(flattenedSublayers);
-
     setLoadedTilesets([]);
     setNeedTransitionToTileset(true);
-
-    const tilesetsStats = initStats(tilesetUrl);
-    setTilesetsStats(tilesetsStats);
-    // @ts-expect-error
-    !!tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setShowBuildingExplorer(false);
-  };
+    setSelectedFeatureAttributes(null);
+  }, [mainTileset]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -483,6 +502,7 @@ export const ViewerApp = () => {
       if (flattenedSublayer) {
         // @ts-expect-error
         flattenedSublayer.visibility = sublayer.visibility;
+        forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
@@ -504,7 +524,7 @@ export const ViewerApp = () => {
     return (
       <ControlPanel
         name={name}
-        onExampleChange={onSelectTileset}
+        onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}
         useTerrainLayer={useTerrainLayer}
