@@ -256,14 +256,28 @@ export const DebugApp = () => {
   const [terrainTiles, setTerrainTiles] = useState({});
   const [uvDebugTexture, setUvDebugTexture] = useState(null);
   const [loadedTilesets, setLoadedTilesets] = useState([]);
-  const [memWidget, setMemVidget] = useState(null);
-
-  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
   const [currentViewport, setCurrentViewport] = useState(null);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
+  const [memWidget, setMemWidget] = useState(null);
+  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
 
+  const initMainTileset = () => {
+    const tilesetUrl = parseTilesetUrlFromUrl();
+
+    if (tilesetUrl) {
+      return { url: tilesetUrl };
+    }
+    return EXAMPLES[INITIAL_EXAMPLE_NAME];
+  };
+
+  const [mainTileset, setMainTileset] = useState(initMainTileset());
+
+  /**
+   * Initialize stats widgets
+   */
   useEffect(() => {
-    const memWidget = new StatsWidget(lumaStats.get("Memory Usage"), {
+    const lumaStatistics = lumaStats.get("Memory Usage");
+    const memWidget = new StatsWidget(lumaStatistics, {
       framesPerUpdate: 1,
       formatters: {
         "GPU Memory": "memory",
@@ -274,8 +288,9 @@ export const DebugApp = () => {
       // @ts-expect-error
       container: statsWidgetContainer,
     });
+
     // @ts-expect-error
-    setMemVidget(memWidget);
+    setMemWidget(memWidget);
 
     // @ts-expect-error
     const tilesetStatsWidget = new StatsWidget(null, {
@@ -283,58 +298,63 @@ export const DebugApp = () => {
     });
     // @ts-expect-error
     setTilesetStatsWidget(tilesetStatsWidget);
-
-    // Check if a tileset is specified in the query params
-    let mainTileset;
-    const tilesetUrl = parseTilesetUrlFromUrl();
-
-    if (tilesetUrl) {
-      mainTileset = { url: tilesetUrl };
-    } else {
-      mainTileset = EXAMPLES[INITIAL_EXAMPLE_NAME];
-    }
-    const initialTilesetStats = initStats(mainTileset.url);
-    setTilesetsStats(initialTilesetStats);
-    onSelectTileset(mainTileset);
-
-    load(UV_DEBUG_TEXTURE_URL, ImageLoader).then((image) =>
-      setUvDebugTexture(image)
-    );
   }, []);
 
-  const getViewState = () =>
-    debugOptions.minimap ? viewState : { main: viewState.main };
+  /**
+   * Hook for start using tilesets stats.
+   */
+  useEffect(() => {
+    const tilesetsStats = initStats(mainTileset.url);
 
-  const getViews = () => (debugOptions.minimap ? VIEWS : [VIEWS[0]]);
+    // @ts-expect-error
+    tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
+    setTilesetsStats(tilesetsStats);
+  }, [loadedTilesets]);
 
-  const onSelectTileset = async (mainTileset) => {
+  /**
+   * Hook to call multiple changing function based on selected tileset.
+   */
+  useEffect(() => {
+    async function fetchMetadata(metadataUrl) {
+      const metadata = await fetch(metadataUrl).then((resp) => resp.json());
+      setMetadata(metadata);
+    }
+
+    async function fetchFlattenedSublayers(tilesetUrl) {
+      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      setFlattenedSublayers(flattenedSublayers);
+    }
+
+    async function fetchUVDebugTexture() {
+      const image = await load(UV_DEBUG_TEXTURE_URL, ImageLoader);
+      setUvDebugTexture(image);
+    }
+
     const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
     const { tilesetUrl, token, name, metadataUrl } = params;
 
-    // setTilesetUrl(tilesetUrl);
+    fetchMetadata(metadataUrl);
+    fetchFlattenedSublayers(tilesetUrl);
+
     setName(name);
     setToken(token);
     setSublayers([]);
-
     handleClearWarnings();
-    const metadata = await fetch(metadataUrl).then((resp) => resp.json());
-    const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
-
-    setMetadata(metadata);
     setTileInfo(null);
     setNormalsDebugData([]);
-    setFlattenedSublayers(flattenedSublayers);
     setLoadedTilesets([]);
     setNeedTransitionToTileset(true);
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
 
-    const tilesetsStats = initStats(tilesetUrl);
-    // @ts-expect-error
-    tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
-    setTilesetsStats(tilesetsStats);
-  };
+    fetchUVDebugTexture();
+  }, [mainTileset]);
+
+  const getViewState = () =>
+    debugOptions.minimap ? viewState : { main: viewState.main };
+
+  const getViews = () => (debugOptions.minimap ? VIEWS : [VIEWS[0]]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -818,7 +838,7 @@ export const DebugApp = () => {
       <ControlPanel
         debugMode
         name={name}
-        onExampleChange={onSelectTileset}
+        onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}
         useTerrainLayer={useTerrainLayer}
