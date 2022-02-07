@@ -22,7 +22,11 @@ import { I3SLoader, I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { ImageLoader } from "@loaders.gl/images";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
-import { buildMinimapData, getFrustumBounds } from "../../utils";
+import {
+  buildMinimapData,
+  getFrustumBounds,
+  useForceUpdate,
+} from "../../utils";
 import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 
 import {
@@ -218,6 +222,7 @@ const StatsWidgetContainer = styled.div<{ renderControlPanel: boolean }>`
  * TODO: Add types to component
  */
 export const DebugApp = () => {
+  const colorMap = new ColorMap();
   let statsWidgetContainer = useRef(null);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
   const [metadata, setMetadata] = useState(null);
@@ -246,12 +251,9 @@ export const DebugApp = () => {
   const [warnings, setWarnings] = useState([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState([]);
   const [sublayers, setSublayers] = useState([]);
-  const [sublayersUpdateCounter, setSublayersUpdateCounter] = useState(0);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
-
-  const [colorMap, setColorMap] = useState(new ColorMap());
   const [uvDebugTexture, setUvDebugTexture] = useState(null);
   const [loadedTilesets, setLoadedTilesets] = useState([]);
   const [memWidget, setMemVidget] = useState(null);
@@ -324,6 +326,9 @@ export const DebugApp = () => {
     setFlattenedSublayers(flattenedSublayers);
     setLoadedTilesets([]);
     setNeedTransitionToTileset(true);
+    colorMap._resetColorsMap();
+    setColoredTilesMap({});
+    setSelectedTile(null);
 
     const tilesetsStats = initStats(tilesetUrl);
     // @ts-expect-error
@@ -585,15 +590,15 @@ export const DebugApp = () => {
 
   const getMeshColor = (tile) => {
     const { tileColorMode } = debugOptions;
-
-    return (
-      colorMap?.getColor(tile, {
+    const result =
+      colorMap.getColor(tile, {
         coloredBy: tileColorMode,
         // @ts-expect-error
         selectedTileId: selectedTile?.id,
         coloredTilesMap,
-      }) || DEFAULT_COLOR
-    );
+      }) || DEFAULT_COLOR;
+
+    return result;
   };
 
   const getAllTilesFromTilesets = (tilesets) => {
@@ -672,8 +677,7 @@ export const DebugApp = () => {
       // @ts-expect-error
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
-    // // @ts-expect-error
-    // setColorMap((prevValue) => prevValue || new ColorMap());
+
     const tiles = getAllTilesFromTilesets(loadedTilesets);
     const viewport = new WebMercatorViewport(viewState.main);
     const frustumBounds = getFrustumBounds(viewport);
@@ -795,9 +799,7 @@ export const DebugApp = () => {
       );
 
       if (flattenedSublayer) {
-        // @ts-expect-error
-        flattenedSublayer.visibility = sublayer.visibility;
-        setSublayersUpdateCounter((prevValue) => prevValue + 1);
+        useForceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>

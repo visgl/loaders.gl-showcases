@@ -103,6 +103,11 @@ export default class ColorMap {
     this.colorMap[id] = this.randomColorMap[id];
     return this.colorMap[id];
   }
+
+  _resetColorsMap() {
+    this.colorMap = {};
+    this.randomColorMap = {};
+  }
 }
 
 /**
