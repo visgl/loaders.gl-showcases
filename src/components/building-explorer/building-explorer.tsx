@@ -152,7 +152,7 @@ export const BuildingExplorer = ({
               <FontAwesomeIcon
                 icon={icon}
                 onClick={() => toggleGroup(sublayer)}
-                // @ts-expect-error
+                // @ts-expect-error - Type 'string' is not assignable to type 'SizeProp | undefined'.
                 size={size}
               />
             </CollapseContainer>

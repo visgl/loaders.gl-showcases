@@ -15,18 +15,30 @@ const defaultProps = {
   material: { pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1] } },
   getBoundingVolumeColor: {
     type: "function",
-    value: (tile) => [255, 255, 255, DEFAULT_BG_OPACITY],
+    value: () => [255, 255, 255, DEFAULT_BG_OPACITY],
     compare: false,
   },
 };
 
 export default class BoundingVolumeLayer extends CompositeLayer {
+  props: any;
+  state: any;
+  static layerName: string;
+  static defaultProps: {
+    visible: boolean;
+    tiles: never[];
+    material: { pbrMetallicRoughness: { baseColorFactor: number[] } };
+    getBoundingVolumeColor: {
+      type: string;
+      value: (tile: any) => number[];
+      compare: boolean;
+    };
+  };
   initializeState() {
-    // @ts-expect-error
     if ("onTileLoadFail" in this.props) {
       log.removed("onTileLoadFail", "onTileError")();
     }
-    // @ts-expect-error
+
     this.state = {
       layerMap: {},
     };
@@ -34,7 +46,6 @@ export default class BoundingVolumeLayer extends CompositeLayer {
 
   updateState({ changeFlags }) {
     if (changeFlags.propsChanged) {
-      // @ts-expect-error
       const { layerMap } = this.state;
 
       for (const key in layerMap) {
@@ -50,7 +61,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
         obb: { halfSize, quaternion, center },
       },
     } = tile;
-    // @ts-expect-error
+    // @ts-expect-error - Property 'attributes' does not exist on type 'CubeGeometry'.
     const { attributes } = geometry;
 
     const POSITION = {
@@ -70,7 +81,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
 
       POSITION.value.set(vec, i);
     }
-    // @ts-expect-error
+    // @ts-expect-error - Property 'attributes' does not exist on type 'CubeGeometry'.
     geometry.attributes = { POSITION };
     return geometry;
   }
@@ -88,7 +99,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
       nlat: GEOMETRY_STEP,
       nlong: GEOMETRY_STEP,
     });
-    // @ts-expect-error
+    // @ts-expect-error - Property 'attributes' does not exist on type 'CubeGeometry'.
     const { attributes } = geometry;
     const POSITION = {
       ...attributes.POSITION,
@@ -100,7 +111,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
       vec.add(center);
       POSITION.value.set(vec, i);
     }
-    // @ts-expect-error
+    // @ts-expect-error - Property 'attributes' does not exist on type 'SphereGeometry'.
     geometry.attributes = { POSITION };
     return geometry;
   }
@@ -117,7 +128,6 @@ export default class BoundingVolumeLayer extends CompositeLayer {
 
   _getBoundingVolumeLayer(tile) {
     const { content, viewportIds } = tile;
-    // @ts-expect-error
     const { material, getBoundingVolumeColor, boundingVolumeType } = this.props;
     const { cartographicOrigin, cartographicModelMatrix } = content;
     const meshType = BOUNDING_VOLUME_MESH_TYPE[boundingVolumeType];
@@ -143,13 +153,11 @@ export default class BoundingVolumeLayer extends CompositeLayer {
   }
 
   renderLayers() {
-    // @ts-expect-error
     const { visible, tiles } = this.props;
 
     if (!visible) {
       return null;
     }
-    // @ts-expect-error
     const { layerMap } = this.state;
 
     return tiles
@@ -177,7 +185,6 @@ export default class BoundingVolumeLayer extends CompositeLayer {
       .filter(Boolean);
   }
 }
-// @ts-expect-error
+
 BoundingVolumeLayer.layerName = "BoundingVolumeLayer";
-// @ts-expect-error
 BoundingVolumeLayer.defaultProps = defaultProps;

@@ -137,8 +137,9 @@ export const ViewerApp = () => {
   const [metadata, setMetadata] = useState({ layers: [] });
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
-  const [memWidget, setMemWidget] = useState(null);
-  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
+  const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
+  const [tilesetStatsWidget, setTilesetStatsWidget] =
+    useState<StatsWidget | null>(null);
   const [loadedTilesets, setLoadedTilesets] = useState([]);
 
   const initMainTileset = () => {
@@ -165,17 +166,16 @@ export const ViewerApp = () => {
         "Renderbuffer Memory": "memory",
         "Texture Memory": "memory",
       },
-      // @ts-expect-error
+      // @ts-expect-error - Type 'MutableRefObject<null>' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, dir, and 275 more.
       container: statsWidgetContainer,
     });
-    // @ts-expect-error
+
     setMemWidget(memWidget);
 
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
     });
-    // @ts-expect-error
     setTilesetStatsWidget(tilesetStatsWidget);
   }, []);
 
@@ -185,7 +185,6 @@ export const ViewerApp = () => {
   useEffect(() => {
     const tilesetsStats = initStats(mainTileset.url);
 
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
@@ -243,16 +242,14 @@ export const ViewerApp = () => {
    * Updates stats, called every frame
    */
   const updateStatWidgets = () => {
-    // @ts-expect-error
     memWidget && memWidget.update();
 
     sumTilesetsStats(loadedTilesets, tilesetsStats);
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.update();
   };
 
   const onTilesetLoad = (tileset) => {
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type '(prevValues: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'
     setLoadedTilesets((prevValues) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
@@ -264,7 +261,7 @@ export const ViewerApp = () => {
 
       if (viewport) {
         const { pitch, bearing } = viewState;
-        // @ts-expect-error
+        // @ts-expect-error - roperty 'fullExtent' does not exist on type 'never'.
         const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
         /**
          * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
@@ -277,7 +274,7 @@ export const ViewerApp = () => {
         /**
          * Convert to world coordinate system to shift the position on some distance in meters
          */
-        // @ts-expect-error
+        // @ts-expect-error - Property 'projectPosition' does not exist on type 'never'.
         const projectedPostion = viewport.projectPosition([
           longitude,
           latitude,
@@ -288,7 +285,7 @@ export const ViewerApp = () => {
         projectedPostion[0] +=
           projection *
           Math.sin((bearing * Math.PI) / 180) *
-          // @ts-expect-error
+          // @ts-expect-error - Property 'distanceScales' does not exist on type 'never'.
           viewport.distanceScales.unitsPerMeter[0];
         /**
          * Shift latitude
@@ -296,12 +293,12 @@ export const ViewerApp = () => {
         projectedPostion[1] +=
           projection *
           Math.cos((bearing * Math.PI) / 180) *
-          // @ts-expect-error
+          // @ts-expect-error - Property 'distanceScales' does not exist on type 'never'.
           viewport.distanceScales.unitsPerMeter[1];
         /**
          * Convert resulting coordinates to catrographic
          */
-        // @ts-expect-error
+        // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
         [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
       }
 
@@ -323,21 +320,21 @@ export const ViewerApp = () => {
   };
 
   const onViewStateChange = ({ interactionState, viewState }) => {
-    let { longitude, latitude, position } = viewState;
+    const { longitude, latitude, position } = viewState;
 
-    const [x, y, oldElevation] = position || [0, 0, 0];
+    const [, , oldElevation] = position || [0, 0, 0];
     const viewportCenterTerrainElevation =
       getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
 
     let cameraTerrainElevation = null;
 
     if (currentViewport) {
-      // @ts-expect-error
+      // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
       const cameraPosition = currentViewport.unprojectPosition(
-        // @ts-expect-error
+        // @ts-expect-error - Property 'cameraPosition' does not exist on type 'never'.
         currentViewport.cameraPosition
       );
-      // @ts-expect-error
+      // @ts-expect-error - Type '0' is not assignable to type 'null'.
       cameraTerrainElevation =
         getElevationByCentralTile(
           cameraPosition[0],
@@ -396,7 +393,7 @@ export const ViewerApp = () => {
   };
 
   const isLayerPickable = () => {
-    // @ts-expect-error
+    // @ts-expect-error - Property 'tileset' does not exist on type 'never'.
     const layerType = tileset?.tileset?.layerType;
 
     switch (layerType) {
@@ -413,19 +410,19 @@ export const ViewerApp = () => {
     };
 
     if (token) {
-      // @ts-expect-error
+      // @ts-expect-error - Object literal may only specify known properties, and 'token' does not exist in type '{ coordinateSystem: any; }'.
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
 
     const layers = flattenedSublayers
-      // @ts-expect-error
+      // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
       .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
-            // @ts-expect-error
+            // @ts-expect-error - Property 'id' does not exist on type 'never'.
             id: `tile-layer-${sublayer.id}`,
-            // @ts-expect-error
+            // @ts-expect-error - Property 'url' does not exist on type 'never'.
             data: sublayer.url,
             loader: I3SLoader,
             onTilesetLoad: onTilesetLoad,
@@ -434,7 +431,7 @@ export const ViewerApp = () => {
             pickable: isLayerPickable(),
             loadOptions,
             highlightedObjectIndex:
-              // @ts-expect-error
+              // @ts-expect-error - Property 'url' does not exist on type 'never'.
               sublayer.url === selectedTilesetBasePath
                 ? selectedFeatureIndex
                 : -1,
@@ -475,7 +472,7 @@ export const ViewerApp = () => {
     setAttributesLoading(false);
 
     const selectedTilesetBasePath = info.object.tileset.basePath;
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type '{} | null' is not assignable to parameter of type 'SetStateAction<null>'.
     setSelectedFeatureAttributes(selectedFeatureAttributes);
     setSelectedFeatureIndex(info.index);
     setSelectedTilesetBasePath(selectedTilesetBasePath);
@@ -487,7 +484,7 @@ export const ViewerApp = () => {
       <StatsWidgetContainer
         hasSublayers={Boolean(sublayers.length)}
         showBuildingExplorer={showBuildingExplorer}
-        // @ts-expect-error
+        // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
         ref={(_) => (statsWidgetContainer = _)}
       />
     );
@@ -496,18 +493,18 @@ export const ViewerApp = () => {
   const updateSublayerVisibility = (sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        // @ts-expect-error
+        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
-        // @ts-expect-error
+        // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
             prevValues.filter(
-              // @ts-expect-error
+              // @ts-expect-error - Property 'basePath' does not exist on type 'never'.
               (tileset) => tileset.basePath !== flattenedSublayer.url
             )
           );
@@ -556,9 +553,10 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => {
-    const title =
-      // @ts-expect-error
-      selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID;
+    const title = selectedFeatureAttributes
+      ? // @ts-expect-error - Property 'NAME' does not exist on type 'never'.
+        selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID
+      : "";
 
     return (
       <AttributesPanel

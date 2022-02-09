@@ -49,7 +49,6 @@ export const Dashboard = () => {
       transitionInterpolator,
       onTransitionEnd: rotateCamera,
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onTilesetLoad = () => {

@@ -10,7 +10,7 @@ const OptionGroup = styled.div`
   line-height: 19px;
   letter-spacing: 0em;
   text-align: left;
-  marign-top: 15px;
+  padding: 10px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 `;
 

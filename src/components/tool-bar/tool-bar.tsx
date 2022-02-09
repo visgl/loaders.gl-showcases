@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -108,15 +107,6 @@ const LeftTooltip = styled(TooltipBox)`
   }
 `;
 
-const propTypes = {
-  onDebugOptionsChange: PropTypes.func,
-  debugOptions: PropTypes.object,
-};
-
-const defaultProps = {
-  onDebugOptionsChange: () => {},
-};
-
 /**
  * TODO: Add types to component
  */
@@ -206,6 +196,3 @@ export const ToolBar = ({
     </Container>
   );
 };
-
-ToolBar.propTypes = propTypes;
-ToolBar.defaultProps = defaultProps;

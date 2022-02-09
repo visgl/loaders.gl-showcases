@@ -257,10 +257,12 @@ export const DebugApp = () => {
   const [terrainTiles, setTerrainTiles] = useState({});
   const [uvDebugTexture, setUvDebugTexture] = useState(null);
   const [loadedTilesets, setLoadedTilesets] = useState([]);
-  const [currentViewport, setCurrentViewport] = useState(null);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
-  const [memWidget, setMemWidget] = useState(null);
-  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
+  const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
+  const [tilesetStatsWidget, setTilesetStatsWidget] =
+    useState<StatsWidget | null>(null);
+
+  const currentViewport = null;
 
   const initMainTileset = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
@@ -286,18 +288,16 @@ export const DebugApp = () => {
         "Renderbuffer Memory": "memory",
         "Texture Memory": "memory",
       },
-      // @ts-expect-error
+      // @ts-expect-error - Type 'MutableRefObject<null>' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, dir, and 275 more.
       container: statsWidgetContainer,
     });
 
-    // @ts-expect-error
     setMemWidget(memWidget);
 
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
     });
-    // @ts-expect-error
     setTilesetStatsWidget(tilesetStatsWidget);
   }, []);
 
@@ -307,7 +307,6 @@ export const DebugApp = () => {
   useEffect(() => {
     const tilesetsStats = initStats(mainTileset.url);
 
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
@@ -379,10 +378,8 @@ export const DebugApp = () => {
 
   // Updates stats, called every frame
   const updateStatWidgets = () => {
-    // @ts-expect-error
     memWidget && memWidget.update();
     sumTilesetsStats(loadedTilesets, tilesetsStats);
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.update();
   };
 
@@ -403,7 +400,7 @@ export const DebugApp = () => {
   const onTileUnload = () => updateStatWidgets();
 
   const onTilesetLoad = (tileset) => {
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type '(prevValues: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'
     setLoadedTilesets((prevValues) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
@@ -416,7 +413,7 @@ export const DebugApp = () => {
         main: { pitch, bearing },
       } = viewState;
 
-      // @ts-expect-error
+      // @ts-expect-error - Property 'layers' does not exist on type 'never'.
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
       /**
        * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
@@ -479,23 +476,22 @@ export const DebugApp = () => {
   };
 
   const onViewStateChange = ({ interactionState, viewState, viewId }) => {
-    let {
+    const {
       longitude,
       latitude,
-      position: [x, y, oldElevation],
+      position: [, , oldElevation],
     } = viewState;
 
     const viewportCenterTerrainElevation =
       getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
-    let cameraTerrainElevation = null;
+    let cameraTerrainElevation: 0 | null = null;
 
     if (currentViewport) {
-      // @ts-expect-error
+      // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
       const cameraPosition = currentViewport.unprojectPosition(
-        // @ts-expect-error
+        // @ts-expect-error - Property 'cameraPosition' does not exist on type 'never'
         currentViewport.cameraPosition
       );
-      // @ts-expect-error
       cameraTerrainElevation =
         getElevationByCentralTile(
           cameraPosition[0],
@@ -510,6 +506,7 @@ export const DebugApp = () => {
         : cameraTerrainElevation;
     if (!interactionState.isZooming) {
       if (oldElevation - elevation > 5) {
+        // @ts-expect-error Type 'number' is not assignable to type '0'.
         elevation = oldElevation - 5;
       } else if (elevation - oldElevation > 5) {
         elevation = oldElevation + 5;
@@ -558,7 +555,7 @@ export const DebugApp = () => {
         if (updatedDebugOptions.showUVDebugTexture) {
           selectDebugTextureForTileset(tileset, uvDebugTexture);
         } else {
-          selectOriginalTextureForTileset(tileset);
+          selectOriginalTextureForTileset();
         }
       });
     }
@@ -570,12 +567,12 @@ export const DebugApp = () => {
     };
 
     loadedTilesets.forEach((tileset) => {
-      // @ts-expect-error
+      // @ts-expect-error - Property 'setOptions' does not exist on type 'never'.
       tileset.setOptions({
         viewportTraversersMap,
         loadTiles,
       });
-      // @ts-expect-error
+      // @ts-expect-error - Property 'update' does not exist on type 'never'.
       tileset.update();
     });
 
@@ -614,7 +611,7 @@ export const DebugApp = () => {
     const result =
       colorMap.getColor(tile, {
         coloredBy: tileColorMode,
-        // @ts-expect-error
+        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         selectedTileId: selectedTile?.id,
         coloredTilesMap,
       }) || DEFAULT_COLOR;
@@ -682,8 +679,8 @@ export const DebugApp = () => {
       lineWidthMinPixels: 1,
       getPosition: (d) => d.coordinates,
       getRadius: (d) => d.radius,
-      getFillColor: (d) => [255, 140, 0, 100],
-      getLineColor: (d) => [0, 0, 0, 120],
+      getFillColor: () => [255, 140, 0, 100],
+      getLineColor: () => [0, 0, 0, 120],
     });
   };
 
@@ -695,7 +692,7 @@ export const DebugApp = () => {
     };
 
     if (token) {
-      // @ts-expect-error
+      // @ts-expect-error - Object literal may only specify known properties, and 'token' does not exist in type '{ coordinateSystem: any; }'
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
 
@@ -704,14 +701,14 @@ export const DebugApp = () => {
     const frustumBounds = getFrustumBounds(viewport);
 
     const tile3dLayers = flattenedSublayers
-      // @ts-expect-error
+      // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
       .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
-            // @ts-expect-error
+            // @ts-expect-error - Property 'id' does not exist on type 'never'.
             id: `tile-layer-${sublayer.id}`,
-            // @ts-expect-error
+            // @ts-expect-error - Property 'url' does not exist on type 'never'.
             data: sublayer.url,
             loader: I3SLoader,
             onTilesetLoad,
@@ -744,7 +741,7 @@ export const DebugApp = () => {
         getColor: (d) => d.color,
         getWidth: 2,
       }),
-      // @ts-expect-error
+      // @ts-expect-error - Expected 0 arguments, but got 1.
       new BoundingVolumeLayer({
         id: "bounding-volume-layer",
         visible: boundingVolume,
@@ -765,9 +762,9 @@ export const DebugApp = () => {
             normalsLength
           ),
         getColor: () => NORMALS_COLOR,
-        // @ts-expect-error
+        // @ts-expect-error - Property 'cartographicModelMatrix' does not exist on type 'never[]'.
         modelMatrix: normalsDebugData.cartographicModelMatrix,
-        // @ts-expect-error
+        // @ts-expect-error - Property 'cartographicOrigin' does not exist on type 'never[]'.
         coordinateOrigin: normalsDebugData.cartographicOrigin,
         coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
         getWidth: 1,
@@ -777,11 +774,9 @@ export const DebugApp = () => {
   };
 
   const renderStats = () => {
-    const { controlPanel } = debugOptions;
-    // TODO - too verbose, get more default styling from stats widget?
     return (
       <StatsWidgetContainer
-        // @ts-expect-error
+        // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'
         ref={(_) => (statsWidgetContainer = _)}
       />
     );
@@ -802,7 +797,6 @@ export const DebugApp = () => {
     return (
       <DebugPanel
         onDebugOptionsChange={handleSetDebugOptions}
-        clearWarnings={handleClearWarnings}
         debugTextureImage={UV_DEBUG_TEXTURE_URL}
         debugOptions={debugOptions}
         renderControlPanel={controlPanel}
@@ -814,19 +808,19 @@ export const DebugApp = () => {
   const updateSublayerVisibility = (sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        // @ts-expect-error
+        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         (fSublayer) => fSublayer.id === sublayer.id
       );
 
       if (flattenedSublayer) {
-        // @ts-expect-error
+        // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
             prevValues.filter(
-              // @ts-expect-error
+              // @ts-expect-error - Property 'basePath' does not exist on type 'never'.
               (tileset) => tileset.basePath !== flattenedSublayer.url
             )
           );
@@ -933,7 +927,7 @@ export const DebugApp = () => {
       return;
     }
     const tileInfo = getTileDebugInfo(info.object);
-    // @ts-expect-error
+    // @ts-expect-error - need to add tileInfo type
     setTileInfo(tileInfo);
     setNormalsDebugData([]);
     setSelectedTile(info.object);
@@ -978,14 +972,14 @@ export const DebugApp = () => {
   const handleClearWarnings = () => setWarnings([]);
 
   const handleShowNormals = (tile) =>
-    // @ts-expect-error
+    // @ts-expect-error - Need to add type for normalsData
     setNormalsDebugData(() =>
       !normalsDebugData.length ? generateBinaryNormalsDebugData(tile) : []
     );
 
   const handleChangeTrianglesPercentage = (tile, newValue) => {
     if (normalsDebugData.length) {
-      // @ts-expect-error
+      // @ts-expect-error - Need to add type for normalsData
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
     }
 
@@ -995,7 +989,7 @@ export const DebugApp = () => {
 
   const handleChangeNormalsLength = (tile, newValue) => {
     if (normalsDebugData.length) {
-      // @ts-expect-error
+      // @ts-expect-error - Need to add type for normalsData
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
     }
 
@@ -1013,20 +1007,18 @@ export const DebugApp = () => {
 
   const renderAttributesPanel = () => {
     const isShowColorPicker = debugOptions.tileColorMode === COLORED_BY.CUSTOM;
-    // @ts-expect-error
-    const tileId = tileInfo["Tile Id"];
+
+    const tileId = tileInfo ? tileInfo["Tile Id"] : "";
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    // @ts-expect-error
-    const title = `Tile: ${selectedTile.id}`;
+    // @ts-expect-error - Property 'id' does not exist on type 'never'.
+    const title = selectedTile ? `Tile: ${selectedTile.id}` : "";
 
     return (
-      // @ts-expect-error
       <AttributesPanel
         title={title}
         handleClosePanel={handleClosePanel}
         attributesObject={tileInfo}
-        selectTileColor={handleSelectTileColor}
         isControlPanelShown={debugOptions.controlPanel}
       >
         <TileValidator

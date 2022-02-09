@@ -22,10 +22,6 @@ const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
     height: 90% !important;
     width: 310px;
   }
-
-  @media (max-width: 768px) {
-    right: 0;
-  }
 `;
 
 const ArcGisContainer = styled.div`
@@ -56,11 +52,11 @@ export const MapInfoPanel = ({
   isMinimapShown,
   showFullInfo,
 }) => {
-  const getIframeStyles = (showFullInfo) => ({
+  const getIframeStyles = (showFullInfo = false) => ({
     display: showFullInfo ? "block" : "none",
     transition: "linear 0.5s",
     marginTop: showFullInfo ? "0" : "-540px",
-    overflowX: showFullInfo ? "auto" : "none",
+    overflowX: showFullInfo ? "auto" : "hidden",
     border: "none",
   });
 
@@ -74,14 +70,15 @@ export const MapInfoPanel = ({
   if (token) {
     url = `${url}&token=${token}`;
   }
+  const iframeStyle = getIframeStyles(showFullInfo);
 
   return (
     <FrameWrap isMinimapShown={isMinimapShown}>
       <iframe
         id="tileset-info"
         title="tileset-info"
-        // @ts-expect-error
-        style={getIframeStyles(showFullInfo)}
+        // @ts-expect-error - style typing issues
+        style={iframeStyle}
         src={url}
       ></iframe>
       <ArcGisContainer>
