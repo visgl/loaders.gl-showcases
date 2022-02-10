@@ -37,8 +37,8 @@ const MenuLink = styled(Link)`
 export const Header = () => {
   return (
     <HeaderContainer>
-      <HeaderLogo>I3S Explorer</HeaderLogo>
-      <MenuContainer>
+      <HeaderLogo id="header-logo">I3S Explorer</HeaderLogo>
+      <MenuContainer id="header-links">
         <MenuLink to="dashboard">Home</MenuLink>
         <MenuLink to="viewer">Viewer</MenuLink>
         <MenuLink to="debug">Debug</MenuLink>
