@@ -9,7 +9,7 @@
     "start-local-deck": "webpack serve --config './webpack.dev.config.js' --env deck",
     "start-local-loaders": "webpack serve --config './webpack.dev.config.js' --env loaders",
     "build": "webpack --config './webpack.prod.config.js'",
-    "predeploy": "npm run build",
+    "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
     "test": "jest"
   },

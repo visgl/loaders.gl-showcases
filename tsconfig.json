@@ -14,5 +14,4 @@
     // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
     "noImplicitAny": false
   },
-  "exclude": ["./src/**/*.spec.ts", "./src/**/*.spec.tsx", "node_modules"]
 }
