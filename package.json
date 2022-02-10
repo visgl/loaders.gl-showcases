@@ -9,11 +9,11 @@
     "start-local-deck": "webpack serve --config './webpack.dev.config.js' --env deck",
     "start-local-loaders": "webpack serve --config './webpack.dev.config.js' --env loaders",
     "build": "webpack --config './webpack.prod.config.js'",
-    "predeploy": "npm run build",
+    "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
     "test:unit": "jest --testPathIgnorePatterns=e2e.*.spec.ts",
     "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
-    "test": "npm run test:unit && npm run test:e2e"
+    "test": "yarn test:unit && yarn test:e2e"
   },
   "author": "",
   "license": "ISC",
