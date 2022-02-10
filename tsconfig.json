@@ -13,5 +13,5 @@
     "sourceMap": true,
     // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
     "noImplicitAny": false
-  }
+  },
 }

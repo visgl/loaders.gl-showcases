@@ -9,9 +9,9 @@
     "start-local-deck": "webpack serve --config './webpack.dev.config.js' --env deck",
     "start-local-loaders": "webpack serve --config './webpack.dev.config.js' --env loaders",
     "build": "webpack --config './webpack.prod.config.js'",
-    "predeploy": "npm run build",
+    "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -38,6 +38,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^27.4.0",
     "@types/react": "^17.0.38",
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^17.0.11",
@@ -45,6 +46,7 @@
     "babel-loader": "^8.2.3",
     "babel-polyfill": "^6.26.0",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.5.1",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.5",
     "webpack": "^5.68.0",
