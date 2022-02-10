@@ -38,6 +38,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -116,9 +117,9 @@ export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
   const forceUpdate = useForceUpdate();
   // TODO init types
-  let currentViewport = null;
+  let currentViewport: MapView = null;
 
-  const [tileset, setTileset] = useState(null);
+  const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [token, setToken] = useState(null);
   const [name, setName] = useState(INITIAL_EXAMPLE_NAME);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -129,7 +130,7 @@ export const ViewerApp = () => {
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
-  const [flattenedSublayers, setFlattenedSublayers] = useState([]);
+  const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
   const [sublayers, setSublayers] = useState([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
@@ -140,7 +141,7 @@ export const ViewerApp = () => {
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] =
     useState<StatsWidget | null>(null);
-  const [loadedTilesets, setLoadedTilesets] = useState([]);
+  const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
   const initMainTileset = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
@@ -248,13 +249,12 @@ export const ViewerApp = () => {
     tilesetStatsWidget && tilesetStatsWidget.update();
   };
 
-  const onTilesetLoad = (tileset) => {
-    // @ts-expect-error - Argument of type '(prevValues: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'
-    setLoadedTilesets((prevValues) => [...prevValues, tileset]);
+  const onTilesetLoad = (tileset: Tileset3D) => {
+    setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter;
+      const [longitude, latitude] = cartographicCenter || [];
       const viewport = currentViewport;
       let pLongitue = longitude;
       let pLatitude = latitude;
@@ -274,7 +274,6 @@ export const ViewerApp = () => {
         /**
          * Convert to world coordinate system to shift the position on some distance in meters
          */
-        // @ts-expect-error - Property 'projectPosition' does not exist on type 'never'.
         const projectedPostion = viewport.projectPosition([
           longitude,
           latitude,
@@ -285,7 +284,6 @@ export const ViewerApp = () => {
         projectedPostion[0] +=
           projection *
           Math.sin((bearing * Math.PI) / 180) *
-          // @ts-expect-error - Property 'distanceScales' does not exist on type 'never'.
           viewport.distanceScales.unitsPerMeter[0];
         /**
          * Shift latitude
@@ -293,12 +291,11 @@ export const ViewerApp = () => {
         projectedPostion[1] +=
           projection *
           Math.cos((bearing * Math.PI) / 180) *
-          // @ts-expect-error - Property 'distanceScales' does not exist on type 'never'.
           viewport.distanceScales.unitsPerMeter[1];
         /**
          * Convert resulting coordinates to catrographic
          */
-        // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
+
         [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
       }
 
@@ -329,9 +326,7 @@ export const ViewerApp = () => {
     let cameraTerrainElevation = null;
 
     if (currentViewport) {
-      // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
       const cameraPosition = currentViewport.unprojectPosition(
-        // @ts-expect-error - Property 'cameraPosition' does not exist on type 'never'.
         currentViewport.cameraPosition
       );
       // @ts-expect-error - Type '0' is not assignable to type 'null'.
@@ -393,7 +388,6 @@ export const ViewerApp = () => {
   };
 
   const isLayerPickable = () => {
-    // @ts-expect-error - Property 'tileset' does not exist on type 'never'.
     const layerType = tileset?.tileset?.layerType;
 
     switch (layerType) {
@@ -405,24 +399,25 @@ export const ViewerApp = () => {
   };
 
   const renderLayers = () => {
-    const loadOptions = {
+    const loadOptions: {
+      i3s: {
+        coordinateSystem: number;
+        token?: string;
+      };
+    } = {
       i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
     };
 
     if (token) {
-      // @ts-expect-error - Object literal may only specify known properties, and 'token' does not exist in type '{ coordinateSystem: any; }'.
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
 
     const layers = flattenedSublayers
-      // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
       .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
-            // @ts-expect-error - Property 'id' does not exist on type 'never'.
             id: `tile-layer-${sublayer.id}`,
-            // @ts-expect-error - Property 'url' does not exist on type 'never'.
             data: sublayer.url,
             loader: I3SLoader,
             onTilesetLoad: onTilesetLoad,
@@ -431,7 +426,6 @@ export const ViewerApp = () => {
             pickable: isLayerPickable(),
             loadOptions,
             highlightedObjectIndex:
-              // @ts-expect-error - Property 'url' does not exist on type 'never'.
               sublayer.url === selectedTilesetBasePath
                 ? selectedFeatureIndex
                 : -1,
@@ -493,18 +487,15 @@ export const ViewerApp = () => {
   const updateSublayerVisibility = (sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
-        // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
             prevValues.filter(
-              // @ts-expect-error - Property 'basePath' does not exist on type 'never'.
               (tileset) => tileset.basePath !== flattenedSublayer.url
             )
           );

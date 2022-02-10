@@ -1,3 +1,4 @@
+import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
 import { StaticMap } from "react-map-gl";
@@ -247,22 +248,22 @@ export const DebugApp = () => {
   );
   const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [tileInfo, setTileInfo] = useState(null);
-  const [selectedTile, setSelectedTile] = useState(null);
+  const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState([]);
-  const [flattenedSublayers, setFlattenedSublayers] = useState([]);
+  const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
   const [sublayers, setSublayers] = useState([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
   const [uvDebugTexture, setUvDebugTexture] = useState(null);
-  const [loadedTilesets, setLoadedTilesets] = useState([]);
+  const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] =
     useState<StatsWidget | null>(null);
 
-  const currentViewport = null;
+  const currentViewport: MapView = null;
 
   const initMainTileset = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
@@ -399,13 +400,12 @@ export const DebugApp = () => {
 
   const onTileUnload = () => updateStatWidgets();
 
-  const onTilesetLoad = (tileset) => {
-    // @ts-expect-error - Argument of type '(prevValues: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'
-    setLoadedTilesets((prevValues) => [...prevValues, tileset]);
+  const onTilesetLoad = (tileset: Tileset3D) => {
+    setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter;
+      const [longitude, latitude] = cartographicCenter || [];
       let pLongitue = longitude;
       let pLatitude = latitude;
       const viewport = new VIEWS[0].type(viewState.main);
@@ -484,12 +484,10 @@ export const DebugApp = () => {
 
     const viewportCenterTerrainElevation =
       getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
-    let cameraTerrainElevation: 0 | null = null;
+    let cameraTerrainElevation: number | null = null;
 
     if (currentViewport) {
-      // @ts-expect-error - Property 'unprojectPosition' does not exist on type 'never'.
       const cameraPosition = currentViewport.unprojectPosition(
-        // @ts-expect-error - Property 'cameraPosition' does not exist on type 'never'
         currentViewport.cameraPosition
       );
       cameraTerrainElevation =
@@ -506,7 +504,6 @@ export const DebugApp = () => {
         : cameraTerrainElevation;
     if (!interactionState.isZooming) {
       if (oldElevation - elevation > 5) {
-        // @ts-expect-error Type 'number' is not assignable to type '0'.
         elevation = oldElevation - 5;
       } else if (elevation - oldElevation > 5) {
         elevation = oldElevation + 5;
@@ -567,12 +564,11 @@ export const DebugApp = () => {
     };
 
     loadedTilesets.forEach((tileset) => {
-      // @ts-expect-error - Property 'setOptions' does not exist on type 'never'.
-      tileset.setOptions({
+      tileset.setProps({
         viewportTraversersMap,
         loadTiles,
       });
-      // @ts-expect-error - Property 'update' does not exist on type 'never'.
+      // @ts-expect-error - update should have argument. Need to change in @loaders.gl
       tileset.update();
     });
 
@@ -611,7 +607,6 @@ export const DebugApp = () => {
     const result =
       colorMap.getColor(tile, {
         coloredBy: tileColorMode,
-        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         selectedTileId: selectedTile?.id,
         coloredTilesMap,
       }) || DEFAULT_COLOR;
@@ -687,12 +682,16 @@ export const DebugApp = () => {
   const renderLayers = () => {
     const { boundingVolume, boundingVolumeType, pickable, wireframe } =
       debugOptions;
-    const loadOptions = {
+    const loadOptions: {
+      i3s: {
+        coordinateSystem: number;
+        token?: string;
+      };
+    } = {
       i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
     };
 
     if (token) {
-      // @ts-expect-error - Object literal may only specify known properties, and 'token' does not exist in type '{ coordinateSystem: any; }'
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
 
@@ -701,14 +700,11 @@ export const DebugApp = () => {
     const frustumBounds = getFrustumBounds(viewport);
 
     const tile3dLayers = flattenedSublayers
-      // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
       .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
-            // @ts-expect-error - Property 'id' does not exist on type 'never'.
             id: `tile-layer-${sublayer.id}`,
-            // @ts-expect-error - Property 'url' does not exist on type 'never'.
             data: sublayer.url,
             loader: I3SLoader,
             onTilesetLoad,
@@ -808,19 +804,16 @@ export const DebugApp = () => {
   const updateSublayerVisibility = (sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        // @ts-expect-error - Property 'id' does not exist on type 'never'.
         (fSublayer) => fSublayer.id === sublayer.id
       );
 
       if (flattenedSublayer) {
-        // @ts-expect-error - Property 'visibility' does not exist on type 'never'.
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
             prevValues.filter(
-              // @ts-expect-error - Property 'basePath' does not exist on type 'never'.
               (tileset) => tileset.basePath !== flattenedSublayer.url
             )
           );
@@ -1006,13 +999,16 @@ export const DebugApp = () => {
   };
 
   const renderAttributesPanel = () => {
+    if (!selectedTile || !tileInfo) {
+      return null;
+    }
+
     const isShowColorPicker = debugOptions.tileColorMode === COLORED_BY.CUSTOM;
 
-    const tileId = tileInfo ? tileInfo["Tile Id"] : "";
+    const tileId = tileInfo["Tile Id"];
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    // @ts-expect-error - Property 'id' does not exist on type 'never'.
-    const title = selectedTile ? `Tile: ${selectedTile.id}` : "";
+    const title = `Tile: ${selectedTile.id}`;
 
     return (
       <AttributesPanel
@@ -1076,7 +1072,7 @@ export const DebugApp = () => {
       {debugPanel && renderDebugPanel()}
       {showFullInfo && renderInfo()}
       {controlPanel && renderControlPanel()}
-      {selectedTile && tileInfo && renderAttributesPanel()}
+      {renderAttributesPanel()}
       {semanticValidator && renderSemanticValidator()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
       <DeckGL

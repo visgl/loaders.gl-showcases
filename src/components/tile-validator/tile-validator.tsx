@@ -1,3 +1,4 @@
+import type { Tile3D } from "@loaders.gl/tiles";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
@@ -85,13 +86,13 @@ interface ITriangleMessage {
 }
 
 interface TileValidatorProps {
-  tile: any;
-  handleShowNormals: (tile: any) => void;
+  tile: Tile3D;
+  handleShowNormals: (tile: Tile3D) => void;
   showNormals: boolean;
   trianglesPercentage: number;
   normalsLength: number;
-  handleChangeTrianglesPercentage: (tile: any, percentage: number) => void;
-  handleChangeNormalsLength: (tile: any, length: number) => void;
+  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
+  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
 }
 
 /**

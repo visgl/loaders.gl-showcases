@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { Property } from "csstype";
 
 const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
   position: absolute;
@@ -52,7 +53,15 @@ export const MapInfoPanel = ({
   isMinimapShown,
   showFullInfo,
 }) => {
-  const getIframeStyles = (showFullInfo = false) => ({
+  const getIframeStyles = (
+    showFullInfo
+  ): {
+    display: string;
+    transition: string;
+    marginTop: string;
+    overflowX: Property.OverflowX;
+    border: string;
+  } => ({
     display: showFullInfo ? "block" : "none",
     transition: "linear 0.5s",
     marginTop: showFullInfo ? "0" : "-540px",
@@ -77,7 +86,6 @@ export const MapInfoPanel = ({
       <iframe
         id="tileset-info"
         title="tileset-info"
-        // @ts-expect-error - style typing issues
         style={iframeStyle}
         src={url}
       ></iframe>

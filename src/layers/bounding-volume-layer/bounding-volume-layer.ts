@@ -1,3 +1,4 @@
+import type { Tile3D } from "@loaders.gl/tiles";
 import { Vector3 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
 import { CubeGeometry, SphereGeometry } from "@luma.gl/engine";
@@ -26,14 +27,15 @@ export default class BoundingVolumeLayer extends CompositeLayer {
   static layerName: string;
   static defaultProps: {
     visible: boolean;
-    tiles: never[];
+    tiles: Tile3D[];
     material: { pbrMetallicRoughness: { baseColorFactor: number[] } };
     getBoundingVolumeColor: {
       type: string;
-      value: (tile: any) => number[];
+      value: (tile: Tile3D) => number[];
       compare: boolean;
     };
   };
+
   initializeState() {
     if ("onTileLoadFail" in this.props) {
       log.removed("onTileLoadFail", "onTileError")();
@@ -113,6 +115,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
     }
     // @ts-expect-error - Property 'attributes' does not exist on type 'SphereGeometry'.
     geometry.attributes = { POSITION };
+
     return geometry;
   }
 

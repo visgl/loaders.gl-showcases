@@ -395,8 +395,8 @@ const getTriangleArea = (vertices) => {
 const getTileObbVertices = (tile) => {
   const geometry = new CubeGeometry();
   const halfSize = tile.header.obb.halfSize;
-  // @ts-expect-error Property 'attributes' does not exist on type 'CubeGeometry'.
-  const { attributes } = geometry;
+
+  const attributes = geometry.getAttributes();
   const positions = new Float32Array(attributes.POSITION.value);
   const obbCenterCartesian = Ellipsoid.WGS84.cartographicToCartesian(
     tile.header.obb.center
@@ -468,10 +468,10 @@ export const isTileGeometryInsideBoundingVolume = (tile) => {
  */
 export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
   const tileData = getTileDataForValidation(tile);
-  const { positions, boundingVolume, boundingType } = tileData;
+  const { positions, boundingVolume } = tileData;
   const cartographicPositions = convertPositionsToVectors(positions);
 
-  if (boundingType === OBB) {
+  if (boundingVolume instanceof OrientedBoundingBox) {
     const geometryObb = makeOrientedBoundingBoxFromPoints(
       cartographicPositions,
       new OrientedBoundingBox()
@@ -479,7 +479,6 @@ export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
     const geometryObbVolume = geometryObb.halfSize.reduce(
       (result, halfSize) => result * halfSize
     );
-    // @ts-expect-error - Property 'halfSize' does not exist on type 'OrientedBoundingBox | BoundingSphere'.
     const tileObbVolume = boundingVolume.halfSize.reduce(
       (result, halfSize) => result * halfSize
     );
@@ -490,7 +489,6 @@ export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
     cartographicPositions,
     new BoundingSphere()
   );
-  // @ts-expect-error - Property 'radius' does not exist on type 'OrientedBoundingBox | BoundingSphere'.
   return geometrySphere.radius < boundingVolume.radius;
 };
 
