@@ -39,7 +39,7 @@ function postrocessSublayers(sublayers) {
     if (!sublayerCopy) {
       continue;
     }
-    // @ts-expect-error
+    // @ts-expect-error TODO fix never to any typing issue
     sublayersCopy.push(sublayerCopy);
     childNodesCount += sublayerCopy.childNodesCount + 1;
   }

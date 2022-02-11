@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { SizeProp } from "@fortawesome/fontawesome-svg-core";
 import styled from "styled-components";
 import { Checkbox, ToggleSwitch } from "../../components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -135,7 +135,7 @@ export const BuildingExplorer = ({
     return sublayers.map((sublayer) => {
       const childLayers = sublayer.sublayers || [];
       let icon = faCircle;
-      let size = "xs";
+      let size: SizeProp = "xs";
 
       if (sublayer.sublayers) {
         size = "lg";
@@ -152,7 +152,6 @@ export const BuildingExplorer = ({
               <FontAwesomeIcon
                 icon={icon}
                 onClick={() => toggleGroup(sublayer)}
-                // @ts-expect-error
                 size={size}
               />
             </CollapseContainer>

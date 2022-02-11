@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { Property } from "csstype";
 
 const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
   position: absolute;
@@ -21,10 +22,6 @@ const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
     overflow-x: hidden;
     height: 90% !important;
     width: 310px;
-  }
-
-  @media (max-width: 768px) {
-    right: 0;
   }
 `;
 
@@ -56,11 +53,19 @@ export const MapInfoPanel = ({
   isMinimapShown,
   showFullInfo,
 }) => {
-  const getIframeStyles = (showFullInfo) => ({
+  const getIframeStyles = (
+    showFullInfo
+  ): {
+    display: string;
+    transition: string;
+    marginTop: string;
+    overflowX: Property.OverflowX;
+    border: string;
+  } => ({
     display: showFullInfo ? "block" : "none",
     transition: "linear 0.5s",
     marginTop: showFullInfo ? "0" : "-540px",
-    overflowX: showFullInfo ? "auto" : "none",
+    overflowX: showFullInfo ? "auto" : "hidden",
     border: "none",
   });
 
@@ -74,14 +79,14 @@ export const MapInfoPanel = ({
   if (token) {
     url = `${url}&token=${token}`;
   }
+  const iframeStyle = getIframeStyles(showFullInfo);
 
   return (
     <FrameWrap isMinimapShown={isMinimapShown}>
       <iframe
         id="tileset-info"
         title="tileset-info"
-        // @ts-expect-error
-        style={getIframeStyles(showFullInfo)}
+        style={iframeStyle}
         src={url}
       ></iframe>
       <ArcGisContainer>

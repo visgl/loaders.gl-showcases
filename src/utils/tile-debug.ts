@@ -176,10 +176,9 @@ const getChildrenInfo = (children) => {
     };
   }
 
-  const clildrenIds = [];
+  const clildrenIds: string[] = [];
 
   for (const index in children) {
-    // @ts-expect-error
     clildrenIds.push(children[index].id);
   }
 
@@ -352,7 +351,7 @@ const getTextureSize = (tile) => {
  * @returns {number}
  */
 const getTriangleVertices = (attribute, offset) => {
-  const geometryVertices = [];
+  const geometryVertices: Vector3[] = [];
   for (let i = 0; i < 3; i++) {
     const typedArray = new attribute.value.constructor(3);
     const subarray = attribute.value.subarray(
@@ -360,7 +359,7 @@ const getTriangleVertices = (attribute, offset) => {
       (offset + i) * attribute.size + attribute.size
     );
     typedArray.set(subarray);
-    // @ts-expect-error
+
     geometryVertices.push(new Vector3(typedArray));
   }
   return geometryVertices;
@@ -396,14 +395,14 @@ const getTriangleArea = (vertices) => {
 const getTileObbVertices = (tile) => {
   const geometry = new CubeGeometry();
   const halfSize = tile.header.obb.halfSize;
-  // @ts-expect-error
-  const { attributes } = geometry;
+
+  const attributes = geometry.getAttributes();
   const positions = new Float32Array(attributes.POSITION.value);
   const obbCenterCartesian = Ellipsoid.WGS84.cartographicToCartesian(
     tile.header.obb.center
   );
 
-  let vertices = [];
+  let vertices: Vector3[] = [];
 
   for (let i = 0; i < positions.length; i += 3) {
     const positionsVector = new Vector3(
@@ -414,7 +413,7 @@ const getTileObbVertices = (tile) => {
     const rotatedPositions = positionsVector
       .transformByQuaternion(tile.header.obb.quaternion)
       .add(obbCenterCartesian);
-    // @ts-expect-error
+
     vertices = vertices.concat(rotatedPositions);
   }
 
@@ -456,14 +455,10 @@ const isAllVerticesInsideBoundingVolume = (boundingVolume, positions) => {
  * @returns {boolean}
  */
 export const isTileGeometryInsideBoundingVolume = (tile) => {
-  try {
-    const tileData = getTileDataForValidation(tile);
-    const { positions, boundingVolume } = tileData;
+  const tileData = getTileDataForValidation(tile);
+  const { positions, boundingVolume } = tileData;
 
-    return isAllVerticesInsideBoundingVolume(boundingVolume, positions);
-  } catch (error) {
-    throw error;
-  }
+  return isAllVerticesInsideBoundingVolume(boundingVolume, positions);
 };
 
 /**
@@ -472,35 +467,29 @@ export const isTileGeometryInsideBoundingVolume = (tile) => {
  * @returns {boolean}
  */
 export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
-  try {
-    const tileData = getTileDataForValidation(tile);
-    const { positions, boundingVolume, boundingType } = tileData;
-    const cartographicPositions = convertPositionsToVectors(positions);
+  const tileData = getTileDataForValidation(tile);
+  const { positions, boundingVolume } = tileData;
+  const cartographicPositions = convertPositionsToVectors(positions);
 
-    if (boundingType === OBB) {
-      const geometryObb = makeOrientedBoundingBoxFromPoints(
-        cartographicPositions,
-        new OrientedBoundingBox()
-      );
-      const geometryObbVolume = geometryObb.halfSize.reduce(
-        (result, halfSize) => result * halfSize
-      );
-      // @ts-expect-error
-      const tileObbVolume = boundingVolume.halfSize.reduce(
-        (result, halfSize) => result * halfSize
-      );
-      return geometryObbVolume < tileObbVolume;
-    }
-
-    const geometrySphere = makeBoundingSphereFromPoints(
+  if (boundingVolume instanceof OrientedBoundingBox) {
+    const geometryObb = makeOrientedBoundingBoxFromPoints(
       cartographicPositions,
-      new BoundingSphere()
+      new OrientedBoundingBox()
     );
-    // @ts-expect-error
-    return geometrySphere.radius < boundingVolume.radius;
-  } catch (error) {
-    throw error;
+    const geometryObbVolume = geometryObb.halfSize.reduce(
+      (result, halfSize) => result * halfSize
+    );
+    const tileObbVolume = boundingVolume.halfSize.reduce(
+      (result, halfSize) => result * halfSize
+    );
+    return geometryObbVolume < tileObbVolume;
   }
+
+  const geometrySphere = makeBoundingSphereFromPoints(
+    cartographicPositions,
+    new BoundingSphere()
+  );
+  return geometrySphere.radius < boundingVolume.radius;
 };
 
 /**
@@ -520,12 +509,8 @@ const getTileDataForValidation = (tile) => {
   const boundingType = getBoundingType(tile);
   const positions = tile.content.attributes.positions.value;
 
-  try {
-    const boundingVolume = createBoundingVolumeFromTile(tile, boundingType);
-    return { positions, boundingType, boundingVolume };
-  } catch (error) {
-    throw error;
-  }
+  const boundingVolume = createBoundingVolumeFromTile(tile, boundingType);
+  return { positions, boundingType, boundingVolume };
 };
 
 /**
@@ -553,7 +538,7 @@ const createBoundingVolumeFromTile = (tile, boundingType) => {
  * @returns {Vector3[]}
  */
 const convertPositionsToVectors = (positions) => {
-  const result = [];
+  const result: Vector3[] = [];
 
   for (let i = 0; i < positions.length; i += 3) {
     const positionVector = new Vector3(
@@ -561,7 +546,7 @@ const convertPositionsToVectors = (positions) => {
       positions[i + 1],
       positions[i + 2]
     );
-    // @ts-expect-error
+
     result.push(positionVector);
   }
 

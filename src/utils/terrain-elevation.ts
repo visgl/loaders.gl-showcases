@@ -2,7 +2,7 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
   let centralTile = null;
   for (const tile of Object.values(terrainTiles)) {
     const {
-      // @ts-expect-error
+      // @ts-expect-error - Property 'bbox' does not exist on type 'unknown'
       bbox: { east, north, south, west },
     } = tile;
     if (
@@ -11,7 +11,7 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
       latitude > south &&
       latitude < north
     ) {
-      // @ts-expect-error
+      // @ts-expect-error - Type 'unknown' is not assignable to type 'null'.
       centralTile = tile;
     }
   }
@@ -20,7 +20,7 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
   }
 
   const {
-    // @ts-expect-error
+    // @ts-expect-error - Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.
     content: [
       {
         attributes: {
@@ -36,7 +36,7 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
     value[0],
     value[1]
   );
-  // @ts-expect-error
+  // @ts-expect-error - Property 'length' does not exist on type 'never'
   for (let i = 3; i < value.length; i += 3) {
     const distance = calculateDistance(
       longitude,

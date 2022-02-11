@@ -26,8 +26,9 @@ const DEFAULT_COLOR = [255, 255, 255];
 const DEFAULT_HIGLIGHT_COLOR = [0, 100, 255];
 
 export default class ColorMap {
-  randomColorMap: {};
-  colorMap: {};
+  randomColorMap: { [id: string]: number[] };
+  colorMap: { [id: string]: number[] };
+
   constructor() {
     this.randomColorMap = {};
     this.colorMap = {};
@@ -93,9 +94,9 @@ export default class ColorMap {
    * @param {string} id
    */
   _getRandomColor(id) {
-    let r = Math.round(Math.random() * 255);
-    let g = 205;
-    let b = Math.round(Math.random() * 255);
+    const r = Math.round(Math.random() * 255);
+    const g = 205;
+    const b = Math.round(Math.random() * 255);
 
     const randomColor = [r, g, b];
 

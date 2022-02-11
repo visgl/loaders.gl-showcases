@@ -14,7 +14,7 @@ export function selectDebugTextureForTileset(tileset, uvDebugTexture) {
   }
 }
 
-export function selectOriginalTextureForTileset(tileset) {
+export function selectOriginalTextureForTileset() {
   for (const tileId in tiles) {
     selectOriginalTextureForTile(tiles[tileId]);
   }

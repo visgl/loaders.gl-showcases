@@ -73,6 +73,14 @@ const Title = styled.h3`
 
 const NO_DATA = "No Data";
 
+interface AttributesPanelProps {
+  title: string;
+  attributesObject: any;
+  isControlPanelShown: boolean;
+  handleClosePanel: () => void;
+  children?: any;
+}
+
 /**
  * TODO: Add types to component
  */
@@ -82,7 +90,7 @@ export const AttributesPanel = ({
   isControlPanelShown,
   handleClosePanel,
   children = null,
-}) => {
+}: AttributesPanelProps) => {
   const prepareTable = () => {
     const tableColumns: JSX.Element[] = [];
 

@@ -1,6 +1,4 @@
-import * as React from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 
 import { DebugOptionGroup, ToggleSwitch, Checkbox } from "../";
 
@@ -50,7 +48,7 @@ const Container = styled.div<{
 
 const Header = styled.h6`
   padding: 0;
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
   font-weight: 500;
   line-height: 15px;
   text-transform: uppercase;
@@ -64,10 +62,7 @@ const DropDown = styled.select`
   ${DropDownStyle}
   width: 167px;
   left: 86px;
-  margin: 10px 0;
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+  margin: 0;
 `;
 
 const Label = styled.label`
@@ -95,7 +90,7 @@ const DebugTextureContainer = styled.div`
   }
 `;
 
-const CheckboxOption = styled.div<{ style?: any }>`
+const CheckboxOption = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -109,25 +104,6 @@ const CheckboxTitle = styled.span`
   cursor: pointer;
 `;
 
-const CHECKBOX_STYLE = {
-  padding: "15px 0",
-  position: "relative",
-};
-
-const propTypes = {
-  onDebugOptionsChange: PropTypes.func,
-  clearWarnings: PropTypes.func,
-  debugTextureImage: PropTypes.string,
-  debugOptions: PropTypes.object,
-  hasBuildingExplorer: PropTypes.bool,
-};
-
-const defaultProps = {
-  clearWarnings: () => {},
-  onDebugOptionsChange: () => {},
-  hasBuildingExplorer: false,
-};
-
 /**
  * TODO: Add types to component
  */
@@ -137,6 +113,12 @@ export const DebugPanel = ({
   renderControlPanel,
   hasBuildingExplorer,
   onDebugOptionsChange,
+}: {
+  debugOptions: any;
+  debugTextureImage: string;
+  renderControlPanel: boolean;
+  hasBuildingExplorer: boolean;
+  onDebugOptionsChange: (newDebugOptions: any) => void;
 }) => {
   const renderBoundingVolumeColor = () => {
     const { boundingVolumeColorMode } = debugOptions;
@@ -193,7 +175,7 @@ export const DebugPanel = ({
     const { boundingVolume } = debugOptions;
     return (
       <DebugOptionGroup>
-        <CheckboxOption style={CHECKBOX_STYLE}>
+        <CheckboxOption>
           <Label htmlFor="boundingVolume">Bounding Volumes</Label>
           <ToggleSwitch
             id="boundingVolume"
@@ -228,7 +210,7 @@ export const DebugPanel = ({
 
     return (
       <DebugOptionGroup>
-        <CheckboxOption style={CHECKBOX_STYLE}>
+        <CheckboxOption>
           <Label>Tiles</Label>
         </CheckboxOption>
         <CheckboxOption>
@@ -329,7 +311,7 @@ export const DebugPanel = ({
 
     return (
       <DebugOptionGroup>
-        <CheckboxOption style={CHECKBOX_STYLE}>
+        <CheckboxOption>
           <Label htmlFor="showFrustumCullingMinimap">Minimap</Label>
           <ToggleSwitch
             id="showFrustumCullingMinimap"
@@ -355,6 +337,3 @@ export const DebugPanel = ({
     </Container>
   );
 };
-
-DebugPanel.propTypes = propTypes;
-DebugPanel.defaultProps = defaultProps;

@@ -11,6 +11,7 @@ import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
   MapView,
+  WebMercatorViewport
 } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import {
@@ -38,6 +39,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -116,9 +118,9 @@ export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
   const forceUpdate = useForceUpdate();
   // TODO init types
-  let currentViewport = null;
+  let currentViewport: WebMercatorViewport = null;
 
-  const [tileset, setTileset] = useState(null);
+  const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [token, setToken] = useState(null);
   const [name, setName] = useState(INITIAL_EXAMPLE_NAME);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -129,7 +131,7 @@ export const ViewerApp = () => {
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
-  const [flattenedSublayers, setFlattenedSublayers] = useState([]);
+  const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
   const [sublayers, setSublayers] = useState([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
@@ -137,9 +139,10 @@ export const ViewerApp = () => {
   const [metadata, setMetadata] = useState({ layers: [] });
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
-  const [memWidget, setMemWidget] = useState(null);
-  const [tilesetStatsWidget, setTilesetStatsWidget] = useState(null);
-  const [loadedTilesets, setLoadedTilesets] = useState([]);
+  const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
+  const [tilesetStatsWidget, setTilesetStatsWidget] =
+    useState<StatsWidget | null>(null);
+  const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
   const initMainTileset = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
@@ -165,17 +168,16 @@ export const ViewerApp = () => {
         "Renderbuffer Memory": "memory",
         "Texture Memory": "memory",
       },
-      // @ts-expect-error
+      // @ts-expect-error - Type 'MutableRefObject<null>' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, dir, and 275 more.
       container: statsWidgetContainer,
     });
-    // @ts-expect-error
+
     setMemWidget(memWidget);
 
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
     });
-    // @ts-expect-error
     setTilesetStatsWidget(tilesetStatsWidget);
   }, []);
 
@@ -185,7 +187,6 @@ export const ViewerApp = () => {
   useEffect(() => {
     const tilesetsStats = initStats(mainTileset.url);
 
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
@@ -243,28 +244,25 @@ export const ViewerApp = () => {
    * Updates stats, called every frame
    */
   const updateStatWidgets = () => {
-    // @ts-expect-error
     memWidget && memWidget.update();
 
     sumTilesetsStats(loadedTilesets, tilesetsStats);
-    // @ts-expect-error
     tilesetStatsWidget && tilesetStatsWidget.update();
   };
 
-  const onTilesetLoad = (tileset) => {
-    // @ts-expect-error
-    setLoadedTilesets((prevValues) => [...prevValues, tileset]);
+  const onTilesetLoad = (tileset: Tileset3D) => {
+    setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter;
+      const [longitude, latitude] = cartographicCenter || [];
       const viewport = currentViewport;
       let pLongitue = longitude;
       let pLatitude = latitude;
 
       if (viewport) {
         const { pitch, bearing } = viewState;
-        // @ts-expect-error
+        // @ts-expect-error - roperty 'fullExtent' does not exist on type 'never'.
         const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
         /**
          * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
@@ -277,7 +275,6 @@ export const ViewerApp = () => {
         /**
          * Convert to world coordinate system to shift the position on some distance in meters
          */
-        // @ts-expect-error
         const projectedPostion = viewport.projectPosition([
           longitude,
           latitude,
@@ -288,7 +285,6 @@ export const ViewerApp = () => {
         projectedPostion[0] +=
           projection *
           Math.sin((bearing * Math.PI) / 180) *
-          // @ts-expect-error
           viewport.distanceScales.unitsPerMeter[0];
         /**
          * Shift latitude
@@ -296,12 +292,11 @@ export const ViewerApp = () => {
         projectedPostion[1] +=
           projection *
           Math.cos((bearing * Math.PI) / 180) *
-          // @ts-expect-error
           viewport.distanceScales.unitsPerMeter[1];
         /**
          * Convert resulting coordinates to catrographic
          */
-        // @ts-expect-error
+
         [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
       }
 
@@ -323,21 +318,19 @@ export const ViewerApp = () => {
   };
 
   const onViewStateChange = ({ interactionState, viewState }) => {
-    let { longitude, latitude, position } = viewState;
+    const { longitude, latitude, position } = viewState;
 
-    const [x, y, oldElevation] = position || [0, 0, 0];
+    const [, , oldElevation] = position || [0, 0, 0];
     const viewportCenterTerrainElevation =
       getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
 
     let cameraTerrainElevation = null;
 
     if (currentViewport) {
-      // @ts-expect-error
       const cameraPosition = currentViewport.unprojectPosition(
-        // @ts-expect-error
         currentViewport.cameraPosition
       );
-      // @ts-expect-error
+      // @ts-expect-error - Type '0' is not assignable to type 'null'.
       cameraTerrainElevation =
         getElevationByCentralTile(
           cameraPosition[0],
@@ -396,7 +389,6 @@ export const ViewerApp = () => {
   };
 
   const isLayerPickable = () => {
-    // @ts-expect-error
     const layerType = tileset?.tileset?.layerType;
 
     switch (layerType) {
@@ -408,24 +400,25 @@ export const ViewerApp = () => {
   };
 
   const renderLayers = () => {
-    const loadOptions = {
+    const loadOptions: {
+      i3s: {
+        coordinateSystem: number;
+        token?: string;
+      };
+    } = {
       i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
     };
 
     if (token) {
-      // @ts-expect-error
       loadOptions.i3s = { ...loadOptions.i3s, token };
     }
 
     const layers = flattenedSublayers
-      // @ts-expect-error
       .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
-            // @ts-expect-error
             id: `tile-layer-${sublayer.id}`,
-            // @ts-expect-error
             data: sublayer.url,
             loader: I3SLoader,
             onTilesetLoad: onTilesetLoad,
@@ -434,7 +427,6 @@ export const ViewerApp = () => {
             pickable: isLayerPickable(),
             loadOptions,
             highlightedObjectIndex:
-              // @ts-expect-error
               sublayer.url === selectedTilesetBasePath
                 ? selectedFeatureIndex
                 : -1,
@@ -475,7 +467,7 @@ export const ViewerApp = () => {
     setAttributesLoading(false);
 
     const selectedTilesetBasePath = info.object.tileset.basePath;
-    // @ts-expect-error
+    // @ts-expect-error - Argument of type '{} | null' is not assignable to parameter of type 'SetStateAction<null>'.
     setSelectedFeatureAttributes(selectedFeatureAttributes);
     setSelectedFeatureIndex(info.index);
     setSelectedTilesetBasePath(selectedTilesetBasePath);
@@ -487,7 +479,7 @@ export const ViewerApp = () => {
       <StatsWidgetContainer
         hasSublayers={Boolean(sublayers.length)}
         showBuildingExplorer={showBuildingExplorer}
-        // @ts-expect-error
+        // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
         ref={(_) => (statsWidgetContainer = _)}
       />
     );
@@ -496,18 +488,15 @@ export const ViewerApp = () => {
   const updateSublayerVisibility = (sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        // @ts-expect-error
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
-        // @ts-expect-error
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
           setLoadedTilesets((prevValues) =>
             prevValues.filter(
-              // @ts-expect-error
               (tileset) => tileset.basePath !== flattenedSublayer.url
             )
           );
@@ -556,9 +545,10 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => {
-    const title =
-      // @ts-expect-error
-      selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID;
+    const title = selectedFeatureAttributes
+      ? // @ts-expect-error - Property 'NAME' does not exist on type 'never'.
+        selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID
+      : "";
 
     return (
       <AttributesPanel

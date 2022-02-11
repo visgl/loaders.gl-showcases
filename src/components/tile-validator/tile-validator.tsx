@@ -1,5 +1,5 @@
+import type { Tile3D } from "@loaders.gl/tiles";
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import {
   isTileGeometryInsideBoundingVolume,
@@ -74,24 +74,6 @@ const VALIDATE_TILE = "Validate Tile";
 const WARNING_TYPE = "warning";
 const OK_TYPE = "ok";
 
-const propTypes = {
-  tile: PropTypes.object,
-  trianglesPercentage: PropTypes.number,
-  normalsLength: PropTypes.number,
-  showNormals: PropTypes.bool,
-  handleShowNormals: PropTypes.func,
-  handleChangeTrianglesPercentage: PropTypes.func,
-  handleChangeNormalsLength: PropTypes.func,
-};
-
-const defaultProps = {
-  tile: null,
-  showNormals: false,
-  handleShowNormals: () => {},
-  handleChangeTrianglesPercentage: () => {},
-  handleChangeNormalsLength: () => {},
-};
-
 interface IGeometryInfo {
   type: string;
   title: string;
@@ -101,6 +83,16 @@ interface ITriangleMessage {
   key: string;
   type?: string;
   text: string;
+}
+
+interface TileValidatorProps {
+  tile: Tile3D;
+  handleShowNormals: (tile: Tile3D) => void;
+  showNormals: boolean;
+  trianglesPercentage: number;
+  normalsLength: number;
+  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
+  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
 }
 
 /**
@@ -114,7 +106,7 @@ export const TileValidator = ({
   normalsLength,
   handleChangeTrianglesPercentage,
   handleChangeNormalsLength,
-}) => {
+}: TileValidatorProps) => {
   useEffect(() => {
     setGeometryInfo(null);
     setTriangleMessages(null);
@@ -377,6 +369,3 @@ export const TileValidator = ({
     </TileValidatorContainer>
   );
 };
-
-TileValidator.propTypes = propTypes;
-TileValidator.defaultProps = defaultProps;
