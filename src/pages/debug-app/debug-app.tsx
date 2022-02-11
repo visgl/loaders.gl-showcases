@@ -263,7 +263,7 @@ export const DebugApp = () => {
   const [tilesetStatsWidget, setTilesetStatsWidget] =
     useState<StatsWidget | null>(null);
 
-  const currentViewport: MapView = null;
+  const currentViewport: WebMercatorViewport = null;
 
   const initMainTileset = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
@@ -469,7 +469,7 @@ export const DebugApp = () => {
       main: "main",
       minimap: minimapViewport ? "minimap" : "main",
     };
-    tileset.setOptions({
+    tileset.setProps({
       viewportTraversersMap,
       loadTiles,
     });

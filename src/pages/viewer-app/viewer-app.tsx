@@ -11,6 +11,7 @@ import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
   MapView,
+  WebMercatorViewport
 } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import {
@@ -117,7 +118,7 @@ export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
   const forceUpdate = useForceUpdate();
   // TODO init types
-  let currentViewport: MapView = null;
+  let currentViewport: WebMercatorViewport = null;
 
   const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [token, setToken] = useState(null);
