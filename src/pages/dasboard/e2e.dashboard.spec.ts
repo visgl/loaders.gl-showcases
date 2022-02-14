@@ -38,4 +38,36 @@ describe("Dashboard", () => {
     const dashboardCanvas = await page.$$("#dashboard-app");
     expect(dashboardCanvas).toBeDefined();
   });
+
+  it("Should go to the Viewer page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#header-links");
+    await page.click("a[href='#/viewer']");
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/viewer");
+  });
+
+  it("Should go to the Debug page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#header-links");
+    await page.click("a[href='#/debug']");
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/debug");
+  });
+
+  it("Should go to the Comparison page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#header-links");
+    await page.click("a[href='#/comparison']");
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/comparison");
+  });
+
+  it("Should go to the About Us page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#header-links");
+    await page.click("a[href='#/about-us']");
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/about-us");
+  });
 });
