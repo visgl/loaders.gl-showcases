@@ -12,6 +12,11 @@ describe("Dashboard", () => {
 
   afterAll(() => browser.close());
 
+  it("Should automatically redirect from '/' path", async () => {
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/dashboard");
+  });
+
   it("Contains header", async () => {
     await page.waitForSelector("#header-logo");
     const text = await page.$eval("#header-logo", (e) => e.textContent);
