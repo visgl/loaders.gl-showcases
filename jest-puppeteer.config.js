@@ -1,6 +1,7 @@
 module.exports = {
   launch: {
-    headless: process.env.CI === "true",
+    // Disable headless mode if you want to run test with browser.
+    headless: true,
     ignoreDefaultArgs: ["--disable-extensions"],
     args: ["--no-sandbox"],
   },
