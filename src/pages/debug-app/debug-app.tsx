@@ -1015,7 +1015,6 @@ export const DebugApp = () => {
         title={title}
         handleClosePanel={handleClosePanel}
         attributesObject={tileInfo}
-        isControlPanelShown={debugOptions.controlPanel}
       >
         <TileValidator
           tile={selectedTile}

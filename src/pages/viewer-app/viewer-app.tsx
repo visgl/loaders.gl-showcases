@@ -11,7 +11,7 @@ import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
   MapView,
-  WebMercatorViewport
+  WebMercatorViewport,
 } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import {
@@ -555,7 +555,6 @@ export const ViewerApp = () => {
         title={title}
         handleClosePanel={handleClosePanel}
         attributesObject={selectedFeatureAttributes}
-        isControlPanelShown
       />
     );
   };
