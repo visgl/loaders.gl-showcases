@@ -51,6 +51,30 @@ function getAliasesForLocalDependencies(env) {
   return aliases;
 }
 
+/**
+ * Returns loader for 'ts' and 'tsx' files.
+ * If we are using '--deck' env variable we should avoid TypeScript issues from deck.gl folder.
+ * TODO: We should always use ts-loader once all issues with deck.gl types have been resolved.
+ */
+function getLoaders(env) {
+  // Use simple babel loader without typescript to avoid local deck.gl typing issues.
+  if (env["deck"]) {
+    return {
+      loader: "babel-loader",
+      options: {
+        presets: [
+          "@babel/preset-env",
+          ["@babel/preset-react", { runtime: "automatic" }],
+        ],
+      },
+    };
+  }
+
+  return {
+    loader: "ts-loader",
+  };
+}
+
 module.exports = (env) => {
   return {
     mode: "development",
@@ -82,7 +106,10 @@ module.exports = (env) => {
             {
               loader: "babel-loader",
               options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
+                presets: [
+                  "@babel/preset-env",
+                  ["@babel/preset-react", { runtime: "automatic" }],
+                ],
               },
             },
           ],
@@ -90,11 +117,7 @@ module.exports = (env) => {
         {
           test: /\.ts(x?)$/,
           exclude: /node_modules/,
-          use: [
-            {
-              loader: "ts-loader",
-            },
-          ],
+          use: [getLoaders(env)],
         },
         {
           test: /\.m?js/,
