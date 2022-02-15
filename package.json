@@ -8,6 +8,7 @@
     "start": "webpack serve --config ./webpack.dev.config.js",
     "start-local-deck": "webpack serve --config ./webpack.dev.config.js --env deck",
     "start-local-loaders": "webpack serve --config ./webpack.dev.config.js --env loaders",
+    "start-local-loaders-deck": "webpack serve --config ./webpack.dev.config.js --env loaders --env deck",
     "build": "webpack --config ./webpack.prod.config.js",
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
