@@ -51,31 +51,9 @@ function getAliasesForLocalDependencies(env) {
   return aliases;
 }
 
-/**
- * Returns loader for 'ts' and 'tsx' files.
- * If we are using '--deck' or '--loaders' env variables we should avoid TypeScript issues from deck.gl or loaders.gl folder.
- * TODO: We should always use ts-loader once all issues with deck.gl and loaders.gl types have been resolved.
- */
-function getLoaders(env) {
-  // Use simple babel loader without typescript to avoid local deck.gl or loader.gl typing issues.
-  if (env["deck"] || env["loaders"]) {
-    return {
-      loader: "babel-loader",
-      options: {
-        presets: [
-          "@babel/preset-env",
-          ["@babel/preset-react", { runtime: "automatic" }],
-        ],
-      },
-    };
-  }
-
-  return {
-    loader: "ts-loader",
-  };
-}
-
 module.exports = (env) => {
+  const transpileOnly = env["deck"] || env["loaders"];
+
   return {
     mode: "development",
     entry: [
@@ -117,7 +95,14 @@ module.exports = (env) => {
         {
           test: /\.ts(x?)$/,
           exclude: /node_modules/,
-          use: [getLoaders(env)],
+          use: [
+            {
+              loader: "ts-loader",
+              options: {
+                transpileOnly,
+              },
+            },
+          ],
         },
         {
           test: /\.m?js/,
