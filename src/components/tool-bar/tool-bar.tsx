@@ -187,7 +187,7 @@ export const ToolBar = ({
   );
 
   return (
-    <Container>
+    <Container id="tool-bar">
       {renderMapButton()}
       {renderMapInfoButton()}
       {renderMemoryButton()}
