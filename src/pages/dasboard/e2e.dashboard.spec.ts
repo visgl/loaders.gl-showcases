@@ -45,6 +45,8 @@ describe("Dashboard", () => {
     await page.click("a[href='#/viewer']");
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/#/viewer");
+    const controlPanel = await page.$$("#control-panel");
+    expect(controlPanel).toBeDefined();
   });
 
   it("Should go to the Debug page", async () => {
@@ -53,6 +55,8 @@ describe("Dashboard", () => {
     await page.click("a[href='#/debug']");
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/#/debug");
+    const toolBar = await page.$$("#tool-bar");
+    expect(toolBar).toBeDefined();
   });
 
   it("Should go to the Comparison page", async () => {
@@ -69,5 +73,15 @@ describe("Dashboard", () => {
     await page.click("a[href='#/about-us']");
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/#/about-us");
+  });
+
+  it("Should return from viewer page to Dashboard", async () => {
+    await page.goto("http://localhost:3000/#/viewer");
+    await page.waitForSelector("#header-links");
+    await page.click("a[href='#/dashboard']");
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/#/dashboard");
+    const dashboardCanvas = await page.$$("#dashboard-app");
+    expect(dashboardCanvas).toBeDefined();
   });
 });

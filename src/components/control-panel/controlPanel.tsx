@@ -193,7 +193,7 @@ export const ControlPanel = ({
   };
 
   return (
-    <Container debugMode={debugMode}>
+    <Container id="control-panel" debugMode={debugMode}>
       {renderExamples()}
       {renderMapStyles()}
       {renderTerrainControl()}
