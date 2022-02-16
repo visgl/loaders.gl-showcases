@@ -53,12 +53,12 @@ function getAliasesForLocalDependencies(env) {
 
 /**
  * Returns loader for 'ts' and 'tsx' files.
- * If we are using '--deck' env variable we should avoid TypeScript issues from deck.gl folder.
- * TODO: We should always use ts-loader once all issues with deck.gl types have been resolved.
+ * If we are using '--deck' or '--loaders' env variables we should avoid TypeScript issues from deck.gl or loaders.gl folder.
+ * TODO: We should always use ts-loader once all issues with deck.gl and loaders.gl types have been resolved.
  */
 function getLoaders(env) {
-  // Use simple babel loader without typescript to avoid local deck.gl typing issues.
-  if (env["deck"]) {
+  // Use simple babel loader without typescript to avoid local deck.gl or loader.gl typing issues.
+  if (env["deck"] || env["loaders"]) {
     return {
       loader: "babel-loader",
       options: {
