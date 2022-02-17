@@ -56,6 +56,8 @@ function getAliasesForLocalDependencies(env) {
 }
 
 module.exports = (env) => {
+  const transpileOnly = env["deck"] || env["loaders"];
+
   return {
     mode: "development",
     entry: [
@@ -86,7 +88,10 @@ module.exports = (env) => {
             {
               loader: "babel-loader",
               options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
+                presets: [
+                  "@babel/preset-env",
+                  ["@babel/preset-react", { runtime: "automatic" }],
+                ],
               },
             },
           ],
@@ -97,6 +102,9 @@ module.exports = (env) => {
           use: [
             {
               loader: "ts-loader",
+              options: {
+                transpileOnly,
+              },
             },
           ],
         },
