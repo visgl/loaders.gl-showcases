@@ -1,9 +1,9 @@
-import { useState } from "react";
-import styled from "styled-components";
-import { EXAMPLES } from "../../constants/i3s-examples";
-import { MAP_STYLES } from "../../constants/map-styles";
+import {useState} from 'react';
+import styled from 'styled-components';
+import {EXAMPLES} from '../../constants/i3s-examples';
+import {MAP_STYLES} from '../../constants/map-styles';
 
-import { ToggleSwitch } from "../../components";
+import {ToggleSwitch} from '../../components';
 
 const Font = `
   font-size: 16px;
@@ -11,13 +11,13 @@ const Font = `
   font-weight: 500;
 `;
 
-const Container = styled.div<{ debugMode: boolean }>`
+const Container = styled.div<{debugMode: boolean}>`
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
-  top: ${(props) => (props.debugMode ? "120px" : "70px")};
+  top: ${props => (props.debugMode ? '120px' : '70px')};
   left: 10px;
   background: #0e111a;
   border-radius: 8px;
@@ -108,7 +108,7 @@ const DropDown = styled.select`
   margin-left: 8px;
 `;
 
-const CUSTOM_EXAMPLE = "Custom example";
+const CUSTOM_EXAMPLE = 'Custom example';
 
 /**
  * TODO: Add types to component
@@ -125,14 +125,14 @@ export const ControlPanel = ({
 }) => {
   const [example, setExample] = useState(name || CUSTOM_EXAMPLE);
 
-  const handleChangeExample = (event) => {
+  const handleChangeExample = event => {
     const selectedExample = event.target.value;
     setExample(selectedExample);
     onExampleChange(EXAMPLES[selectedExample]);
   };
 
   const renderExampleOptions = () => {
-    return Object.keys(EXAMPLES).map((key) => {
+    return Object.keys(EXAMPLES).map(key => {
       const example = EXAMPLES[key];
       return (
         <option key={key} value={example.name}>
@@ -143,7 +143,7 @@ export const ControlPanel = ({
   };
 
   const renderMapStyleOptions = () => {
-    return Object.keys(mapStyles).map((key) => {
+    return Object.keys(mapStyles).map(key => {
       return (
         <option key={key} value={mapStyles[key]}>
           {key}
@@ -153,9 +153,12 @@ export const ControlPanel = ({
   };
 
   const renderExamples = () => (
-    <TilesetDropDown value={example} onChange={handleChangeExample}>
+    <TilesetDropDown
+      id="tileset"
+      value={example}
+      onChange={handleChangeExample}>
       {!name && (
-        <option key={"custom-example"} value={"custom-example"}>
+        <option key={'custom-example'} value={'custom-example'}>
           {CUSTOM_EXAMPLE}
         </option>
       )}
@@ -168,11 +171,11 @@ export const ControlPanel = ({
       <BaseMapContainer>
         <MapName>Base map</MapName>
         <DropDown
+          id="base-map"
           value={selectedMapStyle}
-          onChange={(evt) =>
-            onMapStyleChange({ selectedMapStyle: evt.target.value })
-          }
-        >
+          onChange={evt =>
+            onMapStyleChange({selectedMapStyle: evt.target.value})
+          }>
           {renderMapStyleOptions()}
         </DropDown>
       </BaseMapContainer>
@@ -185,6 +188,7 @@ export const ControlPanel = ({
         <TerrainName>Terrain</TerrainName>
         <ToggleSwitch
           id="terrain-layer-switch"
+          sliderId="change-terrain"
           checked={useTerrainLayer}
           onChange={toggleTerrain}
         />
@@ -193,7 +197,7 @@ export const ControlPanel = ({
   };
 
   return (
-    <Container debugMode={debugMode}>
+    <Container id="control-panel" debugMode={debugMode}>
       {renderExamples()}
       {renderMapStyles()}
       {renderTerrainControl()}

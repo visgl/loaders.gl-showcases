@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Switch = styled.div`
   position: relative;
@@ -46,7 +46,7 @@ const Slider = styled.span`
     position: absolute;
     top: 2px;
     left: 2px;
-    content: "";
+    content: '';
     width: 13px;
     height: 13px;
     background-color: #ffffff;
@@ -71,9 +71,10 @@ const Slider = styled.span`
 export const ToggleSwitch = ({
   checked,
   onChange,
-  name = "",
-  id = "",
-  title = "",
+  name = '',
+  id = '',
+  sliderId = '',
+  title = '',
 }) => {
   return (
     <Switch>
@@ -86,8 +87,8 @@ export const ToggleSwitch = ({
           title={title}
           onChange={onChange}
         />
-        <Slider />
-      </Label>{" "}
+        <Slider id={sliderId} />
+      </Label>{' '}
     </Switch>
   );
 };

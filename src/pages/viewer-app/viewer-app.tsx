@@ -477,6 +477,7 @@ export const ViewerApp = () => {
     // TODO - too verbose, get more default styling from stats widget?
     return (
       <StatsWidgetContainer
+        id="stats-panel"
         hasSublayers={Boolean(sublayers.length)}
         showBuildingExplorer={showBuildingExplorer}
         // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
