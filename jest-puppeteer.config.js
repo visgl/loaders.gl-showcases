@@ -1,6 +1,6 @@
 module.exports = {
   launch: {
-    headless: process.env.CI === 'true',
+    headless: true,
     ignoreDefaultArgs: ['--disable-extensions'],
     args: ['--no-sandbox'],
   },
