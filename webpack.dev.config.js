@@ -20,6 +20,10 @@ const DECK_LINK_ALIASES = {
 
 const LOADERS_LINK_ALIASES = {
   "@loaders.gl/i3s": path.resolve(__dirname, "../loaders.gl/modules/i3s/src"),
+  "@loaders.gl/tiles": path.resolve(
+    __dirname,
+    "../loaders.gl/modules/tiles/src"
+  ),
 };
 
 function getAliasesForLocalDependencies(env) {
@@ -52,6 +56,8 @@ function getAliasesForLocalDependencies(env) {
 }
 
 module.exports = (env) => {
+  const transpileOnly = env["deck"] || env["loaders"];
+
   return {
     mode: "development",
     entry: [
@@ -82,7 +88,10 @@ module.exports = (env) => {
             {
               loader: "babel-loader",
               options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"],
+                presets: [
+                  "@babel/preset-env",
+                  ["@babel/preset-react", { runtime: "automatic" }],
+                ],
               },
             },
           ],
@@ -93,6 +102,9 @@ module.exports = (env) => {
           use: [
             {
               loader: "ts-loader",
+              options: {
+                transpileOnly,
+              },
             },
           ],
         },

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const Container = styled.div<{ isControlPanelShown: boolean }>`
+const Container = styled.div`
   position: absolute;
   top: 70px;
   right: 10px;
@@ -76,7 +76,6 @@ const NO_DATA = "No Data";
 interface AttributesPanelProps {
   title: string;
   attributesObject: any;
-  isControlPanelShown: boolean;
   handleClosePanel: () => void;
   children?: any;
 }
@@ -87,7 +86,6 @@ interface AttributesPanelProps {
 export const AttributesPanel = ({
   title,
   attributesObject,
-  isControlPanelShown,
   handleClosePanel,
   children = null,
 }: AttributesPanelProps) => {
@@ -136,7 +134,7 @@ export const AttributesPanel = ({
   };
 
   return (
-    <Container isControlPanelShown={isControlPanelShown}>
+    <Container>
       {renderHeader()}
       <ContentWrapper>
         {attributesObject && prepareTable()}
