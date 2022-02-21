@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { MAP_STYLES } from "../../constants/map-styles";
@@ -109,12 +109,13 @@ const DropDown = styled.select`
 `;
 
 const CUSTOM_EXAMPLE = "Custom example";
+const CUSTOM_EXAMPLE_VALUE = "custom-example";
 
 /**
  * TODO: Add types to component
  */
 export const ControlPanel = ({
-  name,
+  name = CUSTOM_EXAMPLE_VALUE,
   onExampleChange,
   onMapStyleChange,
   selectedMapStyle,
@@ -123,7 +124,11 @@ export const ControlPanel = ({
   toggleTerrain,
   debugMode = false,
 }) => {
-  const [example, setExample] = useState(name || CUSTOM_EXAMPLE);
+  const [example, setExample] = useState(name);
+
+  useEffect(() => {
+    setExample(name);
+  }, [name]);
 
   const handleChangeExample = (event) => {
     const selectedExample = event.target.value;
@@ -154,7 +159,7 @@ export const ControlPanel = ({
 
   const renderExamples = () => (
     <TilesetDropDown value={example} onChange={handleChangeExample}>
-      {!name && (
+      {name === CUSTOM_EXAMPLE_VALUE && (
         <option key={"custom-example"} value={"custom-example"}>
           {CUSTOM_EXAMPLE}
         </option>
