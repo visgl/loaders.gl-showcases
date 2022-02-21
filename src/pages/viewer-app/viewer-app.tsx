@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { render } from "react-dom";
-import { StaticMap } from "react-map-gl";
+import {useEffect, useRef, useState} from "react";
+import {render} from "react-dom";
+import {StaticMap} from "react-map-gl";
 import styled from "styled-components";
 
-import { load } from "@loaders.gl/core";
-import { lumaStats } from "@luma.gl/core";
+import {load} from "@loaders.gl/core";
+import {lumaStats} from "@luma.gl/core";
 import DeckGL from "@deck.gl/react";
 import {
   MapController,
@@ -13,13 +13,13 @@ import {
   MapView,
   WebMercatorViewport,
 } from "@deck.gl/core";
-import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
+import {TerrainLayer, Tile3DLayer} from "@deck.gl/geo-layers";
 import {
   I3SLoader,
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
 } from "@loaders.gl/i3s";
-import { StatsWidget } from "@probe.gl/stats-widget";
+import {StatsWidget} from "@probe.gl/stats-widget";
 
 import {
   ControlPanel,
@@ -35,11 +35,11 @@ import {
   getElevationByCentralTile,
   useForceUpdate,
 } from "../../utils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
-import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {INITIAL_EXAMPLE_NAME, EXAMPLES} from "../../constants/i3s-examples";
+import {INITIAL_MAP_STYLE} from "../../constants/map-styles";
+import {Tile3D, Tileset3D} from "@loaders.gl/tiles";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -60,7 +60,7 @@ const INITIAL_VIEW_STATE = {
 
 const VIEW = new MapView({
   id: "main",
-  controller: { inertia: true },
+  controller: {inertia: true},
   farZMultiplier: 2.02,
 });
 
@@ -76,7 +76,7 @@ const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
 };
 const TERRAIN_LAYER_MAX_ZOOM = 15;
 
-const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
+const StatsWidgetWrapper = styled.div<{showMemory: boolean}>`
   display: flex;
 `;
 
@@ -84,11 +84,11 @@ const StatsWidgetContainer = styled.div<{
   showBuildingExplorer: boolean;
   hasSublayers: boolean;
 }>`
-  display: ${(props) => (props.showBuildingExplorer ? "none" : "flex")};
+  display: ${props => (props.showBuildingExplorer ? "none" : "flex")};
   flex-direction: column;
   align-items: flex-start;
   position: absolute;
-  top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
+  top: ${props => (props.hasSublayers ? "260px" : "200px")};
   background: #0e111a;
   color: white;
   font-size: 16px;
@@ -136,7 +136,7 @@ export const ViewerApp = () => {
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
-  const [metadata, setMetadata] = useState({ layers: [] });
+  const [metadata, setMetadata] = useState({layers: []});
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
@@ -148,7 +148,7 @@ export const ViewerApp = () => {
     const tilesetUrl = parseTilesetUrlFromUrl();
 
     if (tilesetUrl) {
-      return { url: tilesetUrl };
+      return {url: tilesetUrl};
     }
     return EXAMPLES[INITIAL_EXAMPLE_NAME];
   };
@@ -196,7 +196,7 @@ export const ViewerApp = () => {
    */
   useEffect(() => {
     async function fetchMetadata(metadataUrl) {
-      const metadata = await fetch(metadataUrl).then((resp) => resp.json());
+      const metadata = await fetch(metadataUrl).then(resp => resp.json());
       setMetadata(metadata);
     }
 
@@ -206,7 +206,7 @@ export const ViewerApp = () => {
     }
 
     const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
-    const { tilesetUrl, token, name, metadataUrl } = params;
+    const {tilesetUrl, token, name, metadataUrl} = params;
 
     fetchMetadata(metadataUrl);
     fetchFlattenedSublayers(tilesetUrl);
@@ -226,17 +226,17 @@ export const ViewerApp = () => {
    * @returns {string[]} Sublayer urls or tileset url.
    * TODO Add filtration mode for sublayers which were selected by user.
    */
-  const getFlattenedSublayers = async (tilesetUrl) => {
+  const getFlattenedSublayers = async tilesetUrl => {
     try {
       const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
       setSublayers(sublayersTree.sublayers);
       const sublayers = tileset?.sublayers.filter(
-        (sublayer) => sublayer.name !== "Overview"
+        sublayer => sublayer.name !== "Overview"
       );
       return sublayers;
     } catch (e) {
-      return [{ url: tilesetUrl, visibility: true }];
+      return [{url: tilesetUrl, visibility: true}];
     }
   };
 
@@ -254,16 +254,16 @@ export const ViewerApp = () => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
 
     if (needTransitionToTileset) {
-      const { zoom, cartographicCenter } = tileset;
+      const {zoom, cartographicCenter} = tileset;
       const [longitude, latitude] = cartographicCenter || [];
       const viewport = currentViewport;
       let pLongitue = longitude;
       let pLatitude = latitude;
 
       if (viewport) {
-        const { pitch, bearing } = viewState;
+        const {pitch, bearing} = viewState;
         // @ts-expect-error - roperty 'fullExtent' does not exist on type 'never'.
-        const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
+        const {zmin = 0} = metadata?.layers?.[0]?.fullExtent || {};
         /**
          * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
          * For elevated tilesets cartographic center position of a tileset is not correct
@@ -317,8 +317,8 @@ export const ViewerApp = () => {
     }
   };
 
-  const onViewStateChange = ({ interactionState, viewState }) => {
-    const { longitude, latitude, position } = viewState;
+  const onViewStateChange = ({interactionState, viewState}) => {
+    const {longitude, latitude, position} = viewState;
 
     const [, , oldElevation] = position || [0, 0, 0];
     const viewportCenterTerrainElevation =
@@ -357,20 +357,20 @@ export const ViewerApp = () => {
     });
   };
 
-  const onSelectMapStyle = ({ selectedMapStyle }) => {
+  const onSelectMapStyle = ({selectedMapStyle}) => {
     setSelectedMapStyle(selectedMapStyle);
   };
 
   const toggleTerrain = () => {
-    setUseTerrainLayer((prevValue) => !prevValue);
+    setUseTerrainLayer(prevValue => !prevValue);
   };
 
-  const onTerrainTileLoad = (tile) => {
+  const onTerrainTileLoad = tile => {
     const {
-      bbox: { east, north, south, west },
+      bbox: {east, north, south, west},
     } = tile;
 
-    setTerrainTiles((prevValue) => ({
+    setTerrainTiles(prevValue => ({
       ...prevValue,
       [`${east};${north};${south};${west}`]: tile,
     }));
@@ -383,7 +383,7 @@ export const ViewerApp = () => {
       elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
       elevationData: MAPZEN_TERRAIN_IMAGES,
       texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
-      onTileLoad: (tile) => onTerrainTileLoad(tile),
+      onTileLoad: tile => onTerrainTileLoad(tile),
       color: [255, 255, 255],
     });
   };
@@ -406,17 +406,17 @@ export const ViewerApp = () => {
         token?: string;
       };
     } = {
-      i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+      i3s: {coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS},
     };
 
     if (token) {
-      loadOptions.i3s = { ...loadOptions.i3s, token };
+      loadOptions.i3s = {...loadOptions.i3s, token};
     }
 
     const layers = flattenedSublayers
-      .filter((sublayer) => sublayer.visibility)
+      .filter(sublayer => sublayer.visibility)
       .map(
-        (sublayer) =>
+        sublayer =>
           new Tile3DLayer({
             id: `tile-layer-${sublayer.id}`,
             data: sublayer.url,
@@ -446,16 +446,16 @@ export const ViewerApp = () => {
     setSelectedFeatureIndex(-1);
   };
 
-  const handleClick = async (info) => {
+  const handleClick = async info => {
     if (!info.object || info.index < 0 || !info.layer) {
       handleClosePanel();
       return;
     }
 
-    const options = { i3s: {} };
+    const options = {i3s: {}};
 
     if (token) {
-      options.i3s = { token };
+      options.i3s = {token};
     }
 
     setAttributesLoading(true);
@@ -481,24 +481,24 @@ export const ViewerApp = () => {
         hasSublayers={Boolean(sublayers.length)}
         showBuildingExplorer={showBuildingExplorer}
         // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
-        ref={(_) => (statsWidgetContainer = _)}
+        ref={_ => (statsWidgetContainer = _)}
       />
     );
   };
 
-  const updateSublayerVisibility = (sublayer) => {
+  const updateSublayerVisibility = sublayer => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
-        (fSublayer) => fSublayer.id === sublayer.id
+        fSublayer => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
         forceUpdate();
 
         if (!sublayer.visibility) {
-          setLoadedTilesets((prevValues) =>
+          setLoadedTilesets(prevValues =>
             prevValues.filter(
-              (tileset) => tileset.basePath !== flattenedSublayer.url
+              tileset => tileset.basePath !== flattenedSublayer.url
             )
           );
         }
@@ -507,7 +507,7 @@ export const ViewerApp = () => {
   };
 
   const onToggleBuildingExplorer = () => {
-    setShowBuildingExplorer((prevValue) => !prevValue);
+    setShowBuildingExplorer(prevValue => !prevValue);
   };
 
   const renderControlPanel = () => {
@@ -518,8 +518,7 @@ export const ViewerApp = () => {
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}
         useTerrainLayer={useTerrainLayer}
-        toggleTerrain={toggleTerrain}
-      ></ControlPanel>
+        toggleTerrain={toggleTerrain}></ControlPanel>
     );
   };
 
@@ -539,7 +538,7 @@ export const ViewerApp = () => {
       // eslint-disable-next-line no-undef
       const tooltip = document.createElement("div");
       render(<FontAwesomeIcon icon={faSpinner} />, tooltip);
-      return { html: tooltip.innerHTML };
+      return {html: tooltip.innerHTML};
     }
 
     return null;
@@ -585,13 +584,12 @@ export const ViewerApp = () => {
           type: MapController,
           maxPitch: 60,
           inertia: true,
-          scrollZoom: { speed: 0.01, smooth: true },
+          scrollZoom: {speed: 0.01, smooth: true},
         }}
         onAfterRender={() => updateStatWidgets()}
         getTooltip={() => getTooltip()}
-        onClick={(info) => handleClick(info)}
-      >
-        {({ viewport }) => {
+        onClick={info => handleClick(info)}>
+        {({viewport}) => {
           currentViewport = viewport;
         }}
         {!useTerrainLayer && (
