@@ -23,12 +23,6 @@ describe("Dashboard", () => {
     expect(text).toContain("I3S Explorer");
   });
 
-  it("Contains header", async () => {
-    await page.waitForSelector("#header-logo");
-    const text = await page.$eval("#header-logo", e => e.textContent);
-    expect(text).toContain("I3S Explorer");
-  });
-
   it("Contains page links", async () => {
     await page.waitForSelector("#header-links");
 
