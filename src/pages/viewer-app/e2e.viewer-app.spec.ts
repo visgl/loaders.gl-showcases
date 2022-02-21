@@ -5,10 +5,7 @@ describe('ViewerApp', () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 250,
-    });
+    browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.goto('http://localhost:3000/#/viewer');
   });
@@ -18,7 +15,11 @@ describe('ViewerApp', () => {
   it('Contains control panel', async () => {
     await page.waitForSelector('#control-panel');
     await page.select('#base-map', 'Light');
-    const controlOptions = ['New York', 'San Francisco v1.6'];
+    const controlOptions = [
+      'New York',
+      'San Francisco v1.6',
+      'San Francisco v1.7',
+    ];
 
     for await (const item of controlOptions) {
       expect(await page.select('#tileset', item)).toEqual([item]);
