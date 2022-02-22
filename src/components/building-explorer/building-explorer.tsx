@@ -1,14 +1,14 @@
-import type {SizeProp} from '@fortawesome/fontawesome-svg-core';
-import styled from 'styled-components';
-import {Checkbox, ToggleSwitch} from '../../components';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import type { SizeProp } from "@fortawesome/fontawesome-svg-core";
+import styled from "styled-components";
+import { Checkbox, ToggleSwitch } from "../../components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
   faAngleDown,
   faCircle,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import {useForceUpdate} from '../../utils';
+import { useForceUpdate } from "../../utils";
 
 const BuildingExplorerContainer = styled.div<{
   debugMode: boolean;
@@ -17,19 +17,19 @@ const BuildingExplorerContainer = styled.div<{
 }>`
   position: absolute;
   z-index: 100;
-  top: ${props =>
+  top: ${(props) =>
     props.debugMode
       ? props.isControlPanelShown
-        ? '250px'
-        : '120px'
-      : '200px'};
+      ? "250px"
+      : "120px"
+    : "200px"};
   left: 10px;
   display: flex;
   align-items: center;
   flex-direction: column;
   width: 245px;
   padding: 16px;
-  height: ${props => (props.isShown ? 'calc(100% - 240px)' : '20px')};
+  height: ${(props) => (props.isShown ? "calc(100% - 240px)" : "20px")};
   max-height: 450px;
   align-items: space-between;
   background: #0e111a;
@@ -69,7 +69,7 @@ const CheckboxContainer = styled.div`
   margin-left: 10px;
 `;
 
-const Label = styled.h3<{htmlFor: string}>`
+const Label = styled.h3<{ htmlFor: string }>`
   margin: 0;
   padding: 0;
   cursor: pointer;
@@ -119,26 +119,26 @@ export const BuildingExplorer = ({
     }
   };
 
-  const toggleSublayer = sublayer => {
+  const toggleSublayer = (sublayer) => {
     sublayer.visibility = !sublayer.visibility;
     onUpdateSublayerVisibility(sublayer);
     setChildren(sublayer.sublayers, sublayer.visibility);
     forceUpdate();
   };
 
-  const toggleGroup = sublayer => {
+  const toggleGroup = (sublayer) => {
     sublayer.expanded = !sublayer.expanded;
     forceUpdate();
   };
 
-  const renderSublayers = sublayers => {
-    return sublayers.map(sublayer => {
+  const renderSublayers = (sublayers) => {
+    return sublayers.map((sublayer) => {
       const childLayers = sublayer.sublayers || [];
       let icon = faCircle;
-      let size: SizeProp = 'xs';
+      let size: SizeProp = "xs";
 
       if (sublayer.sublayers) {
-        size = 'lg';
+        size = "lg";
         if (sublayer.expanded) {
           icon = faAngleDown;
         } else {
@@ -176,7 +176,8 @@ export const BuildingExplorer = ({
       id="building-explorer"
       isShown={isShown}
       isControlPanelShown={isControlPanelShown}
-      debugMode={debugMode}>
+      debugMode={debugMode}
+    >
       <ExplorerWraper>
         <Label htmlFor="BuildingExplorerToggle">BuildingExplorer</Label>
         <ToggleSwitch

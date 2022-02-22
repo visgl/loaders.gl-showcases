@@ -1,16 +1,16 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-const CheckboxContainer = styled.div<{disabled: boolean}>`
+const CheckboxContainer = styled.div<{ disabled: boolean }>`
   display: inline-block;
   vertical-align: middle;
-  cursor: ${props => (props.disabled ? 'auto' : 'pointer')}};
+  cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
 `;
 const Icon = styled.svg`
   fill: none;
   stroke: white;
   stroke-width: 2px;
 `;
-const HiddenCheckbox = styled.input.attrs({type: 'checkbox'})`
+const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   border: 0;
   clip: rect(0 0 0 0);
   clippath: inset(50%);
@@ -22,14 +22,14 @@ const HiddenCheckbox = styled.input.attrs({type: 'checkbox'})`
   white-space: nowrap;
   width: 1px;
 `;
-const StyledCheckbox = styled.div<{checked: boolean; disabled: boolean}>`
+const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
   display: inline-block;
   width: 22px;
   height: 22px;
   margin-right: 8px;
-  background: ${props => (props.checked ? '#4F52CC' : '#0E111A')};
-  border: ${props =>
-    props.disabled ? '1px solid rgba(255,255,255, .6)' : '1px solid #4F52CC'};
+  background: ${(props) => (props.checked ? "#4F52CC" : "#0E111A")};
+  border: ${(props) =>
+    props.disabled ? "1px solid rgba(255,255,255, .6)" : "1px solid #4F52CC"};
   border-radius: 4px;
   transition: all 150ms;
 
@@ -38,14 +38,14 @@ const StyledCheckbox = styled.div<{checked: boolean; disabled: boolean}>`
   }
 
   ${Icon} {
-    visibility: ${props => (props.checked ? 'visible' : 'hidden')};
+    visibility: ${(props) => (props.checked ? "visible" : "hidden")};
   }
 `;
 
 /**
  * TODO: Add types to component
  */
-export const Checkbox = ({checked, ...props}) => (
+export const Checkbox = ({ checked, ...props }) => (
   <CheckboxContainer disabled={props.disabled}>
     <HiddenCheckbox checked={checked} {...props} />
     <StyledCheckbox disabled={props.disabled} checked={checked}>
