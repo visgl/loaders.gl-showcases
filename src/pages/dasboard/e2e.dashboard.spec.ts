@@ -27,7 +27,6 @@ describe("Dashboard", () => {
     await page.waitForSelector("#header-links");
 
     const linksParent = await page.$("#header-links");
-
     expect(
       await linksParent.$$eval("a", (nodes) => nodes.map(n => n.innerText))
     ).toEqual(["Home", "Viewer", "Debug", "Comparison", "About Us"]);
