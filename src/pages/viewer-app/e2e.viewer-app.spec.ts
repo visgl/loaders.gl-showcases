@@ -36,13 +36,13 @@ describe("ViewerApp", () => {
       ).toBe(controlUrls[index]);
     }
 
-    await page.click("#change-terrain");
+    await page.click("#terrain-layer-switch~span");
   }, 10000);
 
   it("Contains building explorer", async () => {
     await page.select("#tileset", "Building");
     await page.waitForSelector("#building-explorer");
-    await page.click("#toggle-explorer");
+    await page.click("#BuildingExplorerToggle~span");
     await page.click("#CheckBox220-icon");
     await page.click("#CheckBox230-icon");
     await page.click("#CheckBox240-icon");

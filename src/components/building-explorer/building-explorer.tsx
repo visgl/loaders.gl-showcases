@@ -182,7 +182,6 @@ export const BuildingExplorer = ({
         <Label htmlFor="BuildingExplorerToggle">BuildingExplorer</Label>
         <ToggleSwitch
           id="BuildingExplorerToggle"
-          sliderId="toggle-explorer"
           checked={isShown}
           onChange={onToggleBuildingExplorer}
         />

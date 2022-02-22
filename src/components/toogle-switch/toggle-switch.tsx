@@ -73,7 +73,6 @@ export const ToggleSwitch = ({
   onChange,
   name = "",
   id = "",
-  sliderId = "",
   title = "",
 }) => {
   return (
@@ -87,8 +86,8 @@ export const ToggleSwitch = ({
           title={title}
           onChange={onChange} 
         />
-        <Slider id={sliderId} />
-      </Label>{" "}
+        <Slider />
+      </Label>
     </Switch>
   );
 };

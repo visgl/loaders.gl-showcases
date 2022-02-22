@@ -191,7 +191,6 @@ export const ControlPanel = ({
         <TerrainName>Terrain</TerrainName>
         <ToggleSwitch
           id="terrain-layer-switch"
-          sliderId="change-terrain"
           checked={useTerrainLayer}
           onChange={toggleTerrain}
         />
