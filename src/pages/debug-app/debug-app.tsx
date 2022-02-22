@@ -219,11 +219,11 @@ const StatsWidgetContainer = styled.div`
   overflow: auto;
 `;
 
+const colorMap = new ColorMap();
 /**
  * TODO: Add types to component
  */
 export const DebugApp = () => {
-  const colorMap = new ColorMap();
   const forceUpdate = useForceUpdate();
   let statsWidgetContainer = useRef(null);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
