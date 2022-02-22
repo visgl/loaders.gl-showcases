@@ -18,7 +18,7 @@ describe("ViewerApp", () => {
       "San Francisco v1.6",
       "San Francisco v1.7",
     ];
-    const controlUrl = [
+    const controlUrls = [
       "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
@@ -33,7 +33,7 @@ describe("ViewerApp", () => {
         await page.$eval("#stats-panel", e =>
           e.lastChild.firstChild.textContent.slice(2)
         )
-      ).toBe(controlUrl[index]);
+      ).toBe(controlUrls[index]);
     }
 
     await page.click("#change-terrain");
