@@ -1,6 +1,27 @@
-export const parseTilesetUrlFromUrl = () => {
-  const parsedUrl = new URL(window.location.href);
-  return parsedUrl.searchParams.get("url");
+export const parseTilesetUrlFromUrl = (): string | null => {
+  const params = getParamsAfterHash(window.location.href);
+  return params["url"];
+};
+
+const getParamsAfterHash = (url: string): { [key: string]: string } => {
+  const afterHashPart = url.split("#")[1];
+
+  if (!afterHashPart) {
+    return {};
+  }
+
+  const paramsPart = url.split("?")[1];
+
+  if (!paramsPart) {
+    return {};
+  }
+
+  return paramsPart.split("&").reduce((result, param) => {
+    const [paramKey, value] = param.split("=");
+    result[paramKey] = value;
+
+    return result;
+  }, {});
 };
 
 export const parseTilesetUrlParams = (url, options) => {

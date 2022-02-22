@@ -1,9 +1,9 @@
-import {useState} from 'react';
-import styled from 'styled-components';
-import {EXAMPLES} from '../../constants/i3s-examples';
-import {MAP_STYLES} from '../../constants/map-styles';
+import {useEffect, useState} from "react";
+import styled from "styled-components";
+import {EXAMPLES} from "../../constants/i3s-examples";
+import {MAP_STYLES} from "../../constants/map-styles";
 
-import {ToggleSwitch} from '../../components';
+import {ToggleSwitch} from "../../components";
 
 const Font = `
   font-size: 16px;
@@ -17,7 +17,7 @@ const Container = styled.div<{debugMode: boolean}>`
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
-  top: ${props => (props.debugMode ? '120px' : '70px')};
+  top: ${props => (props.debugMode ? "120px" : "70px")};
   left: 10px;
   background: #0e111a;
   border-radius: 8px;
@@ -108,13 +108,14 @@ const DropDown = styled.select`
   margin-left: 8px;
 `;
 
-const CUSTOM_EXAMPLE = 'Custom example';
+const CUSTOM_EXAMPLE = "Custom example";
+const CUSTOM_EXAMPLE_VALUE = "custom-example";
 
 /**
  * TODO: Add types to component
  */
 export const ControlPanel = ({
-  name,
+  name = CUSTOM_EXAMPLE_VALUE,
   onExampleChange,
   onMapStyleChange,
   selectedMapStyle,
@@ -123,7 +124,11 @@ export const ControlPanel = ({
   toggleTerrain,
   debugMode = false,
 }) => {
-  const [example, setExample] = useState(name || CUSTOM_EXAMPLE);
+  const [example, setExample] = useState(name);
+
+  useEffect(() => {
+    setExample(name);
+  }, [name]);
 
   const handleChangeExample = event => {
     const selectedExample = event.target.value;
@@ -153,12 +158,9 @@ export const ControlPanel = ({
   };
 
   const renderExamples = () => (
-    <TilesetDropDown
-      id="tileset"
-      value={example}
-      onChange={handleChangeExample}>
-      {!name && (
-        <option key={'custom-example'} value={'custom-example'}>
+    <TilesetDropDown value={example} onChange={handleChangeExample}>
+      {name === CUSTOM_EXAMPLE_VALUE && (
+        <option key={"custom-example"} value={"custom-example"}>
           {CUSTOM_EXAMPLE}
         </option>
       )}

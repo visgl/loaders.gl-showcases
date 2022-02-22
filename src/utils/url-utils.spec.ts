@@ -8,7 +8,7 @@ Object.defineProperty(window, "location", {
       includes: mockResponse,
     },
     assign: mockResponse,
-    href: "https://test.com?url=https://tileset-url.com",
+    href: "https://test.com/#/?url=https://tileset-url.com",
   },
   writable: true,
 });
