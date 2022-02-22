@@ -20,9 +20,9 @@ const BuildingExplorerContainer = styled.div<{
   top: ${(props) =>
     props.debugMode
       ? props.isControlPanelShown
-      ? "250px"
-      : "120px"
-    : "200px"};
+        ? "250px"
+        : "120px"
+      : "200px"};
   left: 10px;
   display: flex;
   align-items: center;

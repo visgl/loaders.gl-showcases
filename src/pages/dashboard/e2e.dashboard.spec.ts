@@ -19,7 +19,7 @@ describe("Dashboard", () => {
 
   it("Contains header", async () => {
     await page.waitForSelector("#header-logo");
-    const text = await page.$eval("#header-logo", (e) => e.textContent);
+    const text = await page.$eval("#header-logo", e => e.textContent);
     expect(text).toContain("I3S Explorer");
   });
 
@@ -28,7 +28,7 @@ describe("Dashboard", () => {
 
     const linksParent = await page.$("#header-links");
     expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
+      await linksParent.$$eval("a", nodes => nodes.map(n => n.innerText))
     ).toEqual(["Home", "Viewer", "Debug", "Comparison", "About Us"]);
   });
 

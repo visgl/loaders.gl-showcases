@@ -226,7 +226,7 @@ export const ViewerApp = () => {
    * @returns {string[]} Sublayer urls or tileset url.
    * TODO Add filtration mode for sublayers which were selected by user.
    */
-    const getFlattenedSublayers = async (tilesetUrl) => {
+  const getFlattenedSublayers = async (tilesetUrl) => {
     try {
       const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
@@ -362,7 +362,7 @@ export const ViewerApp = () => {
   };
 
   const toggleTerrain = () => {
-    setUseTerrainLayer(prevValue => !prevValue);
+    setUseTerrainLayer((prevValue) => !prevValue);
   };
 
   const onTerrainTileLoad = (tile) => {
@@ -414,7 +414,7 @@ export const ViewerApp = () => {
     }
 
     const layers = flattenedSublayers
-    .filter((sublayer) => sublayer.visibility)
+      .filter((sublayer) => sublayer.visibility)
       .map(
         (sublayer) =>
           new Tile3DLayer({
