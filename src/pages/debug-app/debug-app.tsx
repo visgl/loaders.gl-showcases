@@ -350,6 +350,7 @@ export const DebugApp = () => {
     setSelectedTile(null);
 
     fetchUVDebugTexture();
+    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
   }, [mainTileset]);
 
   const getViewState = () =>
