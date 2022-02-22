@@ -28,7 +28,7 @@ describe("Dashboard", () => {
 
     const linksParent = await page.$("#header-links");
     expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map(n => n.innerText))
+      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
     ).toEqual(["Home", "Viewer", "Debug", "Comparison", "About Us"]);
   });
 
