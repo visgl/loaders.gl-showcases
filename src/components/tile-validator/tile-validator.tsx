@@ -12,6 +12,7 @@ const TileValidatorContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1 0;
+  font-size: 14px;
 `;
 
 const ValidateButton = styled.button`
@@ -61,6 +62,7 @@ const NormalsControl = styled.div`
   display flex;
   align-items: center;
   margin: 10px 0 10px 0;
+  white-space: nowrap;
 `;
 
 const NoNormalsInfo = styled.span`
