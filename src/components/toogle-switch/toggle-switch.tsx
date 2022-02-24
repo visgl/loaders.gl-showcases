@@ -84,7 +84,7 @@ export const ToggleSwitch = ({
           name={name}
           checked={checked}
           title={title}
-          onChange={onChange} 
+          onChange={onChange}
         />
         <Slider />
       </Label>
