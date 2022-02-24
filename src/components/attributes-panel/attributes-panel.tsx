@@ -45,6 +45,7 @@ const DataCell = styled.td`
   font-weight: 400;
   font-size: 14px;
   padding: 5px 0;
+  white-space: nowrap;
 `;
 
 const HeaderWrapper = styled.div`
