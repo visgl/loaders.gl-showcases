@@ -28,7 +28,7 @@ describe("ViewerApp", () => {
     await page.select("#base-map", "Light");
 
     for await (const [index, item] of controlOptions.entries()) {
-      expect(await page.select("#tileset", item)).toEqual([item]);
+      expect(await page.select("#tilesets", item)).toEqual([item]);
       expect(
         await page.$eval("#stats-panel", e =>
           e.lastChild.firstChild.textContent.slice(2)
@@ -40,7 +40,7 @@ describe("ViewerApp", () => {
   }, 10000);
 
   it("Contains building explorer", async () => {
-    await page.select("#tileset", "Building");
+    await page.select("#tilesets", "Building");
     await page.waitForSelector("#building-explorer");
     await page.click("#BuildingExplorerToggle~span");
     await page.click("#CheckBox220-icon");
