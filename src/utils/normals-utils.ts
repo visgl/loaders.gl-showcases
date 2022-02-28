@@ -1,16 +1,35 @@
-import { Vector3 } from "@math.gl/core";
+import type { Tile3D } from "@loaders.gl/tiles";
+import { Vector3, Matrix4 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
 
 const VALUES_PER_VERTEX = 3;
 
 const scratchVector = new Vector3();
 
+type NormalsDebugData = {
+  src: {
+    normals: Uint32Array,
+    positions: Uint32Array
+  },
+  length: number,
+  modelMatrix: Matrix4,
+  cartographicModelMatrix: Matrix4,
+  cartographicOrigin: Vector3
+};
+
+type PositionsData = {
+  src: {
+    positions: Float32Array,
+    normals: Float32Array
+  }
+};
+
 /**
  * Generates data for display normals by Line layer.
- * @param {object} tile
- * @returns {object} - returs object with typed normals and positions array and length
+ * @param tile
+ * @returns returs object with typed normals and positions array and length
  */
-export function generateBinaryNormalsDebugData(tile) {
+export function generateBinaryNormalsDebugData(tile: Tile3D): NormalsDebugData | Record<string, unknown> {
   if (
     !tile.content ||
     !tile.content.attributes ||
@@ -45,12 +64,12 @@ export function generateBinaryNormalsDebugData(tile) {
 }
 
 /**
- * @param {number} index
+ * @param index
  * @param {object} data
  * @param {number} trianglesPercentage - percent of triangles to show normals
  * @returns {array} - source position in cartographic coordinates
  */
-export function getNormalSourcePosition(index, data, trianglesPercentage) {
+export function getNormalSourcePosition(index: number, data: PositionsData, trianglesPercentage: number): Vector3 | Record<string, unknown> {
   const positions = data.src.positions;
   const normalsGap = getNormalsGap(positions, trianglesPercentage);
   let sourcePosition = {};
@@ -68,18 +87,18 @@ export function getNormalSourcePosition(index, data, trianglesPercentage) {
 }
 
 /**
- * @param {number} index
- * @param {object} data
- * @param {number} trianglesPercentage - percent of triangles to show normals
- * @param {number} normalsLength - allows change visible normals length
- * @returns {array} - target position in cartographic coordinates
+ * @param index
+ * @param data
+ * @param trianglesPercentage - percent of triangles to show normals
+ * @param normalsLength - allows change visible normals length
+ * @returns target position in cartographic coordinates
  */
 export function getNormalTargetPosition(
-  index,
-  data,
-  trianglesPercentage,
-  normalsLength
-) {
+  index: number,
+  data: PositionsData,
+  trianglesPercentage: number,
+  normalsLength: number
+): Vector3 | Record<string, unknown> {
   const positions = data.src.positions;
   const normalsGap = getNormalsGap(positions, trianglesPercentage);
   let targetPosition = {};
@@ -105,10 +124,10 @@ export function getNormalTargetPosition(
 
 /**
  * Calculates normals gap based on showing normals percentage
- * @param {Float32Array} positions
- * @param {Number} trianglesPercentage
+ * @param positions
+ * @param trianglesPercentage
  */
-function getNormalsGap(positions, trianglesPercentage) {
+function getNormalsGap(positions: Float32Array, trianglesPercentage: number): number {
   const triangleCount = positions.length / VALUES_PER_VERTEX;
   const trianglesToShow = Math.floor(
     triangleCount * (trianglesPercentage / 100)
