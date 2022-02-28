@@ -2,7 +2,7 @@ import { buildSublayersTree } from './sublayers';
 
 describe("Sublayers", () => {
 
-  test.only("Should Build sublayers tree", () => {
+  test("Should Build sublayers tree", () => {
     const sublayers = [
       {
         "id": 200,
