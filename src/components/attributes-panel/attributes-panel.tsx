@@ -23,9 +23,9 @@ const Container = styled.div`
 
 const ContentWrapper = styled.div`
   overflow-y: auto;
-  width: 95%;
   padding: 0 15px;
   margin-bottom: 15px;
+  width: 90%;
 `;
 
 const AttributesTable = styled.table`
@@ -33,16 +33,18 @@ const AttributesTable = styled.table`
 `;
 
 const ColumnHeader = styled.th`
-  width: 50%;
+  width: 40%;
   text-align: left;
   font-weight: 500;
+  font-size: 14px;
   border-right: 3px solid rgba(0, 0, 0, 0.05);
   padding: 5px 0;
 `;
 
 const DataCell = styled.td`
-  width: 50%;
+  width: 60%;
   font-weight: 400;
+  font-size: 14px;
   padding: 5px 0;
 `;
 

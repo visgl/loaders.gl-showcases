@@ -1,10 +1,11 @@
+import type { WebMercatorViewport } from "@deck.gl/core";
 import * as mat3 from "gl-matrix/mat3";
 
 const NEAR = [255, 0, 128];
 const FAR = [128, 0, 255];
 const MID = [0, 128, 255];
 
-export function getFrustumBounds(viewport) {
+export function getFrustumBounds(viewport: WebMercatorViewport) {
   const planes = viewport.getFrustumPlanes();
 
   const ntl = viewport.unprojectPosition(

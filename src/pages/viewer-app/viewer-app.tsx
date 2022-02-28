@@ -218,6 +218,7 @@ export const ViewerApp = () => {
     setNeedTransitionToTileset(true);
     setShowBuildingExplorer(false);
     setSelectedFeatureAttributes(null);
+    setSelectedFeatureIndex(-1);
   }, [mainTileset]);
 
   /**

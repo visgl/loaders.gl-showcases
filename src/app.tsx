@@ -4,9 +4,11 @@ import { Header } from "./components";
 import * as Pages from "./pages";
 
 const ContentWrapper = styled.div`
+  top: 0;
+  left: 0;
+  position: absolute;
   width: 100%;
   height: 100%;
-  margin-top: 60px;
 `;
 
 const GlobalStyle = createGlobalStyle`
