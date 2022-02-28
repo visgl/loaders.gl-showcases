@@ -1,4 +1,4 @@
-export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
+export function getElevationByCentralTile(longitude: number, latitude: number, terrainTiles): number | null {
   let centralTile = null;
   for (const tile of Object.values(terrainTiles)) {
     const {
@@ -52,7 +52,7 @@ export function getElevationByCentralTile(longitude, latitude, terrainTiles) {
   return currentElevation;
 }
 
-function calculateDistance(x1, y1, x2, y2) {
+function calculateDistance(x1: number, y1: number, x2: number, y2: number): number {
   const deltaX = x2 - x1;
   const deltaY = y2 - y1;
   return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
