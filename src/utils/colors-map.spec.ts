@@ -3,9 +3,14 @@ import ColorMap, { getRGBValueFromColorObject, makeRGBObjectFromColor } from './
 const DEFAULT_COLOR = [255, 255, 255];
 const DEFAULT_HIGLIGHT_COLOR = [0, 100, 255];
 
+let colorMap;
+
+beforeEach(() => {
+  colorMap = new ColorMap();
+});
+
 describe("Color Map", () => {
   test("Should create color Map", () => {
-    const colorMap = new ColorMap();
 
     expect(colorMap).toBeDefined();
     expect(colorMap.randomColorMap).toBeDefined();
@@ -13,8 +18,6 @@ describe("Color Map", () => {
   });
 
   test("Should return default color", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test'
     };
@@ -24,8 +27,6 @@ describe("Color Map", () => {
   });
 
   test("Should return default color", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test'
     };
@@ -38,8 +39,6 @@ describe("Color Map", () => {
   });
 
   test("Should return random color", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test'
     };
@@ -52,8 +51,6 @@ describe("Color Map", () => {
   });
 
   test("Should return color by depth", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
       depth: 1
@@ -67,8 +64,6 @@ describe("Color Map", () => {
   });
 
   test("Should return DEFAULT color in _getColorByTile method if colorMap isEmpty", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test'
     };
@@ -78,8 +73,6 @@ describe("Color Map", () => {
   });
 
   test("Should return existing tile color in _getColorByTile method", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test'
     };
@@ -91,8 +84,6 @@ describe("Color Map", () => {
   });
 
   test("Should return DEFAULT tile color in _getCustomColor if coloredTilesMap is not provided", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
       coloredTilesMap: null
@@ -104,8 +95,6 @@ describe("Color Map", () => {
   });
 
   test("Should return DEFAULT tile color in _getCustomColor if no tileId in coloredTilesMap", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
       coloredTilesMap: {}
@@ -117,8 +106,6 @@ describe("Color Map", () => {
   });
 
   test("Should return custom color in _getCustomColor", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
     };
@@ -129,15 +116,12 @@ describe("Color Map", () => {
   });
 
   test("Should return selection color in _getCustomColor", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
     };
 
     const customColor = colorMap.getColor(tile, { coloredBy: 3, selectedTileId: 'test' });
-    const map = colorMap.colorMap
-    const isCustomColorExistInColorMap = Boolean(map['test']);
+    const isCustomColorExistInColorMap = Boolean(colorMap.colorMap['test']);
 
     expect(customColor).toEqual(DEFAULT_HIGLIGHT_COLOR);
     expect(isCustomColorExistInColorMap).toBe(true);
@@ -145,8 +129,6 @@ describe("Color Map", () => {
 
 
   test("Should reset colors map", () => {
-    const colorMap = new ColorMap();
-
     const tile = {
       id: 'test',
     };
