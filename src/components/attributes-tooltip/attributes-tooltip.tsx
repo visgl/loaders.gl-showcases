@@ -20,10 +20,10 @@ const Tooltip = styled.div`
 `;
 
 const TableHeader = styled.th`
-  text-align: 'left',
-  font-size: '14px',
-  color: 'white',
-  font-weight: '400'
+  text-align: left;
+  font-size: 14px;
+  color: white;
+  font-weight: 400;
 `;
 
 /**
