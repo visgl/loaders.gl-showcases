@@ -4,6 +4,7 @@ const CheckboxContainer = styled.div<{ disabled: boolean }>`
   display: inline-block;
   vertical-align: middle;
   cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
+  position: relative;
 `;
 const Icon = styled.svg`
   fill: none;
