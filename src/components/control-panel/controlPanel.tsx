@@ -158,7 +158,7 @@ export const ControlPanel = ({
   };
 
   const renderExamples = () => (
-    <TilesetDropDown value={example} onChange={handleChangeExample}>
+    <TilesetDropDown id="tilesets" value={example} onChange={handleChangeExample}>
       {name === CUSTOM_EXAMPLE_VALUE && (
         <option key={"custom-example"} value={"custom-example"}>
           {CUSTOM_EXAMPLE}
@@ -173,6 +173,7 @@ export const ControlPanel = ({
       <BaseMapContainer>
         <MapName>Base map</MapName>
         <DropDown
+          id="base-map"
           value={selectedMapStyle}
           onChange={(evt) =>
             onMapStyleChange({ selectedMapStyle: evt.target.value })

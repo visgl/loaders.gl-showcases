@@ -173,6 +173,7 @@ export const BuildingExplorer = ({
 
   return (
     <BuildingExplorerContainer
+      id="building-explorer"
       isShown={isShown}
       isControlPanelShown={isControlPanelShown}
       debugMode={debugMode}

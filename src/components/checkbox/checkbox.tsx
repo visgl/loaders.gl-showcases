@@ -49,7 +49,7 @@ export const Checkbox = ({ checked, ...props }) => (
   <CheckboxContainer disabled={props.disabled}>
     <HiddenCheckbox checked={checked} {...props} />
     <StyledCheckbox disabled={props.disabled} checked={checked}>
-      <Icon viewBox="0 0 24 24">
+      <Icon id={`${props.id}-icon`} viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />
       </Icon>
     </StyledCheckbox>
