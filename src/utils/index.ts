@@ -16,9 +16,7 @@ export {
   getShortTileDebugInfo,
   getTileDebugInfo,
   validateTile,
-  getGeometryVsTextureMetrics,
   isTileGeometryInsideBoundingVolume,
-  isGeometryBoundingVolumeMoreSuitable,
 } from "./tile-debug";
 export {
   generateBinaryNormalsDebugData,
@@ -31,3 +29,11 @@ export {
   selectDebugTextureForTileset,
   selectOriginalTextureForTileset,
 } from "./texture-selector-utils";
+
+export {
+  getGeometryVsTextureMetrics
+} from './geometry-vs-texture-metrics';
+
+export {
+  isGeometryBoundingVolumeMoreSuitable
+} from './bounding-volume-validation';
