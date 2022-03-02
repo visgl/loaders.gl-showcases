@@ -1,13 +1,15 @@
+import type { Tile3D } from "@loaders.gl/tiles";
+
 import { CubeGeometry } from "@luma.gl/engine";
 import { Ellipsoid } from "@math.gl/geospatial";
 import { Vector3 } from "@math.gl/core";
+import { BoundingSphere, OrientedBoundingBox } from "@math.gl/culling";
 
 /**
  * Calculates  obb vertices of tile
- * @param {object} tile
- * @returns {number[]}
+ * @param tile
  */
-export const getTileObbVertices = (tile) => {
+export const getTileObbVertices = (tile: Tile3D): Float32Array => {
   const geometry = new CubeGeometry();
   const halfSize = tile.header.obb.halfSize;
 
@@ -17,7 +19,7 @@ export const getTileObbVertices = (tile) => {
     tile.header.obb.center
   );
 
-  let vertices: Vector3[] = [];
+  let vertices: number[] = [];
 
   for (let i = 0; i < positions.length; i += 3) {
     const positionsVector = new Vector3(
@@ -32,20 +34,19 @@ export const getTileObbVertices = (tile) => {
     vertices = vertices.concat(rotatedPositions);
   }
 
-  return vertices;
+  return new Float32Array(vertices);
 };
 
 /**
  * Check if provided vertices are inside bounding volume
- * @param {OrientedBoundingBox | BoundingSphere} boundingVolume
- * @param {array} positions
- * @returns {boolean}
+ * @param boundingVolume
+ * @param positions
  */
-export const isAllVerticesInsideBoundingVolume = (boundingVolume, positions) => {
+export const isAllVerticesInsideBoundingVolume = (boundingVolume: OrientedBoundingBox | BoundingSphere, positions: Float32Array): boolean => {
   let isVerticesInsideObb = true;
 
   for (let index = 0; index < positions.length / 3; index += 3) {
-    const point = [
+    const point: number[] = [
       positions[index],
       positions[index + 1],
       positions[index + 2],

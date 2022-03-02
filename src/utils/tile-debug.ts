@@ -1,8 +1,10 @@
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { TileWarning, TileValidationData } from './types';
 import { checkBoundingVolumes } from "./bounding-volume-validation";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
 import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
 import { checkLOD } from "./lod-validation";
-import { getBoundingType } from './bounding-volume-type';
+import { getBoundingType } from './get-volume-type';
 
 const NO_DATA = "No Data";
 
@@ -15,11 +17,12 @@ const FLOAT_VALUES_FIXED_COUNT = 3;
 
 /**
  * Return short tile info
- * @param {object} tileHeader
- * @returns {object} - short tile info for debugging purposes
+ * @param tileHeader
+ * @returns short tile info for debugging purposes
  */
-export const getShortTileDebugInfo = (tileHeader) => {
+export const getShortTileDebugInfo = (tileHeader: Tile3D): { [key: string]: string | number } => {
   const childrenInfo = getChildrenInfo(tileHeader.header.children);
+  // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
   const distanceToCamera = formatFloatNumber(tileHeader._distanceToCamera);
 
   return {
@@ -29,17 +32,19 @@ export const getShortTileDebugInfo = (tileHeader) => {
     "Children Ids": childrenInfo.ids,
     "Vertex count": tileHeader.content.vertexCount || NO_DATA,
     "Distance to camera": distanceToCamera !== null ?
+      // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
       `${formatFloatNumber(tileHeader._distanceToCamera)} m` : NO_DATA
   };
 };
 
 /**
  * Return extended tile info
- * @param {object} tileHeader
- * @returns {object} - extended tile info for debugging purposes
+ * @param tileHeader
+ * @returns extended tile info for debugging purposes
  */
-export const getTileDebugInfo = (tileHeader) => {
+export const getTileDebugInfo = (tileHeader: Tile3D): { [key: string]: string | number | boolean } => {
   const LODMetricValue = formatFloatNumber(tileHeader.lodMetricValue);
+  // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
   const screenSpaceError = formatFloatNumber(tileHeader._screenSpaceError);
 
   return {
@@ -56,11 +61,11 @@ export const getTileDebugInfo = (tileHeader) => {
 
 /**
  * Generates list of tile warnings
- * @param {object} tile
- * @returns {{message: {type: string, title: string}}[]} -List of warnings
+ * @param tile
+ * @returns List of warnings
  */
-export const validateTile = (tile) => {
-  const tileWarnings = [];
+export const validateTile = (tile: Tile3D): TileWarning[] => {
+  const tileWarnings: TileWarning[] = [];
 
   if (tile.parent) {
     checkBoundingVolumes(tile, tileWarnings);
@@ -72,10 +77,9 @@ export const validateTile = (tile) => {
 
 /**
  * Do float numbers formatting based on fixed value
- * @param {number} tile
- * @returns {number}
+ * @param tile
  */
-const formatFloatNumber = (value) => {
+const formatFloatNumber = (value: number): string | null => {
   if (!value) {
     return null;
   }
@@ -85,10 +89,10 @@ const formatFloatNumber = (value) => {
 
 /**
  * Get tile's children info (count, ids)
- * @param {array} children
- * @returns {object} - children data
+ * @param children
+ * @returns children data
  */
-const getChildrenInfo = (children) => {
+const getChildrenInfo = (children: Tile3D[]): { count: number | string, ids: string } => {
   if (!children || !children.length) {
     return {
       count: NO_DATA,
@@ -110,10 +114,9 @@ const getChildrenInfo = (children) => {
 
 /**
  * Check if geometry of tile inside bounding volume
- * @param {object} tile
- * @returns {boolean}
+ * @param tile
  */
-export const isTileGeometryInsideBoundingVolume = (tile) => {
+export const isTileGeometryInsideBoundingVolume = (tile: Tile3D): boolean => {
   const tileData = getTileDataForValidation(tile);
   const { positions, boundingVolume } = tileData;
 
@@ -122,10 +125,9 @@ export const isTileGeometryInsideBoundingVolume = (tile) => {
 
 /**
  * Generates data for tile validation
- * @param {object} tile
- * @returns {object} - {positions, boundingType, boundingVolume}
+ * @param tile
  */
-const getTileDataForValidation = (tile) => {
+const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
   if (
     !tile.content &&
     !tile.content.attributes &&

@@ -1,4 +1,6 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import type { TileWarning } from "../../utils/types";
+
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
 import { StaticMap } from "react-map-gl";
@@ -250,7 +252,7 @@ export const DebugApp = () => {
   const [tileInfo, setTileInfo] = useState(null);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
-  const [warnings, setWarnings] = useState([]);
+  const [warnings, setWarnings] = useState<TileWarning[]>([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
   const [sublayers, setSublayers] = useState([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());

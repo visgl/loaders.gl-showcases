@@ -1,10 +1,13 @@
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { TileWarning, TileValidationData } from "./types";
+
 import {
   OrientedBoundingBox,
   BoundingSphere,
   makeOrientedBoundingBoxFromPoints,
   makeBoundingSphereFromPoints,
 } from "@math.gl/culling";
-import { getBoundingType } from "./bounding-volume-type";
+import { getBoundingType } from "./get-volume-type";
 import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
 import { getTileObbVertices, isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
 import { convertPositionsToVectors } from "./convert-positions-to-vectors";
@@ -13,11 +16,10 @@ import { BOUNDING_VOLUME_WARNING_TYPE } from "../constants/map-styles";
 
 /**
 * Do validation of tile's Bounding Volumes
-* @param {object} tile
-* @param {array} tileWarnings
-* @returns {void}
+* @param tile
+* @param tileWarnings
 */
-export const checkBoundingVolumes = (tile, tileWarnings) => {
+export const checkBoundingVolumes = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
   const boundingType = getBoundingType(tile);
 
   switch (boundingType) {
@@ -36,10 +38,9 @@ export const checkBoundingVolumes = (tile, tileWarnings) => {
 
 /**
  * Check if bounding volume made of geometry is more suitable than tile bounding volume
- * @param {object} tile
- * @returns {boolean}
+ * @param tile
  */
-export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
+export const isGeometryBoundingVolumeMoreSuitable = (tile: Tile3D): boolean => {
   const tileData = getTileDataForValidation(tile);
   const { positions, boundingVolume } = tileData;
   const cartographicPositions = convertPositionsToVectors(positions);
@@ -71,10 +72,9 @@ export const isGeometryBoundingVolumeMoreSuitable = (tile) => {
 
 /**
  * Generates data for tile validation
- * @param {object} tile
- * @returns {object} - {positions, boundingType, boundingVolume}
+ * @param tile
  */
-const getTileDataForValidation = (tile) => {
+const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
   if (
     !tile.content &&
     !tile.content.attributes &&
@@ -92,12 +92,11 @@ const getTileDataForValidation = (tile) => {
 
 /**
  * Do validation of tile OBB
- * @param {object} tile
- * @param {array} tileWarnings
- * @returns {void}
+ * @param tile
+ * @param tileWarnings
  * Check if child OBB inside parent OBB
  */
-const validateObb = (tile, tileWarnings) => {
+const validateObb = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
   const parentObb = createBoundingVolumeFromTile(tile.parent, OBB);
   const tileVertices = getTileObbVertices(tile);
   const isTileObbInsideParentObb = isAllVerticesInsideBoundingVolume(
@@ -115,12 +114,11 @@ const validateObb = (tile, tileWarnings) => {
 
 /**
  * Do validation of tile MBS
- * @param {object} tile
- * @param {array} tileWarnings
- * @returns {void}
+ * @param tile
+ * @param tileWarnings
  * Check if child MBS inside parent MBS
  */
-const validateMbs = (tile, tileWarnings) => {
+const validateMbs = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
   const tileMbs = createBoundingVolumeFromTile(tile, MBS);
   const parentMbs = createBoundingVolumeFromTile(tile.parent, MBS);
 

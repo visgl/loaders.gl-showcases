@@ -1,11 +1,13 @@
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { MeshAttribute } from '@loaders.gl/schema';
+import type { GeometryVSTextureMetrics } from './types';
 import { Vector3 } from "@math.gl/core";
 
 /**
  * Generates geometry vs texture metrics
- * @param {object} tile
- * @returns {object} - List of warnings
+ * @param tile
  */
-export const getGeometryVsTextureMetrics = (tile) => {
+export const getGeometryVsTextureMetrics = (tile: Tile3D): GeometryVSTextureMetrics | null => {
   if (!(tile && tile.content && tile.content.attributes)) {
     return null;
   }
@@ -65,12 +67,12 @@ export const getGeometryVsTextureMetrics = (tile) => {
 /**
  * Calculate triangle vertices of tile
  * @param {object} attribute
- * @param {number} offset
- * @returns {number}
+ * @param offset
  */
-const getTriangleVertices = (attribute, offset) => {
+const getTriangleVertices = (attribute: MeshAttribute, offset: number): Vector3[] => {
   const geometryVertices: Vector3[] = [];
   for (let i = 0; i < 3; i++) {
+    // @ts-expect-error - This expression is not constructable. Type 'Function' has no construct signatures.
     const typedArray = new attribute.value.constructor(3);
     const subarray = attribute.value.subarray(
       (offset + i) * attribute.size,
@@ -85,10 +87,9 @@ const getTriangleVertices = (attribute, offset) => {
 
 /**
  * Calculates triangles area based on vertices
- * @param {array} vertices
- * @returns {number}
+ * @param vertices
  */
-const getTriangleArea = (vertices) => {
+const getTriangleArea = (vertices: Vector3[]): number => {
   const edge1 = new Vector3(
     vertices[0].x,
     vertices[0].y,
@@ -108,9 +109,8 @@ const getTriangleArea = (vertices) => {
 /**
  * Calculate texture size of tile
  * @param {object} tile
- * @returns {number}
  */
-const getTextureSize = (tile) => {
+const getTextureSize = (tile: Tile3D): number => {
   if (!tile.content) {
     return 0;
   }
@@ -122,6 +122,7 @@ const getTextureSize = (tile) => {
         .image) ||
     tile.content.texture ||
     null;
+
   if (!texture) {
     return 0;
   }

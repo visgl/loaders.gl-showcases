@@ -1,12 +1,14 @@
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { TileWarning } from './types';
 import { LOD_WARNING_TYPE, PARENT_LOD_WARNING_TYPE } from "../constants/map-styles";
+
 /**
  * Check LOD value of tile
- * @param {object} tile
- * @param {array} tileWarnings
- * @returns {void}
+ * @param  tile
+ * @param tileWarnings
  * LOD spec https://github.com/Esri/i3s-spec/blob/master/format/LevelofDetail.md
  */
-export const checkLOD = (tile, tileWarnings) => {
+export const checkLOD = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
   const divergence = 0.05;
   const tileLodRatio = tile.lodMetricValue / tile.boundingVolume.radius;
   const parentLodRatio =
