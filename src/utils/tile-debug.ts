@@ -1,10 +1,10 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning, TileValidationData } from './types';
+import type { TileWarning } from './types';
 import { checkBoundingVolumes } from "./bounding-volume-validation";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
-import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
 import { checkLOD } from "./lod-validation";
 import { getBoundingType } from './get-volume-type';
+import { getTileDataForValidation } from "./tile-validation-data";
 
 const NO_DATA = "No Data";
 
@@ -122,24 +122,3 @@ export const isTileGeometryInsideBoundingVolume = (tile: Tile3D): boolean => {
 
   return isAllVerticesInsideBoundingVolume(boundingVolume, positions);
 };
-
-/**
- * Generates data for tile validation
- * @param tile
- */
-const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
-  if (
-    !tile.content &&
-    !tile.content.attributes &&
-    !tile.content.attributes.POSITION
-  ) {
-    throw new Error("Validator - There are no positions in tile");
-  }
-
-  const boundingType = getBoundingType(tile);
-  const positions = tile.content.attributes.positions.value;
-
-  const boundingVolume = createBoundingVolumeFromTile(tile, boundingType);
-  return { positions, boundingType, boundingVolume };
-};
-

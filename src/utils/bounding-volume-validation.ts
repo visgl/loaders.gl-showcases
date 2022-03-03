@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning, TileValidationData } from "./types";
+import type { TileWarning } from "./types";
 
 import {
   OrientedBoundingBox,
@@ -10,6 +10,7 @@ import {
 import { getBoundingType } from "./get-volume-type";
 import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
 import { getTileObbVertices, isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
+import { getTileDataForValidation } from "./tile-validation-data";
 import { convertPositionsToVectors } from "./convert-positions-to-vectors";
 import { OBB, MBS } from '../constants/bounding-volumes';
 import { BOUNDING_VOLUME_WARNING_TYPE } from "../constants/map-styles";
@@ -68,26 +69,6 @@ export const isGeometryBoundingVolumeMoreSuitable = (tile: Tile3D): boolean => {
   }
 
   throw new Error("Unsupported bounding volume type")
-};
-
-/**
- * Generates data for tile validation
- * @param tile
- */
-const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
-  if (
-    !tile.content &&
-    !tile.content.attributes &&
-    !tile.content.attributes.POSITION
-  ) {
-    throw new Error("Validator - There are no positions in tile");
-  }
-
-  const boundingType = getBoundingType(tile);
-  const positions = tile.content.attributes.positions.value;
-
-  const boundingVolume = createBoundingVolumeFromTile(tile, boundingType);
-  return { positions, boundingType, boundingVolume };
 };
 
 /**
