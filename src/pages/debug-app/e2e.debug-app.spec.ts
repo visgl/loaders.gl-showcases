@@ -100,5 +100,5 @@ describe("DebugApp", () => {
     for await (const item of volumeColorOptionsValue) {
       await page.select("#volume-color", item);   
     }
-  }, 10000);
+  }, 20000);
 });
