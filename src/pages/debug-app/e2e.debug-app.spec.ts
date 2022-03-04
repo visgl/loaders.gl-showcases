@@ -7,8 +7,8 @@ describe("DebugApp", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto("http://localhost:3000/#/debug");
-    await page.waitForSelector("#view-minimap")
+    await page.goto("http://localhost:3000/debug");
+    await page.waitForSelector("#view-minimap");
   });
 
   afterAll(() => browser.close());
@@ -44,7 +44,7 @@ describe("DebugApp", () => {
     await page.click("#BuildingExplorerToggle~span");
     await page.click("#terrain-layer-switch~span");
     await page.click("#select-map");
-  }, 10000);
+  }, 20000);
 
   it("Map Info tab works", async () => {
     await page.click("#map-info");
@@ -54,12 +54,12 @@ describe("DebugApp", () => {
   it("Memory Usage tab works", async () => {
     await page.click("#memory-usage");
     await page.waitForSelector("#stats-widget", {visible: true});
-  }, 10000);
+  });
 
   it("Validator tab works", async () => {
     await page.click("#validator");
     await page.waitForSelector("#semantic-validator");
-  }, 10000);
+  });
 
   it("Debug panel works", async () => {
     await page.click("#debug-panel");
@@ -100,5 +100,5 @@ describe("DebugApp", () => {
     for await (const item of volumeColorOptionsValue) {
       await page.select("#volume-color", item);   
     }
-  }, 20000);
+  }, 40000);
 });
