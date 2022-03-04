@@ -782,7 +782,7 @@ export const DebugApp = () => {
   const renderMemory = () => {
     const { showMemory } = debugOptions;
     return (
-      <StatsWidgetWrapper showMemory={showMemory}>
+      <StatsWidgetWrapper id="stats-widget" showMemory={showMemory}>
         {renderStats()}
       </StatsWidgetWrapper>
     );
