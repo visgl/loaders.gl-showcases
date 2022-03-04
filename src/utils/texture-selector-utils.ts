@@ -1,3 +1,5 @@
+// TODO Need to separate multiple export functions from file and split logic for better testing
+
 // The tiles list in the tileset mutates continually.
 // We need to store tiles when we replace texture
 const tiles = {};
