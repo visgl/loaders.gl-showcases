@@ -1,8 +1,7 @@
-import type { TileValidationData } from "./types";
+import type { TileValidationData } from "../../types";
 import type { Tile3D } from "@loaders.gl/tiles";
 
-import { getBoundingType } from "./get-volume-type";
-import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
+import { getBoundingType, createBoundingVolumeFromTile } from "../../bounding-volume";
 
 /**
  * Generates data for tile validation
@@ -20,6 +19,6 @@ export const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
   const boundingType = getBoundingType(tile);
   const positions = tile.content.attributes.positions.value;
 
-  const boundingVolume = createBoundingVolumeFromTile(tile, boundingType);
+  const boundingVolume = createBoundingVolumeFromTile(tile);
   return { positions, boundingType, boundingVolume };
 };

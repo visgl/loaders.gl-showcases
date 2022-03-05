@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning } from "./types";
+import type { TileWarning } from "../../types";
 
 import {
   OrientedBoundingBox,
@@ -7,13 +7,12 @@ import {
   makeOrientedBoundingBoxFromPoints,
   makeBoundingSphereFromPoints,
 } from "@math.gl/culling";
-import { getBoundingType } from "./get-volume-type";
-import { createBoundingVolumeFromTile } from "./bounding-volume-from-tile";
-import { getTileObbVertices, isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
+import { createBoundingVolumeFromTile, getBoundingType } from "../../bounding-volume";
+import { getTileObbVertices, isAllVerticesInsideBoundingVolume } from "../../bounding-volume-vertices";
 import { getTileDataForValidation } from "./tile-validation-data";
-import { convertPositionsToVectors } from "./convert-positions-to-vectors";
-import { OBB, MBS } from '../constants/bounding-volumes';
-import { BOUNDING_VOLUME_WARNING_TYPE } from "../constants/map-styles";
+import { convertPositionsToVectors } from "../../convert-positions-to-vectors";
+import { OBB, MBS } from '../../../constants/bounding-volumes';
+import { BOUNDING_VOLUME_WARNING_TYPE } from "../../../constants/map-styles";
 
 /**
 * Do validation of tile's Bounding Volumes
@@ -78,7 +77,7 @@ export const isGeometryBoundingVolumeMoreSuitable = (tile: Tile3D): boolean => {
  * Check if child OBB inside parent OBB
  */
 const validateObb = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
-  const parentObb = createBoundingVolumeFromTile(tile.parent, OBB);
+  const parentObb = createBoundingVolumeFromTile(tile.parent);
   const tileVertices = getTileObbVertices(tile);
   const isTileObbInsideParentObb = isAllVerticesInsideBoundingVolume(
     parentObb,
@@ -100,8 +99,8 @@ const validateObb = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
  * Check if child MBS inside parent MBS
  */
 const validateMbs = (tile: Tile3D, tileWarnings: TileWarning[]): void => {
-  const tileMbs = createBoundingVolumeFromTile(tile, MBS);
-  const parentMbs = createBoundingVolumeFromTile(tile.parent, MBS);
+  const tileMbs = createBoundingVolumeFromTile(tile);
+  const parentMbs = createBoundingVolumeFromTile(tile.parent);
 
   if (tileMbs instanceof BoundingSphere && parentMbs instanceof BoundingSphere) {
     const distanceBetweenCenters = tileMbs.center.distanceTo(parentMbs.center);

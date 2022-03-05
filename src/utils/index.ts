@@ -32,8 +32,8 @@ export {
 
 export {
   getGeometryVsTextureMetrics
-} from './geometry-vs-texture-metrics';
+} from './validation-utils/attributes-validation/geometry-vs-texture-metrics';
 
 export {
   isGeometryBoundingVolumeMoreSuitable
-} from './bounding-volume-validation';
+} from './validation-utils/tile-validation/bounding-volume-validation';

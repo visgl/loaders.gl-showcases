@@ -1,6 +1,7 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning } from './types';
-import { LOD_WARNING_TYPE, PARENT_LOD_WARNING_TYPE } from "../constants/map-styles";
+import type { TileWarning } from '../../types';
+
+import { LOD_WARNING_TYPE, PARENT_LOD_WARNING_TYPE } from "../../../constants/map-styles";
 
 /**
  * Check LOD value of tile

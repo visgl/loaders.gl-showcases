@@ -1,4 +1,5 @@
 import type { Tileset3D } from "@loaders.gl/tiles";
+
 import { Stats } from "@probe.gl/stats";
 
 export const initStats = (url = ""): Stats => {

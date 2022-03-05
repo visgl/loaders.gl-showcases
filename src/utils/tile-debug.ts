@@ -1,10 +1,11 @@
 import type { Tile3D } from "@loaders.gl/tiles";
 import type { TileWarning } from './types';
-import { checkBoundingVolumes } from "./bounding-volume-validation";
+
+import { checkBoundingVolumes } from "./validation-utils/tile-validation/bounding-volume-validation";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
-import { checkLOD } from "./lod-validation";
-import { getBoundingType } from './get-volume-type';
-import { getTileDataForValidation } from "./tile-validation-data";
+import { checkLOD } from "./validation-utils/tile-validation/lod-validation";
+import { getBoundingType } from "./bounding-volume";
+import { getTileDataForValidation } from "./validation-utils/tile-validation/tile-validation-data";
 
 const NO_DATA = "No Data";
 

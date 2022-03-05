@@ -2,6 +2,8 @@ import type { MeshAttribute } from '@loaders.gl/schema';
 
 import { Vector3 } from "@math.gl/core";
 
+const scratchVector = new Vector3();
+
 /**
  * Calculate triangle vertices of tile
  * @param attribute
@@ -17,8 +19,9 @@ export const getTriangleVertices = (attribute: MeshAttribute, offset: number): V
       (offset + i) * attribute.size + attribute.size
     );
     typedArray.set(subarray);
+    scratchVector.set(typedArray[0], typedArray[1], typedArray[2]);
 
-    geometryVertices.push(new Vector3(typedArray));
+    geometryVertices.push(scratchVector);
   }
   return geometryVertices;
 };
@@ -28,16 +31,18 @@ export const getTriangleVertices = (attribute: MeshAttribute, offset: number): V
  * @param vertices
  */
 export const getTriangleArea = (vertices: Vector3[]): number => {
-  const edge1 = new Vector3(
+  const edge1 = scratchVector.set(
     vertices[0].x,
     vertices[0].y,
     vertices[0].z
   ).subtract(vertices[1]);
-  const edge2 = new Vector3(
+
+  const edge2 = scratchVector.set(
     vertices[1].x,
     vertices[1].y,
     vertices[1].z
   ).subtract(vertices[2]);
+
   const angle = edge1.angle(edge2);
   const area = 0.5 * edge1.magnitude() * edge2.magnitude() * Math.sin(angle);
 
