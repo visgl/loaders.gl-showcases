@@ -127,6 +127,7 @@ export const DebugPanel = ({
       <CheckboxOption>
         <Option>Color</Option>
         <DropDown
+          id="volume-color"
           value={boundingVolumeColorMode}
           onChange={(evt) =>
             onDebugOptionsChange({
@@ -152,7 +153,8 @@ export const DebugPanel = ({
     return (
       <CheckboxOption>
         <Option>Type</Option>
-        <DropDown
+        <DropDown 
+          id="volume-type"
           value={boundingVolumeType}
           onChange={(evt) =>
             onDebugOptionsChange({ boundingVolumeType: evt.target.value })

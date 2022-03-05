@@ -82,7 +82,7 @@ export const MapInfoPanel = ({
   const iframeStyle = getIframeStyles(showFullInfo);
 
   return (
-    <FrameWrap isMinimapShown={isMinimapShown}>
+    <FrameWrap id="map-info-panel" isMinimapShown={isMinimapShown}>
       <iframe
         id="tileset-info"
         title="tileset-info"
