@@ -1,21 +1,25 @@
 import { getTriangleVertices, getTriangleArea } from './triangles-calculation';
-import { Vector3 } from "@math.gl/core";
 
 jest.mock('@math.gl/core', () => ({
   Vector3: jest.fn()
+    .mockReturnValue({
+      test: 1,
+      set: jest.fn().mockReturnValue({
+        subtract: jest.fn().mockReturnValue({
+          angle: jest.fn().mockReturnValue(120),
+          magnitude: jest.fn().mockReturnValue(5)
+        })
+      })
+    })
 }));
 
 describe("Triangles Calculation - getTriangleVertices", () => {
   test("Should return geometry vertices", () => {
-    Vector3.mockReturnValue({
-      test: 1,
-      set: jest.fn()
-    })
-
     const attribute = {
       value: {
-        subarray: jest.fn(),
+        subarray: jest.fn().mockReturnValue('subarray'),
         constructor: jest.fn().mockReturnValue({
+          test: 1,
           set: jest.fn()
         })
       },
@@ -38,14 +42,6 @@ describe("Triangles Calculation - getTriangleArea", () => {
       { x: 2, y: 2, z: 2 }
     ];
 
-    Vector3.mockReturnValue({
-      set: jest.fn().mockReturnValue({
-        subtract: jest.fn().mockReturnValue({
-          angle: jest.fn().mockReturnValue(120),
-          magnitude: jest.fn().mockReturnValue(5)
-        })
-      })
-    });
     const result = getTriangleArea(vertices);
     expect(result).toStrictEqual(7.257639802653928);
   });

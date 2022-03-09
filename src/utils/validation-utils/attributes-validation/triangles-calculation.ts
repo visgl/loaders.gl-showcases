@@ -2,22 +2,24 @@ import type { MeshAttribute } from '@loaders.gl/schema';
 
 import { Vector3 } from "@math.gl/core";
 
+const scratchVector = new Vector3();
+
 /**
  * Calculate triangle vertices of tile
  * @param attribute
  * @param offset
  */
 export const getTriangleVertices = (attribute: MeshAttribute, offset: number): Vector3[] => {
-  const scratchVector = new Vector3();
-
   const geometryVertices: Vector3[] = [];
   for (let i = 0; i < 3; i++) {
     // @ts-expect-error - This expression is not constructable. Type 'Function' has no construct signatures.
     const typedArray = new attribute.value.constructor(3);
+    // console.log('typedArray----', typedArray);
     const subarray = attribute.value.subarray(
       (offset + i) * attribute.size,
       (offset + i) * attribute.size + attribute.size
     );
+
     typedArray.set(subarray);
     scratchVector.set(typedArray[0], typedArray[1], typedArray[2]);
 
@@ -31,8 +33,6 @@ export const getTriangleVertices = (attribute: MeshAttribute, offset: number): V
  * @param vertices
  */
 export const getTriangleArea = (vertices: Vector3[]): number => {
-  const scratchVector = new Vector3();
-
   const edge1 = scratchVector.set(
     vertices[0].x,
     vertices[0].y,
