@@ -6,7 +6,7 @@ module.exports = {
     args: ["--no-sandbox"],
   },
   server: {
-    command: "yarn serve build",
+    command: "yarn serve -c serve.config.json",
     port: 3000,
     launchTimeout: 180000,
   },

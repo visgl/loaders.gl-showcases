@@ -123,7 +123,7 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
   };
 
   return (
-    <SemanticValidatorContainer>
+    <SemanticValidatorContainer id="semantic-validator">
       {warnings && Boolean(warnings.length) ? (
         renderWarnings(warnings)
       ) : (

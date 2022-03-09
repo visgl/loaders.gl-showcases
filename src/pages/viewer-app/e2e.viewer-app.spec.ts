@@ -7,7 +7,7 @@ describe("ViewerApp", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto("http://localhost:3000/#/viewer");
+    await page.goto("http://localhost:3000/viewer");
   });
 
   afterAll(() => browser.close());
@@ -37,7 +37,7 @@ describe("ViewerApp", () => {
     }
 
     await page.click("#terrain-layer-switch~span");
-  }, 10000);
+  });
 
   it("Contains building explorer", async () => {
     await page.select("#tilesets", "Building");
@@ -46,7 +46,7 @@ describe("ViewerApp", () => {
     await page.click("#CheckBox220-icon");
     await page.click("#CheckBox230-icon");
     await page.click("#CheckBox240-icon");
-  }, 10000);
+  }, 20000);
 
   it("Contains statistic panel", async () => {
     await page.waitForSelector("#stats-panel");
