@@ -59,7 +59,7 @@ describe("Tile Debug - getShortTileDebugInfo", () => {
     expect(result).toStrictEqual(expectedResult);
   });
 
-  test("Should return 'No Data' if some fields are not founded", () => {
+  test("Should return 'No Data' if some fields are not found", () => {
     const expectedResult = {
       'Tile Id': 'test',
       Type: 'No Data',
@@ -132,7 +132,7 @@ describe("Tile Debug - getTileDebugInfo", () => {
     expect(result).toStrictEqual(expectedResult);
   });
 
-  test("Should return 'No Data' if some fields are not founded", () => {
+  test("Should return 'No Data' if some fields are not found", () => {
     const expectedResult = {
       "Bounding Type": "Minimum Bounding Sphere",
       "Children Count": "No Data",
