@@ -14,10 +14,12 @@ export const getTriangleVertices = (attribute: MeshAttribute, offset: number): V
   for (let i = 0; i < 3; i++) {
     // @ts-expect-error - This expression is not constructable. Type 'Function' has no construct signatures.
     const typedArray = new attribute.value.constructor(3);
+    // console.log('typedArray----', typedArray);
     const subarray = attribute.value.subarray(
       (offset + i) * attribute.size,
       (offset + i) * attribute.size + attribute.size
     );
+
     typedArray.set(subarray);
     scratchVector.set(typedArray[0], typedArray[1], typedArray[2]);
 
