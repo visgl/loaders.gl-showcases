@@ -69,9 +69,6 @@ export const getGeometryVsTextureMetrics = (tile: Tile3D): GeometryVSTextureMetr
  * @param {object} tile
  */
 const getTextureSize = (tile: Tile3D): number => {
-  if (!tile.content) {
-    return 0;
-  }
   const texture =
     (tile.content.material &&
       tile.content.material.pbrMetallicRoughness &&
