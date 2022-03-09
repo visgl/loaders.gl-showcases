@@ -8,16 +8,13 @@ import { getBoundingType, createBoundingVolumeFromTile } from "../../bounding-vo
  * @param tile
  */
 export const getTileDataForValidation = (tile: Tile3D): TileValidationData => {
-  if (
-    !tile.content &&
-    !tile.content.attributes &&
-    !tile.content.attributes.POSITION
-  ) {
+  const positions = tile?.content?.attributes?.positions?.value;
+
+  if (!positions) {
     throw new Error("Validator - There are no positions in tile");
   }
 
   const boundingType = getBoundingType(tile);
-  const positions = tile.content.attributes.positions.value;
 
   const boundingVolume = createBoundingVolumeFromTile(tile);
   return { positions, boundingType, boundingVolume };
