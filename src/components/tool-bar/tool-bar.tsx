@@ -121,7 +121,7 @@ export const ToolBar = ({
   onDebugOptionsChange,
 }) => {
   const renderMemoryButton = () => (
-    <TooltipCard>
+    <TooltipCard id="memory-usage">
       <ToolButton
         active={showMemory}
         onClick={() => onDebugOptionsChange({ showMemory: !showMemory })}
@@ -134,7 +134,7 @@ export const ToolBar = ({
   );
 
   const renderValidatorButton = () => (
-    <TooltipCard>
+    <TooltipCard id="validator">
       <ToolButton
         active={semanticValidator}
         onClick={() =>
@@ -149,7 +149,7 @@ export const ToolBar = ({
   );
 
   const renderDebugButton = () => (
-    <TooltipCard>
+    <TooltipCard id="debug-panel">
       <ToolButton
         active={debugPanel}
         onClick={() => onDebugOptionsChange({ debugPanel: !debugPanel })}
@@ -161,7 +161,7 @@ export const ToolBar = ({
     </TooltipCard>
   );
   const renderMapButton = () => (
-    <TooltipCard>
+    <TooltipCard id="select-map">
       <ToolButton
         active={controlPanel}
         onClick={() => onDebugOptionsChange({ controlPanel: !controlPanel })}
@@ -174,7 +174,7 @@ export const ToolBar = ({
   );
 
   const renderMapInfoButton = () => (
-    <TooltipCard>
+    <TooltipCard id="map-info">
       <ToolButton
         active={showFullInfo}
         onClick={() => onDebugOptionsChange({ showFullInfo: !showFullInfo })}
