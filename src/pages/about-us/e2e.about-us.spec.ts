@@ -7,7 +7,7 @@ describe("AboutUs", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto("http://localhost:3000/#/about-us");
+    await page.goto("http://localhost:3000/about-us");
   });
 
   afterAll(() => browser.close());

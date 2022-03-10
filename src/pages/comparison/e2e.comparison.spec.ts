@@ -7,7 +7,7 @@ describe("Comparison", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto("http://localhost:3000/#/comparison");
+    await page.goto("http://localhost:3000/comparison");
   });
 
   afterAll(() => browser.close());
