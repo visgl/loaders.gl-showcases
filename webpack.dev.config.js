@@ -78,6 +78,7 @@ module.exports = (env) => {
           warnings: false,
         },
       },
+      historyApiFallback: true
     },
     module: {
       rules: [

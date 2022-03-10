@@ -1,4 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
+
 import { Vector3, Matrix4 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
 
@@ -65,9 +66,9 @@ export function generateBinaryNormalsDebugData(tile: Tile3D): NormalsDebugData |
 
 /**
  * @param index
- * @param {object} data
- * @param {number} trianglesPercentage - percent of triangles to show normals
- * @returns {array} - source position in cartographic coordinates
+ * @param data
+ * @param trianglesPercentage - percent of triangles to show normals
+ * @returns source position in cartographic coordinates
  */
 export function getNormalSourcePosition(index: number, data: PositionsData, trianglesPercentage: number): Vector3 | Record<string, unknown> {
   const positions = data.src.positions;

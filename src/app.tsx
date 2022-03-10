@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate, HashRouter } from "react-router-dom";
+import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header } from "./components";
 import * as Pages from "./pages";
@@ -30,7 +30,7 @@ export const App = () => {
   return (
     <>
       <GlobalStyle />
-      <HashRouter>
+      <BrowserRouter>
         <Header />
         <ContentWrapper>
           <Routes>
@@ -45,7 +45,7 @@ export const App = () => {
             <Route path={"about-us"} element={<Pages.AboutUs />} />
           </Routes>
         </ContentWrapper>
-      </HashRouter>
+      </BrowserRouter>
     </>
   );
 };
