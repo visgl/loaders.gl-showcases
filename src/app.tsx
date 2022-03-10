@@ -41,6 +41,8 @@ export const App = () => {
             <Route path={"dashboard"} element={<Pages.Dashboard />} />
             <Route path={"viewer"} element={<Pages.ViewerApp />} />
             <Route path={"debug"} element={<Pages.DebugApp />} />
+            <Route path={"comparison"} element={<Pages.Comparison />} />
+            <Route path={"about-us"} element={<Pages.AboutUs />} />
           </Routes>
         </ContentWrapper>
       </HashRouter>
