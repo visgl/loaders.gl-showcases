@@ -27,14 +27,14 @@ span:nth-child(2) {
     animation: ${pulse} .4s ease 2s infinite alternate;
 }
 span:nth-child(3) {
-    animation: ${pulse} .4s ease 4s infinite alternate;
+    animation: ${pulse} .4s ease 3s infinite alternate;
 }      
 `;
 
 export const ConstructionInfo = () => {
   return (
-    <Info>
-      <InfoTitle>
+    <Info id="construction-info">
+      <InfoTitle id="construction-title">
         We are working on it <span>.</span>
         <span>.</span>
         <span>.</span>
