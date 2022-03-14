@@ -11,3 +11,4 @@ export { SemanticValidator } from "./semantic-validator/semantic-validator";
 export { ToolBar } from "./tool-bar/tool-bar";
 export { TileValidator } from "./tile-validator/tile-validator";
 export { AttributesTooltip } from "./attributes-tooltip/attributes-tooltip";
+export { ConstructionInfo } from "./construction-info/construction-info"
