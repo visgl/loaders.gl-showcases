@@ -17,5 +17,5 @@ describe("Comparison", () => {
     await page.waitForSelector("#construction-title");
     const text = await page.$eval("#construction-title", (e) => e.textContent);
     expect(text).toEqual("We are working on it ...")
-  }, 20000);
+  });
 });
