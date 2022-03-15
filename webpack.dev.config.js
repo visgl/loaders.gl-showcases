@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const LOADERS_LOCAL_DEPENDENCY = "loaders";
 const DECK_LOCAL_DEPENDENCY = "deck";
+const LUMA_LOCAL_DEPENDENCY = "luma";
 
 const DECK_LINK_ALIASES = {
   "@deck.gl/core": path.resolve(__dirname, "../deck.gl/modules/core/src"),
@@ -26,6 +27,11 @@ const LOADERS_LINK_ALIASES = {
   ),
 };
 
+const LUMA_LINK_ALIASES = {
+  "@luma.gl/core": path.resolve(__dirname, "../luma.gl/modules/core/src"),
+  "@luma.gl/webgl": path.resolve(__dirname, "../luma.gl/modules/webgl/src"),
+};
+
 function getAliasesForLocalDependencies(env) {
   let aliases = {
     // We need to have 1 `React` instance when running `yarn start-local-deck`
@@ -35,6 +41,7 @@ function getAliasesForLocalDependencies(env) {
   const possibleLocalDependencies = [
     LOADERS_LOCAL_DEPENDENCY,
     DECK_LOCAL_DEPENDENCY,
+    LUMA_LOCAL_DEPENDENCY,
   ];
 
   for (const dependency of possibleLocalDependencies) {
@@ -48,6 +55,9 @@ function getAliasesForLocalDependencies(env) {
         case DECK_LOCAL_DEPENDENCY:
           aliases = { ...aliases, ...DECK_LINK_ALIASES };
           break;
+        case LUMA_LOCAL_DEPENDENCY:
+          aliases = { ...aliases, ...LUMA_LINK_ALIASES };
+          break;
         default:
       }
     }
@@ -56,7 +66,7 @@ function getAliasesForLocalDependencies(env) {
 }
 
 module.exports = (env) => {
-  const transpileOnly = env["deck"] || env["loaders"];
+  const transpileOnly = env["deck"] || env["loaders"] || env["luma"];
 
   return {
     mode: "development",
@@ -78,7 +88,7 @@ module.exports = (env) => {
           warnings: false,
         },
       },
-      historyApiFallback: true
+      historyApiFallback: true,
     },
     module: {
       rules: [
