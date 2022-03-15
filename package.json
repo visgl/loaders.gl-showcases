@@ -8,6 +8,7 @@
     "start-local-deck": "webpack serve --config ./webpack.dev.config.js --env deck",
     "start-local-loaders": "webpack serve --config ./webpack.dev.config.js --env loaders",
     "start-local-loaders-deck": "webpack serve --config ./webpack.dev.config.js --env loaders --env deck",
+    "start-local-luma": "webpack serve --config ./webpack.dev.config.js --env luma",
     "build": "webpack --config ./webpack.prod.config.js",
     "test:unit": "jest --testPathIgnorePatterns=e2e.*.spec.ts",
     "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
