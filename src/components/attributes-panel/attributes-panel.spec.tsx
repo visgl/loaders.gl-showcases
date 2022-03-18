@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import { AttributesPanel } from "./attributes-panel";
-import {TileValidator} from "../tile-validator/tile-validator";
 import userEvent from "@testing-library/user-event";
 
 describe("Attributes Panel", () => {
