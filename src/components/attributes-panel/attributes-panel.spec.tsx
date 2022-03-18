@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { AttributesPanel } from "./attributes-panel";
+import {TileValidator} from "../tile-validator/tile-validator";
 import userEvent from "@testing-library/user-event";
 
 describe("Attributes Panel", () => {
@@ -30,6 +31,20 @@ describe("Attributes Panel", () => {
     expect(getColumnheader("OBJECTID")).toBeInTheDocument();
     userEvent.click(button);
     expect(handleClosePanel).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should render attributes panel with children data", () => {
+    const handleClosePanel = jest.fn();
+    const {container} = render(
+      <AttributesPanel
+        title={""}
+        attributesObject={{}}
+        handleClosePanel={handleClosePanel}>
+        {"Some Text"}
+      </AttributesPanel>
+    );
+
+    expect(container).not.toBeEmptyDOMElement();
   });
 
   it("Should render attributes panel without data", () => {
