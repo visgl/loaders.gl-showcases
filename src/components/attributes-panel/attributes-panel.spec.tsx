@@ -32,6 +32,20 @@ describe("Attributes Panel", () => {
     expect(handleClosePanel).toHaveBeenCalledTimes(1);
   });
 
+  it("Should render attributes panel with children data", () => {
+    const handleClosePanel = jest.fn();
+    const {container} = render(
+      <AttributesPanel
+        title={""}
+        attributesObject={{}}
+        handleClosePanel={handleClosePanel}>
+        {"Some Text"}
+      </AttributesPanel>
+    );
+
+    expect(container).not.toBeEmptyDOMElement();
+  });
+
   it("Should render attributes panel without data", () => {
     const handleClosePanel = jest.fn();
     render(
