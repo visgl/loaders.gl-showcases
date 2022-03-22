@@ -11,7 +11,9 @@ export const sumTilesetsStats = (tilesets: Tileset3D[], stats: Stats): void => {
   stats.reset();
   for (const tileset of tilesets) {
     tileset.stats.forEach((stat) => {
-      stats.get(stat.name).addCount(stat.count);
+      if (stat.name !== "Points") {
+        stats.get(stat.name).addCount(stat.count);
+      }
     });
   }
 };
