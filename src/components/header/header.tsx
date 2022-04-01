@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import GitHubIcon from "../../../public/icons/github-icon.png";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -27,8 +28,23 @@ const MenuContainer = styled.div`
 `;
 
 const MenuLink = styled(Link)`
+  display: flex;
+  align-items: center;
   color: black;
   text-decoration: inherit;
+`;
+
+const GithubImage = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+`;
+
+const GitHubLink = styled.a`
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color black;
 `;
 
 /**
@@ -43,7 +59,10 @@ export const Header = () => {
         <MenuLink to="viewer">Viewer</MenuLink>
         <MenuLink to="debug">Debug</MenuLink>
         <MenuLink to="comparison">Comparison</MenuLink>
-        <MenuLink to="about-us">About Us</MenuLink>
+        <GitHubLink href="https://github.com/visgl/loaders.gl-showcases">
+          GitHub
+          <GithubImage src={GitHubIcon} />
+        </GitHubLink>
       </MenuContainer>
     </HeaderContainer>
   );
