@@ -29,7 +29,7 @@ describe("Dashboard", () => {
     const linksParent = await page.$("#header-links");
     expect(
       await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
-    ).toEqual(["Home", "Viewer", "Debug", "Comparison", "About Us"]);
+    ).toEqual(["Home", "Viewer", "Debug", "Comparison", "GitHub"]);
   });
 
   it("Contains dashboard canvas", async () => {
@@ -67,12 +67,12 @@ describe("Dashboard", () => {
     expect(currentUrl).toBe("http://localhost:3000/comparison");
   });
 
-  it("Should go to the About Us page", async () => {
+  it("Should go to the project GitHub page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links");
-    await page.click("a[href='/about-us']");
+    await page.click("a[href='https://github.com/visgl/loaders.gl-showcases']");
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/about-us");
+    expect(currentUrl).toBe("https://github.com/visgl/loaders.gl-showcases");
   });
 
   it("Should return from viewer page to Dashboard", async () => {
