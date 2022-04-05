@@ -6,20 +6,20 @@ import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { MapView, LinearInterpolator } from "@deck.gl/core";
 
-const TILESET_URL = `https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0`;
+const TILESET_URL = `https://tiles.arcgis.com/tiles/UE5k7ygNe76vVJgy/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 
 const INITIAL_VIEW_STATE = {
   transitionDuration: 0,
-  latitude: 40,
-  longitude: -75,
+  longitude: -122.40217135287753,
+  latitude: 37.7953686105136,
   pitch: 45,
   maxPitch: 60,
   bearing: 0,
   minZoom: 2,
   maxZoom: 30,
-  zoom: 17,
+  zoom: 18,
 };
 
 const VIEW = new MapView({
@@ -52,12 +52,7 @@ export const Dashboard = () => {
   }, []);
 
   const onTilesetLoad = () => {
-    setViewState({
-      ...INITIAL_VIEW_STATE,
-      longitude: -122.39840061627255,
-      latitude: 37.79059304582377,
-      zoom: 17,
-    });
+    setViewState(INITIAL_VIEW_STATE);
     rotateCamera();
   };
 
