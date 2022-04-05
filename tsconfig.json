@@ -14,5 +14,6 @@
     // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
     "noImplicitAny": false
   },
-  "exclude": ["src/**/*.spec.ts"]
+  "exclude": ["src/**/*.spec.ts"],
+  "include": ["./jest-setup.ts", "src", "index.d.ts"]
 }
