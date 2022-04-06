@@ -59,7 +59,7 @@ export default class ColorMap {
    * @param {string} id
    */
   _getColorByTile(id) {
-    return this.colorMap[id] || DEFAULT_COLOR;
+    return this.colorMap[id];
   }
 
   /**

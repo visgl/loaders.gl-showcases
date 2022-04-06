@@ -596,10 +596,10 @@ export const DebugApp = () => {
   };
 
   const getBoundingVolumeColor = (tile) => {
-    const { boundingVolumeColorMode } = debugOptions;
+    const { boundingVolumeColorMode, tileColorMode } = debugOptions;
 
-    const color =
-      colorMap.getColor(tile, { coloredBy: boundingVolumeColorMode }) ||
+    const color = tileColorMode > 0 ?
+      colorMap.getColor(tile, { coloredBy: boundingVolumeColorMode }) :
       DEFAULT_COLOR;
 
     return [...color, DEFAULT_BG_OPACITY];
