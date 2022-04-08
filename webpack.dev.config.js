@@ -30,6 +30,10 @@ const LOADERS_LINK_ALIASES = {
 const LUMA_LINK_ALIASES = {
   "@luma.gl/core": path.resolve(__dirname, "../luma.gl/modules/core/src"),
   "@luma.gl/webgl": path.resolve(__dirname, "../luma.gl/modules/webgl/src"),
+  "@luma.gl/experimental": path.resolve(
+    __dirname,
+    "../luma.gl/modules/experimental/src"
+  ),
 };
 
 function getAliasesForLocalDependencies(env) {
