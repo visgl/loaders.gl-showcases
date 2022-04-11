@@ -599,8 +599,7 @@ export const DebugApp = () => {
     const { boundingVolumeColorMode } = debugOptions;
 
     const color =
-      colorMap.getColor(tile, { coloredBy: boundingVolumeColorMode }) ||
-      DEFAULT_COLOR;
+      colorMap.getColor(tile, { coloredBy: boundingVolumeColorMode });
 
     return [...color, DEFAULT_BG_OPACITY];
   };
@@ -612,7 +611,7 @@ export const DebugApp = () => {
         coloredBy: tileColorMode,
         selectedTileId: selectedTile?.id,
         coloredTilesMap,
-      }) || DEFAULT_COLOR;
+      });
 
     return result;
   };

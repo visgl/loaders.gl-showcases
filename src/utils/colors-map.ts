@@ -50,7 +50,7 @@ export default class ColorMap {
       case COLORED_BY.CUSTOM:
         return this._getCustomColor(tile.id, options);
       default:
-        return DEFAULT_COLOR;
+        return this._getDefaultColor(tile.id)
     }
   }
 
@@ -87,6 +87,11 @@ export default class ColorMap {
     }
     this.colorMap[tileId] = color;
     return color;
+  }
+
+  _getDefaultColor(tileId) {
+    this.colorMap[tileId] = DEFAULT_COLOR
+    return this.colorMap[tileId];
   }
 
   /**
