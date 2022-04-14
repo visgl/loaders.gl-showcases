@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { MAP_STYLES } from "../../constants/map-styles";
+import { useSearchParams } from "react-router-dom";
 
 import { ToggleSwitch } from "../../components";
 
@@ -125,9 +126,13 @@ export const ControlPanel = ({
   debugMode = false,
 }) => {
   const [example, setExample] = useState(name);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     setExample(name);
+    if (searchParams.has("url")) return;
+    const selectedTileset = name.toLowerCase().replace(/\s/g, "-");
+    setSearchParams({tileset: selectedTileset});
   }, [name]);
 
   const handleChangeExample = (event) => {
