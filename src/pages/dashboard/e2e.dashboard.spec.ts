@@ -44,7 +44,7 @@ describe("Dashboard", () => {
     await page.waitForSelector("#header-links");
     await page.click("a[href='/viewer']");
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/viewer");
+    expect(currentUrl).toBe("http://localhost:3000/viewer?tileset=san-francisco-v1.7");
     const controlPanel = await page.$$("#control-panel");
     expect(controlPanel).toBeDefined();
   });
@@ -54,7 +54,7 @@ describe("Dashboard", () => {
     await page.waitForSelector("#header-links");
     await page.click("a[href='/debug']");
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/debug");
+    expect(currentUrl).toBe("http://localhost:3000/debug?tileset=san-francisco-v1.7");
     const toolBar = await page.$$("#tool-bar");
     expect(toolBar).toBeDefined();
   });

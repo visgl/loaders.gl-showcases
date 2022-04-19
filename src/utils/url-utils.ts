@@ -1,6 +1,6 @@
-export const parseTilesetUrlFromUrl = () => {
+export const parseTileset = () => {
   const parsedUrl = new URL(window.location.href);
-  return parsedUrl.searchParams.get("url");
+  return parsedUrl.searchParams.get("tileset");
 };
 
 export const parseTilesetUrlParams = (url, options) => {
