@@ -77,6 +77,7 @@ describe("DebugApp", () => {
       await page.select("#color", String(index));   
     }
 
+    await page.hover("#boundingVolume~span");
     await page.click("#boundingVolume~span");
 
     const volumeTypeOptionsText = await page.$$eval("#volume-type > option", options =>
