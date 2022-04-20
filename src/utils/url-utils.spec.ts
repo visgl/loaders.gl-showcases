@@ -1,4 +1,4 @@
-import { parseTileset, parseTilesetUrlParams } from "./url-utils";
+import { parseTilesetFromUrl, parseTilesetUrlParams } from "./url-utils";
 
 const mockResponse = jest.fn();
 Object.defineProperty(window, "location", {
@@ -15,7 +15,7 @@ Object.defineProperty(window, "location", {
 
 describe('Url Utils - parseTilesetUrlFromUrl', () => {
   test("Should parse tileset url", () => {
-    const result = parseTileset();
+    const result = parseTilesetFromUrl();
     expect(result).toStrictEqual("https://tileset-url.com");
   });
 });

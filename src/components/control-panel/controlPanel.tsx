@@ -121,9 +121,9 @@ export const ControlPanel = ({
   useTerrainLayer,
   toggleTerrain,
   debugMode = false,
-  mainTileset
+  tileset
 }) => {
-  const {id, name} = mainTileset;
+  const {id, name} = tileset;
   const [example, setExample] = useState(id);
   const [, setSearchParams] = useSearchParams();
 

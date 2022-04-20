@@ -27,7 +27,7 @@ import {
   BuildingExplorer,
 } from "../../components";
 import {
-  parseTileset,
+  parseTilesetFromUrl,
   parseTilesetUrlParams,
   buildSublayersTree,
   initStats,
@@ -145,15 +145,20 @@ export const ViewerApp = () => {
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
   const initMainTileset = () => {
-    const tilesetName = parseTileset();
+    const tilesetParam = parseTilesetFromUrl();
 
-    if (tilesetName) {
-      if (tilesetName.includes("http")) {
-        return { id: tilesetName, name: CUSTOM_EXAMPLE_VALUE, url: tilesetName };
-      } else if (EXAMPLES[tilesetName]?.id === tilesetName) {
-        return EXAMPLES[tilesetName];
-      }
+    if (tilesetParam?.startsWith("http")) {
+      return {
+        id: tilesetParam,
+        name: CUSTOM_EXAMPLE_VALUE,
+        url: tilesetParam,
+      };
     }
+
+    if (tilesetParam in EXAMPLES) {
+      return EXAMPLES[tilesetParam];
+    }
+
     return EXAMPLES[INITIAL_EXAMPLE_NAME];
   };
 
@@ -215,7 +220,6 @@ export const ViewerApp = () => {
     fetchMetadata(metadataUrl);
     fetchFlattenedSublayers(tilesetUrl);
 
-    //setName(name);
     setToken(token);
     setSublayers([]);
     setLoadedTilesets([]);
@@ -518,7 +522,7 @@ export const ViewerApp = () => {
   const renderControlPanel = () => {
     return (
       <ControlPanel
-        mainTileset={mainTileset}
+        tileset={mainTileset}
         onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}

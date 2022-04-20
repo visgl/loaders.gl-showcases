@@ -44,7 +44,7 @@ import {
   COLORED_BY,
   makeRGBObjectFromColor,
   getRGBValueFromColorObject,
-  parseTileset,
+  parseTilesetFromUrl,
   parseTilesetUrlParams,
   ColorMap,
   getTileDebugInfo,
@@ -266,15 +266,20 @@ export const DebugApp = () => {
   const currentViewport: WebMercatorViewport = null;
 
   const initMainTileset = () => {
-    const tilesetName = parseTileset();
+    const tilesetParam = parseTilesetFromUrl();
 
-    if (tilesetName) {
-      if (tilesetName.includes("http")) {
-        return { id: tilesetName, name: CUSTOM_EXAMPLE_VALUE, url: tilesetName };
-      } else if (EXAMPLES[tilesetName]?.id === tilesetName) {
-        return EXAMPLES[tilesetName];
-      }
+    if (tilesetParam?.startsWith("http")) {
+      return {
+        id: tilesetParam,
+        name: CUSTOM_EXAMPLE_VALUE,
+        url: tilesetParam,
+      };
     }
+
+    if (tilesetParam in EXAMPLES) {
+      return EXAMPLES[tilesetParam];
+    }
+
     return EXAMPLES[INITIAL_EXAMPLE_NAME];
   };
 
@@ -829,7 +834,7 @@ export const DebugApp = () => {
     return (
       <ControlPanel
         debugMode
-        mainTileset={mainTileset}
+        tileset={mainTileset}
         onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}

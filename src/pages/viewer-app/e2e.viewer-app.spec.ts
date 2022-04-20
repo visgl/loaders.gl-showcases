@@ -5,8 +5,7 @@ describe("ViewerApp", () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch({
-    });
+    browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.goto("http://localhost:3000/viewer");
   });
@@ -15,14 +14,14 @@ describe("ViewerApp", () => {
 
   it("Contains control panel", async () => {
     const controlOptions = [
-      "san-francisco-v1.7",
       "new-york",
       "san-francisco-v1.6",
+      "san-francisco-v1.7",
     ];
     const controlUrls = [
-      "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
       "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+      "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
     ];
 
     await page.waitForSelector("#control-panel");
@@ -47,7 +46,7 @@ describe("ViewerApp", () => {
     await page.click("#CheckBox220-icon");
     await page.click("#CheckBox230-icon");
     await page.click("#CheckBox240-icon");
-  }, 40000);
+  }, 20000);
 
   it("Contains statistic panel", async () => {
     await page.waitForSelector("#stats-panel");

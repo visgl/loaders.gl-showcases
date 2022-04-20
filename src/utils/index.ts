@@ -1,4 +1,4 @@
-export { parseTileset, parseTilesetUrlParams } from "./url-utils";
+export { parseTilesetFromUrl, parseTilesetUrlParams } from "./url-utils";
 export { buildSublayersTree } from "./sublayers";
 export { initStats, sumTilesetsStats } from "./stats";
 export { getElevationByCentralTile } from "./terrain-elevation";
