@@ -270,7 +270,6 @@ export const DebugApp = () => {
 
     if (tilesetParam?.startsWith("http")) {
       return {
-        id: tilesetParam,
         name: CUSTOM_EXAMPLE_VALUE,
         url: tilesetParam,
       };

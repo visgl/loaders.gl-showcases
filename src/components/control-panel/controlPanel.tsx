@@ -128,8 +128,10 @@ export const ControlPanel = ({
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    setExample(id);
-    setSearchParams({tileset: id});
+    if (id) {
+      setExample(id);
+      setSearchParams({tileset: id})
+    }
   }, [id])
 
   const handleChangeExample = (event) => {
