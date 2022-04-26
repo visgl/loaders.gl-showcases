@@ -27,7 +27,7 @@ import {
   BuildingExplorer,
 } from "../../components";
 import {
-  parseTilesetUrlFromUrl,
+  parseTilesetFromUrl,
   parseTilesetUrlParams,
   buildSublayersTree,
   initStats,
@@ -39,6 +39,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 
 const TRANSITION_DURAITON = 4000;
@@ -122,7 +123,6 @@ export const ViewerApp = () => {
 
   const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [token, setToken] = useState(null);
-  const [name, setName] = useState(INITIAL_EXAMPLE_NAME);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
@@ -145,11 +145,19 @@ export const ViewerApp = () => {
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
   const initMainTileset = () => {
-    const tilesetUrl = parseTilesetUrlFromUrl();
+    const tilesetParam = parseTilesetFromUrl();
 
-    if (tilesetUrl) {
-      return { url: tilesetUrl };
+    if (tilesetParam?.startsWith("http")) {
+      return {
+        name: CUSTOM_EXAMPLE_VALUE,
+        url: tilesetParam,
+      };
     }
+
+    if (tilesetParam in EXAMPLES) {
+      return EXAMPLES[tilesetParam];
+    }
+
     return EXAMPLES[INITIAL_EXAMPLE_NAME];
   };
 
@@ -206,12 +214,11 @@ export const ViewerApp = () => {
     }
 
     const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
-    const { tilesetUrl, token, name, metadataUrl } = params;
+    const { tilesetUrl, token, metadataUrl } = params;
 
     fetchMetadata(metadataUrl);
     fetchFlattenedSublayers(tilesetUrl);
 
-    setName(name);
     setToken(token);
     setSublayers([]);
     setLoadedTilesets([]);
@@ -514,7 +521,7 @@ export const ViewerApp = () => {
   const renderControlPanel = () => {
     return (
       <ControlPanel
-        name={name}
+        tileset={mainTileset}
         onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}

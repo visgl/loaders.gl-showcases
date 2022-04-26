@@ -14,9 +14,9 @@ describe("ViewerApp", () => {
 
   it("Contains control panel", async () => {
     const controlOptions = [
-      "New York",
-      "San Francisco v1.6",
-      "San Francisco v1.7",
+      "new-york",
+      "san-francisco-v1.6",
+      "san-francisco-v1.7",
     ];
     const controlUrls = [
       "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
@@ -40,7 +40,7 @@ describe("ViewerApp", () => {
   });
 
   it("Contains building explorer", async () => {
-    await page.select("#tilesets", "Building");
+    await page.select("#tilesets", "building");
     await page.waitForSelector("#building-explorer");
     await page.click("#BuildingExplorerToggle~span");
     await page.click("#CheckBox220-icon");

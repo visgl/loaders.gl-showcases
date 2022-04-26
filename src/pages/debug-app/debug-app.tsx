@@ -30,7 +30,7 @@ import {
   getFrustumBounds,
   useForceUpdate,
 } from "../../utils";
-import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
+import { INITIAL_EXAMPLE_NAME, EXAMPLES, CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 
 import {
   INITIAL_MAP_STYLE,
@@ -44,7 +44,7 @@ import {
   COLORED_BY,
   makeRGBObjectFromColor,
   getRGBValueFromColorObject,
-  parseTilesetUrlFromUrl,
+  parseTilesetFromUrl,
   parseTilesetUrlParams,
   ColorMap,
   getTileDebugInfo,
@@ -83,7 +83,6 @@ const TRANSITION_DURAITON = 4000;
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 const NORMALS_COLOR = [255, 0, 0];
-const DEFAULT_COLOR = [255, 255, 255];
 const DEFAULT_BG_OPACITY = 100;
 const UV_DEBUG_TEXTURE_URL =
   "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg";
@@ -231,7 +230,6 @@ export const DebugApp = () => {
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [token, setToken] = useState(null);
-  const [name, setName] = useState(INITIAL_EXAMPLE_NAME);
   const [viewState, setViewState] = useState({
     main: INITIAL_VIEW_STATE,
     minimap: {
@@ -268,11 +266,19 @@ export const DebugApp = () => {
   const currentViewport: WebMercatorViewport = null;
 
   const initMainTileset = () => {
-    const tilesetUrl = parseTilesetUrlFromUrl();
+    const tilesetParam = parseTilesetFromUrl();
 
-    if (tilesetUrl) {
-      return { url: tilesetUrl };
+    if (tilesetParam?.startsWith("http")) {
+      return {
+        name: CUSTOM_EXAMPLE_VALUE,
+        url: tilesetParam,
+      };
     }
+
+    if (tilesetParam in EXAMPLES) {
+      return EXAMPLES[tilesetParam];
+    }
+
     return EXAMPLES[INITIAL_EXAMPLE_NAME];
   };
 
@@ -334,12 +340,11 @@ export const DebugApp = () => {
     }
 
     const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
-    const { tilesetUrl, token, name, metadataUrl } = params;
+    const { tilesetUrl, token, metadataUrl } = params;
 
     fetchMetadata(metadataUrl);
     fetchFlattenedSublayers(tilesetUrl);
 
-    setName(name);
     setToken(token);
     setSublayers([]);
     handleClearWarnings();
@@ -828,7 +833,7 @@ export const DebugApp = () => {
     return (
       <ControlPanel
         debugMode
-        name={name}
+        tileset={mainTileset}
         onExampleChange={setMainTileset}
         onMapStyleChange={onSelectMapStyle}
         selectedMapStyle={selectedMapStyle}

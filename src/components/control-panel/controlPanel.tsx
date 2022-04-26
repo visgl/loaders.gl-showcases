@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { EXAMPLES } from "../../constants/i3s-examples";
+import { EXAMPLES, CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { MAP_STYLES } from "../../constants/map-styles";
+import { useSearchParams } from "react-router-dom";
 
 import { ToggleSwitch } from "../../components";
 
@@ -109,13 +110,10 @@ const DropDown = styled.select`
 `;
 
 const CUSTOM_EXAMPLE = "Custom example";
-const CUSTOM_EXAMPLE_VALUE = "custom-example";
-
 /**
  * TODO: Add types to component
  */
 export const ControlPanel = ({
-  name = CUSTOM_EXAMPLE_VALUE,
   onExampleChange,
   onMapStyleChange,
   selectedMapStyle,
@@ -123,12 +121,18 @@ export const ControlPanel = ({
   useTerrainLayer,
   toggleTerrain,
   debugMode = false,
+  tileset
 }) => {
-  const [example, setExample] = useState(name);
+  const {id, name} = tileset;
+  const [example, setExample] = useState(id);
+  const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    setExample(name);
-  }, [name]);
+    if (id) {
+      setExample(id);
+      setSearchParams({tileset: id})
+    }
+  }, [id])
 
   const handleChangeExample = (event) => {
     const selectedExample = event.target.value;
@@ -140,7 +144,7 @@ export const ControlPanel = ({
     return Object.keys(EXAMPLES).map((key) => {
       const example = EXAMPLES[key];
       return (
-        <option key={key} value={example.name}>
+        <option key={key} value={example.id}>
           {example.name}
         </option>
       );
