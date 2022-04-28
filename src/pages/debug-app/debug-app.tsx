@@ -306,6 +306,9 @@ export const DebugApp = () => {
     // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
+      formatters: {
+        "Tile Memory Use": "memory",
+      },
     });
     setTilesetStatsWidget(tilesetStatsWidget);
   }, []);
