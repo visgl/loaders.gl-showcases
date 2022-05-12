@@ -9,10 +9,13 @@ const VIEW_STATE = {
   zoom: 14.5,
 };
 
-export const INITIAL_EXAMPLE_NAME = "San Francisco v1.7";
+export const INITIAL_EXAMPLE_NAME = "san-francisco-v1.7";
+export const CUSTOM_EXAMPLE_VALUE = "custom-example";
+
 
 export const EXAMPLES = {
-  "San Francisco v1.6": {
+  "san-francisco-v1.6": {
+    id: "san-francisco-v1.6",
     name: "San Francisco v1.6",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
     viewport: {
@@ -21,7 +24,8 @@ export const EXAMPLES = {
       latitude: 34,
     },
   },
-  "San Francisco v1.7": {
+  "san-francisco-v1.7": {
+    id: "san-francisco-v1.7",
     name: "San Francisco v1.7",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
     viewport: {
@@ -30,7 +34,8 @@ export const EXAMPLES = {
       latitude: 34,
     },
   },
-  "New York": {
+  "new-york": {
+    id: "new-york",
     name: "New York",
     url: "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
     viewport: {
@@ -39,7 +44,8 @@ export const EXAMPLES = {
       latitude: 40,
     },
   },
-  Building: {
+  building: {
+    id: "building",
     name: "Building",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Admin_Building_v17/SceneServer/layers/0",
     viewport: {

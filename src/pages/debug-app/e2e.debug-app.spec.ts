@@ -20,10 +20,10 @@ describe("DebugApp", () => {
 
   it("Select Map tab works", async () => {
     const controlOptions = [
-        "New York",
-        "San Francisco v1.6",
-        "San Francisco v1.7",
-        "Building"
+        "san-francisco-v1.7",
+        "new-york",
+        "san-francisco-v1.6",
+        "building"
       ];
 
     await page.waitForSelector("#control-panel");
@@ -32,7 +32,7 @@ describe("DebugApp", () => {
     for await (const item of controlOptions) {
       const tileset = await page.select("#tilesets", item);    
         expect(tileset).toEqual([item])
-        if (tileset.includes("Building")) {
+        if (tileset.includes("building")) {
         await page.waitForSelector("#building-explorer");
         await page.click("#BuildingExplorerToggle~span");
         await page.click("#CheckBox220-icon");
@@ -44,7 +44,7 @@ describe("DebugApp", () => {
     await page.click("#BuildingExplorerToggle~span");
     await page.click("#terrain-layer-switch~span");
     await page.click("#select-map");
-  }, 20000);
+  }, 30000);
 
   it("Map Info tab works", async () => {
     await page.click("#map-info");
@@ -77,6 +77,7 @@ describe("DebugApp", () => {
       await page.select("#color", String(index));   
     }
 
+    await page.hover("#boundingVolume~span");
     await page.click("#boundingVolume~span");
 
     const volumeTypeOptionsText = await page.$$eval("#volume-type > option", options =>
