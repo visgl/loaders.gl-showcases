@@ -7,55 +7,47 @@ jest.mock('react-responsive', () => ({
     .mockImplementationOnce(() => false)
 }));
 
-
 describe("useAppLayout", () => {
-  test("Should detect desktop or laptop", () => {
+  test("Should detect default layout", () => {
     const layout = useAppLayout();
-    expect(layout).toStrictEqual({
-      isDesktopOrLaptop: true,
-      isTablet: false,
-      isMobile: false,
-    });
+    expect(layout).toStrictEqual('default');
   });
 });
 
 describe("getCurrentLayoutProperty", () => {
-  test("Should return property for desktop or laptop ", () => {
+  test("Should return default property", () => {
     const property = getCurrentLayoutProperty({
-      isDesktopOrLaptop: 'margin-left: 333px',
-      isTablet: 'margin-left: 222px',
-      isMobile: 'margin-left: 111px',
-    })({
-      layout: {
-        isDesktopOrLaptop: true,
-        isTablet: false,
-        isMobile: false,
-      }
-    });
+      default: 'margin-left: 333px',
+      tablet: 'margin-left: 222px',
+      mobile: 'margin-left: 111px',
+    })({ layout: 'default' });
     expect(property).toStrictEqual('margin-left: 333px');
   });
 
-  test("Should return default mobile property by default", () => {
+  test("Should return property for tablet", () => {
     const property = getCurrentLayoutProperty({
-      isDesktopOrLaptop: 'margin-left: 333px',
-      isTablet: 'margin-left: 222px',
-      isMobile: 'margin-left: 111px',
-    })({});
+      default: 'margin-left: 333px',
+      tablet: 'margin-left: 222px',
+      mobile: 'margin-left: 111px',
+    })({ layout: 'tablet' });
+    expect(property).toStrictEqual('margin-left: 222px');
+  });
+
+  test("Should return property for mobile", () => {
+    const property = getCurrentLayoutProperty({
+      default: 'margin-left: 333px',
+      tablet: 'margin-left: 222px',
+      mobile: 'margin-left: 111px',
+    })({ layout: 'mobile' });
     expect(property).toStrictEqual('margin-left: 111px');
   });
 
-  test("Should use default layout key", () => {
+  test("Should return default property if no layout provided", () => {
     const property = getCurrentLayoutProperty({
-      isDesktopOrLaptop: 'margin-left: 333px',
-      isTablet: 'margin-left: 222px',
-      isMobile: 'margin-left: 111px',
-    })({
-      layout: {
-        isDesktopOrLaptop: false,
-        isTablet: false,
-        isMobile: false,
-      }
-    });
-    expect(property).toStrictEqual('margin-left: 111px');
+      default: 'margin-left: 333px',
+      tablet: 'margin-left: 222px',
+      mobile: 'margin-left: 111px',
+    })({});
+    expect(property).toStrictEqual('margin-left: 333px');
   });
 });

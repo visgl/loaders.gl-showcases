@@ -29,14 +29,8 @@ export type GeometryVSTextureMetrics = {
   pixelArea: number,
 };
 
-export type Layout = {
-  isDesktopOrLaptop: boolean,
-  isTablet: boolean,
-  isMobile: boolean
-};
-
 export type LayoutProperties = {
-  isDesktopOrLaptop: string | number,
-  isTablet: string | number,
-  isMobile: string | number,
+  default: string | number;
+  tablet: string | number;
+  mobile: string | number;
 };

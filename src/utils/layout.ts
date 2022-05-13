@@ -1,9 +1,7 @@
-import type { Layout, LayoutProperties } from "./types";
+import type { LayoutProperties } from "./types";
 
 import { useMediaQuery } from "react-responsive";
-
-const DEFAULT_LAYOUT = { isMobile: true };
-const DEFAULT_LAYOUT_KEY = 'isMobile';
+import { Layout } from "./enums";
 
 /**
  * Detect current device
@@ -13,19 +11,23 @@ export const useAppLayout = (): Layout => {
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
-  return {
-    isDesktopOrLaptop,
-    isTablet,
-    isMobile,
-  };
+  switch (true) {
+    case isDesktopOrLaptop:
+      return Layout.Default;
+    case isTablet:
+      return Layout.Tablet;
+    case isMobile:
+      return Layout.Mobile;
+    default:
+      return Layout.Default;
+  }
 };
 
 /**
  * Return properties based on current layout
- * @param properties 
+ * @param properties
  */
 export const getCurrentLayoutProperty = (properties: LayoutProperties) => (props: any): string | number => {
-  const layoutObject = props?.layout || DEFAULT_LAYOUT;
-  const detectedLayoutKey = Object.entries(layoutObject).find(([_, value]) => value)?.[0] || DEFAULT_LAYOUT_KEY;
-  return properties[detectedLayoutKey];
+  const layoutObject = props?.layout || Layout.Default;
+  return properties[layoutObject];
 };
