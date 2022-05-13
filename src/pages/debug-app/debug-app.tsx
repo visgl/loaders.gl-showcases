@@ -579,8 +579,7 @@ export const DebugApp = () => {
         viewportTraversersMap,
         loadTiles,
       });
-      // @ts-expect-error - update should have argument. Need to change in @loaders.gl
-      tileset.update();
+      tileset.selectTiles();
     });
 
     const { debugPanel } = debugOptions;
