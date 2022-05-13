@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import * as Pages from "./pages";
+import { Theme } from "./utils/enums";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -24,27 +26,39 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 /**
+ * @todo Add colors and styles for each theme.
+ */
+const THEMES = {
+  [Theme.Dark]: {},
+  [Theme.Light]: {},
+};
+
+/**
  * TODO: Add types to component
  */
 export const App = () => {
+  const [theme, setTheme] = useState<Theme>(Theme.Dark);
+
   return (
     <>
       <GlobalStyle />
-      <BrowserRouter>
-        <Header />
-        <ContentWrapper>
-          <Routes>
-            <Route
-              path={"/"}
-              element={<Navigate to="dashboard" replace={true} />}
-            />
-            <Route path={"dashboard"} element={<Pages.Dashboard />} />
-            <Route path={"viewer"} element={<Pages.ViewerApp />} />
-            <Route path={"debug"} element={<Pages.DebugApp />} />
-            <Route path={"comparison"} element={<Pages.Comparison />} />
-          </Routes>
-        </ContentWrapper>
-      </BrowserRouter>
+      <ThemeProvider theme={THEMES[theme]}>
+        <BrowserRouter>
+          <Header setTheme={setTheme} theme={theme} />
+          <ContentWrapper>
+            <Routes>
+              <Route
+                path={"/"}
+                element={<Navigate to="dashboard" replace={true} />}
+              />
+              <Route path={"dashboard"} element={<Pages.Dashboard />} />
+              <Route path={"viewer"} element={<Pages.ViewerApp />} />
+              <Route path={"debug"} element={<Pages.DebugApp />} />
+              <Route path={"comparison"} element={<Pages.Comparison />} />
+            </Routes>
+          </ContentWrapper>
+        </BrowserRouter>
+      </ThemeProvider>
     </>
   );
 };

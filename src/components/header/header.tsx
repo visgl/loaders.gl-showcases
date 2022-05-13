@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import GitHubIcon from "../../../public/icons/github-icon.png";
+import { Theme } from "../../utils/enums";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -47,10 +48,15 @@ const GitHubLink = styled.a`
   color black;
 `;
 
+interface HeaderProps {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
 /**
  * TODO: Add types to component
  */
-export const Header = () => {
+export const Header = ({ theme, setTheme }: HeaderProps) => {
   return (
     <HeaderContainer>
       <HeaderLogo id="header-logo">I3S Explorer</HeaderLogo>
