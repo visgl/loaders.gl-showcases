@@ -419,7 +419,7 @@ export const DebugApp = () => {
       const [longitude, latitude] = cartographicCenter || [];
       let pLongitue = longitude;
       let pLatitude = latitude;
-      const viewport = new VIEWS[0].type(viewState.main);
+      const viewport = new VIEWS[0].ViewportType(viewState.main);
       const {
         main: { pitch, bearing },
       } = viewState;
