@@ -54,7 +54,7 @@ interface HeaderProps {
 }
 
 /**
- * TODO: Add types to component
+ * @todo: Use theme props inside header
  */
 export const Header = ({ theme, setTheme }: HeaderProps) => {
   return (
