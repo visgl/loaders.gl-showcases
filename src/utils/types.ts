@@ -28,3 +28,9 @@ export type GeometryVSTextureMetrics = {
   minTexCoordArea: number,
   pixelArea: number,
 };
+
+export type LayoutProperties = {
+  default: string | number;
+  tablet: string | number;
+  mobile: string | number;
+};
