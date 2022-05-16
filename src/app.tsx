@@ -29,8 +29,18 @@ const GlobalStyle = createGlobalStyle`
  * @todo Add colors and styles for each theme.
  */
 const THEMES = {
-  [Theme.Dark]: {},
-  [Theme.Light]: {},
+  [Theme.Dark]: {
+    mainColor: "#232430",
+    fontColor: "#FFFFFF",
+    buttonBorderColor: "#9EA2AE",
+    buttonBackgroundColor: "#393A45",
+  },
+  [Theme.Light]: {
+    mainColor: "#FFFFFF",
+    fontColor: "#0E111A",
+    buttonBorderColor: "#9EA2AE",
+    buttonBackgroundColor: "#DCDEE3",
+  },
 };
 
 /**

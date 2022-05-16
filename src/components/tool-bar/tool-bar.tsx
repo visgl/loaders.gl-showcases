@@ -19,7 +19,7 @@ const Container = styled.div`
   height: 40px;
   background: #0e111a;
   border-radius: 8px;
-  z-index: 100;
+  z-index: 90;
   background: #0e111a;
 `;
 
