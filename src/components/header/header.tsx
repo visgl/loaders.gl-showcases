@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 
@@ -362,7 +362,7 @@ const DefaultMenu = ({
     theme === Theme.Light ? LightModeLightIcon : DarkModeLightIcon;
 
   return (
-    <MenuContainer id="header-links">
+    <MenuContainer id="header-links-default">
       <MenuLink to="dashboard" active={pathname === "/dashboard" ? 1 : 0}>
         Home
       </MenuLink>
@@ -373,6 +373,7 @@ const DefaultMenu = ({
         Debug
       </MenuLink>
       <CompareButton
+        id="compare-default-button"
         active={pathname === "/comparison"}
         open={isCompareMenuOpen}
         onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
@@ -383,14 +384,16 @@ const DefaultMenu = ({
         GitHub
         <GithubImage src={githubIcon} />
       </GitHubLink>
-      <HelpButton>Help</HelpButton>
-      <ThemeToggleWrapper>
+      <HelpButton id="help-button-default">Help</HelpButton>
+      <ThemeToggleWrapper id="toggle-button-default">
         <ThemeToggleImage
+          id="toggle-dark-default"
           active={theme === Theme.Dark ? 1 : 0}
           src={darkIcon}
           onClick={() => setTheme(Theme.Dark)}
         />
         <ThemeToggleImage
+          id="toggle-light-default"
           active={theme === Theme.Light ? 1 : 0}
           src={lightIcon}
           onClick={() => setTheme(Theme.Light)}
@@ -407,18 +410,29 @@ const TabletOrMobileHeader = ({ theme, isOpen, setIsOpen }) => {
   return (
     <>
       {!isOpen && (
-        <BurgerIcon src={burgerIcon} onClick={() => setIsOpen(true)} />
+        <BurgerIcon
+          id="burger-menu"
+          src={burgerIcon}
+          onClick={() => setIsOpen(true)}
+        />
       )}
-      {isOpen && <CloseIcon src={closeIcon} onClick={() => setIsOpen(false)} />}
+      {isOpen && (
+        <CloseIcon
+          id="close-header-menu"
+          src={closeIcon}
+          onClick={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 };
 
 const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
+
   return (
-    <TabletOrMobileMenuContainer>
-      <MenuLinks>
+    <TabletOrMobileMenuContainer id="tablet-or-mobile-menu">
+      <MenuLinks id="header-links">
         <LinksWrapper>
           <TabletOrMobileLink
             to="dashboard"
@@ -436,6 +450,7 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
             Debug
           </TabletOrMobileLink>
           <CompareTabletOrMobile
+            id="compare-tablet-or-mobile-button"
             active={pathname === "/comparison"}
             open={isCompareMenuOpen}
             onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
@@ -444,8 +459,8 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
           </CompareTabletOrMobile>
           {isCompareMenuOpen && (
             <MenuLinks>
-              <CompareMenuItem>Across Layers</CompareMenuItem>
-              <CompareMenuItem>Within a Layer</CompareMenuItem>
+              <CompareMenuItem id="across-layers-item">Across Layers</CompareMenuItem>
+              <CompareMenuItem id="within-layer-item">Within a Layer</CompareMenuItem>
             </MenuLinks>
           )}
           <TabletOrMobileGitHubLink href={GITHUB_LINK}>
@@ -454,7 +469,9 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
           </TabletOrMobileGitHubLink>
         </LinksWrapper>
         <HorisontalLine />
-        <TabletOrMobileListButton>Help</TabletOrMobileListButton>
+        <TabletOrMobileListButton id="help-button-tablet-or-mobile">
+          Help
+        </TabletOrMobileListButton>
       </MenuLinks>
     </TabletOrMobileMenuContainer>
   );
@@ -470,8 +487,12 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
   const isDefaultLayout = layout === Layout.Default;
   const githubIcon = theme === Theme.Light ? GitHubIconDark : GitHubIconLight;
 
+  useEffect(() => {
+    setIsTabletOrMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
-    <HeaderContainer layout={layout}>
+    <HeaderContainer id="header-container" layout={layout}>
       <HeaderLogo layout={layout} id="header-logo">
         I3S Explorer
       </HeaderLogo>
