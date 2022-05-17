@@ -65,15 +65,27 @@ describe("Dashboard Default View", () => {
     expect(toolBar).toBeDefined();
   });
 
-  // TODO turn it on back then compare dropdown menu will be implemented
+  it("Should go to the Comparison Across Layers Page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#compare-default-button");
+    await page.click("#compare-default-button");
+    await page.hover("a[href='/comparison/across-layers']");
+    await page.click("a[href='/comparison/across-layers']");
 
-  // it("Should go to the Comparison page", async () => {
-  //   await page.goto("http://localhost:3000");
-  //   await page.waitForSelector("#header-links-default");
-  //   await page.click("a[href='/comparison']");
-  //   const currentUrl = page.url();
-  //   expect(currentUrl).toBe("http://localhost:3000/comparison");
-  // });
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/comparison/across-layers");
+  });
+
+  it("Should go to the Comparison Withhin Layer Page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#compare-default-button");
+    await page.click("#compare-default-button");
+    await page.hover("a[href='/comparison/within-layer']");
+    await page.click("a[href='/comparison/within-layer']");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/comparison/within-layer");
+  });
 
   it("Should go to the project GitHub page", async () => {
     await page.goto("http://localhost:3000");
@@ -254,26 +266,13 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
 
-  // TODO turn it on back then compare dropdown menu will be implemented
-
-  // it("Should go to the Comparison page", async () => {
-  //   await page.goto("http://localhost:3000");
-  //   await page.waitForSelector("#burger-menu");
-  //   await page.click("#burger-menu");
-  //   await page.waitForSelector("#header-links");
-  //   await page.click("a[href='/comparison']");
-
-  //   const currentUrl = page.url();
-  //   expect(currentUrl).toBe("http://localhost:3000/comparison");
-  //   expect(!(await page.$("#tablet-or-mobile-menu")));
-  // });
-
   it("Should go to the project GitHub page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
     await page.click("a[href='https://github.com/visgl/loaders.gl-showcases']");
+    await page.waitForTimeout(5000);
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("https://github.com/visgl/loaders.gl-showcases");
@@ -314,4 +313,32 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(!(await page.$("#across-layers-item")));
     expect(!(await page.$("#within-layer-item")));
   }, 30000);
+
+  it("Should go to the Comparison Across Layers Page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#burger-menu");
+    await page.click("#burger-menu");
+    await page.waitForSelector("#compare-tablet-or-mobile-button");
+    await page.click("#compare-tablet-or-mobile-button");
+
+    await page.hover("a[href='/comparison/across-layers']");
+    await page.click("a[href='/comparison/across-layers']");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/comparison/across-layers");
+  });
+
+  it("Should go to the Comparison Withhin Layer Page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#burger-menu");
+    await page.click("#burger-menu");
+    await page.waitForSelector("#compare-tablet-or-mobile-button");
+    await page.click("#compare-tablet-or-mobile-button");
+
+    await page.hover("a[href='/comparison/within-layer']");
+    await page.click("a[href='/comparison/within-layer']");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/comparison/within-layer");
+  });
 });
