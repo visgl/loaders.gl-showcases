@@ -12,10 +12,11 @@ describe("Comparison", () => {
 
   afterAll(() => browser.close());
 
-  it("Contains construction info", async () => {
-    await page.waitForSelector("#construction-info");
-    await page.waitForSelector("#construction-title");
-    const text = await page.$eval("#construction-title", (e) => e.textContent);
-    expect(text).toEqual("We are working on it ...")
+  it("Contains two canvases", async () => {
+    await page.waitForSelector("#first-deck-container");
+    await page.waitForSelector("#second-deck-container");
+
+    expect(await page.$$("#first-deck-container")).toBeDefined();
+    expect(await page.$$("#second-deck-container")).toBeDefined();
   });
 });
