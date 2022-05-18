@@ -324,7 +324,13 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.hover("a[href='/comparison/across-layers']");
     await page.click("a[href='/comparison/across-layers']");
 
+
+    await page.waitForSelector("#construction-info");
+    await page.waitForSelector("#construction-title");
+
     const currentUrl = page.url();
+    const text = await page.$eval("#construction-title", (e) => e.textContent);
+    expect(text).toEqual("We are working on it ...")
     expect(currentUrl).toBe("http://localhost:3000/comparison/across-layers");
   });
 
@@ -338,7 +344,12 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.hover("a[href='/comparison/within-layer']");
     await page.click("a[href='/comparison/within-layer']");
 
+    await page.waitForSelector("#construction-info");
+    await page.waitForSelector("#construction-title");
+
     const currentUrl = page.url();
+    const text = await page.$eval("#construction-title", (e) => e.textContent);
+    expect(text).toEqual("We are working on it ...")
     expect(currentUrl).toBe("http://localhost:3000/comparison/within-layer");
   });
 });
