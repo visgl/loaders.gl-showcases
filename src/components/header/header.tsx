@@ -456,7 +456,6 @@ const DefaultMenu = ({
         >
           Compare
         </CompareButton>
-        {/* TODO Add outside click detection to close  Compare Tab*/}
         {isCompareMenuOpen && <CompareTab pathname={pathname} />}
       </CompareItemWrapper>
       <GitHubLink href={GITHUB_LINK}>
