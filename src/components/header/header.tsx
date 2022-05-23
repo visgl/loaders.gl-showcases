@@ -47,6 +47,10 @@ interface ActiveProps {
   active: number;
 }
 
+interface CompareMenuProps {
+  pathname: string;
+}
+
 const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;
   top: 0;
@@ -195,6 +199,15 @@ const CompareButton = styled.div<CompareButtonProps>`
       background: #60c2a4;
     }
   }
+
+  ${({ active }) =>
+    active &&
+    css`
+      &:after,
+      &:before {
+        background: #60c2a4;
+      }
+    `}
 `;
 
 const HelpButton = styled.button`
@@ -345,9 +358,64 @@ const TabletOrMobileListButton = styled.div`
   cursor: pointer;
 `;
 
-const CompareMenuItem = styled(TabletOrMobileListButton)`
-  margin: 20px 0;
+const CompareTabContainer = styled.div`
+  position: absolute;
+  top: 49px;
+  left: -80px;
+  background: ${(props) => props.theme.mainColor};
+  border: 1px solid #616678;
+  border-radius: 0px 0px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  width: 253px;
 `;
+
+const CompareItemWrapper = styled.div`
+  position: relative;
+`;
+
+const CompareMenuLink = styled(MenuLink)`
+  height: 43px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding-left: 16px;
+
+  &::before,
+  &::after {
+    display: none;
+  }
+
+  &:hover {
+    color: ${(props) => props.theme.fontColor};
+    background: ${(props) => props.theme.buttonBackgroundColor};
+  }
+
+  &:first-child {
+    margin-top: 8px;
+  }
+
+  &:last-child {
+    margin-bottom: 8px;
+  }
+`;
+
+const CompareTab = ({ pathname }: CompareMenuProps) => (
+  <CompareTabContainer>
+    <CompareMenuLink
+      to="comparison/across-layers"
+      active={pathname === "/comparison/across-layers" ? 1 : 0}
+    >
+      Across Layers
+    </CompareMenuLink>
+    <CompareMenuLink
+      to="comparison/within-layer"
+      active={pathname === "/comparison/within-layer" ? 1 : 0}
+    >
+      Within a Layer
+    </CompareMenuLink>
+  </CompareTabContainer>
+);
 
 const DefaultMenu = ({
   pathname,
@@ -356,6 +424,10 @@ const DefaultMenu = ({
   githubIcon,
 }: DefaultMenuProps) => {
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsCompareMenuOpen(false);
+  }, [pathname]);
 
   const darkIcon = theme === Theme.Dark ? DarkModeDarkIcon : LightModeDarkIcon;
   const lightIcon =
@@ -372,14 +444,20 @@ const DefaultMenu = ({
       <MenuLink to="debug" active={pathname === "/debug" ? 1 : 0}>
         Debug
       </MenuLink>
-      <CompareButton
-        id="compare-default-button"
-        active={pathname === "/comparison"}
-        open={isCompareMenuOpen}
-        onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
-      >
-        Compare
-      </CompareButton>
+      <CompareItemWrapper>
+        <CompareButton
+          id="compare-default-button"
+          active={
+            pathname === "/comparison/across-layers" ||
+            pathname === "/comparison/within-layer"
+          }
+          open={isCompareMenuOpen}
+          onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
+        >
+          Compare
+        </CompareButton>
+        {isCompareMenuOpen && <CompareTab pathname={pathname} />}
+      </CompareItemWrapper>
       <GitHubLink href={GITHUB_LINK}>
         GitHub
         <GithubImage src={githubIcon} />
@@ -451,7 +529,10 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
           </TabletOrMobileLink>
           <CompareTabletOrMobile
             id="compare-tablet-or-mobile-button"
-            active={pathname === "/comparison"}
+            active={
+              pathname === "/comparison/across-layers" ||
+              pathname === "/comparison/within-layer"
+            }
             open={isCompareMenuOpen}
             onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
           >
@@ -459,8 +540,20 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
           </CompareTabletOrMobile>
           {isCompareMenuOpen && (
             <MenuLinks>
-              <CompareMenuItem id="across-layers-item">Across Layers</CompareMenuItem>
-              <CompareMenuItem id="within-layer-item">Within a Layer</CompareMenuItem>
+              <TabletOrMobileLink
+                id="across-layers-item"
+                to="comparison/across-layers"
+                active={pathname === "/comparison/across-layers" ? 1 : 0}
+              >
+                Across Layers
+              </TabletOrMobileLink>
+              <TabletOrMobileLink
+                id="within-layer-item"
+                to="comparison/within-layer"
+                active={pathname === "/comparison/within-layer" ? 1 : 0}
+              >
+                Within a Layer
+              </TabletOrMobileLink>
             </MenuLinks>
           )}
           <TabletOrMobileGitHubLink href={GITHUB_LINK}>
