@@ -29,8 +29,18 @@ const GlobalStyle = createGlobalStyle`
  * @todo Add colors and styles for each theme.
  */
 const THEMES = {
-  [Theme.Dark]: {},
-  [Theme.Light]: {},
+  [Theme.Dark]: {
+    mainColor: "#232430",
+    fontColor: "#FFFFFF",
+    buttonBorderColor: "#9EA2AE",
+    buttonBackgroundColor: "#393A45",
+  },
+  [Theme.Light]: {
+    mainColor: "#FFFFFF",
+    fontColor: "#0E111A",
+    buttonBorderColor: "#9EA2AE",
+    buttonBackgroundColor: "#DCDEE3",
+  },
 };
 
 /**
@@ -55,6 +65,15 @@ export const App = () => {
               <Route path={"viewer"} element={<Pages.ViewerApp />} />
               <Route path={"debug"} element={<Pages.DebugApp />} />
               <Route path={"comparison"} element={<Pages.Comparison />} />
+              <Route path={"comparison"} element={<Pages.Comparison />} />
+              <Route
+                path={"comparison/across-layers"}
+                element={<Pages.ConstructionInfo />}
+              />
+              <Route
+                path={"comparison/within-layer"}
+                element={<Pages.ConstructionInfo />}
+              />
             </Routes>
           </ContentWrapper>
         </BrowserRouter>
