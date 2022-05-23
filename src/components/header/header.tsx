@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 
@@ -19,6 +19,7 @@ import LightModeBurger from "../../../public/icons/light-mode-burger.svg";
 
 import DarkModeClose from "../../../public/icons/dark-mode-close.svg";
 import LightModeClose from "../../../public/icons/light-mode-close.svg";
+import { useClickOutside } from "../../utils/use-click-outside-hook";
 
 const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
 
@@ -400,21 +401,23 @@ const CompareMenuLink = styled(MenuLink)`
   }
 `;
 
-const CompareTab = ({ pathname }: CompareMenuProps) => (
-  <CompareTabContainer>
-    <CompareMenuLink
-      to="comparison/across-layers"
-      active={pathname === "/comparison/across-layers" ? 1 : 0}
-    >
-      Across Layers
-    </CompareMenuLink>
-    <CompareMenuLink
-      to="comparison/within-layer"
-      active={pathname === "/comparison/within-layer" ? 1 : 0}
-    >
-      Within a Layer
-    </CompareMenuLink>
-  </CompareTabContainer>
+const CompareTab = React.forwardRef<HTMLInputElement, CompareMenuProps>(
+  ({ pathname }, forwardedRef) => (
+    <CompareTabContainer ref={forwardedRef}>
+      <CompareMenuLink
+        to="comparison/across-layers"
+        active={pathname === "/comparison/across-layers" ? 1 : 0}
+      >
+        Across Layers
+      </CompareMenuLink>
+      <CompareMenuLink
+        to="comparison/within-layer"
+        active={pathname === "/comparison/within-layer" ? 1 : 0}
+      >
+        Within a Layer
+      </CompareMenuLink>
+    </CompareTabContainer>
+  )
 );
 
 const DefaultMenu = ({
@@ -423,7 +426,10 @@ const DefaultMenu = ({
   setTheme,
   githubIcon,
 }: DefaultMenuProps) => {
+  const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
+
+  useClickOutside(compareTabRef, () => setIsCompareMenuOpen(false));
 
   useEffect(() => {
     setIsCompareMenuOpen(false);
@@ -456,7 +462,9 @@ const DefaultMenu = ({
         >
           Compare
         </CompareButton>
-        {isCompareMenuOpen && <CompareTab pathname={pathname} />}
+        {isCompareMenuOpen && (
+          <CompareTab ref={compareTabRef} pathname={pathname} />
+        )}
       </CompareItemWrapper>
       <GitHubLink href={GITHUB_LINK}>
         GitHub
