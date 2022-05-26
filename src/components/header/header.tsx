@@ -19,7 +19,7 @@ import LightModeBurger from "../../../public/icons/light-mode-burger.svg";
 
 import DarkModeClose from "../../../public/icons/dark-mode-close.svg";
 import LightModeClose from "../../../public/icons/light-mode-close.svg";
-import { useClickOutside } from "../../utils/use-click-outside-hook";
+import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 
 const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
 
