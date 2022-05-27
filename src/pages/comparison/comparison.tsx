@@ -15,6 +15,8 @@ import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { TRANSITION_DURATION } from "../../constants/i3s-examples";
+import { darkGrey } from "../../constants/colors";
 
 interface layoutProps {
   layout: string;
@@ -23,8 +25,6 @@ interface layoutProps {
 const INITIAL_VIEW_STATE = {
   longitude: -120,
   latitude: 34,
-  height: 600,
-  width: 800,
   pitch: 45,
   maxPitch: 90,
   bearing: 0,
@@ -35,7 +35,12 @@ const INITIAL_VIEW_STATE = {
   transitionInterpolator: null,
 };
 
-const TRANSITION_DURAITON = 4000;
+const CONTROLLER_PROPS = {
+  type: MapController,
+  maxPitch: 60,
+  inertia: true,
+  scrollZoom: { speed: 0.01, smooth: true },
+};
 
 const VIEW = new MapView({
   id: "main",
@@ -77,7 +82,7 @@ const Devider = styled.div<layoutProps>`
     mobile: "8px",
   })};
 
-  background-color: #232430;
+  background-color: ${darkGrey};
 `;
 
 export const Comparison = () => {
@@ -186,7 +191,7 @@ export const Comparison = () => {
 
       setViewState({
         ...newViewState,
-        transitionDuration: TRANSITION_DURAITON,
+        transitionDuration: TRANSITION_DURATION,
         transitionInterpolator: new FlyToInterpolator(),
       });
       setNeedTransitionToTileset(false);
@@ -203,7 +208,7 @@ export const Comparison = () => {
   };
   const layers1 = [
     new Tile3DLayer({
-      id: `tile-layer`,
+      id: `tile-layer-1`,
       data: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
       loader: I3SLoader,
       onTilesetLoad: onTilesetLoad,
@@ -212,7 +217,7 @@ export const Comparison = () => {
   ];
   const layers2 = [
     new Tile3DLayer({
-      id: `tile-layer`,
+      id: `tile-layer-2`,
       data: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
       loader: I3SLoader,
       onTilesetLoad: onTilesetLoad,
@@ -228,12 +233,7 @@ export const Comparison = () => {
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
-          controller={{
-            type: MapController,
-            maxPitch: 60,
-            inertia: true,
-            scrollZoom: { speed: 0.01, smooth: true },
-          }}
+          controller={CONTROLLER_PROPS}
         >
           {({ viewport }) => {
             currentViewport = viewport;
@@ -250,12 +250,7 @@ export const Comparison = () => {
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
-          controller={{
-            type: MapController,
-            maxPitch: 60,
-            inertia: true,
-            scrollZoom: { speed: 0.01, smooth: true },
-          }}
+          controller={CONTROLLER_PROPS}
         >
           {({ viewport }) => {
             currentViewport = viewport;
