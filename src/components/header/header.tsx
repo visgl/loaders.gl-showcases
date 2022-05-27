@@ -405,14 +405,14 @@ const CompareTab = React.forwardRef<HTMLInputElement, CompareMenuProps>(
   ({ pathname }, forwardedRef) => (
     <CompareTabContainer ref={forwardedRef}>
       <CompareMenuLink
-        to="comparison/across-layers"
-        active={pathname === "/comparison/across-layers" ? 1 : 0}
+        to="compare-across-layers"
+        active={pathname === "/compare-across-layers" ? 1 : 0}
       >
         Across Layers
       </CompareMenuLink>
       <CompareMenuLink
-        to="comparison/within-layer"
-        active={pathname === "/comparison/within-layer" ? 1 : 0}
+        to="compare-within-layer"
+        active={pathname === "/compare-within-layer" ? 1 : 0}
       >
         Within a Layer
       </CompareMenuLink>
@@ -454,8 +454,8 @@ const DefaultMenu = ({
         <CompareButton
           id="compare-default-button"
           active={
-            pathname === "/comparison/across-layers" ||
-            pathname === "/comparison/within-layer"
+            pathname === "/compare-across-layers" ||
+            pathname === "/compare-within-layer"
           }
           open={isCompareMenuOpen}
           onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
@@ -538,8 +538,8 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
           <CompareTabletOrMobile
             id="compare-tablet-or-mobile-button"
             active={
-              pathname === "/comparison/across-layers" ||
-              pathname === "/comparison/within-layer"
+              pathname === "/compare-across-layers" ||
+              pathname === "/compare-within-layer"
             }
             open={isCompareMenuOpen}
             onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
@@ -550,15 +550,15 @@ const TabletOrMobileMenu = ({ pathname, githubIcon }) => {
             <MenuLinks>
               <TabletOrMobileLink
                 id="across-layers-item"
-                to="comparison/across-layers"
-                active={pathname === "/comparison/across-layers" ? 1 : 0}
+                to="compare-across-layers"
+                active={pathname === "/compare-across-layers" ? 1 : 0}
               >
                 Across Layers
               </TabletOrMobileLink>
               <TabletOrMobileLink
                 id="within-layer-item"
-                to="comparison/within-layer"
-                active={pathname === "/comparison/within-layer" ? 1 : 0}
+                to="compare-within-layer"
+                active={pathname === "/compare-within-layer" ? 1 : 0}
               >
                 Within a Layer
               </TabletOrMobileLink>

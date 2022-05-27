@@ -7,10 +7,11 @@ import {
   MapView,
   WebMercatorViewport,
 } from "@deck.gl/core";
+import styled from "styled-components";
+
 import { StaticMap } from "react-map-gl";
 import { Tileset3D } from "@loaders.gl/tiles";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
-import styled from "styled-components";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { getElevationByCentralTile } from "../../utils";

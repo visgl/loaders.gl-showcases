@@ -72,15 +72,13 @@ export const App = () => {
               <Route path={"dashboard"} element={<Pages.Dashboard />} />
               <Route path={"viewer"} element={<Pages.ViewerApp />} />
               <Route path={"debug"} element={<Pages.DebugApp />} />
-              <Route path={"comparison"} element={<Pages.Comparison />} />
-              <Route path={"comparison"} element={<Pages.Comparison />} />
               <Route
-                path={"comparison/across-layers"}
-                element={<Pages.ConstructionInfo />}
+                path={"compare-across-layers"}
+                element={<Pages.Comparison />}
               />
               <Route
-                path={"comparison/within-layer"}
-                element={<Pages.ConstructionInfo />}
+                path={"compare-within-layer"}
+                element={<Pages.Comparison />}
               />
             </Routes>
           </ContentWrapper>

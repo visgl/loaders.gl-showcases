@@ -69,22 +69,22 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#compare-default-button");
     await page.click("#compare-default-button");
-    await page.hover("a[href='/comparison/across-layers']");
-    await page.click("a[href='/comparison/across-layers']");
+    await page.hover("a[href='/compare-across-layers']");
+    await page.click("a[href='/compare-across-layers']");
 
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/comparison/across-layers");
+    expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 
   it("Should go to the Comparison Withhin Layer Page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#compare-default-button");
     await page.click("#compare-default-button");
-    await page.hover("a[href='/comparison/within-layer']");
-    await page.click("a[href='/comparison/within-layer']");
+    await page.hover("a[href='/compare-within-layer']");
+    await page.click("a[href='/compare-within-layer']");
 
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/comparison/within-layer");
+    expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 
   it("Should go to the project GitHub page", async () => {
@@ -321,17 +321,17 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#compare-tablet-or-mobile-button");
     await page.click("#compare-tablet-or-mobile-button");
 
-    await page.hover("a[href='/comparison/across-layers']");
-    await page.click("a[href='/comparison/across-layers']");
+    await page.hover("a[href='/compare-across-layers']");
+    await page.click("a[href='/compare-across-layers']");
 
+    await page.waitForSelector("#first-deck-container");
+    await page.waitForSelector("#second-deck-container");
 
-    await page.waitForSelector("#construction-info");
-    await page.waitForSelector("#construction-title");
+    expect(await page.$$("#first-deck-container")).toBeDefined();
+    expect(await page.$$("#second-deck-container")).toBeDefined();
 
     const currentUrl = page.url();
-    const text = await page.$eval("#construction-title", (e) => e.textContent);
-    expect(text).toEqual("We are working on it ...")
-    expect(currentUrl).toBe("http://localhost:3000/comparison/across-layers");
+    expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 
   it("Should go to the Comparison Withhin Layer Page", async () => {
@@ -341,15 +341,16 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#compare-tablet-or-mobile-button");
     await page.click("#compare-tablet-or-mobile-button");
 
-    await page.hover("a[href='/comparison/within-layer']");
-    await page.click("a[href='/comparison/within-layer']");
+    await page.hover("a[href='/compare-within-layer']");
+    await page.click("a[href='/compare-within-layer']");
 
-    await page.waitForSelector("#construction-info");
-    await page.waitForSelector("#construction-title");
+    await page.waitForSelector("#first-deck-container");
+    await page.waitForSelector("#second-deck-container");
+
+    expect(await page.$$("#first-deck-container")).toBeDefined();
+    expect(await page.$$("#second-deck-container")).toBeDefined();
 
     const currentUrl = page.url();
-    const text = await page.$eval("#construction-title", (e) => e.textContent);
-    expect(text).toEqual("We are working on it ...")
-    expect(currentUrl).toBe("http://localhost:3000/comparison/within-layer");
+    expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 });
