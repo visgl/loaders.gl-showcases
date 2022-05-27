@@ -5,6 +5,8 @@ import styled, { css } from "styled-components";
 import { Layout, Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
+import { lightGreen } from "../../constants/colors";
+
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
 import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 
@@ -102,17 +104,17 @@ const MenuLink = styled(Link)<ActiveProps>`
   position: relative;
 
   color: ${(props) =>
-    props.active ? "#60c2a4" : props.theme.colors.fontColor};
+    props.active ? lightGreen : props.theme.colors.fontColor};
   margin-right: 24px;
 
   &:hover {
-    color: #60c2a4;
+    color: ${lightGreen};
 
     &::after {
       content: "";
       position: absolute;
       top: 25px;
-      border: 1px solid #60c2a4;
+      border: 1px solid ${lightGreen};
       border-radius: 1px;
       width: 100%;
     }
@@ -125,7 +127,7 @@ const MenuLink = styled(Link)<ActiveProps>`
         content: "";
         position: absolute;
         top: 25px;
-        border: 1px solid #60c2a4;
+        border: 1px solid ${lightGreen};
         border-radius: 1px;
         width: 100%;
       }
@@ -149,9 +151,9 @@ const GitHubLink = styled.a`
   color: ${(props) => props.theme.colors.fontColor};
 
   &:hover {
-    color: #60c2a4;
+    color: ${lightGreen};
     & > img {
-      border: 1px solid #60c2a4;
+      border: 1px solid ${lightGreen};
     }
   }
 `;
@@ -166,11 +168,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin-top: 2px;
   height: 30px;
   border-bottom: 2px solid
-    ${(props) => (props.active ? "#60c2a4" : props.theme.colors.mainColor)};
+    ${(props) => (props.active ? lightGreen : props.theme.colors.mainColor)};
   border-radius: 2px;
 
   color: ${(props) =>
-    props.active ? "#60c2a4" : props.theme.colors.fontColor};
+    props.active ? lightGreen : props.theme.colors.fontColor};
 
   &::before,
   &::after {
@@ -195,11 +197,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   }
 
   &:hover {
-    color: #60c2a4;
-    border-bottom: 2px solid #60c2a4;
+    color: ${lightGreen};
+    border-bottom: 2px solid ${lightGreen};
     &::after,
     &::before {
-      background: #60c2a4;
+      background: ${lightGreen};
     }
   }
 
@@ -208,7 +210,7 @@ const CompareButton = styled.div<CompareButtonProps>`
     css`
       &:after,
       &:before {
-        background: #60c2a4;
+        background: ${lightGreen};
       }
     `}
 `;
@@ -223,8 +225,8 @@ const HelpButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: #60c2a4;
-    color: #60c2a4;
+    border-color: ${lightGreen};
+    color: ${lightGreen};
   }
 `;
 
@@ -253,7 +255,7 @@ const ThemeToggleImage = styled.img<ActiveProps>`
     props.active ? props.theme.colors.mainColor : "transparent"};
 
   &:hover {
-    background: #60c2a4;
+    background: ${lightGreen};
   }
 `;
 
@@ -301,7 +303,7 @@ const LinksWrapper = styled.div`
 
 const TabletOrMobileLink = styled(Link)<ActiveProps>`
   color: ${(props) =>
-    props.active ? "#60c2a4" : props.theme.colors.fontColor};
+    props.active ? lightGreen : props.theme.colors.fontColor};
   text-decoration: inherit;
   font-size: 16px;
   line-height: 19px;
@@ -313,23 +315,23 @@ const CompareTabletOrMobile = styled(CompareButton)<CompareButtonProps>`
   border: none;
   height: 19px;
   color: ${(props) =>
-    props.active ? "#60c2a4" : props.theme.colors.fontColor};
+    props.active ? lightGreen : props.theme.colors.fontColor};
   width: calc(100vw - 60px);
 
   &::after,
   &::before {
     background: ${(props) =>
-      props.active ? "#60c2a4" : props.theme.colors.fontColor};
+      props.active ? lightGreen : props.theme.colors.fontColor};
   }
 
   &:hover {
     border: none;
     color: ${(props) =>
-      props.active ? "#60c2a4" : props.theme.colors.fontColor};
+      props.active ? lightGreen : props.theme.colors.fontColor};
     &::after,
     &::before {
       background: ${(props) =>
-        props.active ? "#60c2a4" : props.theme.colors.fontColor};
+        props.active ? lightGreen : props.theme.colors.fontColor};
     }
   }
 `;

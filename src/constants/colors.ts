@@ -7,3 +7,4 @@ export const white = '#FFFFFF';
 export const black = '#0E111A';
 export const darkViolet = '#4744D3';
 export const primaryViolet = '#605DEC';
+export const lightGreen = '#60c2a4';
