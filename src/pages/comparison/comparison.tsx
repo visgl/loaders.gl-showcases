@@ -270,7 +270,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
         <LeftSideToolsPanelWrapper layout={layout}>
-          <MainToolsPanel showSettings={mode === ComparisonMode.withinLayer} />
+          <MainToolsPanel
+            id="tools-panel-left"
+            showSettings={mode === ComparisonMode.withinLayer}
+          />
         </LeftSideToolsPanelWrapper>
         <DeckGL
           id="first-deck-container"
@@ -291,6 +294,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <DeckWrapper layout={layout}>
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
+            id="tools-panel-right"
             showOptions={mode === ComparisonMode.acrossLayers}
             showSettings={mode === ComparisonMode.withinLayer}
           />

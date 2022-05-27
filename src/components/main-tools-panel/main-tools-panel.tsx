@@ -29,12 +29,17 @@ interface ButtonProps {
 }
 
 interface MainToolsPanelProps {
+  id: string;
   showOptions?: boolean;
   showSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
 }
 
-const Container = styled.div`
+interface ContainerProps {
+  id: string;
+}
+
+const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   background: ${(props) => props.theme.colors.mainColor};
@@ -79,6 +84,7 @@ const Button = styled.button<ButtonProps>`
 `;
 
 export const MainToolsPanel = ({
+  id,
   showOptions = true,
   showSettings = true,
   onChange = () => ({}),
@@ -96,7 +102,7 @@ export const MainToolsPanel = ({
   };
 
   return (
-    <Container>
+    <Container id={id}>
       {showOptions && (
         <Button
           layout={layout}
