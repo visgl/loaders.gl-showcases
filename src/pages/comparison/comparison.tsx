@@ -18,8 +18,14 @@ import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { TRANSITION_DURATION } from "../../constants/i3s-examples";
 import { darkGrey } from "../../constants/colors";
+import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
+import { ComparisonMode } from "../../utils/enums";
 
-interface layoutProps {
+interface ComparisonPageProps {
+  mode: ComparisonMode;
+}
+
+interface LayoutProps {
   layout: string;
 }
 
@@ -49,18 +55,18 @@ const VIEW = new MapView({
   farZMultiplier: 2.02,
 });
 
-const Container = styled.div<layoutProps>`
+const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: ${getCurrentLayoutProperty({
     default: "row",
     tablet: "column",
-    mobile: "column",
+    mobile: "column-reverse",
   })};
-  margin-top: 60px;
+  margin-top: 58px;
   height: calc(100% - 60px);
 `;
 
-const DeckWrapper = styled.div<layoutProps>`
+const DeckWrapper = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
     default: "50%",
     tablet: "100%",
@@ -70,7 +76,7 @@ const DeckWrapper = styled.div<layoutProps>`
   position: relative;
 `;
 
-const Devider = styled.div<layoutProps>`
+const Devider = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
     default: "14px",
     tablet: "100%",
@@ -86,7 +92,41 @@ const Devider = styled.div<layoutProps>`
   background-color: ${darkGrey};
 `;
 
-export const Comparison = () => {
+const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+  z-index: 10;
+
+  left: ${getCurrentLayoutProperty({
+    default: "24px",
+    tablet: "24px",
+    mobile: "8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    default: "right 24px",
+    tablet: "left 24px",
+    mobile: "left 8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
   const [terrainTiles] = useState({});
   const [metadata] = useState({ layers: [] });
@@ -225,9 +265,13 @@ export const Comparison = () => {
       loadOptions,
     }),
   ];
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
+        <LeftSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel showSettings={mode === ComparisonMode.withinLayer} />
+        </LeftSideToolsPanelWrapper>
         <DeckGL
           id="first-deck-container"
           layers={layers1}
@@ -245,6 +289,12 @@ export const Comparison = () => {
 
       <Devider layout={layout} />
       <DeckWrapper layout={layout}>
+        <RightSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            showOptions={mode === ComparisonMode.acrossLayers}
+            showSettings={mode === ComparisonMode.withinLayer}
+          />
+        </RightSideToolsPanelWrapper>
         <DeckGL
           id="second-deck-container"
           layers={layers2}

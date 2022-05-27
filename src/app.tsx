@@ -12,6 +12,8 @@ import {
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
+import { ComparisonMode } from "./utils/enums";
+import { AppThemes } from "./utils/types";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -36,18 +38,24 @@ const GlobalStyle = createGlobalStyle`
 /**
  * @todo Add colors and styles for each theme.
  */
-const THEMES = {
+const THEMES: AppThemes = {
   [Theme.Dark]: {
-    mainColor: darkGrey,
-    fontColor: white,
-    buttonBorderColor: lightGrey,
-    buttonBackgroundColor: mediumGrey,
+    colors: {
+      mainColor: darkGrey,
+      fontColor: white,
+      buttonBorderColor: lightGrey,
+      buttonBackgroundColor: mediumGrey,
+    },
+    name: Theme.Dark,
   },
   [Theme.Light]: {
-    mainColor: white,
-    fontColor: black,
-    buttonBorderColor: lightGrey,
-    buttonBackgroundColor: silverGrey,
+    colors: {
+      mainColor: white,
+      fontColor: black,
+      buttonBorderColor: lightGrey,
+      buttonBackgroundColor: silverGrey,
+    },
+    name: Theme.Light,
   },
 };
 
@@ -74,11 +82,13 @@ export const App = () => {
               <Route path={"debug"} element={<Pages.DebugApp />} />
               <Route
                 path={"compare-across-layers"}
-                element={<Pages.Comparison />}
+                element={
+                  <Pages.Comparison mode={ComparisonMode.acrossLayers} />
+                }
               />
               <Route
                 path={"compare-within-layer"}
-                element={<Pages.Comparison />}
+                element={<Pages.Comparison mode={ComparisonMode.withinLayer} />}
               />
             </Routes>
           </ContentWrapper>

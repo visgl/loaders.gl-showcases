@@ -5,3 +5,5 @@ export const darkGrey = '#232430';
 export const silverGrey = '#DCDEE3';
 export const white = '#FFFFFF';
 export const black = '#0E111A';
+export const darkViolet = '#4744D3';
+export const primaryViolet = '#605DEC';

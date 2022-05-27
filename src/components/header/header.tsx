@@ -62,7 +62,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 
   height: ${getCurrentLayoutProperty({
     default: "65px",
@@ -73,7 +73,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
 
 const HeaderLogo = styled.h2<PropsWithLayout>`
   white-space: nowrap;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   font-size: ${getCurrentLayoutProperty({
     default: "24px",
     tablet: "16px",
@@ -101,7 +101,8 @@ const MenuLink = styled(Link)<ActiveProps>`
   height: 20px;
   position: relative;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? "#60c2a4" : props.theme.colors.fontColor};
   margin-right: 24px;
 
   &:hover {
@@ -135,7 +136,7 @@ const GithubImage = styled.img`
   width: 16px;
   height: 16px;
   margin-left: 5px;
-  border: 1px solid ${(props) => props.theme.mainColor};
+  border: 1px solid ${(props) => props.theme.colors.mainColor};
   border-radius: 12px;
 `;
 
@@ -145,7 +146,7 @@ const GitHubLink = styled.a`
   text-decoration: none;
   height: 20px;
 
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   &:hover {
     color: #60c2a4;
@@ -165,16 +166,17 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin-top: 2px;
   height: 30px;
   border-bottom: 2px solid
-    ${(props) => (props.active ? "#60c2a4" : props.theme.mainColor)};
+    ${(props) => (props.active ? "#60c2a4" : props.theme.colors.mainColor)};
   border-radius: 2px;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? "#60c2a4" : props.theme.colors.fontColor};
 
   &::before,
   &::after {
     content: "";
     position: absolute;
-    background: ${(props) => props.theme.fontColor};
+    background: ${(props) => props.theme.colors.fontColor};
     border-radius: 2px;
     display: block;
     height: 7px;
@@ -212,8 +214,8 @@ const CompareButton = styled.div<CompareButtonProps>`
 `;
 
 const HelpButton = styled.button`
-  color: ${(props) => props.theme.fontColor};
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  color: ${(props) => props.theme.colors.fontColor};
+  border: 1px solid ${(props) => props.theme.colors.buttonBorderColor};
   border-radius: 12px;
   padding: 7px 18px;
   background: transparent;
@@ -227,10 +229,10 @@ const HelpButton = styled.button`
 `;
 
 const ThemeToggleWrapper = styled.div`
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  border: 1px solid ${(props) => props.theme.colors.buttonBorderColor};
   border-radius: 12px;
 
-  background: ${(props) => props.theme.buttonBackgroundColor};
+  background: ${(props) => props.theme.colors.buttonBackgroundColor};
   margin-left: 24px;
   padding: 1px;
 
@@ -248,7 +250,7 @@ const ThemeToggleImage = styled.img<ActiveProps>`
 
   cursor: pointer;
   background: ${(props) =>
-    props.active ? props.theme.mainColor : "transparent"};
+    props.active ? props.theme.colors.mainColor : "transparent"};
 
   &:hover {
     background: #60c2a4;
@@ -277,7 +279,7 @@ const TabletOrMobileMenuContainer = styled.div`
   top: 58px;
   display: flex;
   width: 100vw;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 `;
 
 const MenuLinks = styled.div`
@@ -298,7 +300,8 @@ const LinksWrapper = styled.div`
 `;
 
 const TabletOrMobileLink = styled(Link)<ActiveProps>`
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? "#60c2a4" : props.theme.colors.fontColor};
   text-decoration: inherit;
   font-size: 16px;
   line-height: 19px;
@@ -309,36 +312,38 @@ const CompareTabletOrMobile = styled(CompareButton)<CompareButtonProps>`
   margin: 20px 0;
   border: none;
   height: 19px;
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? "#60c2a4" : props.theme.colors.fontColor};
   width: calc(100vw - 60px);
 
   &::after,
   &::before {
     background: ${(props) =>
-      props.active ? "#60c2a4" : props.theme.fontColor};
+      props.active ? "#60c2a4" : props.theme.colors.fontColor};
   }
 
   &:hover {
     border: none;
-    color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+    color: ${(props) =>
+      props.active ? "#60c2a4" : props.theme.colors.fontColor};
     &::after,
     &::before {
       background: ${(props) =>
-        props.active ? "#60c2a4" : props.theme.fontColor};
+        props.active ? "#60c2a4" : props.theme.colors.fontColor};
     }
   }
 `;
 
 const TabletOrMobileGitHubLink = styled(GitHubLink)`
   margin: 20px 0;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   & > img {
     border: none;
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
+    color: ${(props) => props.theme.colors.fontColor};
     & > img {
       border: none;
     }
@@ -355,7 +360,7 @@ const TabletOrMobileListButton = styled.div`
   height: 20px;
   position: relative;
   margin: 20px 16px;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   cursor: pointer;
 `;
 
@@ -363,7 +368,7 @@ const CompareTabContainer = styled.div`
   position: absolute;
   top: 49px;
   left: -80px;
-  background: ${(props) => props.theme.mainColor};
+  background: ${(props) => props.theme.colors.mainColor};
   border: 1px solid #616678;
   border-radius: 0px 0px 8px 8px;
   display: flex;
@@ -388,8 +393,8 @@ const CompareMenuLink = styled(MenuLink)`
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
-    background: ${(props) => props.theme.buttonBackgroundColor};
+    color: ${(props) => props.theme.colors.fontColor};
+    background: ${(props) => props.theme.colors.buttonBackgroundColor};
   }
 
   &:first-child {

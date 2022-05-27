@@ -1,4 +1,5 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
+import { Theme } from "./enums";
 
 export type TileWarning = {
   type: string;
@@ -33,4 +34,14 @@ export type LayoutProperties = {
   default: string | number;
   tablet: string | number;
   mobile: string | number;
+};
+
+type AppTheme = {
+  name: Theme;
+  colors: { [name: string]: string };
+};
+
+export type AppThemes = {
+  [Theme.Dark]: AppTheme;
+  [Theme.Light]: AppTheme;
 };
