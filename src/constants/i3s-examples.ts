@@ -9,6 +9,8 @@ const VIEW_STATE = {
   zoom: 14.5,
 };
 
+export const TRANSITION_DURATION = 4000;
+
 export const INITIAL_EXAMPLE_NAME = "san-francisco-v1.7";
 export const CUSTOM_EXAMPLE_VALUE = "custom-example";
 

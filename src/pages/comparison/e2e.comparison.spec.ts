@@ -1,21 +1,43 @@
 import puppeteer from "puppeteer";
 
-describe("Comparison", () => {
+describe("Compare pages", () => {
   let browser;
   let page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto("http://localhost:3000/comparison");
+  });
+
+  beforeEach(async () => {
+    await page.goto("http://localhost:3000");
   });
 
   afterAll(() => browser.close());
 
-  it("Contains construction info", async () => {
-    await page.waitForSelector("#construction-info");
-    await page.waitForSelector("#construction-title");
-    const text = await page.$eval("#construction-title", (e) => e.textContent);
-    expect(text).toEqual("We are working on it ...")
+  it("Compare Across Layers Page should be present", async () => {
+    await page.goto("http://localhost:3000/compare-across-layers");
+
+    await page.waitForSelector("#first-deck-container");
+    await page.waitForSelector("#second-deck-container");
+
+    expect(await page.$$("#first-deck-container")).toBeDefined();
+    expect(await page.$$("#second-deck-container")).toBeDefined();
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
+  });
+
+  it("Compare Within Layer Page should be present", async () => {
+    await page.goto("http://localhost:3000/compare-within-layer");
+
+    await page.waitForSelector("#first-deck-container");
+    await page.waitForSelector("#second-deck-container");
+
+    expect(await page.$$("#first-deck-container")).toBeDefined();
+    expect(await page.$$("#second-deck-container")).toBeDefined();
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 });

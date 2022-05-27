@@ -2,6 +2,14 @@ import { useState } from "react";
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
+import {
+  black,
+  darkGrey,
+  lightGrey,
+  mediumGrey,
+  silverGrey,
+  white,
+} from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
 
@@ -30,16 +38,16 @@ const GlobalStyle = createGlobalStyle`
  */
 const THEMES = {
   [Theme.Dark]: {
-    mainColor: "#232430",
-    fontColor: "#FFFFFF",
-    buttonBorderColor: "#9EA2AE",
-    buttonBackgroundColor: "#393A45",
+    mainColor: darkGrey,
+    fontColor: white,
+    buttonBorderColor: lightGrey,
+    buttonBackgroundColor: mediumGrey,
   },
   [Theme.Light]: {
-    mainColor: "#FFFFFF",
-    fontColor: "#0E111A",
-    buttonBorderColor: "#9EA2AE",
-    buttonBackgroundColor: "#DCDEE3",
+    mainColor: white,
+    fontColor: black,
+    buttonBorderColor: lightGrey,
+    buttonBackgroundColor: silverGrey,
   },
 };
 
@@ -64,15 +72,13 @@ export const App = () => {
               <Route path={"dashboard"} element={<Pages.Dashboard />} />
               <Route path={"viewer"} element={<Pages.ViewerApp />} />
               <Route path={"debug"} element={<Pages.DebugApp />} />
-              <Route path={"comparison"} element={<Pages.Comparison />} />
-              <Route path={"comparison"} element={<Pages.Comparison />} />
               <Route
-                path={"comparison/across-layers"}
-                element={<Pages.ConstructionInfo />}
+                path={"compare-across-layers"}
+                element={<Pages.Comparison />}
               />
               <Route
-                path={"comparison/within-layer"}
-                element={<Pages.ConstructionInfo />}
+                path={"compare-within-layer"}
+                element={<Pages.Comparison />}
               />
             </Routes>
           </ContentWrapper>
