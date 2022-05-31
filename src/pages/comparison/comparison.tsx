@@ -2,21 +2,15 @@ import { useState } from "react";
 import DeckGL from "@deck.gl/react";
 import {
   MapController,
-  FlyToInterpolator,
-  COORDINATE_SYSTEM,
   MapView,
   WebMercatorViewport,
 } from "@deck.gl/core";
 import styled from "styled-components";
 
 import { StaticMap } from "react-map-gl";
-import { Tileset3D } from "@loaders.gl/tiles";
-import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { I3SLoader } from "@loaders.gl/i3s";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { TRANSITION_DURATION } from "../../constants/i3s-examples";
 import { darkGrey } from "../../constants/colors";
 
 interface layoutProps {
@@ -24,14 +18,14 @@ interface layoutProps {
 }
 
 const INITIAL_VIEW_STATE = {
-  longitude: -120,
-  latitude: 34,
+  longitude: 0,
+  latitude: 0,
   pitch: 45,
   maxPitch: 90,
   bearing: 0,
-  minZoom: 2,
+  minZoom: 1,
   maxZoom: 30,
-  zoom: 14.5,
+  zoom: 1,
   transitionDuration: 0,
   transitionInterpolator: null,
 };
@@ -89,9 +83,7 @@ const Devider = styled.div<layoutProps>`
 export const Comparison = () => {
   let currentViewport: WebMercatorViewport = null;
   const [terrainTiles] = useState({});
-  const [metadata] = useState({ layers: [] });
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
   const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const layout = useAppLayout();
 
@@ -135,102 +127,12 @@ export const Comparison = () => {
     });
   };
 
-  const onTilesetLoad = (tileset: Tileset3D) => {
-    if (needTransitionToTileset) {
-      const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
-      const viewport = currentViewport;
-      let pLongitue = longitude;
-      let pLatitude = latitude;
-
-      if (viewport) {
-        const { pitch, bearing } = viewState;
-        // @ts-expect-error - roperty 'fullExtent' does not exist on type 'never'.
-        const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
-        /**
-         * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
-         * For elevated tilesets cartographic center position of a tileset is not correct
-         * to use it as viewState position because these positions are different.
-         * We need to calculate projection of camera direction onto the ellipsoid surface.
-         * We use this projection as offset to add it to the tileset cartographic center position.
-         */
-        const projection = zmin * Math.tan((pitch * Math.PI) / 180);
-        /**
-         * Convert to world coordinate system to shift the position on some distance in meters
-         */
-        const projectedPostion = viewport.projectPosition([
-          longitude,
-          latitude,
-        ]);
-        /**
-         * Shift longitude
-         */
-        projectedPostion[0] +=
-          projection *
-          Math.sin((bearing * Math.PI) / 180) *
-          viewport.distanceScales.unitsPerMeter[0];
-        /**
-         * Shift latitude
-         */
-        projectedPostion[1] +=
-          projection *
-          Math.cos((bearing * Math.PI) / 180) *
-          viewport.distanceScales.unitsPerMeter[1];
-        /**
-         * Convert resulting coordinates to catrographic
-         */
-
-        [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
-      }
-
-      const newViewState = {
-        ...viewState,
-        zoom: zoom + 2.5,
-        longitude: pLongitue,
-        latitude: pLatitude,
-      };
-
-      setViewState({
-        ...newViewState,
-        transitionDuration: TRANSITION_DURATION,
-        transitionInterpolator: new FlyToInterpolator(),
-      });
-      setNeedTransitionToTileset(false);
-    }
-  };
-
-  const loadOptions: {
-    i3s: {
-      coordinateSystem: number;
-      token?: string;
-    };
-  } = {
-    i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
-  };
-  const layers1 = [
-    new Tile3DLayer({
-      id: `tile-layer-1`,
-      data: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
-      loader: I3SLoader,
-      onTilesetLoad: onTilesetLoad,
-      loadOptions,
-    }),
-  ];
-  const layers2 = [
-    new Tile3DLayer({
-      id: `tile-layer-2`,
-      data: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
-      loader: I3SLoader,
-      onTilesetLoad: onTilesetLoad,
-      loadOptions,
-    }),
-  ];
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
         <DeckGL
           id="first-deck-container"
-          layers={layers1}
+          layers={[]}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
@@ -247,7 +149,7 @@ export const Comparison = () => {
       <DeckWrapper layout={layout}>
         <DeckGL
           id="second-deck-container"
-          layers={layers2}
+          layers={[]}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
