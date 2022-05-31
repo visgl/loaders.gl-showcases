@@ -23,9 +23,9 @@ const INITIAL_VIEW_STATE = {
   pitch: 45,
   maxPitch: 90,
   bearing: 0,
-  minZoom: 1,
+  minZoom: 2,
   maxZoom: 30,
-  zoom: 1,
+  zoom: 2,
   transitionDuration: 0,
   transitionInterpolator: null,
 };
