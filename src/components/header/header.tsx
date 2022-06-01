@@ -25,34 +25,34 @@ import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 
 const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
 
-interface HeaderProps {
+type HeaderProps = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-}
+};
 
-interface DefaultMenuProps {
+type DefaultMenuProps = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   pathname: string;
   githubIcon: string;
-}
+};
 
-interface PropsWithLayout {
+type PropsWithLayout = {
   layout: string;
-}
+};
 
-interface CompareButtonProps {
+type CompareButtonProps = {
   open: boolean;
   active: boolean;
-}
+};
 
-interface ActiveProps {
+type ActiveProps = {
   active: number;
-}
+};
 
-interface CompareMenuProps {
+type CompareMenuProps = {
   pathname: string;
-}
+};
 
 const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;

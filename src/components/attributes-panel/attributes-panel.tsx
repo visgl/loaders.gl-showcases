@@ -75,12 +75,12 @@ const Title = styled.h3`
 
 const NO_DATA = "No Data";
 
-interface AttributesPanelProps {
+type AttributesPanelProps = {
   title: string;
   attributesObject: any;
   handleClosePanel: () => void;
   children?: any;
-}
+};
 
 /**
  * TODO: Add types to component

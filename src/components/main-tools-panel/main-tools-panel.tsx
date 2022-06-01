@@ -21,23 +21,23 @@ enum ActiveButton {
   none,
 }
 
-interface ButtonProps {
+type ButtonProps = {
   active: boolean;
   lightImage: string;
   darkImage: string;
   layout: Layout;
-}
+};
 
-interface MainToolsPanelProps {
+type MainToolsPanelProps = {
   id: string;
   showOptions?: boolean;
   showSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
-}
+};
 
-interface ContainerProps {
+type ContainerProps = {
   id: string;
-}
+};
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -55,8 +55,6 @@ const Button = styled.button<ButtonProps>`
   width: 56px;
   height: 60px;
   cursor: pointer;
-  background-color: ${(props) =>
-    props.active ? primaryViolet : "transparent"} !important;
   background: url(${(props) =>
       props.active
         ? props.lightImage
@@ -64,13 +62,11 @@ const Button = styled.button<ButtonProps>`
         ? props.darkImage
         : props.lightImage})
     no-repeat;
+  background-color: ${(props) =>
+    props.active ? primaryViolet : "transparent"};
   background-position: center;
   outline: 0;
   border: none;
-
-  button:focus {
-    outline: 0;
-  }
 
   ${({ layout, lightImage }) =>
     layout === Layout.Default &&
@@ -78,7 +74,7 @@ const Button = styled.button<ButtonProps>`
       &:hover {
         background: url(${lightImage}) no-repeat;
         background-position: center;
-        background-color: ${darkViolet} !important;
+        background-color: ${darkViolet};
       }
     `}
 `;

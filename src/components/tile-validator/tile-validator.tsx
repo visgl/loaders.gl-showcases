@@ -76,18 +76,18 @@ const VALIDATE_TILE = "Validate Tile";
 const WARNING_TYPE = "warning";
 const OK_TYPE = "ok";
 
-interface IGeometryInfo {
+type IGeometryInfo = {
   type: string;
   title: string;
-}
+};
 
-interface ITriangleMessage {
+type ITriangleMessage = {
   key: string;
   type?: string;
   text: string;
-}
+};
 
-interface TileValidatorProps {
+type TileValidatorProps = {
   tile: Tile3D;
   handleShowNormals: (tile: Tile3D) => void;
   showNormals: boolean;
@@ -95,7 +95,7 @@ interface TileValidatorProps {
   normalsLength: number;
   handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
   handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
-}
+};
 
 /**
  * TODO: Add types to component
