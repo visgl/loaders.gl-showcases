@@ -153,7 +153,7 @@ export const DebugPanel = ({
     return (
       <CheckboxOption>
         <Option>Type</Option>
-        <DropDown 
+        <DropDown
           id="volume-type"
           value={boundingVolumeType}
           onChange={(evt) =>
@@ -219,7 +219,6 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="loadTiles"
-              value={loadTiles}
               checked={loadTiles}
               onChange={() => onDebugOptionsChange({ loadTiles: !loadTiles })}
             />
@@ -230,7 +229,6 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="pickable"
-              value={pickable}
               checked={pickable}
               onChange={() => onDebugOptionsChange({ pickable: !pickable })}
             ></Checkbox>
@@ -241,7 +239,6 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="uvDebugTexture"
-              value={showUVDebugTexture}
               checked={showUVDebugTexture}
               onChange={() =>
                 onDebugOptionsChange({
@@ -257,7 +254,6 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="wireframe"
-              value={wireframe}
               checked={wireframe}
               onChange={() => onDebugOptionsChange({ wireframe: !wireframe })}
             />
@@ -296,7 +292,6 @@ export const DebugPanel = ({
         <label>
           <Checkbox
             id="showFrustumCullingMinimapViewport"
-            value={minimapViewport}
             checked={minimapViewport}
             onChange={() =>
               onDebugOptionsChange({ minimapViewport: !minimapViewport })

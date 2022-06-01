@@ -8,7 +8,9 @@ import {
   lightGrey,
   mediumGrey,
   silverGrey,
+  transparentBlack,
   white,
+  whiteSecondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
@@ -45,6 +47,8 @@ const THEMES: AppThemes = {
       fontColor: white,
       buttonBorderColor: lightGrey,
       buttonBackgroundColor: mediumGrey,
+      panelBackgroundColor: transparentBlack,
+      listItemBackground: mediumGrey,
     },
     name: Theme.Dark,
   },
@@ -54,6 +58,8 @@ const THEMES: AppThemes = {
       fontColor: black,
       buttonBorderColor: lightGrey,
       buttonBackgroundColor: silverGrey,
+      panelBackgroundColor: whiteSecondary,
+      listItemBackground: silverGrey,
     },
     name: Theme.Light,
   },

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const CheckboxContainer = styled.div<{ disabled: boolean }>`
+const CheckboxContainer = styled.div<{ disabled?: boolean }>`
   display: inline-block;
   vertical-align: middle;
   cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
@@ -46,11 +46,11 @@ const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
 /**
  * TODO: Add types to component
  */
-export const Checkbox = ({ checked, ...props }) => (
-  <CheckboxContainer disabled={props.disabled}>
-    <HiddenCheckbox checked={checked} {...props} />
-    <StyledCheckbox disabled={props.disabled} checked={checked}>
-      <Icon id={`${props.id}-icon`} viewBox="0 0 24 24">
+export const Checkbox = ({ id, checked, disabled = false, onChange }) => (
+  <CheckboxContainer disabled={disabled}>
+    <HiddenCheckbox checked={checked} onChange={onChange} />
+    <StyledCheckbox disabled={disabled} checked={checked}>
+      <Icon id={`${id}-icon`} viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />
       </Icon>
     </StyledCheckbox>

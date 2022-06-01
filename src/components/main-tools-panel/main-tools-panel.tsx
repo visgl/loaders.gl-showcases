@@ -11,15 +11,8 @@ import GearIconGrey from "../../../public/icons/gear-grey.svg";
 import SettingsIconGrey from "../../../public/icons/settings-grey.svg";
 import MemoryIconGrey from "../../../public/icons/memory-grey.svg";
 
-import { Layout, Theme } from "../../utils/enums";
+import { ActiveButton, Layout, Theme } from "../../utils/enums";
 import { useAppLayout } from "../../utils/layout";
-
-enum ActiveButton {
-  options,
-  settings,
-  memory,
-  none,
-}
 
 type ButtonProps = {
   active: boolean;
@@ -30,6 +23,7 @@ type ButtonProps = {
 
 type MainToolsPanelProps = {
   id: string;
+  active: ActiveButton;
   showOptions?: boolean;
   showSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
@@ -81,21 +75,12 @@ const Button = styled.button<ButtonProps>`
 
 export const MainToolsPanel = ({
   id,
+  active,
   showOptions = true,
   showSettings = true,
   onChange = () => ({}),
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
-  const [active, setActive] = useState<ActiveButton>(ActiveButton.none);
-
-  const handleButtonClick = (activeButton: ActiveButton) => {
-    if (active === activeButton) {
-      setActive(ActiveButton.none);
-    } else {
-      setActive(activeButton);
-    }
-    onChange(activeButton);
-  };
 
   return (
     <Container id={id}>
@@ -105,7 +90,7 @@ export const MainToolsPanel = ({
           active={active === ActiveButton.options}
           darkImage={GearIconGrey}
           lightImage={GearIconWhite}
-          onClick={() => handleButtonClick(ActiveButton.options)}
+          onClick={() => onChange(ActiveButton.options)}
         />
       )}
       {showSettings && (
@@ -114,7 +99,7 @@ export const MainToolsPanel = ({
           active={active === ActiveButton.settings}
           darkImage={SettingsIconGrey}
           lightImage={SettingsIconWhite}
-          onClick={() => handleButtonClick(ActiveButton.settings)}
+          onClick={() => onChange(ActiveButton.settings)}
         />
       )}
       <Button
@@ -122,7 +107,7 @@ export const MainToolsPanel = ({
         active={active === ActiveButton.memory}
         darkImage={MemoryIconGrey}
         lightImage={MemoryIconWhite}
-        onClick={() => handleButtonClick(ActiveButton.memory)}
+        onClick={() => onChange(ActiveButton.memory)}
       />
     </Container>
   );

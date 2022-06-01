@@ -158,7 +158,6 @@ export const BuildingExplorer = ({
             <label>
               <Checkbox
                 id={`CheckBox${sublayer.id}`}
-                value={sublayer.visibility}
                 checked={sublayer.visibility}
                 onChange={() => toggleSublayer(sublayer)}
               />

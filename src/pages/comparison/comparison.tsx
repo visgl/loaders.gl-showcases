@@ -9,7 +9,8 @@ import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { darkGrey } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
-import { ComparisonMode } from "../../utils/enums";
+import { ActiveButton, ComparisonMode, ListItemType } from "../../utils/enums";
+import { LayersPanel } from "../../components/layers-panel/layers-panel";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -115,11 +116,51 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
+const LeftLayersPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+  z-index: 10;
+
+  left: ${getCurrentLayoutProperty({
+    default: "100px",
+    tablet: "100px",
+    mobile: "calc(50% - 180px)",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "top: calc(50% - 20vh);",
+  })};
+`;
+
+const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    default: "right 100px;",
+    tablet: "left: 100px;",
+    mobile: "left: calc(50% - 180px);",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "top: calc(50% - 20vh);",
+  })};
+`;
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
   const [terrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
+  const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
+    ActiveButton.none
+  );
+  const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
+    ActiveButton.none
+  );
   const layout = useAppLayout();
 
   const onViewStateChange = ({ interactionState, viewState }) => {
@@ -162,6 +203,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const handleChangeLeftPanelVisibility = (active: ActiveButton) => {
+    setActiveLeftPanel((prevValue) =>
+      prevValue === active ? ActiveButton.none : active
+    );
+  };
+
+  const handleChangeRightPanelVisibility = (active: ActiveButton) => {
+    setActiveRightPanel((prevValue) =>
+      prevValue === active ? ActiveButton.none : active
+    );
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -181,9 +234,33 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
+            active={activeLeftPanel}
             showSettings={mode === ComparisonMode.withinLayer}
+            onChange={handleChangeLeftPanelVisibility}
           />
         </LeftSideToolsPanelWrapper>
+        {activeLeftPanel === ActiveButton.options && (
+          <LeftLayersPanelWrapper layout={layout}>
+            <LayersPanel
+              layers={[]}
+              type={ListItemType.Radio}
+              baseMaps={[]}
+              multipleSelection={false}
+              onLayerInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onSceneInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onBaseMapInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onClose={() =>
+                handleChangeLeftPanelVisibility(ActiveButton.options)
+              }
+            />
+          </LeftLayersPanelWrapper>
+        )}
       </DeckWrapper>
 
       <Devider layout={layout} />
@@ -204,10 +281,34 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
+            active={activeRightPanel}
             showOptions={mode === ComparisonMode.acrossLayers}
             showSettings={mode === ComparisonMode.withinLayer}
+            onChange={handleChangeRightPanelVisibility}
           />
         </RightSideToolsPanelWrapper>
+        {activeRightPanel === ActiveButton.options && (
+          <RightLayersPanelWrapper layout={layout}>
+            <LayersPanel
+              layers={[]}
+              type={ListItemType.Radio}
+              baseMaps={[]}
+              multipleSelection={false}
+              onLayerInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onSceneInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onBaseMapInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onClose={() =>
+                handleChangeRightPanelVisibility(ActiveButton.options)
+              }
+            />
+          </RightLayersPanelWrapper>
+        )}
       </DeckWrapper>
     </Container>
   );
