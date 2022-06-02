@@ -13,13 +13,13 @@ export const useAppLayout = (): Layout => {
 
   switch (true) {
     case isDesktopOrLaptop:
-      return Layout.Default;
+      return Layout.Desktop;
     case isTablet:
       return Layout.Tablet;
     case isMobile:
       return Layout.Mobile;
     default:
-      return Layout.Default;
+      return Layout.Desktop;
   }
 };
 
@@ -27,7 +27,9 @@ export const useAppLayout = (): Layout => {
  * Return properties based on current layout
  * @param properties
  */
-export const getCurrentLayoutProperty = (properties: LayoutProperties) => (props: any): string | number => {
-  const layoutObject = props?.layout || Layout.Default;
-  return properties[layoutObject];
-};
+export const getCurrentLayoutProperty =
+  (properties: LayoutProperties) =>
+  (props: any): string | number => {
+    const layoutObject = props?.layout || Layout.Desktop;
+    return properties[layoutObject];
+  };

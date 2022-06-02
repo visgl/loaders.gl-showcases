@@ -1,10 +1,6 @@
 import { useState } from "react";
 import DeckGL from "@deck.gl/react";
-import {
-  MapController,
-  MapView,
-  WebMercatorViewport,
-} from "@deck.gl/core";
+import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
 
 import { StaticMap } from "react-map-gl";
@@ -46,7 +42,7 @@ const VIEW = new MapView({
 const Container = styled.div<layoutProps>`
   display: flex;
   flex-direction: ${getCurrentLayoutProperty({
-    default: "row",
+    desktop: "row",
     tablet: "column",
     mobile: "column",
   })};
@@ -56,7 +52,7 @@ const Container = styled.div<layoutProps>`
 
 const DeckWrapper = styled.div<layoutProps>`
   width: ${getCurrentLayoutProperty({
-    default: "50%",
+    desktop: "50%",
     tablet: "100%",
     mobile: "100%",
   })};
@@ -66,13 +62,13 @@ const DeckWrapper = styled.div<layoutProps>`
 
 const Devider = styled.div<layoutProps>`
   width: ${getCurrentLayoutProperty({
-    default: "14px",
+    desktop: "14px",
     tablet: "100%",
     mobile: "100%",
   })};
 
   height: ${getCurrentLayoutProperty({
-    default: "100%",
+    desktop: "100%",
     tablet: "8px",
     mobile: "8px",
   })};
