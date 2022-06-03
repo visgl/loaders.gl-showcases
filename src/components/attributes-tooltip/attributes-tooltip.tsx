@@ -1,5 +1,9 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const NO_DATA = "No Data";
 
@@ -12,7 +16,7 @@ const defaultProps = {
 };
 
 const Tooltip = styled.div`
-  background: "#0E111A",
+  background: ${color_brand_primary};
   margin: "-10px",
   color: "rgba(255,255,255,.6)",
   font-size: "14px",
@@ -22,7 +26,7 @@ const Tooltip = styled.div`
 const TableHeader = styled.th`
   text-align: left;
   font-size: 14px;
-  color: white;
+  color: ${color_canvas_inverted};
   font-weight: 400;
 `;
 

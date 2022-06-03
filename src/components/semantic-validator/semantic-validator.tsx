@@ -1,5 +1,9 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const SemanticValidatorContainer = styled.div`
   display: flex;
@@ -11,7 +15,7 @@ const SemanticValidatorContainer = styled.div`
   bottom: 10px;
   color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
-  background: #0e111a;
+  background: ${color_brand_primary};
   z-index: 17;
   line-height: 135%;
   border-radius: 8px;
@@ -28,14 +32,14 @@ const TableHeader = styled.th`
   position: sticky;
   top: 0;
   text-align: left;
-  background: #0e111a;
+  background: ${color_brand_primary};
   padding: 8px;
   height: 22px;
 `;
 
 const NoIssuesItem = styled.h4`
   margin: auto;
-  color: white;
+  color: ${color_canvas_inverted};
   font-weight: normal;
 `;
 

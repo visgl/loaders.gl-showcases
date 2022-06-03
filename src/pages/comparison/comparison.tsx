@@ -7,7 +7,7 @@ import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { darkGrey } from "../../constants/colors";
+import { color_canvas_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ActiveButton, ComparisonMode, ListItemType } from "../../utils/enums";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -81,7 +81,7 @@ const Devider = styled.div<LayoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${darkGrey};
+  background-color: ${color_canvas_primary};
 `;
 
 const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
@@ -245,8 +245,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
-            active={activeLeftPanel}
-            showSettings={mode === ComparisonMode.withinLayer}
+            activeButton={activeLeftPanel}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
             onChange={handleChangeLeftPanelVisibility}
           />
         </LeftSideToolsPanelWrapper>
@@ -293,9 +293,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
-            active={activeRightPanel}
-            showOptions={mode === ComparisonMode.acrossLayers}
-            showSettings={mode === ComparisonMode.withinLayer}
+            activeButton={activeRightPanel}
+            showLayerOptions={mode === ComparisonMode.acrossLayers}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
             onChange={handleChangeRightPanelVisibility}
           />
         </RightSideToolsPanelWrapper>

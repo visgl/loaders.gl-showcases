@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-import { darkViolet, primaryViolet } from "../../constants/colors";
+import { color_ui_primary, dim_ui_primary } from "../../constants/colors";
 
 import GearIconWhite from "../../../public/icons/gear-white.svg";
 import SettingsIconWhite from "../../../public/icons/settings-white.svg";
@@ -22,9 +22,9 @@ type ButtonProps = {
 
 type MainToolsPanelProps = {
   id: string;
-  active: ActiveButton;
-  showOptions?: boolean;
-  showSettings?: boolean;
+  activeButton: ActiveButton;
+  showLayerOptions?: boolean;
+  showComparisonSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
 };
 
@@ -56,7 +56,7 @@ const Button = styled.button<ButtonProps>`
         : props.lightImage})
     no-repeat;
   background-color: ${(props) =>
-    props.active ? primaryViolet : "transparent"};
+    props.active ? color_ui_primary : "transparent"};
   background-position: center;
   outline: 0;
   border: none;
@@ -67,35 +67,35 @@ const Button = styled.button<ButtonProps>`
       &:hover {
         background: url(${lightImage}) no-repeat;
         background-position: center;
-        background-color: ${darkViolet};
+        background-color: ${dim_ui_primary};
       }
     `}
 `;
 
 export const MainToolsPanel = ({
   id,
-  active,
-  showOptions = true,
-  showSettings = true,
+  activeButton,
+  showLayerOptions = true,
+  showComparisonSettings = true,
   onChange = () => ({}),
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
 
   return (
     <Container id={id}>
-      {showOptions && (
+      {showLayerOptions && (
         <Button
           layout={layout}
-          active={active === ActiveButton.options}
+          active={activeButton === ActiveButton.options}
           darkImage={GearIconGrey}
           lightImage={GearIconWhite}
           onClick={() => onChange(ActiveButton.options)}
         />
       )}
-      {showSettings && (
+      {showComparisonSettings && (
         <Button
           layout={layout}
-          active={active === ActiveButton.settings}
+          active={activeButton === ActiveButton.settings}
           darkImage={SettingsIconGrey}
           lightImage={SettingsIconWhite}
           onClick={() => onChange(ActiveButton.settings)}
@@ -103,7 +103,7 @@ export const MainToolsPanel = ({
       )}
       <Button
         layout={layout}
-        active={active === ActiveButton.memory}
+        active={activeButton === ActiveButton.memory}
         darkImage={MemoryIconGrey}
         lightImage={MemoryIconWhite}
         onClick={() => onChange(ActiveButton.memory)}

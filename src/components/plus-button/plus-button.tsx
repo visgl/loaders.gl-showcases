@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { primaryViolet } from "../../constants/colors";
+import { color_ui_primary } from "../../constants/colors";
 
 type PlusButtonProps = {
   text?: string;
@@ -15,7 +15,8 @@ const Button = styled.div`
   &:hover {
     > * {
       &:first-child {
-        opacity: 0.4;
+        // Keep rgba format to avoid issue with opacity inheritance and pseudo elements.
+        background: rgba(96, 93, 236, 0.2);
       }
     }
   }
@@ -25,7 +26,8 @@ const PlusIcon = styled.div`
   position: relative;
   width: 24px;
   height: 24px;
-  background: #605dec66;
+  // Keep rgba format to avoid issue with opacity inheritance and pseudo elements.
+  background: rgba(96, 93, 236, 0.4);
   cursor: pointer;
   border-radius: 4px;
   margin-right: 16px;
@@ -36,7 +38,7 @@ const PlusIcon = styled.div`
     transform: translate(-50%, -50%);
     height: 2px;
     width: 50%;
-    background: ${primaryViolet};
+    background: ${color_ui_primary};
     top: 50%;
     left: 50%;
   }
@@ -47,14 +49,14 @@ const PlusIcon = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: ${primaryViolet};
+    background: ${color_ui_primary};
     height: 50%;
     width: 2px;
   }
 `;
 
 const ButtonText = styled.div`
-  color: ${primaryViolet};
+  color: ${color_ui_primary};
 `;
 
 export const PlusButton = ({ text = "", onClick }: PlusButtonProps) => {

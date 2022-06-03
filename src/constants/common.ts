@@ -1,3 +1,5 @@
+import { color_brand_primary, color_canvas_inverted } from "./colors";
+
 export const DropDownStyle = `
   position: static;
   display: flex;
@@ -10,8 +12,8 @@ export const DropDownStyle = `
   border-radius: 4px;
   box-sizing: border-box;
     option {
-      color: white;
-      background: #0E111A;
+      color: ${color_canvas_inverted};
+      background: ${color_brand_primary};
       display: flex;
       white-space: pre;
       min-height: 20px;
@@ -19,13 +21,13 @@ export const DropDownStyle = `
     }
   &:hover {
     background: #4F52CC;
-    color: black;
+    color: ${color_brand_primary};
   }
 `;
 
 export const Color = `
-  background: #0E111A;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
 `;
 
 export const Font = `

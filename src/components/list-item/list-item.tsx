@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { lightGrey } from "../../constants/colors";
+import { color_brand_quaternary } from "../../constants/colors";
 import { ListItemType } from "../../utils/enums";
 import { Checkbox } from "../checkbox/checkbox";
 import { RadioButton } from "../radio-button/radio-button";
@@ -34,13 +34,13 @@ const Container = styled.div<ContainerProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background: ${({ theme }) => theme.colors.listItemBackground};
+      background: ${({ theme }) => theme.colors.listItemActive};
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     `}
 
   &:hover {
-    background: ${({ theme }) => theme.colors.listItemBackground};
+    background: ${({ theme }) => theme.colors.listItemHover};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 `;
@@ -58,7 +58,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
   position: relative;
   width: 4px;
   height: 4px;
-  background-color: ${lightGrey};
+  background-color: ${color_brand_quaternary};
   border-radius: 50%;
   margin-bottom: 12px;
 
@@ -69,7 +69,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
     width: 4px;
     height: 4px;
     left: 0px;
-    background-color: ${lightGrey};
+    background-color: ${color_brand_quaternary};
     border-radius: inherit;
   }
 

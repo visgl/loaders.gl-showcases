@@ -1,7 +1,10 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { lineGrey, senaryGrey } from "../../constants/colors";
-import { ListItemType } from "../../utils/enums";
+import {
+  color_canvas_inverted,
+  color_brand_tertiary,
+} from "../../constants/colors";
+import { ListItemType, Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { ListItem } from "../list-item/list-item";
 import { PlusButton } from "../plus-button/plus-button";
@@ -35,7 +38,8 @@ const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${(props) => props.theme.colors.panelBackgroundColor};
+  background: ${({ theme }) => theme.colors.panelBgColor};
+  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
   border-radius: 8px;
   padding-bottom: 26px;
 
@@ -67,9 +71,9 @@ const Tab = styled.div<TabProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 
   &:hover {
-    color: ${senaryGrey};
+    color: ${color_brand_tertiary};
     &::after {
-      background: ${senaryGrey};
+      background: ${color_brand_tertiary};
     }
   }
 
@@ -119,7 +123,7 @@ const CloseButton = styled.div`
   &:hover {
     &::before,
     &::after {
-      background-color: ${senaryGrey};
+      background-color: ${color_brand_tertiary};
     }
   }
 `;
@@ -138,9 +142,10 @@ const Content = styled.div`
 const HorizontalLine = styled.div`
   margin-top: 35px;
   margin-bottom: 16px;
-  border: 1px solid ${lineGrey};
+  border: 1px solid ${color_canvas_inverted};
   border-radius: 1px;
-  background: ${lineGrey};
+  background: ${color_canvas_inverted};
+  opacity: 0.12;
   width: 100%;
 `;
 
