@@ -4,6 +4,8 @@ import { lineGrey, senaryGrey } from "../../constants/colors";
 import { ListItemType } from "../../utils/enums";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { ListItem } from "../list-item/list-item";
+
+import { BaseMapList } from "../base-map-list/base-map-list";
 import { PlusButton } from "../plus-button/plus-button";
 
 enum Tabs {
@@ -158,29 +160,42 @@ const LayersList = styled.div`
   margin-bottom: 10px;
 `;
 
-const InsertButtons = styled.div`
+const InsertButtons = styled.div<{ item: number }>`
   display: flex;
   flex-direction: column;
   padding-left: 10px;
 
   > * {
     &:first-child {
-      margin-bottom: 28px;
+      margin-bottom: ${(props) => (props.item === Tabs.Layers ? "28px" : "0px")};
     }
   }
 `;
+
+const MapOptionTitle = styled.div`
+width: 100;
+height: 19px;
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 19px;
+color: #FFFFFF;
+margin-bottom: 24px;
+`;
+
+const DYMMY = [{id: Math.random().toString(), name: 'Dark'}, {id: Math.random().toString(), name: 'Dark'}, {id: Math.random().toString(), name: 'Dark'}]
 
 const LayersControlPanel = ({ layers, type }) => {
   return (
     <LayersContainer>
       <LayersList>
-        {layers.map((layer) => {
+        {DYMMY.map((layer) => {
           return (
             <ListItem
               key={layer.id}
               id={layer.id}
               title={layer.name}
-              type={type}
+              type={ListItemType.Radio}
               selected={false}
               hasOptions={true}
               onSelect={function (id: string): void {
@@ -193,15 +208,17 @@ const LayersControlPanel = ({ layers, type }) => {
           );
         })}
       </LayersList>
-      <InsertButtons>
+      <InsertButtons item={Tabs.Layers}>
         <PlusButton
           text={"Insert layer"}
+          tab={Tabs.Layers}
           onClick={function (): void {
             throw new Error("Function not implemented.");
           }}
         />
         <PlusButton
           text={"Insert scene"}
+          tab={Tabs.Layers}
           onClick={function (): void {
             throw new Error("Function not implemented.");
           }}
@@ -210,6 +227,40 @@ const LayersControlPanel = ({ layers, type }) => {
     </LayersContainer>
   );
 };
+
+const LayersMapOption = ({ baseMaps }) => {
+    return (
+      <LayersContainer>
+        <MapOptionTitle>
+          Base Map
+        </MapOptionTitle>
+        <LayersList>
+          {DYMMY.map((baseMap) => {
+            return (
+              <BaseMapList
+                key={baseMap.id}
+                id={baseMap.id}
+                title={baseMap.name}
+                hasOptions={true}
+                onOptionsClick={function (id: string): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
+            );
+          })}
+        </LayersList>
+        <InsertButtons item={Tabs.MapOptions}>
+          <PlusButton
+            tab={Tabs.MapOptions}
+            text={"Insert Base Map"}
+            onClick={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
+        </InsertButtons>
+      </LayersContainer>
+    );
+  };
 
 export const LayersPanel = ({
   layers,
@@ -242,7 +293,7 @@ export const LayersPanel = ({
         <HorizontalLine />
         {tab === Tabs.Layers ? (
           <LayersControlPanel layers={layers} type={type} />
-        ) : null}
+        ) : (<LayersMapOption baseMaps={baseMaps}/>)}
       </Content>
     </Container>
   );

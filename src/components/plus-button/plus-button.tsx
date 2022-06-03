@@ -3,6 +3,7 @@ import { primaryViolet } from "../../constants/colors";
 
 type PlusButtonProps = {
   text?: string;
+  tab: number;
   onClick: () => void;
 };
 
@@ -21,10 +22,10 @@ const Button = styled.div`
   }
 `;
 
-const PlusIcon = styled.div`
+const PlusIcon = styled.div<{ tab: number; }>`
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: ${(props) => (props.tab === 0 ? "24px" : "40px")};
+  height: ${(props) => (props.tab === 0 ? "24px" : "40px")};
   background: #605dec66;
   cursor: pointer;
   border-radius: 4px;
@@ -57,10 +58,10 @@ const ButtonText = styled.div`
   color: ${primaryViolet};
 `;
 
-export const PlusButton = ({ text = "", onClick }: PlusButtonProps) => {
+export const PlusButton = ({ text = "", tab, onClick }: PlusButtonProps) => {
   return (
     <Button onClick={onClick}>
-      <PlusIcon />
+      <PlusIcon tab={tab}/>
       <ButtonText>{text}</ButtonText>
     </Button>
   );
