@@ -1,20 +1,29 @@
 import styled from "styled-components";
 import {
-  color_brand_primary,
   color_canvas_inverted,
+  color_ui_primary,
+  dim_ui_primary,
 } from "../../constants/colors";
 
-const CheckboxContainer = styled.div<{ disabled?: boolean }>`
+type CheckboxProps = {
+  id: string;
+  checked: boolean;
+  onChange: () => void;
+};
+
+const CheckboxContainer = styled.div`
   display: inline-block;
   vertical-align: middle;
-  cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
+  cursor: pointer;
   position: relative;
 `;
+
 const Icon = styled.svg`
   fill: none;
   stroke: ${color_canvas_inverted};
   stroke-width: 2px;
 `;
+
 const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   border: 0;
   clip: rect(0 0 0 0);
@@ -27,19 +36,17 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   white-space: nowrap;
   width: 1px;
 `;
-const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  margin-right: 8px;
-  background: ${(props) => (props.checked ? "#4F52CC" : color_brand_primary)};
-  border: ${(props) =>
-    props.disabled ? "1px solid rgba(255,255,255, .6)" : "1px solid #4F52CC"};
-  border-radius: 4px;
-  transition: all 150ms;
 
-  ${HiddenCheckbox}:focus + & {
-    box-shadow: 0 0 0 2px #4f52cc;
+const StyledCheckbox = styled.div<{ checked: boolean }>`
+  width: 24px;
+  height: 24px;
+  background: ${({ checked }) => (checked ? color_ui_primary : "transparent")};
+  border: 1px solid ${color_ui_primary};
+  border-radius: 4px;
+
+  &:hover {
+    background: ${({ checked }) => (checked ? dim_ui_primary : "transparent")};
+    border: 1px solid ${dim_ui_primary};
   }
 
   ${Icon} {
@@ -47,13 +54,10 @@ const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
   }
 `;
 
-/**
- * TODO: Add types to component
- */
-export const Checkbox = ({ id, checked, disabled = false, onChange }) => (
-  <CheckboxContainer disabled={disabled}>
+export const Checkbox = ({ id, checked, onChange }: CheckboxProps) => (
+  <CheckboxContainer>
     <HiddenCheckbox checked={checked} onChange={onChange} />
-    <StyledCheckbox disabled={disabled} checked={checked}>
+    <StyledCheckbox checked={checked}>
       <Icon id={`${id}-icon`} viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />
       </Icon>

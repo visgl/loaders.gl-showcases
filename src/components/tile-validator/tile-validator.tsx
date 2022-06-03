@@ -324,7 +324,6 @@ export const TileValidator = ({
           >
             <Checkbox
               id="normals-checkbox"
-              disabled={!isTileHasNormals}
               checked={showNormals}
               onChange={() => handleShowNormals(tile)}
             ></Checkbox>
