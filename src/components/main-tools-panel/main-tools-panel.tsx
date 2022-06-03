@@ -30,8 +30,8 @@ type ButtonProps = {
 
 type MainToolsPanelProps = {
   id: string;
-  showOptions?: boolean;
-  showSettings?: boolean;
+  showLayerOptions?: boolean;
+  showComparisonSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
 };
 
@@ -81,37 +81,39 @@ const Button = styled.button<ButtonProps>`
 
 export const MainToolsPanel = ({
   id,
-  showOptions = true,
-  showSettings = true,
+  showLayerOptions = true,
+  showComparisonSettings = true,
   onChange = () => ({}),
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
-  const [active, setActive] = useState<ActiveButton>(ActiveButton.none);
+  const [activeButton, setActiveButton] = useState<ActiveButton>(
+    ActiveButton.none
+  );
 
-  const handleButtonClick = (activeButton: ActiveButton) => {
-    if (active === activeButton) {
-      setActive(ActiveButton.none);
+  const handleButtonClick = (newActiveButton: ActiveButton) => {
+    if (newActiveButton === activeButton) {
+      setActiveButton(ActiveButton.none);
     } else {
-      setActive(activeButton);
+      setActiveButton(newActiveButton);
     }
-    onChange(activeButton);
+    onChange(newActiveButton);
   };
 
   return (
     <Container id={id}>
-      {showOptions && (
+      {showLayerOptions && (
         <Button
           layout={layout}
-          active={active === ActiveButton.options}
+          active={activeButton === ActiveButton.options}
           darkImage={GearIconGrey}
           lightImage={GearIconWhite}
           onClick={() => handleButtonClick(ActiveButton.options)}
         />
       )}
-      {showSettings && (
+      {showComparisonSettings && (
         <Button
           layout={layout}
-          active={active === ActiveButton.settings}
+          active={activeButton === ActiveButton.settings}
           darkImage={SettingsIconGrey}
           lightImage={SettingsIconWhite}
           onClick={() => handleButtonClick(ActiveButton.settings)}
@@ -119,7 +121,7 @@ export const MainToolsPanel = ({
       )}
       <Button
         layout={layout}
-        active={active === ActiveButton.memory}
+        active={activeButton === ActiveButton.memory}
         darkImage={MemoryIconGrey}
         lightImage={MemoryIconWhite}
         onClick={() => handleButtonClick(ActiveButton.memory)}

@@ -181,7 +181,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
-            showSettings={mode === ComparisonMode.withinLayer}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
           />
         </LeftSideToolsPanelWrapper>
       </DeckWrapper>
@@ -204,8 +204,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
-            showOptions={mode === ComparisonMode.acrossLayers}
-            showSettings={mode === ComparisonMode.withinLayer}
+            showLayerOptions={mode === ComparisonMode.acrossLayers}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
           />
         </RightSideToolsPanelWrapper>
       </DeckWrapper>
