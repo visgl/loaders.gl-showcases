@@ -71,9 +71,10 @@ const Tab = styled.div<TabProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 
   &:hover {
-    color: ${color_brand_tertiary};
+    color: ${({ theme }) => theme.colors.tabHover};
     &::after {
-      background: ${color_brand_tertiary};
+      border-color: ${({ theme }) => theme.colors.tabHover};
+      background: ${({ theme }) => theme.colors.tabHover};
     }
   }
 
@@ -189,10 +190,10 @@ const LayersControlPanel = ({ layers, type }) => {
               type={type}
               selected={false}
               hasOptions={true}
-              onSelect={function (id: string): void {
+              onSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
-              onOptionsClick={function (id: string): void {
+              onOptionsClick={function (): void {
                 throw new Error("Function not implemented.");
               }}
             />
