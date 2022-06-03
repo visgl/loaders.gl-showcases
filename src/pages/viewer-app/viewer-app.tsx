@@ -23,7 +23,6 @@ import { StatsWidget } from "@probe.gl/stats-widget";
 
 import {
   ControlPanel,
-  AttributesPanel,
   BuildingExplorer,
 } from "../../components";
 import {
@@ -41,6 +40,8 @@ import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
+import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -563,11 +564,11 @@ export const ViewerApp = () => {
       : "";
 
     return (
-      <AttributesPanel
-        title={title}
-        handleClosePanel={handleClosePanel}
-        attributesObject={selectedFeatureAttributes}
-      />
+      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
+        <FeatureAttributes
+          attributesObject={selectedFeatureAttributes}
+        ></FeatureAttributes>
+      </TileDetailsPanel>
     );
   };
 
