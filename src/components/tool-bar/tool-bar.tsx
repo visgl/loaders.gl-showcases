@@ -7,6 +7,10 @@ import {
   faExclamationCircle,
   faInfo,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const Container = styled.div`
   display: flex;
@@ -17,10 +21,10 @@ const Container = styled.div`
   left: 10px;
   width: 277px;
   height: 40px;
-  background: #0e111a;
+  background: ${color_brand_primary};
   border-radius: 8px;
   z-index: 90;
-  background: #0e111a;
+  background: ${color_brand_primary};
 `;
 
 const ToolButton = styled.button<{ active: boolean }>`
@@ -35,11 +39,11 @@ const ToolButton = styled.button<{ active: boolean }>`
   border-radius: 5px;
   width: 100%;
   background: ${(props) => (props.active ? "#4F52CC" : "transparent")};
-  color: ${(props) => (props.active ? "white" : "rgba(255, 255 , 255, .8)")};
+  color: ${(props) => (props.active ? color_canvas_inverted : "rgba(255, 255 , 255, .8)")};
   cursor: pointer;
 
   &:hover {
-    color: white;
+    color: ${color_canvas_inverted};
   }
 `;
 
@@ -87,15 +91,15 @@ const TooltipCard = styled.div`
 
   & ${ToolButton}:hover + ${TooltipBox} {
     visibility: visible;
-    color: #0e111a;
+    color: ${color_brand_primary};
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: ${color_canvas_inverted};
     width: 120px;
     border-radius: 4px;
 
     &:before {
-      border-color: transparent transparent white white;
+      border-color: transparent transparent ${color_canvas_inverted}  ${color_canvas_inverted};
     }
   }
 `;

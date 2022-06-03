@@ -3,12 +3,11 @@ import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
-  black,
-  darkGrey,
-  lightGrey,
-  mediumGrey,
-  silverGrey,
-  white,
+  color_brand_primary,
+  color_canvas_primary,
+  color_brand_quaternary,
+  color_brand_tertiary,
+  color_canvas_inverted,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
@@ -41,19 +40,17 @@ const GlobalStyle = createGlobalStyle`
 const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
-      mainColor: darkGrey,
-      fontColor: white,
-      buttonBorderColor: lightGrey,
-      buttonBackgroundColor: mediumGrey,
+      mainColor: color_canvas_primary,
+      fontColor: color_canvas_inverted,
+      buttonBackgroundColor: color_brand_quaternary,
     },
     name: Theme.Dark,
   },
   [Theme.Light]: {
     colors: {
-      mainColor: white,
-      fontColor: black,
-      buttonBorderColor: lightGrey,
-      buttonBackgroundColor: silverGrey,
+      mainColor: color_canvas_inverted,
+      fontColor: color_brand_primary,
+      buttonBackgroundColor: color_brand_tertiary,
     },
     name: Theme.Light,
   },
