@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
@@ -11,6 +11,7 @@ import { darkGrey } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ActiveButton, ComparisonMode, ListItemType } from "../../utils/enums";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
+import { EXAMPLES } from "../../constants/i3s-examples";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -129,7 +130,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   ${getCurrentLayoutProperty({
     default: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "top: calc(50% - 20vh);",
+    mobile: "bottom: 0;",
   })};
 `;
 
@@ -146,7 +147,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   ${getCurrentLayoutProperty({
     default: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "top: calc(50% - 20vh);",
+    mobile: "bottom: 0;",
   })};
 `;
 
@@ -215,6 +216,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     );
   };
 
+  const getLayerExamples = () => {
+    return Object.keys(EXAMPLES).map((key) => {
+      const example = EXAMPLES[key];
+
+      return example;
+    });
+  };
+
+  const layersExamples = useMemo(() => getLayerExamples(), [EXAMPLES]);
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -242,7 +253,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         {activeLeftPanel === ActiveButton.options && (
           <LeftLayersPanelWrapper layout={layout}>
             <LayersPanel
-              layers={[]}
+              id="left-layers-panel"
+              layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={[]}
               multipleSelection={false}
@@ -290,7 +302,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         {activeRightPanel === ActiveButton.options && (
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
-              layers={[]}
+              id="right-layers-panel"
+              layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={[]}
               multipleSelection={false}

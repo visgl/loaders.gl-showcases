@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled, { css } from "styled-components";
 
 import { darkViolet, primaryViolet } from "../../constants/colors";

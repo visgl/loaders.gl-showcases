@@ -87,7 +87,7 @@ const CheckboxOption = styled.div`
 `;
 
 const SublayerName = styled.span`
-  margin-left: 5;
+  margin-left: 5px;
   cursor: pointer;
 `;
 

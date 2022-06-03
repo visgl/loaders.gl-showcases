@@ -25,7 +25,7 @@ type ContainerProps = {
 const Container = styled.div<ContainerProps>`
   display: flex;
   justify-content: space-between;
-  width: calc(100% - 30px);
+  align-items: center;
   padding: 10px 20px 10px 10px;
   background: transparent;
   cursor: pointer;
@@ -46,7 +46,7 @@ const Container = styled.div<ContainerProps>`
 `;
 
 const Title = styled.div`
-  margin-left: 45px;
+  margin-left: 16px;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
@@ -60,6 +60,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
   height: 4px;
   background-color: ${lightGrey};
   border-radius: 50%;
+  margin-bottom: 12px;
 
   &:before,
   &:after {

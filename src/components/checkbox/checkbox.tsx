@@ -27,7 +27,6 @@ const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
   display: inline-block;
   width: 22px;
   height: 22px;
-  margin-right: 8px;
   background: ${(props) => (props.checked ? "#4F52CC" : "#0E111A")};
   border: ${(props) =>
     props.disabled ? "1px solid rgba(255,255,255, .6)" : "1px solid #4F52CC"};

@@ -72,6 +72,11 @@ const NoNormalsInfo = styled.span`
   color: #ff0047;
 `;
 
+const CheckboxTitle = styled.span`
+  margin-left: 5px;
+  cursor: pointer;
+`;
+
 const VALIDATE_TILE = "Validate Tile";
 const WARNING_TYPE = "warning";
 const OK_TYPE = "ok";
@@ -322,7 +327,7 @@ export const TileValidator = ({
               checked={showNormals}
               onChange={() => handleShowNormals(tile)}
             ></Checkbox>
-            Show Normals
+            <CheckboxTitle>Show Normals</CheckboxTitle>
           </label>
         </NormalsControl>
         <NormalsControl>

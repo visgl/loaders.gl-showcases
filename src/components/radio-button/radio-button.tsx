@@ -13,10 +13,10 @@ type CheckmarkProps = {
   checked: boolean;
 };
 
-const CheckboxContainer = styled.label<CheckmarkProps>`
-  display: block;
+const CheckboxContainer = styled.div<CheckmarkProps>`
+  height: 25px;
+  width: 25px;
   position: relative;
-  margin-bottom: 12px;
   cursor: pointer;
   font-size: 22px;
   -webkit-user-select: none;
@@ -32,10 +32,10 @@ const Input = styled.input`
 
 const Checkmark = styled.span<CheckmarkProps>`
   position: absolute;
-  top: -8px;
+  top: 0;
   left: 0;
-  height: 25px;
-  width: 25px;
+  height: 100%;
+  width: 100%;
   background-color: transparent;
   border: 1px solid ${primaryViolet};
   border-radius: 50%;

@@ -3,9 +3,8 @@ import styled, { css } from "styled-components";
 import { lineGrey, senaryGrey } from "../../constants/colors";
 import { ListItemType } from "../../utils/enums";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { ListItem } from "../list-item/list-item";
-
 import { BaseMapList } from "../base-map-list/base-map-list";
+import { ListItem } from "../list-item/list-item";
 import { PlusButton } from "../plus-button/plus-button";
 
 enum Tabs {
@@ -14,6 +13,7 @@ enum Tabs {
 }
 
 type LayersPanelProps = {
+  id: string;
   layers: any[];
   type: ListItemType;
   baseMaps: any[];
@@ -43,7 +43,7 @@ const Container = styled.div<LayoutProps>`
   max-height: ${getCurrentLayoutProperty({
     default: "408px",
     tablet: "408px",
-    mobile: "40vh",
+    mobile: "calc(50vh - 82px)",
   })};
 `;
 
@@ -263,6 +263,7 @@ const LayersMapOption = ({ baseMaps }) => {
   };
 
 export const LayersPanel = ({
+  id,
   layers,
   type,
   baseMaps,
@@ -276,18 +277,23 @@ export const LayersPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container id={id} layout={layout}>
       <PanelHeader>
-        <Tab active={tab === Tabs.Layers} onClick={() => setTab(Tabs.Layers)}>
+        <Tab
+          id="layers-tab"
+          active={tab === Tabs.Layers}
+          onClick={() => setTab(Tabs.Layers)}
+        >
           Layers
         </Tab>
         <Tab
+          id="map-options-tab"
           active={tab === Tabs.MapOptions}
           onClick={() => setTab(Tabs.MapOptions)}
         >
           Map Options
         </Tab>
-        <CloseButton onClick={onClose} />
+        <CloseButton id="layers-panel-close-button" onClick={onClose} />
       </PanelHeader>
       <Content>
         <HorizontalLine />
