@@ -1,17 +1,11 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { lightGrey } from "../../constants/colors";
-import { ListItemType } from "../../utils/enums";
-import { Checkbox } from "../checkbox/checkbox";
-import { RadioButton } from "../radio-button/radio-button";
-import dark from '../../assets/base-map-photos/dark-map.png'
 
-type ListItemProps = {
+type BaseMapsItemProps = {
   id: string;
   title: string;
-  type: ListItemType;
-  selected: boolean;
   hasOptions: boolean;
-  onSelect: (id: string) => void;
+  iconUrl: string;
   onOptionsClick: (id: string) => void;
 };
 
@@ -22,12 +16,12 @@ type OptionsButtonProps = {
 const Container = styled.div`
 display: flex;
 justify-content: space-between;
-width: 100%
-padding: 4px 0px 4px 10px;
+align-items: center;
+padding: 10px 20px 10px 10px;
 background: transparent;
 cursor: pointer;
 margin-bottom: 8px;
-border-radius: 8px;
+
 &:hover {
   background: ${({ theme }) => theme.colors.listItemBackground};
   box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
@@ -49,6 +43,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
   height: 4px;
   background-color: ${lightGrey};
   border-radius: 50%;
+  margin-bottom: 12px;
 
   &:before,
   &:after {
@@ -76,18 +71,18 @@ justify-content: flex-start;
 align-items: center;
 `;
 
-const MapPhoto = styled.div`
-background-image: url(${dark});
+const MapIcon = styled.div<{ url: string }>`
+background-image: url(${(props) => props.url});
 width: 40px;
 height: 40px;
 border-radius: 8px;
 `;
 
-export const BaseMapList = ({id, title, hasOptions, onOptionsClick}) => {
+export const BaseMapList = ({id, title, hasOptions, iconUrl, onOptionsClick}: BaseMapsItemProps) => {
   return (
     <Container>
       <ItemContentWrapper>
-        <MapPhoto />
+        <MapIcon url={iconUrl}/>
         <Title>{title}</Title>
       </ItemContentWrapper>
       {hasOptions && <OptionsButton onClick={() => onOptionsClick(id)} />}

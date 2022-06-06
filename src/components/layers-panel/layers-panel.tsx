@@ -179,23 +179,22 @@ font-style: normal;
 font-weight: 700;
 font-size: 16px;
 line-height: 19px;
-color: #FFFFFF;
+color: ${({ theme }) => theme.colors.fontColor};
 margin-bottom: 24px;
 `;
 
-const DYMMY = [{id: Math.random().toString(), name: 'Dark'}, {id: Math.random().toString(), name: 'Dark'}, {id: Math.random().toString(), name: 'Dark'}]
 
 const LayersControlPanel = ({ layers, type }) => {
   return (
     <LayersContainer>
       <LayersList>
-        {DYMMY.map((layer) => {
+        {layers.map((layer) => {
           return (
             <ListItem
               key={layer.id}
               id={layer.id}
               title={layer.name}
-              type={ListItemType.Radio}
+              type={type}
               selected={false}
               hasOptions={true}
               onSelect={function (id: string): void {
@@ -235,12 +234,13 @@ const LayersMapOption = ({ baseMaps }) => {
           Base Map
         </MapOptionTitle>
         <LayersList>
-          {DYMMY.map((baseMap) => {
+          {baseMaps.map((baseMap) => {
             return (
               <BaseMapList
                 key={baseMap.id}
                 id={baseMap.id}
                 title={baseMap.name}
+                iconUrl={baseMap.url}
                 hasOptions={true}
                 onOptionsClick={function (id: string): void {
                   throw new Error("Function not implemented.");
@@ -299,7 +299,9 @@ export const LayersPanel = ({
         <HorizontalLine />
         {tab === Tabs.Layers ? (
           <LayersControlPanel layers={layers} type={type} />
-        ) : (<LayersMapOption baseMaps={baseMaps}/>)}
+        ) : (
+          <LayersMapOption baseMaps={baseMaps} />
+        )}
       </Content>
     </Container>
   );

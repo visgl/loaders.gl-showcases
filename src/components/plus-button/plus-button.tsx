@@ -24,8 +24,8 @@ const Button = styled.div`
 
 const PlusIcon = styled.div<{ tab: number; }>`
   position: relative;
-  width: ${(props) => (props.tab === 0 ? "24px" : "40px")};
-  height: ${(props) => (props.tab === 0 ? "24px" : "40px")};
+  width: ${(props) => (props.tab ? "40px" : "24px")};
+  height: ${(props) => (props.tab ? "40px" : "24px")};
   background: #605dec66;
   cursor: pointer;
   border-radius: 4px;
