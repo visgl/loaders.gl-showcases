@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 
-import { Layout, Theme } from "../../utils/enums";
+import { Layout, Theme } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
 import { color_brand_secondary, color_ui_secondary } from "../../constants/colors";

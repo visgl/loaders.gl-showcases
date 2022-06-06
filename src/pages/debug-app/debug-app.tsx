@@ -1,5 +1,5 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type { TileWarning } from "../../utils/types";
+import type { TileWarning } from "../../types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";

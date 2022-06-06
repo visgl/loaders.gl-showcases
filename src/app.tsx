@@ -13,9 +13,7 @@ import {
   color_brand_quinary,
 } from "./constants/colors";
 import * as Pages from "./pages";
-import { Theme } from "./utils/enums";
-import { ComparisonMode } from "./utils/enums";
-import { AppThemes } from "./utils/types";
+import { AppThemes, Theme, ComparisonMode } from "./types";
 
 const ContentWrapper = styled.div`
   top: 0;

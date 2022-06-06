@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
-import { ListItemType } from "../../utils/enums";
+import { ListItemType } from "../../types";
 import { Checkbox } from "../checkbox/checkbox";
 import { RadioButton } from "../radio-button/radio-button";
 

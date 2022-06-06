@@ -4,7 +4,8 @@ import {
   color_canvas_inverted,
   color_brand_tertiary,
 } from "../../constants/colors";
-import { ListItemType, Theme } from "../../utils/enums";
+import { ListItemType, Theme } from "../../types";
+
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { ListItem } from "../list-item/list-item";
 import { PlusButton } from "../plus-button/plus-button";

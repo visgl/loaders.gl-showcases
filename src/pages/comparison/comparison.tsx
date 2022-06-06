@@ -9,7 +9,7 @@ import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { color_canvas_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
-import { ActiveButton, ComparisonMode, ListItemType } from "../../utils/enums";
+import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { EXAMPLES } from "../../constants/i3s-examples";
 

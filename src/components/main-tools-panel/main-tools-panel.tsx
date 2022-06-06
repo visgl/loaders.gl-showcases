@@ -10,7 +10,7 @@ import GearIconGrey from "../../../public/icons/gear-grey.svg";
 import SettingsIconGrey from "../../../public/icons/settings-grey.svg";
 import MemoryIconGrey from "../../../public/icons/memory-grey.svg";
 
-import { ActiveButton, Layout, Theme } from "../../utils/enums";
+import { ActiveButton, Layout, Theme } from "../../types";
 import { useAppLayout } from "../../utils/layout";
 
 type ButtonProps = {
