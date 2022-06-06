@@ -1,7 +1,11 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { lineGrey, senaryGrey } from "../../constants/colors";
-import { ListItemType } from "../../utils/enums";
+import {
+  color_canvas_inverted,
+  color_brand_tertiary,
+} from "../../constants/colors";
+import { ListItemType, Theme } from "../../types";
+
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { BaseMapList } from "../base-map-list/base-map-list";
 import { ListItem } from "../list-item/list-item";
@@ -17,7 +21,6 @@ type LayersPanelProps = {
   layers: any[];
   type: ListItemType;
   baseMaps: any[];
-  multipleSelection: boolean;
   onLayerInsert: () => void;
   onSceneInsert: () => void;
   onBaseMapInsert: () => void;
@@ -36,7 +39,8 @@ const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${(props) => props.theme.colors.panelBackgroundColor};
+  background: ${({ theme }) => theme.colors.panelBgColor};
+  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
   border-radius: 8px;
   padding-bottom: 26px;
 
@@ -68,9 +72,10 @@ const Tab = styled.div<TabProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 
   &:hover {
-    color: ${senaryGrey};
+    color: ${({ theme }) => theme.colors.tabHover};
     &::after {
-      background: ${senaryGrey};
+      border-color: ${({ theme }) => theme.colors.tabHover};
+      background: ${({ theme }) => theme.colors.tabHover};
     }
   }
 
@@ -120,7 +125,7 @@ const CloseButton = styled.div`
   &:hover {
     &::before,
     &::after {
-      background-color: ${senaryGrey};
+      background-color: ${color_brand_tertiary};
     }
   }
 `;
@@ -139,9 +144,10 @@ const Content = styled.div`
 const HorizontalLine = styled.div`
   margin-top: 35px;
   margin-bottom: 16px;
-  border: 1px solid ${lineGrey};
+  border: 1px solid ${color_canvas_inverted};
   border-radius: 1px;
-  background: ${lineGrey};
+  background: ${color_canvas_inverted};
+  opacity: 0.12;
   width: 100%;
 `;
 
@@ -197,10 +203,10 @@ const LayersControlPanel = ({ layers, type }) => {
               type={type}
               selected={false}
               hasOptions={true}
-              onSelect={function (id: string): void {
+              onSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
-              onOptionsClick={function (id: string): void {
+              onOptionsClick={function (): void {
                 throw new Error("Function not implemented.");
               }}
             />
@@ -267,7 +273,6 @@ export const LayersPanel = ({
   layers,
   type,
   baseMaps,
-  multipleSelection = false,
   onLayerInsert,
   onSceneInsert,
   onBaseMapInsert,

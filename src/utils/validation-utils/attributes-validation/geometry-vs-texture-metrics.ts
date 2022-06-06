@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { GeometryVSTextureMetrics } from '../../types';
+import type { GeometryVSTextureMetrics } from '../../../types';
 
 import { getTriangleVertices, getTriangleArea } from "./triangles-calculation";
 

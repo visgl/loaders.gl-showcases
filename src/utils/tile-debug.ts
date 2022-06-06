@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning } from './types';
+import type { TileWarning } from '../types';
 
 import { checkBoundingVolumes } from "./validation-utils/tile-validation/bounding-volume-validation";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";

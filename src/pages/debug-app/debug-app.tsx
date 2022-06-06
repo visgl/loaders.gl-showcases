@@ -1,5 +1,5 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type { TileWarning } from "../../utils/types";
+import type { TileWarning } from "../../types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
@@ -78,6 +78,7 @@ import {
 import { BoundingVolumeLayer } from "../../layers";
 
 import { Color, Font } from "../../constants/common";
+import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
 
 const TRANSITION_DURAITON = 4000;
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
@@ -189,7 +190,7 @@ const VIEWS = [
 const TILE_COLOR_SELECTOR = "Tile Color Selector";
 
 const HEADER_STYLE = {
-  color: "white",
+  color: color_canvas_inverted,
 };
 
 const CURSOR_STYLE = {
@@ -966,8 +967,8 @@ export const DebugApp = () => {
       fontWeight: "bold",
       marginTop: "10px",
       cursor: isResetButtonDisabled ? "auto" : "pointer",
-      color: isResetButtonDisabled ? "rgba(255,255,255,.6)" : "white",
-      background: isResetButtonDisabled ? "#0E111A" : "#4F52CC",
+      color: isResetButtonDisabled ? "rgba(255,255,255,.6)" : color_canvas_inverted,
+      background: isResetButtonDisabled ? color_brand_primary : "#4F52CC",
     };
   };
 

@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { primaryViolet, white } from "../../constants/colors";
+import { color_ui_primary, color_canvas_inverted } from "../../constants/colors";
 
 type RadioButtonProps = {
   id: string;
@@ -37,7 +37,7 @@ const Checkmark = styled.span<CheckmarkProps>`
   height: 100%;
   width: 100%;
   background-color: transparent;
-  border: 1px solid ${primaryViolet};
+  border: 1px solid ${color_ui_primary};
   border-radius: 50%;
 
   &::after {
@@ -55,10 +55,10 @@ const Checkmark = styled.span<CheckmarkProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background-color: ${primaryViolet};
+      background-color: ${color_ui_primary};
       &::after {
         display: block;
-        background-color: ${white};
+        background-color: ${color_canvas_inverted};
       }
     `}
 `;

@@ -7,9 +7,9 @@ import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE, EXAMPLES_BASE_MAP } from "../../constants/map-styles";
-import { darkGrey } from "../../constants/colors";
+import { color_canvas_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
-import { ActiveButton, ComparisonMode, ListItemType } from "../../utils/enums";
+import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { EXAMPLES } from "../../constants/i3s-examples";
 
@@ -81,7 +81,7 @@ const Devider = styled.div<LayoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${darkGrey};
+  background-color: ${color_canvas_primary};
 `;
 
 const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
@@ -245,8 +245,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
-            active={activeLeftPanel}
-            showSettings={mode === ComparisonMode.withinLayer}
+            activeButton={activeLeftPanel}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
             onChange={handleChangeLeftPanelVisibility}
           />
         </LeftSideToolsPanelWrapper>
@@ -257,7 +257,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={EXAMPLES_BASE_MAP}
-              multipleSelection={false}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}
@@ -293,9 +292,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
-            active={activeRightPanel}
-            showOptions={mode === ComparisonMode.acrossLayers}
-            showSettings={mode === ComparisonMode.withinLayer}
+            activeButton={activeRightPanel}
+            showLayerOptions={mode === ComparisonMode.acrossLayers}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
             onChange={handleChangeRightPanelVisibility}
           />
         </RightSideToolsPanelWrapper>
@@ -306,7 +305,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={[]}
-              multipleSelection={false}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}

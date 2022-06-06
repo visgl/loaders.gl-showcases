@@ -3,19 +3,17 @@ import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
-  black,
-  darkGrey,
-  lightGrey,
-  mediumGrey,
-  silverGrey,
-  transparentBlack,
-  white,
-  whiteSecondary,
+  color_brand_primary,
+  color_canvas_primary,
+  color_canvas_secondary,
+  color_brand_quaternary,
+  color_brand_tertiary,
+  color_canvas_inverted,
+  color_brand_senary,
+  color_brand_quinary,
 } from "./constants/colors";
 import * as Pages from "./pages";
-import { Theme } from "./utils/enums";
-import { ComparisonMode } from "./utils/enums";
-import { AppThemes } from "./utils/types";
+import { AppThemes, Theme, ComparisonMode } from "./types";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -43,23 +41,25 @@ const GlobalStyle = createGlobalStyle`
 const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
-      mainColor: darkGrey,
-      fontColor: white,
-      buttonBorderColor: lightGrey,
-      buttonBackgroundColor: mediumGrey,
-      panelBackgroundColor: transparentBlack,
-      listItemBackground: mediumGrey,
+      mainColor: color_canvas_primary,
+      fontColor: color_canvas_inverted,
+      buttonBackgroundColor: color_brand_quaternary,
+      panelBgColor: color_brand_primary,
+      tabHover: color_brand_tertiary,
+      listItemActive: color_brand_quaternary,
+      listItemHover: color_brand_senary,
     },
     name: Theme.Dark,
   },
   [Theme.Light]: {
     colors: {
-      mainColor: white,
-      fontColor: black,
-      buttonBorderColor: lightGrey,
-      buttonBackgroundColor: silverGrey,
-      panelBackgroundColor: whiteSecondary,
-      listItemBackground: silverGrey,
+      mainColor: color_canvas_inverted,
+      fontColor: color_brand_primary,
+      buttonBackgroundColor: color_brand_tertiary,
+      panelBgColor: color_canvas_secondary,
+      tabHover: color_brand_senary,
+      listItemActive: color_brand_tertiary,
+      listItemHover: color_brand_quinary,
     },
     name: Theme.Light,
   },
