@@ -257,7 +257,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={[]}
-              multipleSelection={false}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}
@@ -306,7 +305,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               layers={layersExamples}
               type={ListItemType.Radio}
               baseMaps={[]}
-              multipleSelection={false}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}

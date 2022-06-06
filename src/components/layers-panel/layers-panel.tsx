@@ -20,7 +20,6 @@ type LayersPanelProps = {
   layers: any[];
   type: ListItemType;
   baseMaps: any[];
-  multipleSelection: boolean;
   onLayerInsert: () => void;
   onSceneInsert: () => void;
   onBaseMapInsert: () => void;
@@ -224,7 +223,6 @@ export const LayersPanel = ({
   layers,
   type,
   baseMaps,
-  multipleSelection = false,
   onLayerInsert,
   onSceneInsert,
   onBaseMapInsert,
