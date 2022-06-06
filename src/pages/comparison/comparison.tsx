@@ -11,7 +11,6 @@ import { color_canvas_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
-import { EXAMPLES } from "../../constants/i3s-examples";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -20,8 +19,6 @@ type ComparisonPageProps = {
 type LayoutProps = {
   layout: string;
 };
-
-type LayersIds = string[];
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -172,18 +169,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     ActiveButton.none
   );
 
-  const getLayerExamples = () =>
-    Object.keys(EXAMPLES).map((key) => EXAMPLES[key]);
-
-  const [leftPanelLayerExamples] = useState(() => getLayerExamples());
-  const [rightPanelLayerExamples] = useState(() => getLayerExamples());
-
-  const [leftPanelSelectedLayersIds, setLeftPanelSelectedLayersIds] =
-    useState<LayersIds>([]);
-
-  const [rightPanelSelectedLayersIds, setRightPanelSelectedLayersIds] =
-    useState<LayersIds>([]);
-
   const layout = useAppLayout();
 
   const onViewStateChange = ({ interactionState, viewState }) => {
@@ -266,11 +251,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="left-layers-panel"
-              layers={leftPanelLayerExamples}
-              selectedLayerIds={leftPanelSelectedLayersIds}
               type={ListItemType.Radio}
               baseMaps={[]}
-              onLayersSelect={(id) => setLeftPanelSelectedLayersIds([id])}
+              onLayersSelect={function (): void {
+                throw new Error("Function not implemented.");
+              }}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}
@@ -316,9 +301,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              layers={rightPanelLayerExamples}
-              selectedLayerIds={rightPanelSelectedLayersIds}
-              onLayersSelect={(id) => setRightPanelSelectedLayersIds([id])}
+              onLayersSelect={function (): void {
+                throw new Error("Function not implemented.");
+              }}
               type={ListItemType.Radio}
               baseMaps={[]}
               onLayerInsert={function (): void {

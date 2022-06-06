@@ -4,6 +4,7 @@ import {
   color_canvas_inverted,
   color_brand_tertiary,
 } from "../../constants/colors";
+import { EXAMPLES } from "../../constants/i3s-examples";
 import { ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
@@ -16,11 +17,9 @@ enum Tabs {
 
 type LayersPanelProps = {
   id: string;
-  layers: any[];
-  selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: any[];
-  onLayersSelect: (id: string) => void;
+  onLayersSelect: (ids: string[]) => void;
   onLayerInsert: () => void;
   onSceneInsert: () => void;
   onBaseMapInsert: () => void;
@@ -34,6 +33,8 @@ type TabProps = {
 type LayoutProps = {
   layout: string;
 };
+
+type LayersIds = string[];
 
 const Container = styled.div<LayoutProps>`
   display: flex;
@@ -149,16 +150,38 @@ const HorizontalLine = styled.div`
   opacity: 0.12;
 `;
 
+const getLayerExamples = () =>
+  Object.keys(EXAMPLES).map((key) => EXAMPLES[key]);
+
 export const LayersPanel = ({
   id,
-  layers,
-  selectedLayerIds,
   type,
   onLayersSelect,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
+  const [layers] = useState(() => getLayerExamples());
+  const [selectedLayerIds, setSelectedLayerIds] = useState<LayersIds>([]);
   const layout = useAppLayout();
+
+  const handleSelectLayers = (id: string): void => {
+    switch (type) {
+      case ListItemType.Radio: {
+        setSelectedLayerIds([id]);
+        break;
+      }
+      case ListItemType.Checkbox: {
+        if (selectedLayerIds.includes(id)) {
+          setSelectedLayerIds((prevValues) =>
+            prevValues.filter((existedId) => existedId !== id)
+          );
+        } else {
+          setSelectedLayerIds((prevValues) => [...prevValues, id]);
+        }
+      }
+    }
+    onLayersSelect(selectedLayerIds);
+  };
 
   return (
     <Container id={id} layout={layout}>
@@ -187,7 +210,7 @@ export const LayersPanel = ({
             baseMaps={[]}
             type={type}
             selectedLayerIds={selectedLayerIds}
-            onLayersSelect={onLayersSelect}
+            onLayersSelect={handleSelectLayers}
             onLayerOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}
