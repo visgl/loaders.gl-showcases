@@ -5,7 +5,10 @@ import styled, { css } from "styled-components";
 import { Layout, Theme } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
-import { color_brand_secondary, color_ui_secondary } from "../../constants/colors";
+import {
+  color_brand_secondary,
+  color_ui_secondary,
+} from "../../constants/colors";
 
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
 import GitHubIconLight from "../../../public/icons/github-icon-light.png";
@@ -168,7 +171,8 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin-top: 2px;
   height: 30px;
   border-bottom: 2px solid
-    ${(props) => (props.active ? color_ui_secondary : props.theme.colors.mainColor)};
+    ${(props) =>
+      props.active ? color_ui_secondary : props.theme.colors.mainColor};
   border-radius: 2px;
 
   color: ${(props) =>
@@ -277,7 +281,6 @@ const CloseIcon = styled(MenuIcon)`
 
 const TabletOrMobileMenuContainer = styled.div`
   position: fixed;
-  z-index: 10;
   top: 58px;
   display: flex;
   width: 100vw;

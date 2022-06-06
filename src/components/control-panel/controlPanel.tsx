@@ -83,7 +83,7 @@ const MapName = styled.h3`
 `;
 
 const TerrainName = styled.h3`
-  background:  ${color_brand_primary};
+  background: ${color_brand_primary};
   color: ${color_canvas_inverted};
   margin: 0;
   font-weight: normal;
@@ -107,7 +107,7 @@ const DropDown = styled.select`
 
   &:hover {
     background: #4f52cc;
-    color:${color_brand_primary};
+    color: ${color_brand_primary};
   }
   width: 167px;
   margin-left: 8px;

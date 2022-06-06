@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
@@ -20,6 +20,8 @@ type ComparisonPageProps = {
 type LayoutProps = {
   layout: string;
 };
+
+type LayersIds = string[];
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -119,11 +121,14 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
 
 const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
-  z-index: 10;
 
   left: ${getCurrentLayoutProperty({
     default: "100px",
     tablet: "100px",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
     mobile: "calc(50% - 180px)",
   })};
 
@@ -141,6 +146,10 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   ${getCurrentLayoutProperty({
     default: "right 100px;",
     tablet: "left: 100px;",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
     mobile: "left: calc(50% - 180px);",
   })};
 
@@ -162,6 +171,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
+
+  const getLayerExamples = () =>
+    Object.keys(EXAMPLES).map((key) => EXAMPLES[key]);
+
+  const [leftPanelLayerExamples] = useState(() => getLayerExamples());
+  const [rightPanelLayerExamples] = useState(() => getLayerExamples());
+
+  const [leftPanelSelectedLayersIds, setLeftPanelSelectedLayersIds] =
+    useState<LayersIds>([]);
+
+  const [rightPanelSelectedLayersIds, setRightPanelSelectedLayersIds] =
+    useState<LayersIds>([]);
+
   const layout = useAppLayout();
 
   const onViewStateChange = ({ interactionState, viewState }) => {
@@ -216,16 +238,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     );
   };
 
-  const getLayerExamples = () => {
-    return Object.keys(EXAMPLES).map((key) => {
-      const example = EXAMPLES[key];
-
-      return example;
-    });
-  };
-
-  const layersExamples = useMemo(() => getLayerExamples(), [EXAMPLES]);
-
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -254,9 +266,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="left-layers-panel"
-              layers={layersExamples}
+              layers={leftPanelLayerExamples}
+              selectedLayerIds={leftPanelSelectedLayersIds}
               type={ListItemType.Radio}
               baseMaps={[]}
+              onLayersSelect={(id) => setLeftPanelSelectedLayersIds([id])}
               onLayerInsert={function (): void {
                 throw new Error("Function not implemented.");
               }}
@@ -302,7 +316,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              layers={layersExamples}
+              layers={rightPanelLayerExamples}
+              selectedLayerIds={rightPanelSelectedLayersIds}
+              onLayersSelect={(id) => setRightPanelSelectedLayersIds([id])}
               type={ListItemType.Radio}
               baseMaps={[]}
               onLayerInsert={function (): void {

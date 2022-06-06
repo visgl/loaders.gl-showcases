@@ -1,8 +1,12 @@
 import styled, { css } from "styled-components";
-import { color_ui_primary, color_canvas_inverted } from "../../constants/colors";
+import {
+  color_ui_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 type RadioButtonProps = {
   id: string;
+  name?: string;
   checked: boolean;
   disabled?: boolean;
   onChange: () => void;
@@ -14,8 +18,8 @@ type CheckmarkProps = {
 };
 
 const CheckboxContainer = styled.div<CheckmarkProps>`
-  height: 25px;
-  width: 25px;
+  height: 24px;
+  width: 24px;
   position: relative;
   cursor: pointer;
   font-size: 22px;
@@ -42,10 +46,10 @@ const Checkmark = styled.span<CheckmarkProps>`
 
   &::after {
     content: "";
-    top: 5.5px;
-    left: 5.5px;
-    width: 14px;
-    height: 14px;
+    top: calc(50% - 6px);
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: white;
     position: absolute;
@@ -65,6 +69,7 @@ const Checkmark = styled.span<CheckmarkProps>`
 
 export const RadioButton = ({
   id,
+  name = "radio",
   checked,
   disabled = false,
   onChange,
@@ -73,7 +78,7 @@ export const RadioButton = ({
     <Input
       type="radio"
       checked={checked}
-      name="radio"
+      name={name}
       onChange={onChange}
       disabled={disabled}
     />

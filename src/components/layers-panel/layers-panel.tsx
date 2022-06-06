@@ -7,8 +7,7 @@ import {
 import { ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { ListItem } from "../list-item/list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { LayersControlPanel } from "./layers-control-panel";
 
 enum Tabs {
   Layers,
@@ -18,8 +17,10 @@ enum Tabs {
 type LayersPanelProps = {
   id: string;
   layers: any[];
+  selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: any[];
+  onLayersSelect: (id: string) => void;
   onLayerInsert: () => void;
   onSceneInsert: () => void;
   onBaseMapInsert: () => void;
@@ -141,91 +142,19 @@ const Content = styled.div`
 `;
 
 const HorizontalLine = styled.div`
-  margin-top: 35px;
-  margin-bottom: 16px;
+  margin: 35px 16px 16px 16px;
   border: 1px solid ${color_canvas_inverted};
   border-radius: 1px;
   background: ${color_canvas_inverted};
   opacity: 0.12;
-  width: 100%;
 `;
-
-const LayersContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: calc(100% - 100px);
-  overflow: auto;
-`;
-
-const LayersList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 10px;
-`;
-
-const InsertButtons = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-
-  > * {
-    &:first-child {
-      margin-bottom: 28px;
-    }
-  }
-`;
-
-const LayersControlPanel = ({ layers, type }) => {
-  return (
-    <LayersContainer>
-      <LayersList>
-        {layers.map((layer) => {
-          return (
-            <ListItem
-              key={layer.id}
-              id={layer.id}
-              title={layer.name}
-              type={type}
-              selected={false}
-              hasOptions={true}
-              onSelect={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onOptionsClick={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
-          );
-        })}
-      </LayersList>
-      <InsertButtons>
-        <PlusButton
-          text={"Insert layer"}
-          onClick={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-        <PlusButton
-          text={"Insert scene"}
-          onClick={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-      </InsertButtons>
-    </LayersContainer>
-  );
-};
 
 export const LayersPanel = ({
   id,
   layers,
+  selectedLayerIds,
   type,
-  baseMaps,
-  onLayerInsert,
-  onSceneInsert,
-  onBaseMapInsert,
+  onLayersSelect,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
@@ -250,11 +179,26 @@ export const LayersPanel = ({
         </Tab>
         <CloseButton id="layers-panel-close-button" onClick={onClose} />
       </PanelHeader>
+      <HorizontalLine />
       <Content>
-        <HorizontalLine />
-        {tab === Tabs.Layers ? (
-          <LayersControlPanel layers={layers} type={type} />
-        ) : null}
+        {tab === Tabs.Layers && (
+          <LayersControlPanel
+            layers={layers}
+            baseMaps={[]}
+            type={type}
+            selectedLayerIds={selectedLayerIds}
+            onLayersSelect={onLayersSelect}
+            onLayerOptionsClick={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onLayerInsert={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onSceneInsert={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
+        )}
       </Content>
     </Container>
   );
