@@ -1,6 +1,9 @@
 import styled, { css } from "styled-components";
 
-import { color_ui_primary, dim_ui_primary } from "../../constants/colors";
+import {
+  color_brand_tertiary,
+  dim_brand_tertinary,
+} from "../../constants/colors";
 
 import GearIconWhite from "../../../public/icons/gear-white.svg";
 import SettingsIconWhite from "../../../public/icons/settings-white.svg";
@@ -35,7 +38,7 @@ type ContainerProps = {
 const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
-  background: ${(props) => props.theme.colors.mainColor};
+  background: ${(props) => props.theme.colors.mainCanvasColor};
   border-radius: 12px;
   padding: 2px;
 `;
@@ -56,7 +59,7 @@ const Button = styled.button<ButtonProps>`
         : props.lightImage})
     no-repeat;
   background-color: ${(props) =>
-    props.active ? color_ui_primary : "transparent"};
+    props.active ? color_brand_tertiary : "transparent"};
   background-position: center;
   outline: 0;
   border: none;
@@ -67,7 +70,7 @@ const Button = styled.button<ButtonProps>`
       &:hover {
         background: url(${lightImage}) no-repeat;
         background-position: center;
-        background-color: ${dim_ui_primary};
+        background-color: ${dim_brand_tertinary};
       }
     `}
 `;

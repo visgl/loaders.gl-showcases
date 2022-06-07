@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { color_ui_primary } from "../../constants/colors";
+import {color_brand_tertiary} from "../../constants/colors";
 
 type PlusButtonProps = {
-  text?: string;
+  children?: React.ReactNode;
   tab: number;
   onClick: () => void;
 };
@@ -23,10 +23,10 @@ const Button = styled.div`
   }
 `;
 
-const PlusIcon = styled.div<{ tab: number; }>`
+const PlusIcon = styled.div<{tab: number}>`
   position: relative;
-  width: ${(props) => (props.tab ? "40px" : "24px")};
-  height: ${(props) => (props.tab ? "40px" : "24px")};
+  width: ${props => (props.tab ? "40px" : "24px")};
+  height: ${props => (props.tab ? "40px" : "24px")};
   // Keep rgba format to avoid issue with opacity inheritance and pseudo elements.
   background: rgba(96, 93, 236, 0.4);
   cursor: pointer;
@@ -39,7 +39,7 @@ const PlusIcon = styled.div<{ tab: number; }>`
     transform: translate(-50%, -50%);
     height: 2px;
     width: 50%;
-    background: ${color_ui_primary};
+    background: ${color_brand_tertiary};
     top: 50%;
     left: 50%;
   }
@@ -50,21 +50,21 @@ const PlusIcon = styled.div<{ tab: number; }>`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: ${color_ui_primary};
+    background: ${color_brand_tertiary};
     height: 50%;
     width: 2px;
   }
 `;
 
 const ButtonText = styled.div`
-  color: ${color_ui_primary};
+  color: ${color_brand_tertiary};
 `;
 
-export const PlusButton = ({ text = "", tab, onClick }: PlusButtonProps) => {
+export const PlusButton = ({children, tab, onClick}: PlusButtonProps) => {
   return (
     <Button onClick={onClick}>
-      <PlusIcon tab={tab}/>
-      <ButtonText>{text}</ButtonText>
+      <PlusIcon tab={tab} />
+      <ButtonText>{children}</ButtonText>
     </Button>
   );
 };

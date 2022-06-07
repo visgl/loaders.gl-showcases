@@ -10,7 +10,7 @@ type ListItemProps = {
   type: ListItemType;
   selected: boolean;
   hasOptions: boolean;
-  onSelect: (id: string) => void;
+  onChange: (id: string) => void;
   onOptionsClick: (id: string) => void;
 };
 
@@ -34,13 +34,13 @@ const Container = styled.div<ContainerProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background: ${({ theme }) => theme.colors.listItemActive};
+      background: ${({ theme }) => theme.colors.mainHiglightColor};
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     `}
 
   &:hover {
-    background: ${({ theme }) => theme.colors.listItemHover};
+    background: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 `;
@@ -88,25 +88,19 @@ const ItemContentWrapper = styled.div`
   align-items: center;
 `;
 
-export const ListItem = ({
-  id,
-  title,
-  type,
-  selected,
-  hasOptions,
-  onSelect,
-  onOptionsClick,
-}: ListItemProps) => {
+export const ListItem = (props: ListItemProps) => {
+  const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
+    props;
   return (
-    <Container checked={selected}>
+    <Container checked={selected} onClick={() => onChange(id)}>
       <ItemContentWrapper>
         {type === ListItemType.Checkbox ? (
-          <Checkbox id={id} checked={selected} onChange={() => onSelect(id)} />
+          <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
         ) : (
           <RadioButton
             id={id}
             checked={selected}
-            onChange={() => onSelect(id)}
+            onChange={() => onChange(id)}
           />
         )}
 

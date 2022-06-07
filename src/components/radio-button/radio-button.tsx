@@ -1,8 +1,13 @@
 import styled, { css } from "styled-components";
-import { color_ui_primary, color_canvas_inverted } from "../../constants/colors";
+import {
+  color_brand_tertiary,
+  color_canvas_inverted,
+  dim_brand_tertinary,
+} from "../../constants/colors";
 
 type RadioButtonProps = {
   id: string;
+  name?: string;
   checked: boolean;
   disabled?: boolean;
   onChange: () => void;
@@ -14,8 +19,8 @@ type CheckmarkProps = {
 };
 
 const CheckboxContainer = styled.div<CheckmarkProps>`
-  height: 25px;
-  width: 25px;
+  height: 24px;
+  width: 24px;
   position: relative;
   cursor: pointer;
   font-size: 22px;
@@ -37,15 +42,15 @@ const Checkmark = styled.span<CheckmarkProps>`
   height: 100%;
   width: 100%;
   background-color: transparent;
-  border: 1px solid ${color_ui_primary};
+  border: 1px solid ${color_brand_tertiary};
   border-radius: 50%;
 
   &::after {
     content: "";
-    top: 5.5px;
-    left: 5.5px;
-    width: 14px;
-    height: 14px;
+    top: calc(50% - 6px);
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: white;
     position: absolute;
@@ -55,16 +60,24 @@ const Checkmark = styled.span<CheckmarkProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background-color: ${color_ui_primary};
+      background-color: ${color_brand_tertiary};
       &::after {
         display: block;
         background-color: ${color_canvas_inverted};
       }
+      &:hover {
+        background-color: ${dim_brand_tertinary};
+      }
     `}
+
+  &:hover {
+    border-color: ${dim_brand_tertinary};
+  }
 `;
 
 export const RadioButton = ({
   id,
+  name = "radio",
   checked,
   disabled = false,
   onChange,
@@ -73,7 +86,7 @@ export const RadioButton = ({
     <Input
       type="radio"
       checked={checked}
-      name="radio"
+      name={name}
       onChange={onChange}
       disabled={disabled}
     />

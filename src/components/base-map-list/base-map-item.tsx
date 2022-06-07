@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { lightGrey } from "../../constants/colors";
+import { color_brand_quaternary } from "../../constants/colors";
 
 type BaseMapsItemProps = {
   id: string;
@@ -41,7 +41,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
   position: relative;
   width: 4px;
   height: 4px;
-  background-color: ${lightGrey};
+  background-color: ${color_brand_quaternary};
   border-radius: 50%;
   margin-bottom: 12px;
 
@@ -52,7 +52,7 @@ const OptionsButton = styled.div<OptionsButtonProps>`
     width: 4px;
     height: 4px;
     left: 0px;
-    background-color: ${lightGrey};
+    background-color: ${color_brand_quaternary};
     border-radius: inherit;
   }
 

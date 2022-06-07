@@ -6,12 +6,11 @@ import styled from "styled-components";
 import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
-import { INITIAL_MAP_STYLE, EXAMPLES_BASE_MAP } from "../../constants/map-styles";
-import { color_canvas_primary } from "../../constants/colors";
+import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
-import { EXAMPLES } from "../../constants/i3s-examples";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -81,7 +80,7 @@ const Devider = styled.div<LayoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${color_canvas_primary};
+  background-color: ${color_brand_primary};
 `;
 
 const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
@@ -119,11 +118,14 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
 
 const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
-  z-index: 10;
 
   left: ${getCurrentLayoutProperty({
     default: "100px",
     tablet: "100px",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
     mobile: "calc(50% - 180px)",
   })};
 
@@ -141,6 +143,10 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   ${getCurrentLayoutProperty({
     default: "right 100px;",
     tablet: "left: 100px;",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
     mobile: "left: calc(50% - 180px);",
   })};
 
@@ -216,16 +222,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     );
   };
 
-  const getLayerExamples = () => {
-    return Object.keys(EXAMPLES).map((key) => {
-      const example = EXAMPLES[key];
-
-      return example;
-    });
-  };
-
-  const layersExamples = useMemo(() => getLayerExamples(), [EXAMPLES]);
-
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -254,16 +250,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="left-layers-panel"
-              layers={layersExamples}
               type={ListItemType.Radio}
-              baseMaps={EXAMPLES_BASE_MAP}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onSceneInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onBaseMapInsert={function (): void {
+              baseMaps={[]}
+              onLayersSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
               onClose={() =>
@@ -302,18 +291,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              layers={layersExamples}
+              onLayersSelect={function (): void {
+                throw new Error("Function not implemented.");
+              }}
               type={ListItemType.Radio}
               baseMaps={[]}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onSceneInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onBaseMapInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }

@@ -1,15 +1,12 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import {
-  color_canvas_inverted,
-  color_brand_tertiary,
-} from "../../constants/colors";
+import { BaseMapList } from "../base-map-list/base-map-item";
+import { EXAMPLES } from "../../constants/i3s-examples";
 import { ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { BaseMapList } from "../base-map-list/base-map-list";
-import { ListItem } from "../list-item/list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { LayersControlPanel } from "./layers-control-panel";
+
 
 enum Tabs {
   Layers,
@@ -18,12 +15,9 @@ enum Tabs {
 
 type LayersPanelProps = {
   id: string;
-  layers: any[];
   type: ListItemType;
   baseMaps: any[];
-  onLayerInsert: () => void;
-  onSceneInsert: () => void;
-  onBaseMapInsert: () => void;
+  onLayersSelect: (ids: string[]) => void;
   onClose: () => void;
 };
 
@@ -35,11 +29,13 @@ type LayoutProps = {
   layout: string;
 };
 
+type LayersIds = string[];
+
 const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${({ theme }) => theme.colors.panelBgColor};
+  background: ${({ theme }) => theme.colors.mainCanvasColor};
   opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
   border-radius: 8px;
   padding-bottom: 26px;
@@ -72,10 +68,10 @@ const Tab = styled.div<TabProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.tabHover};
+    color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
     &::after {
-      border-color: ${({ theme }) => theme.colors.tabHover};
-      background: ${({ theme }) => theme.colors.tabHover};
+      border-color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
+      background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
     }
   }
 
@@ -125,7 +121,7 @@ const CloseButton = styled.div`
   &:hover {
     &::before,
     &::after {
-      background-color: ${color_brand_tertiary};
+      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
     }
   }
 `;
@@ -142,144 +138,44 @@ const Content = styled.div`
 `;
 
 const HorizontalLine = styled.div`
-  margin-top: 35px;
-  margin-bottom: 16px;
-  border: 1px solid ${color_canvas_inverted};
+  margin: 35px 16px 16px 16px;
+  border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
-  background: ${color_canvas_inverted};
+  background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
   opacity: 0.12;
-  width: 100%;
 `;
 
-const LayersContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: calc(100% - 100px);
-  overflow: auto;
-`;
-
-const LayersList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 10px;
-`;
-
-const InsertButtons = styled.div<{ item: number }>`
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-
-  > * {
-    &:first-child {
-      margin-bottom: ${(props) => (props.item === Tabs.Layers ? "28px" : "0px")};
-    }
-  }
-`;
-
-const MapOptionTitle = styled.div`
-width: 100;
-height: 19px;
-font-style: normal;
-font-weight: 700;
-font-size: 16px;
-line-height: 19px;
-color: ${({ theme }) => theme.colors.fontColor};
-margin-bottom: 24px;
-`;
-
-
-const LayersControlPanel = ({ layers, type }) => {
-  return (
-    <LayersContainer>
-      <LayersList>
-        {layers.map((layer) => {
-          return (
-            <ListItem
-              key={layer.id}
-              id={layer.id}
-              title={layer.name}
-              type={type}
-              selected={false}
-              hasOptions={true}
-              onSelect={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onOptionsClick={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
-          );
-        })}
-      </LayersList>
-      <InsertButtons item={Tabs.Layers}>
-        <PlusButton
-          text={"Insert layer"}
-          tab={Tabs.Layers}
-          onClick={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-        <PlusButton
-          text={"Insert scene"}
-          tab={Tabs.Layers}
-          onClick={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-      </InsertButtons>
-    </LayersContainer>
-  );
-};
-
-const LayersMapOption = ({ baseMaps }) => {
-    return (
-      <LayersContainer>
-        <MapOptionTitle>
-          Base Map
-        </MapOptionTitle>
-        <LayersList>
-          {baseMaps.map((baseMap) => {
-            return (
-              <BaseMapList
-                key={baseMap.id}
-                id={baseMap.id}
-                title={baseMap.name}
-                iconUrl={baseMap.url}
-                hasOptions={true}
-                onOptionsClick={function (id: string): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            );
-          })}
-        </LayersList>
-        <InsertButtons item={Tabs.MapOptions}>
-          <PlusButton
-            tab={Tabs.MapOptions}
-            text={"Insert Base Map"}
-            onClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
-        </InsertButtons>
-      </LayersContainer>
-    );
-  };
+const getLayerExamples = () => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
   id,
-  layers,
   type,
-  baseMaps,
-  onLayerInsert,
-  onSceneInsert,
-  onBaseMapInsert,
+  onLayersSelect,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
+  const [layers] = useState(() => getLayerExamples());
+  const [selectedLayerIds, setSelectedLayerIds] = useState<LayersIds>([]);
   const layout = useAppLayout();
+
+  const handleSelectLayers = (id: string): void => {
+    switch (type) {
+      case ListItemType.Radio: {
+        setSelectedLayerIds([id]);
+        break;
+      }
+      case ListItemType.Checkbox: {
+        if (selectedLayerIds.includes(id)) {
+          setSelectedLayerIds((prevValues) =>
+            prevValues.filter((existedId) => existedId !== id)
+          );
+        } else {
+          setSelectedLayerIds((prevValues) => [...prevValues, id]);
+        }
+      }
+    }
+    onLayersSelect(selectedLayerIds);
+  };
 
   return (
     <Container id={id} layout={layout}>
@@ -300,13 +196,27 @@ export const LayersPanel = ({
         </Tab>
         <CloseButton id="layers-panel-close-button" onClick={onClose} />
       </PanelHeader>
+      <HorizontalLine />
       <Content>
-        <HorizontalLine />
-        {tab === Tabs.Layers ? (
-          <LayersControlPanel layers={layers} type={type} />
-        ) : (
-          <LayersMapOption baseMaps={baseMaps} />
+        {tab === Tabs.Layers && (
+          <LayersControlPanel
+            layers={layers}
+            baseMaps={[]}
+            type={type}
+            selectedLayerIds={selectedLayerIds}
+            onLayersSelect={handleSelectLayers}
+            onLayerOptionsClick={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onLayerInsert={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onSceneInsert={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
         )}
+        {tab === Tabs.MapOptions && <LayersMapOption baseMaps={baseMaps} />}
       </Content>
     </Container>
   );
