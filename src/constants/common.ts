@@ -1,3 +1,5 @@
+export const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
+
 export const DropDownStyle = `
   position: static;
   display: flex;

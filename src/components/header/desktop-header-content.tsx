@@ -17,8 +17,7 @@ import {
   GithubImage,
   MenuProps,
 } from "./common";
-
-const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
+import { GITHUB_LINK } from "../../constants/common";
 
 type CompareMenuProps = {
   pathname: string;
