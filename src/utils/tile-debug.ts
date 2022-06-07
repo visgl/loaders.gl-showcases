@@ -1,64 +1,10 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning } from './types';
+import type { TileWarning } from "./types";
 
 import { checkBoundingVolumes } from "./validation-utils/tile-validation/bounding-volume-validation";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
 import { checkLOD } from "./validation-utils/tile-validation/lod-validation";
-import { getBoundingType } from "./bounding-volume";
 import { getTileDataForValidation } from "./validation-utils/tile-validation/tile-validation-data";
-
-const NO_DATA = "No Data";
-
-const REFINEMENT_TYPES = {
-  1: "Add",
-  2: "Replace",
-};
-
-const FLOAT_VALUES_FIXED_COUNT = 3;
-
-/**
- * Return short tile info
- * @param tileHeader
- * @returns short tile info for debugging purposes
- */
-export const getShortTileDebugInfo = (tileHeader: Tile3D): { [key: string]: string | number } => {
-  const childrenInfo = getChildrenInfo(tileHeader.header.children);
-  // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
-  const distanceToCamera = formatFloatNumber(tileHeader._distanceToCamera);
-
-  return {
-    "Tile Id": tileHeader.id,
-    Type: tileHeader.type || NO_DATA,
-    "Children Count": childrenInfo.count,
-    "Children Ids": childrenInfo.ids,
-    "Vertex count": tileHeader.content.vertexCount || NO_DATA,
-    "Distance to camera": distanceToCamera !== null ?
-      // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
-      `${formatFloatNumber(tileHeader._distanceToCamera)} m` : NO_DATA
-  };
-};
-
-/**
- * Return extended tile info
- * @param tileHeader
- * @returns extended tile info for debugging purposes
- */
-export const getTileDebugInfo = (tileHeader: Tile3D): { [key: string]: string | number | boolean } => {
-  const LODMetricValue = formatFloatNumber(tileHeader.lodMetricValue);
-  // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
-  const screenSpaceError = formatFloatNumber(tileHeader._screenSpaceError);
-
-  return {
-    ...getShortTileDebugInfo(tileHeader),
-    "Refinement Type": REFINEMENT_TYPES[tileHeader.refine] || NO_DATA,
-    "Has Texture": Boolean(tileHeader.content.texture),
-    "Has Material": Boolean(tileHeader.content.material),
-    "Bounding Type": getBoundingType(tileHeader),
-    "LOD Metric Type": tileHeader.lodMetricType || NO_DATA,
-    "LOD Metric Value": LODMetricValue !== null ? LODMetricValue : NO_DATA,
-    "Screen Space Error": screenSpaceError !== null ? screenSpaceError : NO_DATA
-  };
-};
 
 /**
  * Generates list of tile warnings
@@ -77,39 +23,23 @@ export const validateTile = (tile: Tile3D): TileWarning[] => {
 };
 
 /**
- * Do float numbers formatting based on fixed value
- * @param tile
- */
-const formatFloatNumber = (value: number): string | null => {
-  if (!value) {
-    return null;
-  }
-
-  return value.toFixed(FLOAT_VALUES_FIXED_COUNT);
-};
-
-/**
  * Get tile's children info (count, ids)
  * @param children
  * @returns children data
  */
-const getChildrenInfo = (children: Tile3D[]): { count: number | string, ids: string } => {
-  if (!children || !children.length) {
+export const getChildrenInfo = (
+  children: Tile3D[]
+): { count: number; ids: string } => {
+  if (!children?.length) {
     return {
-      count: NO_DATA,
-      ids: NO_DATA,
+      count: NaN,
+      ids: "",
     };
   }
 
-  const clildrenIds: string[] = [];
-
-  for (const index in children) {
-    clildrenIds.push(children[index].id);
-  }
-
   return {
-    count: clildrenIds.length,
-    ids: clildrenIds.join(", "),
+    count: children.length,
+    ids: children.map((children: Tile3D) => children.id).join(", "),
   };
 };
 
