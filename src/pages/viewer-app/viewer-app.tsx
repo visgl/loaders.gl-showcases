@@ -41,6 +41,7 @@ import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -90,8 +91,8 @@ const StatsWidgetContainer = styled.div<{
   align-items: flex-start;
   position: absolute;
   top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
   font-size: 16px;
   font-style: normal;
   font-weight: 500;

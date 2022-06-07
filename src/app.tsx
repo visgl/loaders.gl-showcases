@@ -3,15 +3,19 @@ import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
-  black,
-  darkGrey,
-  lightGrey,
-  mediumGrey,
-  silverGrey,
-  white,
+  color_brand_primary,
+  color_canvas_inverted,
+  color_canvas_primary,
+  color_canvas_secondary,
+  dim_canvas_primary,
+  dim_canvas_secondary,
+  hilite_canvas_primary,
+  hilite_canvas_secondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
+import { ComparisonMode } from "./utils/enums";
+import { AppThemes } from "./utils/types";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -36,18 +40,26 @@ const GlobalStyle = createGlobalStyle`
 /**
  * @todo Add colors and styles for each theme.
  */
-const THEMES = {
+const THEMES: AppThemes = {
   [Theme.Dark]: {
-    mainColor: darkGrey,
-    fontColor: white,
-    buttonBorderColor: lightGrey,
-    buttonBackgroundColor: mediumGrey,
+    colors: {
+      mainColor: color_brand_primary,
+      fontColor: color_canvas_inverted,
+      mainCanvasColor: color_canvas_primary,
+      mainHiglightColor: hilite_canvas_primary,
+      mainDimColor: dim_canvas_primary,
+    },
+    name: Theme.Dark,
   },
   [Theme.Light]: {
-    mainColor: white,
-    fontColor: black,
-    buttonBorderColor: lightGrey,
-    buttonBackgroundColor: silverGrey,
+    colors: {
+      mainColor: color_canvas_inverted,
+      fontColor: color_brand_primary,
+      mainCanvasColor: color_canvas_secondary,
+      mainHiglightColor: hilite_canvas_secondary,
+      mainDimColor: dim_canvas_secondary,
+    },
+    name: Theme.Light,
   },
 };
 
@@ -74,11 +86,13 @@ export const App = () => {
               <Route path={"debug"} element={<Pages.DebugApp />} />
               <Route
                 path={"compare-across-layers"}
-                element={<Pages.Comparison />}
+                element={
+                  <Pages.Comparison mode={ComparisonMode.acrossLayers} />
+                }
               />
               <Route
                 path={"compare-within-layer"}
-                element={<Pages.Comparison />}
+                element={<Pages.Comparison mode={ComparisonMode.withinLayer} />}
               />
             </Routes>
           </ContentWrapper>

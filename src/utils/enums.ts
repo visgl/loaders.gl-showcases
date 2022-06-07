@@ -9,3 +9,8 @@ export enum Layout {
   Tablet = 'tablet',
   Mobile = 'mobile'
 }
+
+export enum ComparisonMode {
+  acrossLayers,
+  withinLayer
+}

@@ -5,6 +5,11 @@ import styled, { css } from "styled-components";
 import { Layout, Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
+import {
+  color_brand_quaternary,
+  color_brand_secondary,
+} from "../../constants/colors";
+
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
 import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 
@@ -23,34 +28,34 @@ import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 
 const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
 
-interface HeaderProps {
+type HeaderProps = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-}
+};
 
-interface DefaultMenuProps {
+type DefaultMenuProps = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   pathname: string;
   githubIcon: string;
-}
+};
 
-interface PropsWithLayout {
+type PropsWithLayout = {
   layout: string;
-}
+};
 
-interface CompareButtonProps {
+type CompareButtonProps = {
   open: boolean;
   active: boolean;
-}
+};
 
-interface ActiveProps {
+type ActiveProps = {
   active: number;
-}
+};
 
-interface CompareMenuProps {
+type CompareMenuProps = {
   pathname: string;
-}
+};
 
 const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;
@@ -62,7 +67,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 
   height: ${getCurrentLayoutProperty({
     default: "65px",
@@ -73,7 +78,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
 
 const HeaderLogo = styled.h2<PropsWithLayout>`
   white-space: nowrap;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   font-size: ${getCurrentLayoutProperty({
     default: "24px",
     tablet: "16px",
@@ -101,17 +106,18 @@ const MenuLink = styled(Link)<ActiveProps>`
   height: 20px;
   position: relative;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   margin-right: 24px;
 
   &:hover {
-    color: #60c2a4;
+    color: ${color_brand_secondary};
 
     &::after {
       content: "";
       position: absolute;
       top: 25px;
-      border: 1px solid #60c2a4;
+      border: 1px solid ${color_brand_secondary};
       border-radius: 1px;
       width: 100%;
     }
@@ -124,7 +130,7 @@ const MenuLink = styled(Link)<ActiveProps>`
         content: "";
         position: absolute;
         top: 25px;
-        border: 1px solid #60c2a4;
+        border: 1px solid ${color_brand_secondary};
         border-radius: 1px;
         width: 100%;
       }
@@ -135,7 +141,7 @@ const GithubImage = styled.img`
   width: 16px;
   height: 16px;
   margin-left: 5px;
-  border: 1px solid ${(props) => props.theme.mainColor};
+  border: 1px solid ${(props) => props.theme.colors.mainColor};
   border-radius: 12px;
 `;
 
@@ -145,12 +151,12 @@ const GitHubLink = styled.a`
   text-decoration: none;
   height: 20px;
 
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   &:hover {
-    color: #60c2a4;
+    color: ${color_brand_secondary};
     & > img {
-      border: 1px solid #60c2a4;
+      border: 1px solid ${color_brand_secondary};
     }
   }
 `;
@@ -165,16 +171,18 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin-top: 2px;
   height: 30px;
   border-bottom: 2px solid
-    ${(props) => (props.active ? "#60c2a4" : props.theme.mainColor)};
+    ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.mainColor};
   border-radius: 2px;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
 
   &::before,
   &::after {
     content: "";
     position: absolute;
-    background: ${(props) => props.theme.fontColor};
+    background: ${(props) => props.theme.colors.fontColor};
     border-radius: 2px;
     display: block;
     height: 7px;
@@ -193,11 +201,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   }
 
   &:hover {
-    color: #60c2a4;
-    border-bottom: 2px solid #60c2a4;
+    color: ${color_brand_secondary};
+    border-bottom: 2px solid ${color_brand_secondary};
     &::after,
     &::before {
-      background: #60c2a4;
+      background: ${color_brand_secondary};
     }
   }
 
@@ -206,14 +214,14 @@ const CompareButton = styled.div<CompareButtonProps>`
     css`
       &:after,
       &:before {
-        background: #60c2a4;
+        background: ${color_brand_secondary};
       }
     `}
 `;
 
 const HelpButton = styled.button`
-  color: ${(props) => props.theme.fontColor};
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  color: ${(props) => props.theme.colors.fontColor};
+  border: 1px solid ${color_brand_quaternary};
   border-radius: 12px;
   padding: 7px 18px;
   background: transparent;
@@ -221,21 +229,25 @@ const HelpButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: #60c2a4;
-    color: #60c2a4;
+    border-color: ${color_brand_secondary};
+    color: ${color_brand_secondary};
   }
 `;
 
 const ThemeToggleWrapper = styled.div`
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  border: 1px solid ${color_brand_quaternary};
   border-radius: 12px;
 
-  background: ${(props) => props.theme.buttonBackgroundColor};
+  background: ${(props) => props.theme.colors.mainHiglightColor};
   margin-left: 24px;
   padding: 1px;
 
   display: flex;
   justify-content: space-between;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.mainDimColor};
+  }
 `;
 
 const ThemeToggleImage = styled.img<ActiveProps>`
@@ -248,11 +260,7 @@ const ThemeToggleImage = styled.img<ActiveProps>`
 
   cursor: pointer;
   background: ${(props) =>
-    props.active ? props.theme.mainColor : "transparent"};
-
-  &:hover {
-    background: #60c2a4;
-  }
+    props.active ? props.theme.colors.mainColor : "transparent"};
 `;
 
 const MenuIcon = styled.img`
@@ -277,7 +285,7 @@ const TabletOrMobileMenuContainer = styled.div`
   top: 58px;
   display: flex;
   width: 100vw;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 `;
 
 const MenuLinks = styled.div`
@@ -298,7 +306,8 @@ const LinksWrapper = styled.div`
 `;
 
 const TabletOrMobileLink = styled(Link)<ActiveProps>`
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   text-decoration: inherit;
   font-size: 16px;
   line-height: 19px;
@@ -309,36 +318,38 @@ const CompareTabletOrMobile = styled(CompareButton)<CompareButtonProps>`
   margin: 20px 0;
   border: none;
   height: 19px;
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   width: calc(100vw - 60px);
 
   &::after,
   &::before {
     background: ${(props) =>
-      props.active ? "#60c2a4" : props.theme.fontColor};
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
   }
 
   &:hover {
     border: none;
-    color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+    color: ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
     &::after,
     &::before {
       background: ${(props) =>
-        props.active ? "#60c2a4" : props.theme.fontColor};
+        props.active ? color_brand_secondary : props.theme.colors.fontColor};
     }
   }
 `;
 
 const TabletOrMobileGitHubLink = styled(GitHubLink)`
   margin: 20px 0;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   & > img {
     border: none;
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
+    color: ${(props) => props.theme.colors.fontColor};
     & > img {
       border: none;
     }
@@ -355,7 +366,7 @@ const TabletOrMobileListButton = styled.div`
   height: 20px;
   position: relative;
   margin: 20px 16px;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   cursor: pointer;
 `;
 
@@ -363,7 +374,7 @@ const CompareTabContainer = styled.div`
   position: absolute;
   top: 49px;
   left: -80px;
-  background: ${(props) => props.theme.mainColor};
+  background: ${(props) => props.theme.colors.mainColor};
   border: 1px solid #616678;
   border-radius: 0px 0px 8px 8px;
   display: flex;
@@ -388,8 +399,9 @@ const CompareMenuLink = styled(MenuLink)`
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
-    background: ${(props) => props.theme.buttonBackgroundColor};
+    color: ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
+    background: ${(props) => props.theme.colors.mainHiglightColor};
   }
 
   &:first-child {

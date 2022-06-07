@@ -7,6 +7,7 @@ import {
   isGeometryBoundingVolumeMoreSuitable,
 } from "../../utils";
 import { Checkbox } from "../";
+import { color_canvas_inverted } from "../../constants/colors";
 
 const TileValidatorContainer = styled.div`
   display: flex;
@@ -19,7 +20,7 @@ const ValidateButton = styled.button`
   display: flex;
   padding: 4px 16px;
   background: #4f52cc;
-  color: white;
+  color: ${color_canvas_inverted};
   align-items: center;
   height: 20px;
   justify-content: center;
@@ -48,7 +49,7 @@ const GapInput = styled.input`
   max-width: 50px;
   margin: 0 10px;
   background: #1d2335;
-  color: white;
+  color: ${color_canvas_inverted};
   font-weight: bold;
   text-align: center;
   border-radius: 4px;
@@ -76,18 +77,18 @@ const VALIDATE_TILE = "Validate Tile";
 const WARNING_TYPE = "warning";
 const OK_TYPE = "ok";
 
-interface IGeometryInfo {
+type IGeometryInfo = {
   type: string;
   title: string;
-}
+};
 
-interface ITriangleMessage {
+type ITriangleMessage = {
   key: string;
   type?: string;
   text: string;
-}
+};
 
-interface TileValidatorProps {
+type TileValidatorProps = {
   tile: Tile3D;
   handleShowNormals: (tile: Tile3D) => void;
   showNormals: boolean;
@@ -95,7 +96,7 @@ interface TileValidatorProps {
   normalsLength: number;
   handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
   handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
-}
+};
 
 /**
  * TODO: Add types to component

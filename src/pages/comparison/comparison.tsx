@@ -1,21 +1,23 @@
 import { useState } from "react";
 import DeckGL from "@deck.gl/react";
-import {
-  MapController,
-  MapView,
-  WebMercatorViewport,
-} from "@deck.gl/core";
+import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
 
 import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { darkGrey } from "../../constants/colors";
+import { color_brand_primary } from "../../constants/colors";
+import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
+import { ComparisonMode } from "../../utils/enums";
 
-interface layoutProps {
+type ComparisonPageProps = {
+  mode: ComparisonMode;
+};
+
+type LayoutProps = {
   layout: string;
-}
+};
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -43,18 +45,18 @@ const VIEW = new MapView({
   farZMultiplier: 2.02,
 });
 
-const Container = styled.div<layoutProps>`
+const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: ${getCurrentLayoutProperty({
     default: "row",
     tablet: "column",
-    mobile: "column",
+    mobile: "column-reverse",
   })};
-  margin-top: 60px;
+  margin-top: 58px;
   height: calc(100% - 60px);
 `;
 
-const DeckWrapper = styled.div<layoutProps>`
+const DeckWrapper = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
     default: "50%",
     tablet: "100%",
@@ -64,7 +66,7 @@ const DeckWrapper = styled.div<layoutProps>`
   position: relative;
 `;
 
-const Devider = styled.div<layoutProps>`
+const Devider = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
     default: "14px",
     tablet: "100%",
@@ -77,10 +79,43 @@ const Devider = styled.div<layoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${darkGrey};
+  background-color: ${color_brand_primary};
 `;
 
-export const Comparison = () => {
+const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+
+  left: ${getCurrentLayoutProperty({
+    default: "24px",
+    tablet: "24px",
+    mobile: "8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    default: "right 24px",
+    tablet: "left 24px",
+    mobile: "left 8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
   const [terrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -143,6 +178,12 @@ export const Comparison = () => {
           }}
           <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
         </DeckGL>
+        <LeftSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            id="tools-panel-left"
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
+          />
+        </LeftSideToolsPanelWrapper>
       </DeckWrapper>
 
       <Devider layout={layout} />
@@ -160,6 +201,13 @@ export const Comparison = () => {
           }}
           <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
         </DeckGL>
+        <RightSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            id="tools-panel-right"
+            showLayerOptions={mode === ComparisonMode.acrossLayers}
+            showComparisonSettings={mode === ComparisonMode.withinLayer}
+          />
+        </RightSideToolsPanelWrapper>
       </DeckWrapper>
     </Container>
   );

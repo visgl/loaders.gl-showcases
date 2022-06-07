@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
 
 const CheckboxContainer = styled.div<{ disabled: boolean }>`
   display: inline-block;
@@ -8,7 +9,7 @@ const CheckboxContainer = styled.div<{ disabled: boolean }>`
 `;
 const Icon = styled.svg`
   fill: none;
-  stroke: white;
+  stroke: ${color_canvas_inverted};
   stroke-width: 2px;
 `;
 const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
@@ -28,7 +29,7 @@ const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
   width: 22px;
   height: 22px;
   margin-right: 8px;
-  background: ${(props) => (props.checked ? "#4F52CC" : "#0E111A")};
+  background: ${(props) => (props.checked ? "#4F52CC" : color_brand_primary)};
   border: ${(props) =>
     props.disabled ? "1px solid rgba(255,255,255, .6)" : "1px solid #4F52CC"};
   border-radius: 4px;
