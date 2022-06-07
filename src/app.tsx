@@ -4,10 +4,13 @@ import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
   color_brand_primary,
-  color_canvas_primary,
-  color_brand_quaternary,
-  color_brand_tertiary,
   color_canvas_inverted,
+  color_canvas_primary,
+  color_canvas_secondary,
+  dim_canvas_primary,
+  dim_canvas_secondary,
+  hilite_canvas_primary,
+  hilite_canvas_secondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { Theme } from "./utils/enums";
@@ -40,9 +43,11 @@ const GlobalStyle = createGlobalStyle`
 const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
-      mainColor: color_canvas_primary,
+      mainColor: color_brand_primary,
       fontColor: color_canvas_inverted,
-      buttonBackgroundColor: color_brand_quaternary,
+      mainCanvasColor: color_canvas_primary,
+      mainHiglightColor: hilite_canvas_primary,
+      mainDimColor: dim_canvas_primary,
     },
     name: Theme.Dark,
   },
@@ -50,7 +55,9 @@ const THEMES: AppThemes = {
     colors: {
       mainColor: color_canvas_inverted,
       fontColor: color_brand_primary,
-      buttonBackgroundColor: color_brand_tertiary,
+      mainCanvasColor: color_canvas_secondary,
+      mainHiglightColor: hilite_canvas_secondary,
+      mainDimColor: dim_canvas_secondary,
     },
     name: Theme.Light,
   },

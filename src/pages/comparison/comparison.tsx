@@ -7,7 +7,7 @@ import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { color_canvas_primary } from "../../constants/colors";
+import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ComparisonMode } from "../../utils/enums";
 
@@ -79,7 +79,7 @@ const Devider = styled.div<LayoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${color_canvas_primary};
+  background-color: ${color_brand_primary};
 `;
 
 const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
