@@ -9,7 +9,8 @@ import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
-import { ComparisonMode } from "../../utils/enums";
+import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
+import { LayersPanel } from "../../components/layers-panel/layers-panel";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -115,11 +116,59 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
+const LeftLayersPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+
+  left: ${getCurrentLayoutProperty({
+    default: "100px",
+    tablet: "100px",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "calc(50% - 180px)",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 0;",
+  })};
+`;
+
+const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    default: "right 100px;",
+    tablet: "left: 100px;",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "left: calc(50% - 180px);",
+  })};
+
+  ${getCurrentLayoutProperty({
+    default: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 0;",
+  })};
+`;
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
   const [terrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
+  const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
+    ActiveButton.none
+  );
+  const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
+    ActiveButton.none
+  );
+
   const layout = useAppLayout();
 
   const onViewStateChange = ({ interactionState, viewState }) => {
@@ -162,6 +211,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const handleChangeLeftPanelVisibility = (active: ActiveButton) => {
+    setActiveLeftPanel((prevValue) =>
+      prevValue === active ? ActiveButton.none : active
+    );
+  };
+
+  const handleChangeRightPanelVisibility = (active: ActiveButton) => {
+    setActiveRightPanel((prevValue) =>
+      prevValue === active ? ActiveButton.none : active
+    );
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -181,9 +242,26 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
+            activeButton={activeLeftPanel}
             showComparisonSettings={mode === ComparisonMode.withinLayer}
+            onChange={handleChangeLeftPanelVisibility}
           />
         </LeftSideToolsPanelWrapper>
+        {activeLeftPanel === ActiveButton.options && (
+          <LeftLayersPanelWrapper layout={layout}>
+            <LayersPanel
+              id="left-layers-panel"
+              type={ListItemType.Radio}
+              baseMaps={[]}
+              onLayersSelect={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              onClose={() =>
+                handleChangeLeftPanelVisibility(ActiveButton.options)
+              }
+            />
+          </LeftLayersPanelWrapper>
+        )}
       </DeckWrapper>
 
       <Devider layout={layout} />
@@ -204,10 +282,27 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
+            activeButton={activeRightPanel}
             showLayerOptions={mode === ComparisonMode.acrossLayers}
             showComparisonSettings={mode === ComparisonMode.withinLayer}
+            onChange={handleChangeRightPanelVisibility}
           />
         </RightSideToolsPanelWrapper>
+        {activeRightPanel === ActiveButton.options && (
+          <RightLayersPanelWrapper layout={layout}>
+            <LayersPanel
+              id="right-layers-panel"
+              onLayersSelect={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+              type={ListItemType.Radio}
+              baseMaps={[]}
+              onClose={() =>
+                handleChangeRightPanelVisibility(ActiveButton.options)
+              }
+            />
+          </RightLayersPanelWrapper>
+        )}
       </DeckWrapper>
     </Container>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 
-import { Layout, Theme } from "../../utils/enums";
+import { Layout, Theme } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
 import {
@@ -281,7 +281,6 @@ const CloseIcon = styled(MenuIcon)`
 
 const TabletOrMobileMenuContainer = styled.div`
   position: fixed;
-  z-index: 10;
   top: 58px;
   display: flex;
   width: 100vw;

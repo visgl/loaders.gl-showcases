@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import {
@@ -14,16 +13,8 @@ import GearIconGrey from "../../../public/icons/gear-grey.svg";
 import SettingsIconGrey from "../../../public/icons/settings-grey.svg";
 import MemoryIconGrey from "../../../public/icons/memory-grey.svg";
 
-import { Layout, Theme } from "../../utils/enums";
+import { ActiveButton, Layout, Theme } from "../../types";
 import { useAppLayout } from "../../utils/layout";
-import { useLocation } from "react-router-dom";
-
-enum ActiveButton {
-  options,
-  settings,
-  memory,
-  none,
-}
 
 type ButtonProps = {
   active: boolean;
@@ -34,6 +25,7 @@ type ButtonProps = {
 
 type MainToolsPanelProps = {
   id: string;
+  activeButton: ActiveButton;
   showLayerOptions?: boolean;
   showComparisonSettings?: boolean;
   onChange?: (active: ActiveButton) => void;
@@ -85,29 +77,12 @@ const Button = styled.button<ButtonProps>`
 
 export const MainToolsPanel = ({
   id,
+  activeButton,
   showLayerOptions = true,
   showComparisonSettings = true,
   onChange = () => ({}),
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
-  const [activeButton, setActiveButton] = useState<ActiveButton>(
-    ActiveButton.none
-  );
-  const location = useLocation();
-  const { pathname } = location;
-
-  useEffect(() => {
-    setActiveButton(ActiveButton.none);
-  }, [pathname]);
-
-  const handleButtonClick = (newActiveButton: ActiveButton) => {
-    if (newActiveButton === activeButton) {
-      setActiveButton(ActiveButton.none);
-    } else {
-      setActiveButton(newActiveButton);
-    }
-    onChange(newActiveButton);
-  };
 
   return (
     <Container id={id}>
@@ -117,7 +92,7 @@ export const MainToolsPanel = ({
           active={activeButton === ActiveButton.options}
           darkImage={GearIconGrey}
           lightImage={GearIconWhite}
-          onClick={() => handleButtonClick(ActiveButton.options)}
+          onClick={() => onChange(ActiveButton.options)}
         />
       )}
       {showComparisonSettings && (
@@ -126,7 +101,7 @@ export const MainToolsPanel = ({
           active={activeButton === ActiveButton.settings}
           darkImage={SettingsIconGrey}
           lightImage={SettingsIconWhite}
-          onClick={() => handleButtonClick(ActiveButton.settings)}
+          onClick={() => onChange(ActiveButton.settings)}
         />
       )}
       <Button
@@ -134,7 +109,7 @@ export const MainToolsPanel = ({
         active={activeButton === ActiveButton.memory}
         darkImage={MemoryIconGrey}
         lightImage={MemoryIconWhite}
-        onClick={() => handleButtonClick(ActiveButton.memory)}
+        onClick={() => onChange(ActiveButton.memory)}
       />
     </Container>
   );

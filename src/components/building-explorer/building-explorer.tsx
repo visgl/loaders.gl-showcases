@@ -88,7 +88,7 @@ const CheckboxOption = styled.div`
 `;
 
 const SublayerName = styled.span`
-  margin-left: 5;
+  margin-left: 5px;
   cursor: pointer;
 `;
 
@@ -159,7 +159,6 @@ export const BuildingExplorer = ({
             <label>
               <Checkbox
                 id={`CheckBox${sublayer.id}`}
-                value={sublayer.visibility}
                 checked={sublayer.visibility}
                 onChange={() => toggleSublayer(sublayer)}
               />

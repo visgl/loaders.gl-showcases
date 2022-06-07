@@ -13,9 +13,7 @@ import {
   hilite_canvas_secondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
-import { Theme } from "./utils/enums";
-import { ComparisonMode } from "./utils/enums";
-import { AppThemes } from "./utils/types";
+import { AppThemes, Theme, ComparisonMode } from "./types";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -47,7 +45,9 @@ const THEMES: AppThemes = {
       fontColor: color_canvas_inverted,
       mainCanvasColor: color_canvas_primary,
       mainHiglightColor: hilite_canvas_primary,
+      mainHiglightColorInverted: hilite_canvas_secondary,
       mainDimColor: dim_canvas_primary,
+      mainDimColorInverted: dim_canvas_secondary,
     },
     name: Theme.Dark,
   },
@@ -57,7 +57,9 @@ const THEMES: AppThemes = {
       fontColor: color_brand_primary,
       mainCanvasColor: color_canvas_secondary,
       mainHiglightColor: hilite_canvas_secondary,
+      mainHiglightColorInverted: hilite_canvas_primary,
       mainDimColor: dim_canvas_secondary,
+      mainDimColorInverted: dim_canvas_primary,
     },
     name: Theme.Light,
   },
