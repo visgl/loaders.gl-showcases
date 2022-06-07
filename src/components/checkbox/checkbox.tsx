@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import {
+  color_brand_tertiary,
   color_canvas_inverted,
-  color_ui_primary,
-  dim_ui_primary,
+  dim_brand_tertinary,
 } from "../../constants/colors";
 
 type CheckboxProps = {
@@ -40,13 +40,15 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
 const StyledCheckbox = styled.div<{ checked: boolean }>`
   width: 24px;
   height: 24px;
-  background: ${({ checked }) => (checked ? color_ui_primary : "transparent")};
-  border: 1px solid ${color_ui_primary};
+  background: ${({ checked }) =>
+    checked ? color_brand_tertiary : "transparent"};
+  border: 1px solid ${color_brand_tertiary};
   border-radius: 4px;
 
   &:hover {
-    background: ${({ checked }) => (checked ? dim_ui_primary : "transparent")};
-    border: 1px solid ${dim_ui_primary};
+    background: ${({ checked }) =>
+      checked ? dim_brand_tertinary : "transparent"};
+    border: 1px solid ${dim_brand_tertinary};
   }
 
   ${Icon} {
@@ -54,9 +56,9 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
   }
 `;
 
-export const Checkbox = ({ id, checked, onChange }: CheckboxProps) => (
+export const Checkbox = ({ id, checked, onChange, ...rest }: CheckboxProps) => (
   <CheckboxContainer>
-    <HiddenCheckbox checked={checked} onChange={onChange} />
+    <HiddenCheckbox checked={checked} onChange={onChange} {...rest} />
     <StyledCheckbox checked={checked}>
       <Icon id={`${id}-icon`} viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />

@@ -7,7 +7,7 @@ import { StaticMap } from "react-map-gl";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { color_canvas_primary } from "../../constants/colors";
+import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -80,7 +80,7 @@ const Devider = styled.div<LayoutProps>`
     mobile: "8px",
   })};
 
-  background-color: ${color_canvas_primary};
+  background-color: ${color_brand_primary};
 `;
 
 const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
@@ -256,15 +256,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onLayersSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onSceneInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onBaseMapInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
@@ -306,15 +297,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               }}
               type={ListItemType.Radio}
               baseMaps={[]}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onSceneInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onBaseMapInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }

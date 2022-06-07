@@ -1,9 +1,5 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import {
-  color_canvas_inverted,
-  color_brand_tertiary,
-} from "../../constants/colors";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { ListItemType, Theme } from "../../types";
 
@@ -20,9 +16,6 @@ type LayersPanelProps = {
   type: ListItemType;
   baseMaps: any[];
   onLayersSelect: (ids: string[]) => void;
-  onLayerInsert: () => void;
-  onSceneInsert: () => void;
-  onBaseMapInsert: () => void;
   onClose: () => void;
 };
 
@@ -40,7 +33,7 @@ const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${({ theme }) => theme.colors.panelBgColor};
+  background: ${({ theme }) => theme.colors.mainCanvasColor};
   opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
   border-radius: 8px;
   padding-bottom: 26px;
@@ -73,10 +66,10 @@ const Tab = styled.div<TabProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.tabHover};
+    color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
     &::after {
-      border-color: ${({ theme }) => theme.colors.tabHover};
-      background: ${({ theme }) => theme.colors.tabHover};
+      border-color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
+      background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
     }
   }
 
@@ -126,7 +119,7 @@ const CloseButton = styled.div`
   &:hover {
     &::before,
     &::after {
-      background-color: ${color_brand_tertiary};
+      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
     }
   }
 `;
@@ -144,14 +137,13 @@ const Content = styled.div`
 
 const HorizontalLine = styled.div`
   margin: 35px 16px 16px 16px;
-  border: 1px solid ${color_canvas_inverted};
+  border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
-  background: ${color_canvas_inverted};
+  background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
   opacity: 0.12;
 `;
 
-const getLayerExamples = () =>
-  Object.keys(EXAMPLES).map((key) => EXAMPLES[key]);
+const getLayerExamples = () => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
   id,

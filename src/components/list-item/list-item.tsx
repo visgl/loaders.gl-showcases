@@ -34,13 +34,13 @@ const Container = styled.div<ContainerProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background: ${({ theme }) => theme.colors.listItemActive};
+      background: ${({ theme }) => theme.colors.mainHiglightColor};
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     `}
 
   &:hover {
-    background: ${({ theme }) => theme.colors.listItemHover};
+    background: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 `;

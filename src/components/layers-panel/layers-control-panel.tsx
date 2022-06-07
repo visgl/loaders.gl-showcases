@@ -71,8 +71,8 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton text="Insert layer" onClick={onLayerInsert} />
-        <PlusButton text="Insert scene" onClick={onSceneInsert} />
+        <PlusButton onClick={onLayerInsert}>Insert layer</PlusButton>
+        <PlusButton onClick={onSceneInsert}>Insert scene</PlusButton>
       </InsertButtons>
     </LayersContainer>
   );

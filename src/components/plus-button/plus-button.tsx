@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { color_ui_primary } from "../../constants/colors";
+import { color_brand_tertiary } from "../../constants/colors";
 
 type PlusButtonProps = {
-  text?: string;
+  children?: React.ReactNode;
   onClick: () => void;
 };
 
@@ -38,7 +38,7 @@ const PlusIcon = styled.div`
     transform: translate(-50%, -50%);
     height: 2px;
     width: 50%;
-    background: ${color_ui_primary};
+    background: ${color_brand_tertiary};
     top: 50%;
     left: 50%;
   }
@@ -49,21 +49,21 @@ const PlusIcon = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: ${color_ui_primary};
+    background: ${color_brand_tertiary};
     height: 50%;
     width: 2px;
   }
 `;
 
 const ButtonText = styled.div`
-  color: ${color_ui_primary};
+  color: ${color_brand_tertiary};
 `;
 
-export const PlusButton = ({ text = "", onClick }: PlusButtonProps) => {
+export const PlusButton = ({ children, onClick }: PlusButtonProps) => {
   return (
     <Button onClick={onClick}>
       <PlusIcon />
-      <ButtonText>{text}</ButtonText>
+      <ButtonText>{children}</ButtonText>
     </Button>
   );
 };

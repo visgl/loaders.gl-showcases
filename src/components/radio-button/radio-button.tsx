@@ -1,7 +1,8 @@
 import styled, { css } from "styled-components";
 import {
-  color_ui_primary,
+  color_brand_tertiary,
   color_canvas_inverted,
+  dim_brand_tertinary,
 } from "../../constants/colors";
 
 type RadioButtonProps = {
@@ -41,7 +42,7 @@ const Checkmark = styled.span<CheckmarkProps>`
   height: 100%;
   width: 100%;
   background-color: transparent;
-  border: 1px solid ${color_ui_primary};
+  border: 1px solid ${color_brand_tertiary};
   border-radius: 50%;
 
   &::after {
@@ -59,12 +60,19 @@ const Checkmark = styled.span<CheckmarkProps>`
   ${({ checked }) =>
     checked &&
     css`
-      background-color: ${color_ui_primary};
+      background-color: ${color_brand_tertiary};
       &::after {
         display: block;
         background-color: ${color_canvas_inverted};
       }
+      &:hover {
+        background-color: ${dim_brand_tertinary};
+      }
     `}
+
+  &:hover {
+    border-color: ${dim_brand_tertinary};
+  }
 `;
 
 export const RadioButton = ({

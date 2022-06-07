@@ -4,13 +4,13 @@ import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
   color_brand_primary,
+  color_canvas_inverted,
   color_canvas_primary,
   color_canvas_secondary,
-  color_brand_quaternary,
-  color_brand_tertiary,
-  color_canvas_inverted,
-  color_brand_senary,
-  color_brand_quinary,
+  dim_canvas_primary,
+  dim_canvas_secondary,
+  hilite_canvas_primary,
+  hilite_canvas_secondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, Theme, ComparisonMode } from "./types";
@@ -41,13 +41,13 @@ const GlobalStyle = createGlobalStyle`
 const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
-      mainColor: color_canvas_primary,
+      mainColor: color_brand_primary,
       fontColor: color_canvas_inverted,
-      buttonBackgroundColor: color_brand_quaternary,
-      panelBgColor: color_brand_primary,
-      tabHover: color_brand_tertiary,
-      listItemActive: color_brand_quaternary,
-      listItemHover: color_brand_senary,
+      mainCanvasColor: color_canvas_primary,
+      mainHiglightColor: hilite_canvas_primary,
+      mainHiglightColorInverted: hilite_canvas_secondary,
+      mainDimColor: dim_canvas_primary,
+      mainDimColorInverted: dim_canvas_secondary,
     },
     name: Theme.Dark,
   },
@@ -55,11 +55,11 @@ const THEMES: AppThemes = {
     colors: {
       mainColor: color_canvas_inverted,
       fontColor: color_brand_primary,
-      buttonBackgroundColor: color_brand_tertiary,
-      panelBgColor: color_canvas_secondary,
-      tabHover: color_brand_senary,
-      listItemActive: color_brand_tertiary,
-      listItemHover: color_brand_quinary,
+      mainCanvasColor: color_canvas_secondary,
+      mainHiglightColor: hilite_canvas_secondary,
+      mainHiglightColorInverted: hilite_canvas_primary,
+      mainDimColor: dim_canvas_secondary,
+      mainDimColorInverted: dim_canvas_primary,
     },
     name: Theme.Light,
   },
