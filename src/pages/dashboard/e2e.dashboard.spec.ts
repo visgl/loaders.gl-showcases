@@ -125,7 +125,7 @@ describe("Dashboard Default View", () => {
     expect(lightButton).toBeDefined();
   });
 
-  it("Should switch between themes", async () => {
+  it.only("Should switch between themes", async () => {
     await page.waitForSelector("#header-container");
 
     // Check default theme colors of header elements
@@ -150,11 +150,11 @@ describe("Dashboard Default View", () => {
     const linksParentLight = await page.$("#header-links-default");
     expect(
       await linksParentLight.$$eval("a", (nodes) => nodes.map((n) => getComputedStyle(n).getPropertyValue('color')))
-    ).toEqual(["rgb(96, 194, 164)", "rgb(14, 17, 26)", "rgb(14, 17, 26)", "rgb(14, 17, 26)"]);
+    ).toEqual(["rgb(96, 194, 164)", "rgb(35, 36, 48)", "rgb(35, 36, 48)", "rgb(35, 36, 48)"]);
 
     expect(
       await page.$eval("#header-logo", (element) => getComputedStyle(element).getPropertyValue('color'))
-    ).toEqual("rgb(14, 17, 26)");
+    ).toEqual("rgb(35, 36, 48)");
 
     // Check dark theme colors of header elements
     await page.click("#toggle-dark-default");
