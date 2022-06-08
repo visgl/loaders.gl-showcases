@@ -5,6 +5,10 @@ import { MAP_STYLES } from "../../constants/map-styles";
 import { useSearchParams } from "react-router-dom";
 
 import { ToggleSwitch } from "../../components";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const Font = `
   font-size: 16px;
@@ -20,7 +24,7 @@ const Container = styled.div<{ debugMode: boolean }>`
   align-items: center;
   top: ${(props) => (props.debugMode ? "120px" : "70px")};
   left: 10px;
-  background: #0e111a;
+  background: ${color_brand_primary};
   border-radius: 8px;
   z-index: 15;
   padding 16px;
@@ -34,14 +38,14 @@ const TilesetDropDown = styled.select`
   height: 28px;
   cursor: pointer;
   border-radius: 4px;
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
   width: 245px;
   margin-bottom: 8px;
 
   option {
-    color: white;
-    background: #0e111a;
+    color: ${color_canvas_inverted};
+    background: ${color_brand_primary};
     display: flex;
     white-space: pre;
     min-height: 20px;
@@ -50,7 +54,7 @@ const TilesetDropDown = styled.select`
 
   &:hover {
     background: #4f52cc;
-    color: black;
+    color: ${color_brand_primary};
   }
 `;
 
@@ -70,8 +74,8 @@ const TerrainContainer = styled(BaseMapContainer)`
 `;
 
 const MapName = styled.h3`
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
   font-weight: normal;
   font-size: 16px;
   width: 70px;
@@ -79,8 +83,8 @@ const MapName = styled.h3`
 `;
 
 const TerrainName = styled.h3`
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
   margin: 0;
   font-weight: normal;
   font-size: 16px;
@@ -92,18 +96,18 @@ const DropDown = styled.select`
   height: 28px;
   cursor: pointer;
   border-radius: 4px;
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
 
   option {
-    color: white;
-    background: #0e111a;
+    color: ${color_canvas_inverted};
+    background: ${color_brand_primary};
     padding: 0px 2px 1px;
   }
 
   &:hover {
     background: #4f52cc;
-    color: black;
+    color: ${color_brand_primary};
   }
   width: 167px;
   margin-left: 8px;
@@ -121,18 +125,18 @@ export const ControlPanel = ({
   useTerrainLayer,
   toggleTerrain,
   debugMode = false,
-  tileset
+  tileset,
 }) => {
-  const {id, name} = tileset;
+  const { id, name } = tileset;
   const [example, setExample] = useState(id);
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (id) {
       setExample(id);
-      setSearchParams({tileset: id})
+      setSearchParams({ tileset: id });
     }
-  }, [id])
+  }, [id]);
 
   const handleChangeExample = (event) => {
     const selectedExample = event.target.value;
@@ -162,7 +166,11 @@ export const ControlPanel = ({
   };
 
   const renderExamples = () => (
-    <TilesetDropDown id="tilesets" value={example} onChange={handleChangeExample}>
+    <TilesetDropDown
+      id="tilesets"
+      value={example}
+      onChange={handleChangeExample}
+    >
       {name === CUSTOM_EXAMPLE_VALUE && (
         <option key={"custom-example"} value={"custom-example"}>
           {CUSTOM_EXAMPLE}

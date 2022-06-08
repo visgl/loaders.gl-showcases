@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-import { Layout, Theme } from "../../utils/enums";
+import { Layout, Theme } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
@@ -10,10 +10,10 @@ import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 import { DesktopHeaderContent } from "./desktop-header-content";
 import { NonDesktopHeaderContent } from "./non-desktop-header-content";
 
-interface HeaderProps {
+type HeaderProps = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-}
+};
 
 interface PropsWithLayout {
   layout: string;
@@ -29,7 +29,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 
   height: ${getCurrentLayoutProperty({
     desktop: "65px",
@@ -40,7 +40,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
 
 const HeaderLogo = styled.h2<PropsWithLayout>`
   white-space: nowrap;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   font-size: ${getCurrentLayoutProperty({
     desktop: "24px",
     tablet: "16px",

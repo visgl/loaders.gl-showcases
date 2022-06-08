@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useForceUpdate } from "../../utils";
+import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
 
 const BuildingExplorerContainer = styled.div<{
   debugMode: boolean;
@@ -32,7 +33,7 @@ const BuildingExplorerContainer = styled.div<{
   height: ${(props) => (props.isShown ? "calc(100% - 240px)" : "20px")};
   max-height: 450px;
   align-items: space-between;
-  background: #0e111a;
+  background: ${color_brand_primary};
   border-radius: 8px;
 `;
 
@@ -58,8 +59,8 @@ const CollapseContainer = styled.div`
 `;
 
 const CheckboxContainer = styled.div`
-  background: #0e111a;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_inverted};
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -73,7 +74,7 @@ const Label = styled.h3<{ htmlFor: string }>`
   margin: 0;
   padding: 0;
   cursor: pointer;
-  color: white;
+  color: ${color_canvas_inverted};
   font-weight: normal;
 `;
 
@@ -87,7 +88,7 @@ const CheckboxOption = styled.div`
 `;
 
 const SublayerName = styled.span`
-  margin-left: 5;
+  margin-left: 5px;
   cursor: pointer;
 `;
 
@@ -158,7 +159,6 @@ export const BuildingExplorer = ({
             <label>
               <Checkbox
                 id={`CheckBox${sublayer.id}`}
-                value={sublayer.visibility}
                 checked={sublayer.visibility}
                 onChange={() => toggleSublayer(sublayer)}
               />

@@ -1,4 +1,4 @@
-import type { ObbData } from './types';
+import type { ObbData } from '../types';
 import type { Tile3D } from "@loaders.gl/tiles";
 
 import { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";

@@ -1,7 +1,6 @@
-import type { LayoutProperties } from "./types";
+import { LayoutProperties, Layout } from "../types";
 
 import { useMediaQuery } from "react-responsive";
-import { Layout } from "./enums";
 
 /**
  * Detect current device

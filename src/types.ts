@@ -1,5 +1,33 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 
+export enum Theme {
+  Dark,
+  Light,
+}
+
+export enum Layout {
+  Desktop = "default",
+  Tablet = "tablet",
+  Mobile = "mobile",
+}
+
+export enum ComparisonMode {
+  acrossLayers,
+  withinLayer,
+}
+
+export enum ListItemType {
+  Radio,
+  Checkbox,
+}
+
+export enum ActiveButton {
+  options,
+  settings,
+  memory,
+  none,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -33,4 +61,14 @@ export type LayoutProperties = {
   desktop: string | number;
   tablet: string | number;
   mobile: string | number;
+};
+
+type AppTheme = {
+  name: Theme;
+  colors: { [name: string]: string };
+};
+
+export type AppThemes = {
+  [Theme.Dark]: AppTheme;
+  [Theme.Light]: AppTheme;
 };

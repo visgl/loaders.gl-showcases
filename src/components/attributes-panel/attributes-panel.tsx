@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const Container = styled.div`
   position: absolute;
@@ -11,7 +15,7 @@ const Container = styled.div`
   align-items: flex-start;
   align-items: center;
   color: rgba(255, 255, 255, 0.6);
-  background: #0e111a;
+  background: ${color_brand_primary};
   flex-flow: column;
   width: 320px;
   height: auto;
@@ -62,7 +66,7 @@ const CloseButton = styled.button`
   border: none;
   cursor: pointer;
   background: transparent;
-  color: white;
+  color: ${color_canvas_inverted};
   outline: none;
   font-size: 19px;
   margin-right: 5px;
@@ -70,17 +74,17 @@ const CloseButton = styled.button`
 
 const Title = styled.h3`
   margin-left: 15px;
-  color: white;
+  color: ${color_canvas_inverted};
 `;
 
 const NO_DATA = "No Data";
 
-interface AttributesPanelProps {
+type AttributesPanelProps = {
   title: string;
   attributesObject: any;
   handleClosePanel: () => void;
   children?: any;
-}
+};
 
 /**
  * TODO: Add types to component
