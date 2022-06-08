@@ -87,13 +87,13 @@ const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
-    default: "24px",
+    desktop: "24px",
     tablet: "24px",
     mobile: "8px",
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 8px;",
   })};
@@ -104,13 +104,13 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    default: "right 24px",
+    desktop: "right 24px",
     tablet: "left 24px",
     mobile: "left 8px",
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 8px;",
   })};
@@ -120,7 +120,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
-    default: "100px",
+    desktop: "100px",
     tablet: "100px",
     /**
      * Make mobile panel centered horisontally
@@ -130,7 +130,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 0;",
   })};
@@ -141,7 +141,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    default: "right 100px;",
+    desktop: "right 100px;",
     tablet: "left: 100px;",
     /**
      * Make mobile panel centered horisontally
@@ -151,7 +151,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 0;",
   })};

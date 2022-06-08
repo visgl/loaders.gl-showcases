@@ -39,7 +39,7 @@ const Container = styled.div<LayoutProps>`
   padding-bottom: 26px;
 
   max-height: ${getCurrentLayoutProperty({
-    default: "408px",
+    desktop: "408px",
     tablet: "408px",
     mobile: "calc(50vh - 82px)",
   })};

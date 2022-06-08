@@ -6,7 +6,7 @@ export enum Theme {
 }
 
 export enum Layout {
-  Desktop = "default",
+  Desktop = "desktop",
   Tablet = "tablet",
   Mobile = "mobile",
 }
