@@ -11,8 +11,8 @@ type LayersControlPanelProps = {
   baseMaps: any[];
   onLayersSelect: (id: string) => void;
   onLayerOptionsClick: (id: string) => void;
-  onLayerInsert: () => void;
-  onSceneInsert: () => void;
+  onLayerInsertClick: () => void;
+  onSceneInsertClick: () => void;
 };
 
 const LayersContainer = styled.div`
@@ -47,8 +47,8 @@ export const LayersControlPanel = ({
   selectedLayerIds,
   onLayersSelect,
   onLayerOptionsClick,
-  onLayerInsert,
-  onSceneInsert,
+  onLayerInsertClick,
+  onSceneInsertClick,
 }: LayersControlPanelProps) => {
   return (
     <LayersContainer>
@@ -71,8 +71,8 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton onClick={onLayerInsert}>Insert layer</PlusButton>
-        <PlusButton onClick={onSceneInsert}>Insert scene</PlusButton>
+        <PlusButton onClick={onLayerInsertClick}>Insert layer</PlusButton>
+        <PlusButton onClick={onSceneInsertClick}>Insert scene</PlusButton>
       </InsertButtons>
     </LayersContainer>
   );

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
-import { ListItemType, Theme } from "../../types";
+import { LayerExample, ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { InsertPanel } from "../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 
 enum Tabs {
@@ -16,6 +17,7 @@ type LayersPanelProps = {
   type: ListItemType;
   baseMaps: any[];
   onLayersSelect: (ids: string[]) => void;
+  onLayerInsert: (layer: LayerExample) => void;
   onClose: () => void;
 };
 
@@ -37,11 +39,12 @@ const Container = styled.div<LayoutProps>`
   opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
   border-radius: 8px;
   padding-bottom: 26px;
+  position: relative;
 
   max-height: ${getCurrentLayoutProperty({
     desktop: "408px",
     tablet: "408px",
-    mobile: "calc(50vh - 82px)",
+    mobile: "calc(50vh - 110px)",
   })};
 `;
 
@@ -143,17 +146,29 @@ const HorizontalLine = styled.div`
   opacity: 0.12;
 `;
 
-const getLayerExamples = () => Object.values(EXAMPLES);
+const InsertPanelWrapper = styled.div`
+  position: absolute;
+  top: 24px;
+  // Make insert panel centered related to layers panel.
+  // 168px is half insert panel width.
+  left: calc(50% - 168px);
+`;
+
+const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
   id,
   type,
   onLayersSelect,
+  onLayerInsert,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [layers] = useState(() => getLayerExamples());
+  const [layers, setLayers] = useState<LayerExample[]>(() =>
+    getLayerExamples()
+  );
   const [selectedLayerIds, setSelectedLayerIds] = useState<LayersIds>([]);
+  const [showInsertPanel, setShowInsertPanel] = useState(false);
   const layout = useAppLayout();
 
   const handleSelectLayers = (id: string): void => {
@@ -173,6 +188,17 @@ export const LayersPanel = ({
       }
     }
     onLayersSelect(selectedLayerIds);
+  };
+
+  const handleInsertLayer = (layer: LayerExample) => {
+    const newLayer: LayerExample = {
+      ...layer,
+      id: layer.name.replace(/" "/g, "-"),
+    };
+
+    setLayers((prevValues) => [...prevValues, newLayer]);
+    setShowInsertPanel(false);
+    onLayerInsert(newLayer);
   };
 
   return (
@@ -206,15 +232,23 @@ export const LayersPanel = ({
             onLayerOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}
-            onLayerInsert={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            onSceneInsert={function (): void {
+            onLayerInsertClick={() => setShowInsertPanel(true)}
+            onSceneInsertClick={function (): void {
               throw new Error("Function not implemented.");
             }}
           />
         )}
       </Content>
+
+      {showInsertPanel && (
+        <InsertPanelWrapper>
+          <InsertPanel
+            title={"Insert Layer"}
+            onInsert={(layer) => handleInsertLayer(layer)}
+            onCancel={() => setShowInsertPanel(false)}
+          />
+        </InsertPanelWrapper>
+      )}
     </Container>
   );
 };

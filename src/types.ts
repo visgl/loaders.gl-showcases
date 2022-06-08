@@ -1,4 +1,5 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
+import { WebMercatorViewport } from "react-map-gl";
 
 export enum Theme {
   Dark,
@@ -79,3 +80,10 @@ export type AppThemes = {
   [Theme.Light]: AppTheme;
 };
 
+export type LayerExample = {
+  id?: string;
+  name: string;
+  url: string;
+  token?: string;
+  vieport?: WebMercatorViewport
+}
