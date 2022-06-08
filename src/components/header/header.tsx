@@ -15,9 +15,9 @@ type HeaderProps = {
   setTheme: (theme: Theme) => void;
 };
 
-interface PropsWithLayout {
+type PropsWithLayout = {
   layout: string;
-}
+};
 
 const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;

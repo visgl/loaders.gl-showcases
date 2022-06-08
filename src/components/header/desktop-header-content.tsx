@@ -18,6 +18,10 @@ import {
   MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
+import {
+  color_brand_quaternary,
+  color_brand_secondary,
+} from "../../constants/colors";
 
 type CompareMenuProps = {
   pathname: string;
@@ -37,17 +41,18 @@ const MenuLink = styled(Link)<ActiveProps>`
   height: 20px;
   position: relative;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   margin-right: 24px;
 
   &:hover {
-    color: #60c2a4;
+    color: ${color_brand_secondary};
 
     &::after {
       content: "";
       position: absolute;
       top: 25px;
-      border: 1px solid #60c2a4;
+      border: 1px solid ${color_brand_secondary};
       border-radius: 1px;
       width: 100%;
     }
@@ -60,7 +65,7 @@ const MenuLink = styled(Link)<ActiveProps>`
         content: "";
         position: absolute;
         top: 25px;
-        border: 1px solid #60c2a4;
+        border: 1px solid ${color_brand_secondary};
         border-radius: 1px;
         width: 100%;
       }
@@ -73,12 +78,12 @@ const GitHubLink = styled.a`
   text-decoration: none;
   height: 20px;
 
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   &:hover {
-    color: #60c2a4;
+    color: ${color_brand_secondary};
     & > img {
-      border: 1px solid #60c2a4;
+      border: 1px solid ${color_brand_secondary};
     }
   }
 `;
@@ -93,16 +98,18 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin-top: 2px;
   height: 30px;
   border-bottom: 2px solid
-    ${(props) => (props.active ? "#60c2a4" : props.theme.mainColor)};
+    ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.mainColor};
   border-radius: 2px;
 
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
 
   &::before,
   &::after {
     content: "";
     position: absolute;
-    background: ${(props) => props.theme.fontColor};
+    background: ${(props) => props.theme.colors.fontColor};
     border-radius: 2px;
     display: block;
     height: 7px;
@@ -121,11 +128,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   }
 
   &:hover {
-    color: #60c2a4;
-    border-bottom: 2px solid #60c2a4;
+    color: ${color_brand_secondary};
+    border-bottom: 2px solid ${color_brand_secondary};
     &::after,
     &::before {
-      background: #60c2a4;
+      background: ${color_brand_secondary};
     }
   }
 
@@ -134,14 +141,14 @@ const CompareButton = styled.div<CompareButtonProps>`
     css`
       &:after,
       &:before {
-        background: #60c2a4;
+        background: ${color_brand_secondary};
       }
     `}
 `;
 
 const HelpButton = styled.button`
-  color: ${(props) => props.theme.fontColor};
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  color: ${(props) => props.theme.colors.fontColor};
+  border: 1px solid ${color_brand_quaternary};
   border-radius: 12px;
   padding: 7px 18px;
   background: transparent;
@@ -149,21 +156,25 @@ const HelpButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: #60c2a4;
-    color: #60c2a4;
+    border-color: ${color_brand_secondary};
+    color: ${color_brand_secondary};
   }
 `;
 
 const ThemeToggleWrapper = styled.div`
-  border: 1px solid ${(props) => props.theme.buttonBorderColor};
+  border: 1px solid ${color_brand_quaternary};
   border-radius: 12px;
 
-  background: ${(props) => props.theme.buttonBackgroundColor};
+  background: ${(props) => props.theme.colors.mainHiglightColor};
   margin-left: 24px;
   padding: 1px;
 
   display: flex;
   justify-content: space-between;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.mainDimColor};
+  }
 `;
 
 const ThemeToggleImage = styled.img<ActiveProps>`
@@ -176,7 +187,7 @@ const ThemeToggleImage = styled.img<ActiveProps>`
 
   cursor: pointer;
   background: ${(props) =>
-    props.active ? props.theme.mainColor : "transparent"};
+    props.active ? props.theme.colors.mainColor : "transparent"};
 
   &:hover {
     background: #60c2a4;
@@ -187,7 +198,7 @@ const CompareTabContainer = styled.div`
   position: absolute;
   top: 49px;
   left: -80px;
-  background: ${(props) => props.theme.mainColor};
+  background: ${(props) => props.theme.colors.mainColor};
   border: 1px solid #616678;
   border-radius: 0px 0px 8px 8px;
   display: flex;
@@ -212,8 +223,9 @@ const CompareMenuLink = styled(MenuLink)`
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
-    background: ${(props) => props.theme.buttonBackgroundColor};
+    color: ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
+    background: ${(props) => props.theme.colors.mainHiglightColor};
   }
 
   &:first-child {

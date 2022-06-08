@@ -21,6 +21,6 @@ export const GithubImage = styled.img`
   width: 16px;
   height: 16px;
   margin-left: 5px;
-  border: 1px solid ${(props) => props.theme.mainColor};
+  border: 1px solid ${(props) => props.theme.colors.mainColor};
   border-radius: 12px;
 `;

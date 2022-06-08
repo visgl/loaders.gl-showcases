@@ -19,6 +19,7 @@ import {
   MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
+import { color_brand_secondary } from "../../constants/colors";
 
 const MenuIcon = styled.img`
   display: block;
@@ -38,11 +39,10 @@ const CloseIcon = styled(MenuIcon)`
 
 const MenuContainer = styled.div`
   position: fixed;
-  z-index: 10;
   top: 58px;
   display: flex;
   width: 100vw;
-  background-color: ${(props) => props.theme.mainColor};
+  background-color: ${(props) => props.theme.colors.mainColor};
 `;
 
 const MenuLinks = styled.div`
@@ -63,7 +63,8 @@ const LinksWrapper = styled.div`
 `;
 
 const MenuLink = styled(Link)<ActiveProps>`
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   text-decoration: inherit;
   font-size: 16px;
   line-height: 19px;
@@ -77,14 +78,16 @@ const CompareButton = styled.div<CompareButtonProps>`
   cursor: pointer;
   margin: 20px 0;
   height: 19px;
-  color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+  color: ${(props) =>
+    props.active ? color_brand_secondary : props.theme.colors.fontColor};
   width: calc(100vw - 60px);
 
   &::before,
   &::after {
     content: "";
     position: absolute;
-    background: ${(props) => props.theme.fontColor};
+    background: ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
     border-radius: 2px;
     display: block;
     height: 7px;
@@ -103,12 +106,13 @@ const CompareButton = styled.div<CompareButtonProps>`
   }
 
   &:hover {
-    color: ${(props) => (props.active ? "#60c2a4" : props.theme.fontColor)};
+    color: ${(props) =>
+      props.active ? color_brand_secondary : props.theme.colors.fontColor};
     border: none;
     &::after,
     &::before {
       background: ${(props) =>
-        props.active ? "#60c2a4" : props.theme.fontColor};
+        props.active ? color_brand_secondary : props.theme.colors.fontColor};
     }
   }
 
@@ -128,14 +132,14 @@ const GitHubLink = styled.a`
   text-decoration: none;
   height: 20px;
   margin: 20px 0;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
 
   & > img {
     border: none;
   }
 
   &:hover {
-    color: ${(props) => props.theme.fontColor};
+    color: ${(props) => props.theme.colors.fontColor};
     & > img {
       border: none;
     }
@@ -152,7 +156,7 @@ const ListButton = styled.div`
   height: 20px;
   position: relative;
   margin: 20px 16px;
-  color: ${(props) => props.theme.fontColor};
+  color: ${(props) => props.theme.colors.fontColor};
   cursor: pointer;
 `;
 
