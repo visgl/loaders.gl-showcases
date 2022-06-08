@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
@@ -168,6 +168,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
+
+  useEffect(() => {
+    setActiveRightPanel(ActiveButton.none);
+    setActiveLeftPanel(ActiveButton.none);
+  }, [mode]);
 
   const layout = useAppLayout();
 
