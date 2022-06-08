@@ -1,22 +1,26 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { BaseMapList } from "../base-map-list/base-map-item";
 import { EXAMPLES } from "../../constants/i3s-examples";
+import { EXAMPLES_BASE_MAP } from "../../constants/map-styles";
 import { ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { LayersControlPanel } from "./layers-control-panel";
-
+import { MapOptionPanel } from "./map-options-panel";
 
 enum Tabs {
   Layers,
   MapOptions,
 }
 
+enum ButtonSizes {
+  Small,
+  Big,
+}
+
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  baseMaps: any[];
   onLayersSelect: (ids: string[]) => void;
   onClose: () => void;
 };
@@ -155,6 +159,7 @@ export const LayersPanel = ({
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [layers] = useState(() => getLayerExamples());
+  const [maps] = useState(EXAMPLES_BASE_MAP);
   const [selectedLayerIds, setSelectedLayerIds] = useState<LayersIds>([]);
   const layout = useAppLayout();
 
@@ -200,8 +205,8 @@ export const LayersPanel = ({
       <Content>
         {tab === Tabs.Layers && (
           <LayersControlPanel
+            insertButtonSize={ButtonSizes.Small}
             layers={layers}
-            baseMaps={[]}
             type={type}
             selectedLayerIds={selectedLayerIds}
             onLayersSelect={handleSelectLayers}
@@ -216,7 +221,18 @@ export const LayersPanel = ({
             }}
           />
         )}
-        {tab === Tabs.MapOptions && <LayersMapOption baseMaps={baseMaps} />}
+        {tab === Tabs.MapOptions && (
+          <MapOptionPanel
+            insertButtonSize={ButtonSizes.Big}
+            baseMaps={maps}
+            onMapOptionsClick={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onBaseMapInsert={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
+        )}
       </Content>
     </Container>
   );

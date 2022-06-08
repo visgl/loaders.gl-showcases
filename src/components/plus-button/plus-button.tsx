@@ -3,7 +3,7 @@ import {color_brand_tertiary} from "../../constants/colors";
 
 type PlusButtonProps = {
   children?: React.ReactNode;
-  tab: number;
+  buttonSize: number;
   onClick: () => void;
 };
 
@@ -23,10 +23,10 @@ const Button = styled.div`
   }
 `;
 
-const PlusIcon = styled.div<{tab: number}>`
+const PlusIcon = styled.div<{buttonSize: number}>`
   position: relative;
-  width: ${props => (props.tab ? "40px" : "24px")};
-  height: ${props => (props.tab ? "40px" : "24px")};
+  width: ${props => (props.buttonSize ? "40px" : "24px")};
+  height: ${props => (props.buttonSize ? "40px" : "24px")};
   // Keep rgba format to avoid issue with opacity inheritance and pseudo elements.
   background: rgba(96, 93, 236, 0.4);
   cursor: pointer;
@@ -60,10 +60,14 @@ const ButtonText = styled.div`
   color: ${color_brand_tertiary};
 `;
 
-export const PlusButton = ({children, tab, onClick}: PlusButtonProps) => {
+export const PlusButton = ({
+  children,
+  buttonSize,
+  onClick,
+}: PlusButtonProps) => {
   return (
     <Button onClick={onClick}>
-      <PlusIcon tab={tab} />
+      <PlusIcon buttonSize={buttonSize} />
       <ButtonText>{children}</ButtonText>
     </Button>
   );

@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
-import { color_brand_quaternary } from "../../constants/colors";
+import styled from "styled-components";
 import { ListItemType } from "../../types";
 import { Checkbox } from "../checkbox/checkbox";
+import { ListItemWrapper } from "../layers-panel/list-item-wrapper";
 import { RadioButton } from "../radio-button/radio-button";
 
 type ListItemProps = {
@@ -14,99 +14,31 @@ type ListItemProps = {
   onOptionsClick: (id: string) => void;
 };
 
-type OptionsButtonProps = {
-  onClick: (id: string) => void;
-};
-
-type ContainerProps = {
-  checked: boolean;
-};
-
-const Container = styled.div<ContainerProps>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px 10px 10px;
-  background: transparent;
-  cursor: pointer;
-  margin-bottom: 8px;
-
-  ${({ checked }) =>
-    checked &&
-    css`
-      background: ${({ theme }) => theme.colors.mainHiglightColor};
-      box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-    `}
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.mainDimColor};
-    box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-`;
-
 const Title = styled.div`
   margin-left: 16px;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
-  color: ${({ theme }) => theme.colors.fontColor};
-`;
-
-const OptionsButton = styled.div<OptionsButtonProps>`
-  position: relative;
-  width: 4px;
-  height: 4px;
-  background-color: ${color_brand_quaternary};
-  border-radius: 50%;
-  margin-bottom: 12px;
-
-  &:before,
-  &:after {
-    content: "";
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    left: 0px;
-    background-color: ${color_brand_quaternary};
-    border-radius: inherit;
-  }
-
-  &:before {
-    top: 6px;
-  }
-
-  &:after {
-    top: 12px;
-  }
-`;
-
-const ItemContentWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  color: ${({theme}) => theme.colors.fontColor};
 `;
 
 export const ListItem = (props: ListItemProps) => {
-  const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
+  const {id, title, type, selected, hasOptions, onChange, onOptionsClick} =
     props;
   return (
-    <Container checked={selected} onClick={() => onChange(id)}>
-      <ItemContentWrapper>
-        {type === ListItemType.Checkbox ? (
-          <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
-        ) : (
-          <RadioButton
-            id={id}
-            checked={selected}
-            onChange={() => onChange(id)}
-          />
-        )}
-
-        <Title>{title}</Title>
-      </ItemContentWrapper>
-      {hasOptions && <OptionsButton onClick={() => onOptionsClick(id)} />}
-    </Container>
+    <ListItemWrapper
+      id={id}
+      hasOptions={hasOptions}
+      onOptionsClick={onOptionsClick}
+      selected={selected}
+      onChange={onChange}>
+      {type === ListItemType.Checkbox ? (
+        <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
+      ) : (
+        <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
+      )}
+      <Title>{title}</Title>
+    </ListItemWrapper>
   );
 };

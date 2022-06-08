@@ -5,10 +5,10 @@ import { ListItem } from "../list-item/list-item";
 import { PlusButton } from "../plus-button/plus-button";
 
 type LayersControlPanelProps = {
+  insertButtonSize: number;
   layers: any[];
   selectedLayerIds: string[];
   type: ListItemType;
-  baseMaps: any[];
   onLayersSelect: (id: string) => void;
   onLayerOptionsClick: (id: string) => void;
   onLayerInsert: () => void;
@@ -42,6 +42,7 @@ const InsertButtons = styled.div`
 `;
 
 export const LayersControlPanel = ({
+  insertButtonSize,
   layers,
   type,
   selectedLayerIds,
@@ -71,8 +72,8 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton tab={0} onClick={onLayerInsert} />
-        <PlusButton tab={0} onClick={onSceneInsert} />
+        <PlusButton buttonSize={insertButtonSize} onClick={onLayerInsert} />
+        <PlusButton buttonSize={insertButtonSize} onClick={onSceneInsert} />
       </InsertButtons>
     </LayersContainer>
   );

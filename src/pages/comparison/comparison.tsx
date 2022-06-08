@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
@@ -251,7 +251,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
-              baseMaps={[]}
               onLayersSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
@@ -295,7 +294,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 throw new Error("Function not implemented.");
               }}
               type={ListItemType.Radio}
-              baseMaps={[]}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }

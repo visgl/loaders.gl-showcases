@@ -1,19 +1,26 @@
 import styled from "styled-components";
-import { BaseMapList } from "../base-map-list/base-map-item";
-import { PlusButton } from "../plus-button/plus-button";
+import {BaseMapListItem} from "../base-map-list-item/base-map-list-item";
+import {PlusButton} from "../plus-button/plus-button";
+
+type MapOptionPanelProps = {
+  insertButtonSize: number;
+  baseMaps: any[];
+  onMapOptionsClick: (id: string) => void;
+  onBaseMapInsert: () => void;
+};
 
 const MapOptionTitle = styled.div`
-width: 100;
-height: 19px;
-font-style: normal;
-font-weight: 700;
-font-size: 16px;
-line-height: 19px;
-color: ${({ theme }) => theme.colors.fontColor};
-margin-bottom: 24px;
+  width: 100;
+  height: 19px;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: ${({theme}) => theme.colors.fontColor};
+  margin-bottom: 24px;
 `;
 
-const LayersContainer = styled.div`
+const MapOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -27,48 +34,48 @@ const MapList = styled.div`
   margin-bottom: 10px;
 `;
 
-const InsertButtons = styled.div<{ item: number }>`
+const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
   padding-left: 10px;
 
   > * {
     &:first-child {
-      margin-bottom: ${(props) => (props.item === Tabs.Layers ? "28px" : "0px")};
+      margin-bottom: 0px;
     }
   }
 `;
 
-export const LayersMapOption = ({ baseMaps }) => {
-    return (
-      <LayersContainer>
-        <MapOptionTitle>
-          Base Map
-        </MapOptionTitle>
-        <MapList>
-          {baseMaps.map((baseMap) => {
-            return (
-              <BaseMapList
-                key={baseMap.id}
-                id={baseMap.id}
-                title={baseMap.name}
-                iconUrl={baseMap.url}
-                hasOptions={true}
-                onOptionsClick={function (id: string): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            );
-          })}
-        </MapList>
-        <InsertButtons item={Tabs.MapOptions}>
-          <PlusButton
-            tab={Tabs.MapOptions}
-            onClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
-        </InsertButtons>
-      </LayersContainer>
-    );
-  };
+export const MapOptionPanel = ({
+  baseMaps,
+  insertButtonSize,
+  onMapOptionsClick,
+  onBaseMapInsert
+}: MapOptionPanelProps) => {
+  return (
+    <MapOptionsContainer>
+      <MapOptionTitle>Base Map</MapOptionTitle>
+      <MapList>
+        {baseMaps.map(baseMap => {
+          return (
+            <BaseMapListItem
+              key={baseMap.id}
+              id={baseMap.id}
+              title={baseMap.name}
+              iconUrl={baseMap.url}
+              hasOptions={true}
+              onOptionsClick={onMapOptionsClick}
+            />
+          );
+        })}
+      </MapList>
+      <InsertButtons>
+        <PlusButton
+          buttonSize={insertButtonSize}
+          onClick={onBaseMapInsert}>
+          Insert Base Map
+        </PlusButton>
+      </InsertButtons>
+    </MapOptionsContainer>
+  );
+};
