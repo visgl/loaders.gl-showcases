@@ -286,7 +286,7 @@ export const DesktopHeaderContent = ({
       <MenuLink to="debug" active={pathname === "/debug" ? 1 : 0}>
         Debug
       </MenuLink>
-      <CompareItemWrapper>
+      <CompareItemWrapper ref={compareTabRef}>
         <CompareButton
           id="compare-default-button"
           active={
@@ -299,7 +299,7 @@ export const DesktopHeaderContent = ({
           Compare
         </CompareButton>
         {isCompareMenuOpen && (
-          <CompareTab ref={compareTabRef} pathname={pathname} />
+          <CompareTab pathname={pathname} />
         )}
       </CompareItemWrapper>
       <GitHubLink href={GITHUB_LINK}>
