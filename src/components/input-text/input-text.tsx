@@ -1,10 +1,10 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import styled from "styled-components";
 
 type InputProps = {
   id?: string;
   label?: string;
-  value?: string;
+  value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -51,22 +51,14 @@ const Label = styled.label<LabelProps>`
 export const InputText = ({
   id = "input-text",
   label,
-  value: inputValue = "",
+  value,
   onChange,
   ...rest
 }: InputProps) => {
-  const [value, setValue] = useState(inputValue);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setValue(value);
-    onChange(event);
-  };
-
   return (
     <InputWrapper>
       {label && <Label htmlFor={id}>{label}</Label>}
-      <Input id={id} value={value} onChange={handleInputChange} {...rest} />
+      <Input id={id} value={value} onChange={onChange} {...rest} />
     </InputWrapper>
   );
 };

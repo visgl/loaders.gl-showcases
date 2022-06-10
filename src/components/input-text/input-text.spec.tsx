@@ -9,10 +9,10 @@ describe("Input Text", () => {
     const onChange = jest.fn();
 
     const dom = renderWithTheme(
-      <InputText id="input-test" onChange={onChange} />
+      <InputText id="input-test" value="test" onChange={onChange} />
     );
 
-    const input: HTMLElement | null =
+    const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
     const inputLabel: HTMLLabelElement | null =
       dom.container.querySelector("label");
@@ -25,29 +25,38 @@ describe("Input Text", () => {
     const onChange = jest.fn();
 
     const dom = renderWithTheme(
-      <InputText id="input-test" label="Label Text" onChange={onChange} />
+      <InputText
+        id="input-test"
+        label="Label Text"
+        value="test"
+        onChange={onChange}
+      />
     );
-    const input: HTMLElement | null =
+    const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]")!;
     const inputLabel: HTMLLabelElement | null =
       dom.container.querySelector("label")!;
 
     expect(input).toBeInTheDocument();
+    expect(input.value).toBe("test");
     expect(inputLabel).toBeInTheDocument();
     expect(inputLabel?.textContent).toEqual("Label Text");
   });
 
   it("Should change InputText", () => {
-    const onChange = jest.fn();
+    let changedValue = "";
+    const onChange = jest
+      .fn()
+      .mockImplementation((event) => (changedValue = event.target.value));
 
     const dom = renderWithTheme(
-      <InputText id="input-test" onChange={onChange} />
+      <InputText id="input-test" value="test" onChange={onChange} />
     );
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]")!;
-    fireEvent.change(input, { target: { value: "test" } });
+    fireEvent.change(input, { target: { value: "test-updated" } });
 
-    expect(input.value).toBe("test");
+    expect(changedValue).toBe("test-updated");
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
