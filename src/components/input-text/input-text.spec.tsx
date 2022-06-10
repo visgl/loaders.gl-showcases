@@ -50,4 +50,17 @@ describe("Input Text", () => {
     expect(input.value).toBe("test");
     expect(onChange).toHaveBeenCalledTimes(1);
   });
+
+  it("Should handle value as prop", () => {
+    const onChange = jest.fn();
+
+    const dom = renderWithTheme(
+      <InputText id="input-test" value="test-prop-value" onChange={onChange} />
+    );
+    const input: HTMLInputElement | null =
+      dom.container.querySelector("input[type=text]")!;
+
+    expect(input.value).toBe("test-prop-value");
+    expect(onChange).toHaveBeenCalledTimes(0);
+  });
 });

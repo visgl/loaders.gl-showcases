@@ -4,6 +4,7 @@ import styled from "styled-components";
 type InputProps = {
   id?: string;
   label?: string;
+  value?: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -50,10 +51,11 @@ const Label = styled.label<LabelProps>`
 export const InputText = ({
   id = "input-text",
   label,
+  value: inputValue = "",
   onChange,
   ...rest
 }: InputProps) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(inputValue);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
