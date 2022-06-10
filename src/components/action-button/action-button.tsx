@@ -80,9 +80,5 @@ export const ActionButton = ({
 
   const ButtonComponent = useMemo(() => getButtonComponent(), [variant]);
 
-  return (
-    <ButtonComponent variant={variant} onClick={(event) => onClick(event)}>
-      {children}
-    </ButtonComponent>
-  );
+  return <ButtonComponent onClick={onClick}>{children}</ButtonComponent>;
 };
