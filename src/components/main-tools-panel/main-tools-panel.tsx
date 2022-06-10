@@ -65,7 +65,7 @@ const Button = styled.button<ButtonProps>`
   border: none;
 
   ${({ layout, lightImage }) =>
-    layout === Layout.Default &&
+    layout === Layout.Desktop &&
     css`
       &:hover {
         background: url(${lightImage}) no-repeat;

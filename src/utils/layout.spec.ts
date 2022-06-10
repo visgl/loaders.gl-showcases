@@ -10,23 +10,23 @@ jest.mock('react-responsive', () => ({
 describe("useAppLayout", () => {
   test("Should detect default layout", () => {
     const layout = useAppLayout();
-    expect(layout).toStrictEqual('default');
+    expect(layout).toStrictEqual('desktop');
   });
 });
 
 describe("getCurrentLayoutProperty", () => {
   test("Should return default property", () => {
     const property = getCurrentLayoutProperty({
-      default: 'margin-left: 333px',
+      desktop: 'margin-left: 333px',
       tablet: 'margin-left: 222px',
       mobile: 'margin-left: 111px',
-    })({ layout: 'default' });
+    })({ layout: 'desktop' });
     expect(property).toStrictEqual('margin-left: 333px');
   });
 
   test("Should return property for tablet", () => {
     const property = getCurrentLayoutProperty({
-      default: 'margin-left: 333px',
+      desktop: 'margin-left: 333px',
       tablet: 'margin-left: 222px',
       mobile: 'margin-left: 111px',
     })({ layout: 'tablet' });
@@ -35,7 +35,7 @@ describe("getCurrentLayoutProperty", () => {
 
   test("Should return property for mobile", () => {
     const property = getCurrentLayoutProperty({
-      default: 'margin-left: 333px',
+      desktop: 'margin-left: 333px',
       tablet: 'margin-left: 222px',
       mobile: 'margin-left: 111px',
     })({ layout: 'mobile' });
@@ -44,7 +44,7 @@ describe("getCurrentLayoutProperty", () => {
 
   test("Should return default property if no layout provided", () => {
     const property = getCurrentLayoutProperty({
-      default: 'margin-left: 333px',
+      desktop: 'margin-left: 333px',
       tablet: 'margin-left: 222px',
       mobile: 'margin-left: 111px',
     })({});

@@ -4,6 +4,7 @@ import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
 import {
   color_brand_primary,
+  color_brand_quaternary,
   color_canvas_inverted,
   color_canvas_primary,
   color_canvas_secondary,
@@ -43,6 +44,7 @@ const THEMES: AppThemes = {
     colors: {
       mainColor: color_brand_primary,
       fontColor: color_canvas_inverted,
+      secondaryFontColor: color_brand_quaternary,
       mainCanvasColor: color_canvas_primary,
       mainHiglightColor: hilite_canvas_primary,
       mainHiglightColorInverted: hilite_canvas_secondary,
@@ -55,6 +57,7 @@ const THEMES: AppThemes = {
     colors: {
       mainColor: color_canvas_inverted,
       fontColor: color_brand_primary,
+      secondaryFontColor: dim_canvas_primary,
       mainCanvasColor: color_canvas_secondary,
       mainHiglightColor: hilite_canvas_secondary,
       mainHiglightColorInverted: hilite_canvas_primary,

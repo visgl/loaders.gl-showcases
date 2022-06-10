@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
@@ -49,7 +49,7 @@ const VIEW = new MapView({
 const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: ${getCurrentLayoutProperty({
-    default: "row",
+    desktop: "row",
     tablet: "column",
     mobile: "column-reverse",
   })};
@@ -59,7 +59,7 @@ const Container = styled.div<LayoutProps>`
 
 const DeckWrapper = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
-    default: "50%",
+    desktop: "50%",
     tablet: "100%",
     mobile: "100%",
   })};
@@ -69,13 +69,13 @@ const DeckWrapper = styled.div<LayoutProps>`
 
 const Devider = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
-    default: "14px",
+    desktop: "14px",
     tablet: "100%",
     mobile: "100%",
   })};
 
   height: ${getCurrentLayoutProperty({
-    default: "100%",
+    desktop: "100%",
     tablet: "8px",
     mobile: "8px",
   })};
@@ -87,13 +87,13 @@ const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
-    default: "24px",
+    desktop: "24px",
     tablet: "24px",
     mobile: "8px",
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 8px;",
   })};
@@ -104,13 +104,13 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    default: "right 24px",
+    desktop: "right 24px",
     tablet: "left 24px",
     mobile: "left 8px",
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 8px;",
   })};
@@ -120,7 +120,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
-    default: "100px",
+    desktop: "100px",
     tablet: "100px",
     /**
      * Make mobile panel centered horisontally
@@ -130,7 +130,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 0;",
   })};
@@ -141,7 +141,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    default: "right 100px;",
+    desktop: "right 100px;",
     tablet: "left: 100px;",
     /**
      * Make mobile panel centered horisontally
@@ -151,7 +151,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   })};
 
   ${getCurrentLayoutProperty({
-    default: "top: 24px;",
+    desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 0;",
   })};
@@ -168,6 +168,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
+
+  useEffect(() => {
+    setActiveRightPanel(ActiveButton.none);
+    setActiveLeftPanel(ActiveButton.none);
+  }, [mode]);
+
   const layout = useAppLayout();
 
   const onViewStateChange = ({ interactionState, viewState }) => {

@@ -1,3 +1,4 @@
+export const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
 import { color_brand_primary, color_canvas_inverted } from "./colors";
 
 export const DropDownStyle = `
