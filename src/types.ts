@@ -28,6 +28,12 @@ export enum ActiveButton {
   none,
 }
 
+export enum ActionButtonVariant {
+  primary,
+  secondary,
+  cancel
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -72,3 +78,4 @@ export type AppThemes = {
   [Theme.Dark]: AppTheme;
   [Theme.Light]: AppTheme;
 };
+
