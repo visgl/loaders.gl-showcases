@@ -15,5 +15,5 @@
     "noImplicitAny": false
   },
   "exclude": ["src/**/*.spec.ts"],
-  "include": ["./jest-setup.ts", "src", "index.d.ts"]
+  "include": ["./jest-setup.ts", "src", "index.d.ts", "styled.d.ts"]
 }

@@ -3,7 +3,7 @@ import { color_brand_tertiary } from "../../constants/colors";
 
 type PlusButtonProps = {
   children?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 const Button = styled.div`
