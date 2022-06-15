@@ -1,5 +1,6 @@
 import styled, {css} from "styled-components";
 import {OptionButton} from "../option-button/option-button";
+import {MAP_STYLES} from '../../constants/map-styles';
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -7,6 +8,8 @@ type BaseMapsItemProps = {
   selected?: boolean;
   hasOptions: boolean;
   onChange?: (id: string) => void;
+  onMapClick?: ({ selectedMapStyle }) => void;
+  onTerrainClick?: () => void;
   onOptionsClick: (id: string) => void;
 };
 
@@ -50,11 +53,31 @@ export const ListItemWrapper = ({
   selected,
   hasOptions,
   onOptionsClick,
+  onMapClick,
+  onTerrainClick,
   onChange,
 }: BaseMapsItemProps) => {
   const handleClick = () => {
-    if (onChange) onChange(id);
+
+    console.log(onMapClick, onTerrainClick)
+    if (onChange) { 
+      onChange(id);
+    }
+
+    if (onTerrainClick) {
+      onTerrainClick();
+      onMapClick = undefined;
+    }
+
+    if (onMapClick) {
+        onMapClick({ selectedMapStyle: MAP_STYLES[id] });
+      }
+
+    // if (onTerrainClick) {
+    //   onTerrainClick();
+    // }
   };
+
   return (
     <Container checked={selected} onClick={handleClick}>
       <ItemContentWrapper>{children}</ItemContentWrapper>

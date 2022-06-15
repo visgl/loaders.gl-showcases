@@ -6,6 +6,8 @@ type BaseMapsItemProps = {
   title: string;
   hasOptions: boolean;
   iconUrl: string;
+  onMapClick: ({ selectedMapStyle }) => void;
+  onTerrainClick: () => void;
   onOptionsClick: (id: string) => void;
 };
 
@@ -31,11 +33,15 @@ export const BaseMapListItem = ({
   hasOptions,
   iconUrl,
   onOptionsClick,
+  onTerrainClick,
+  onMapClick
 }: BaseMapsItemProps) => {
   return (
     <ListItemWrapper
       id={id}
       hasOptions={hasOptions}
+      onMapClick={onMapClick}
+      onTerrainClick={onTerrainClick}
       onOptionsClick={onOptionsClick}>
       <MapIcon url={iconUrl} />
       <Title>{title}</Title>

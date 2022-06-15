@@ -5,6 +5,8 @@ import {PlusButton} from "../plus-button/plus-button";
 type MapOptionPanelProps = {
   insertButtonSize: number;
   baseMaps: any[];
+  onMapClick: ({ selectedMapStyle }) => void;
+  onTerrainClick: () => void;
   onMapOptionsClick: (id: string) => void;
   onBaseMapInsert: () => void;
 };
@@ -49,7 +51,9 @@ const InsertButtons = styled.div`
 export const MapOptionPanel = ({
   baseMaps,
   insertButtonSize,
+  onMapClick,
   onMapOptionsClick,
+  onTerrainClick,
   onBaseMapInsert
 }: MapOptionPanelProps) => {
   return (
@@ -65,6 +69,8 @@ export const MapOptionPanel = ({
               iconUrl={baseMap.url}
               hasOptions={true}
               onOptionsClick={onMapOptionsClick}
+              onTerrainClick={onTerrainClick}
+              onMapClick={onMapClick}
             />
           );
         })}

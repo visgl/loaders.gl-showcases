@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
+import { TerrainLayer } from "@deck.gl/geo-layers";
 import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
 import styled from "styled-components";
 
@@ -159,15 +160,27 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
-  const [terrainTiles] = useState({});
+  const [useTerrainLayer, setUseTerrainLayer] = useState(false);
+  const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
+  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
   const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
+
+  const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
+  const ARCGIS_STREET_MAP_SURFACE_IMAGES =
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+  const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
+  rScaler: 256,
+  gScaler: 1,
+  bScaler: 1 / 256,
+  offset: -32768,
+};
+const TERRAIN_LAYER_MAX_ZOOM = 15;
 
   useEffect(() => {
     setActiveRightPanel(ActiveButton.none);
@@ -216,6 +229,40 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const onTerrainTileLoad = (tile) => {
+    const {
+      bbox: { east, north, south, west },
+    } = tile;
+
+    setTerrainTiles((prevValue) => ({
+      ...prevValue,
+      [`${east};${north};${south};${west}`]: tile,
+    }));
+  };
+
+  const renderTerrainLayer = () => {
+    return new TerrainLayer({
+      id: "terrain",
+      maxZoom: TERRAIN_LAYER_MAX_ZOOM,
+      elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
+      elevationData: MAPZEN_TERRAIN_IMAGES,
+      texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
+      onTileLoad: (tile) => onTerrainTileLoad(tile),
+      color: [255, 255, 255],
+    });
+  };
+
+  const renderLayers = () => {
+    const layers: any = [];
+
+    if (useTerrainLayer) {
+      const terrainLayer = renderTerrainLayer();
+      layers.push(terrainLayer);
+    }
+
+    return layers;
+  };
+
   const handleChangeLeftPanelVisibility = (active: ActiveButton) => {
     setActiveLeftPanel((prevValue) =>
       prevValue === active ? ActiveButton.none : active
@@ -228,12 +275,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     );
   };
 
+  const onMapClick = ({ selectedMapStyle }) => {
+    setSelectedMapStyle(selectedMapStyle);
+  };
+
+  const onTerrainClick = () => {
+    setUseTerrainLayer((prevValue) => !prevValue);
+  };
+
+  const layers = renderLayers();
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
         <DeckGL
           id="first-deck-container"
-          layers={[]}
+          layers={layers}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
@@ -260,6 +317,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onLayersSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
+              onMapClick={onMapClick}
+              onTerrainClick={onTerrainClick}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
@@ -272,7 +331,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <DeckWrapper layout={layout}>
         <DeckGL
           id="second-deck-container"
-          layers={[]}
+          layers={layers}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
@@ -299,6 +358,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onLayersSelect={function (): void {
                 throw new Error("Function not implemented.");
               }}
+              onMapClick={onMapClick}
+              onTerrainClick={onTerrainClick}
               type={ListItemType.Radio}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)

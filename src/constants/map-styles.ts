@@ -10,9 +10,9 @@ export const MAP_STYLES = {
 };
 
 export const EXAMPLES_BASE_MAP = [
-  {id: 'dark', name: 'Dark', url: dark},
-  {id: 'light', name: 'Light', url: light},
-  {id: 'terrain', name: 'Terrain', url: terrain},
+  {id: 'Dark', name: 'Dark', url: dark},
+  {id: 'Light', name: 'Light', url: light},
+  {id: 'Terrain', name: 'Terrain', url: terrain},
 ];
 
 export const INITIAL_MAP_STYLE = MAP_STYLES["Dark"];
