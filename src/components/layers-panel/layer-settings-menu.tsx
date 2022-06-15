@@ -7,7 +7,7 @@ const Container = styled.div<{ top: number }>`
   width: 202px;
   right: 36px;
   border-radius: 8px;
-  top: ${({ top }) => `${top}px`};
+  top: ${({ top }) => `${top + 10}px`};
   background: ${({ theme }) => theme.colors.mainColor};
   color: ${({ theme }) => theme.colors.fontColor};
 
@@ -16,7 +16,7 @@ const Container = styled.div<{ top: number }>`
   padding: 16px;
 `;
 
-export const ListItemSettingsPanel = ({
+export const LayerSettingsMenu = ({
   forElementNode,
   onCloseHandler,
   children,
@@ -37,8 +37,8 @@ export const ListItemSettingsPanel = ({
 
   let top = 0;
   if (forElementNode) {
-    const { offsetTop, offsetHeight } = forElementNode;
-    top = offsetTop + offsetHeight;
+    const { offsetTop } = forElementNode;
+    top = offsetTop;
   }
 
   return (

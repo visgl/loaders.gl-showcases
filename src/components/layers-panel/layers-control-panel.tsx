@@ -3,7 +3,7 @@ import styled, { useTheme } from "styled-components";
 import { ListItemType } from "../../types";
 
 import { ListItem } from "../list-item/list-item";
-import { ListItemSettingsPanel } from "../list-item/list-item-settings-panel";
+import { LayerSettingsMenu } from "./layer-settings-menu";
 import { PlusButton } from "../plus-button/plus-button";
 
 import LocationIcon from "../../../public/icons/location.svg?svgr";
@@ -124,7 +124,7 @@ export const LayersControlPanel = ({
         <PlusButton>Insert scene</PlusButton>
       </InsertButtons>
       {showLayerSettings && (
-        <ListItemSettingsPanel
+        <LayerSettingsMenu
           onCloseHandler={() => setShowLayerSettings(false)}
           forElementNode={settingsForItemRef.current.get(settingsLayerId)}
         >
@@ -147,7 +147,7 @@ export const LayersControlPanel = ({
             </LayerSettingsIcon>
             Delete layer
           </LayerSettingsItem>
-        </ListItemSettingsPanel>
+        </LayerSettingsMenu>
       )}
     </LayersContainer>
   );
