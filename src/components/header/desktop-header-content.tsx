@@ -2,14 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 
-import { Theme } from "../../utils/enums";
-
-import DarkModeLightIcon from "../../../public/icons/dark-mode-light.svg";
-import DarkModeDarkIcon from "../../../public/icons/dark-mode-dark.svg";
-
-import LightModeLightIcon from "../../../public/icons/light-mode-light.svg";
-import LightModeDarkIcon from "../../../public/icons/light-mode-dark.svg";
-
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 import {
   ActiveProps,
@@ -22,6 +14,7 @@ import {
   color_brand_quaternary,
   color_brand_secondary,
 } from "../../constants/colors";
+import { ThemeToggler } from "./theme-toggler";
 
 type CompareMenuProps = {
   pathname: string;
@@ -161,39 +154,6 @@ const HelpButton = styled.button`
   }
 `;
 
-const ThemeToggleWrapper = styled.div`
-  border: 1px solid ${color_brand_quaternary};
-  border-radius: 12px;
-
-  background: ${(props) => props.theme.colors.mainHiglightColor};
-  margin-left: 24px;
-  padding: 1px;
-
-  display: flex;
-  justify-content: space-between;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.mainDimColor};
-  }
-`;
-
-const ThemeToggleImage = styled.img<ActiveProps>`
-  display: block;
-  width: 13px;
-  height: 14px;
-
-  padding: 9px;
-  border-radius: 12px;
-
-  cursor: pointer;
-  background: ${(props) =>
-    props.active ? props.theme.colors.mainColor : "transparent"};
-
-  &:hover {
-    background: #60c2a4;
-  }
-`;
-
 const CompareTabContainer = styled.div`
   position: absolute;
   top: 49px;
@@ -271,10 +231,6 @@ export const DesktopHeaderContent = ({
     setIsCompareMenuOpen(false);
   }, [pathname]);
 
-  const darkIcon = theme === Theme.Dark ? DarkModeDarkIcon : LightModeDarkIcon;
-  const lightIcon =
-    theme === Theme.Light ? LightModeLightIcon : DarkModeLightIcon;
-
   return (
     <MenuContainer id="header-links-default">
       <MenuLink to="dashboard" active={pathname === "/dashboard" ? 1 : 0}>
@@ -298,29 +254,14 @@ export const DesktopHeaderContent = ({
         >
           Compare
         </CompareButton>
-        {isCompareMenuOpen && (
-          <CompareTab pathname={pathname} />
-        )}
+        {isCompareMenuOpen && <CompareTab pathname={pathname} />}
       </CompareItemWrapper>
       <GitHubLink href={GITHUB_LINK}>
         GitHub
         <GithubImage src={githubIcon} />
       </GitHubLink>
       <HelpButton id="help-button-default">Help</HelpButton>
-      <ThemeToggleWrapper id="toggle-button-default">
-        <ThemeToggleImage
-          id="toggle-dark-default"
-          active={theme === Theme.Dark ? 1 : 0}
-          src={darkIcon}
-          onClick={() => setTheme(Theme.Dark)}
-        />
-        <ThemeToggleImage
-          id="toggle-light-default"
-          active={theme === Theme.Light ? 1 : 0}
-          src={lightIcon}
-          onClick={() => setTheme(Theme.Light)}
-        />
-      </ThemeToggleWrapper>
+      <ThemeToggler theme={theme} setTheme={setTheme} />
     </MenuContainer>
   );
 };
