@@ -203,15 +203,6 @@ export const LayersPanel = ({
             type={type}
             selectedLayerIds={selectedLayerIds}
             onLayersSelect={handleSelectLayers}
-            onLayerOptionsClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            onLayerInsert={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            onSceneInsert={function (): void {
-              throw new Error("Function not implemented.");
-            }}
           />
         )}
       </Content>

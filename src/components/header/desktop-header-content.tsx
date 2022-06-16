@@ -225,7 +225,7 @@ export const DesktopHeaderContent = ({
   const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
-  useClickOutside(compareTabRef, () => setIsCompareMenuOpen(false));
+  useClickOutside([compareTabRef.current], () => setIsCompareMenuOpen(false));
 
   useEffect(() => {
     setIsCompareMenuOpen(false);
