@@ -14,7 +14,7 @@ import {
   hilite_canvas_secondary,
 } from "./constants/colors";
 import * as Pages from "./pages";
-import { AppThemes, Theme, ComparisonMode } from "./types";
+import { AppThemes, ComparisonMode, Theme } from "./types";
 
 const ContentWrapper = styled.div`
   top: 0;

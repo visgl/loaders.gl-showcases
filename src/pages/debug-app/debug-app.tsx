@@ -30,7 +30,11 @@ import {
   getFrustumBounds,
   useForceUpdate,
 } from "../../utils";
-import { INITIAL_EXAMPLE_NAME, EXAMPLES, CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
+import {
+  INITIAL_EXAMPLE_NAME,
+  EXAMPLES,
+  CUSTOM_EXAMPLE_VALUE,
+} from "../../constants/i3s-examples";
 
 import {
   INITIAL_MAP_STYLE,
@@ -47,8 +51,6 @@ import {
   parseTilesetFromUrl,
   parseTilesetUrlParams,
   ColorMap,
-  getTileDebugInfo,
-  getShortTileDebugInfo,
   validateTile as handleValidateTile,
   generateBinaryNormalsDebugData,
   getNormalSourcePosition,
@@ -64,8 +66,6 @@ import {
 } from "../../utils";
 
 import {
-  AttributesPanel,
-  AttributesTooltip,
   ControlPanel,
   DebugPanel,
   MapInfoPanel,
@@ -75,10 +75,14 @@ import {
   BuildingExplorer,
 } from "../../components";
 
+import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
+
 import { BoundingVolumeLayer } from "../../layers";
 
 import { Color, Font } from "../../constants/common";
 import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
+import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
+import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 
 const TRANSITION_DURAITON = 4000;
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
@@ -248,7 +252,6 @@ export const DebugApp = () => {
     DEFAULT_TRIANGLES_PERCENTAGE
   );
   const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
-  const [tileInfo, setTileInfo] = useState(null);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -352,7 +355,6 @@ export const DebugApp = () => {
     setToken(token);
     setSublayers([]);
     handleClearWarnings();
-    setTileInfo(null);
     setNormalsDebugData([]);
     setLoadedTilesets([]);
     setNeedTransitionToTileset(true);
@@ -606,20 +608,20 @@ export const DebugApp = () => {
   const getBoundingVolumeColor = (tile) => {
     const { boundingVolumeColorMode } = debugOptions;
 
-    const color =
-      colorMap.getColor(tile, { coloredBy: boundingVolumeColorMode });
+    const color = colorMap.getColor(tile, {
+      coloredBy: boundingVolumeColorMode,
+    });
 
     return [...color, DEFAULT_BG_OPACITY];
   };
 
   const getMeshColor = (tile) => {
     const { tileColorMode } = debugOptions;
-    const result =
-      colorMap.getColor(tile, {
-        coloredBy: tileColorMode,
-        selectedTileId: selectedTile?.id,
-        coloredTilesMap,
-      });
+    const result = colorMap.getColor(tile, {
+      coloredBy: tileColorMode,
+      selectedTileId: selectedTile?.id,
+      coloredTilesMap,
+    });
 
     return result;
   };
@@ -912,14 +914,13 @@ export const DebugApp = () => {
     return true;
   };
 
-  const getTooltip = (info) => {
+  const getTooltip = (info: { object: Tile3D; index: number; layer: any }) => {
     if (!info.object || info.index < 0 || !info.layer) {
       return null;
     }
-    const tileInfo = getShortTileDebugInfo(info.object);
     // eslint-disable-next-line no-undef
     const tooltip = document.createElement("div");
-    render(<AttributesTooltip data={tileInfo} />, tooltip);
+    render(<TileTooltip tile={info.object} />, tooltip);
 
     return { html: tooltip.innerHTML };
   };
@@ -929,15 +930,11 @@ export const DebugApp = () => {
       handleClosePanel();
       return;
     }
-    const tileInfo = getTileDebugInfo(info.object);
-    // @ts-expect-error - need to add tileInfo type
-    setTileInfo(tileInfo);
     setNormalsDebugData([]);
     setSelectedTile(info.object);
   };
 
   const handleClosePanel = () => {
-    setTileInfo(null);
     setSelectedTile(null);
     setNormalsDebugData([]);
   };
@@ -1008,24 +1005,21 @@ export const DebugApp = () => {
     return newValue;
   };
 
-  const renderAttributesPanel = () => {
-    if (!selectedTile || !tileInfo) {
+  const renderTilePanel = () => {
+    if (!selectedTile) {
       return null;
     }
 
     const isShowColorPicker = debugOptions.tileColorMode === COLORED_BY.CUSTOM;
 
-    const tileId = tileInfo["Tile Id"];
+    const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
     const title = `Tile: ${selectedTile.id}`;
 
     return (
-      <AttributesPanel
-        title={title}
-        handleClosePanel={handleClosePanel}
-        attributesObject={tileInfo}
-      >
+      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
+        <TileMetadata tile={selectedTile}></TileMetadata>
         <TileValidator
           tile={selectedTile}
           showNormals={Boolean(normalsDebugData.length)}
@@ -1057,7 +1051,7 @@ export const DebugApp = () => {
             </button>
           </div>
         )}
-      </AttributesPanel>
+      </TileDetailsPanel>
     );
   };
 
@@ -1081,7 +1075,7 @@ export const DebugApp = () => {
       {debugPanel && renderDebugPanel()}
       {showFullInfo && renderInfo()}
       {controlPanel && renderControlPanel()}
-      {renderAttributesPanel()}
+      {renderTilePanel()}
       {semanticValidator && renderSemanticValidator()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
       <DeckGL

@@ -125,7 +125,7 @@ describe("Dashboard Default View", () => {
     expect(lightButton).toBeDefined();
   });
 
-  it.only("Should switch between themes", async () => {
+  it("Should switch between themes", async () => {
     await page.waitForSelector("#header-container");
 
     // Check default theme colors of header elements

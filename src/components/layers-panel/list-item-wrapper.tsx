@@ -1,8 +1,10 @@
+import { ForwardedRef } from "react";
 import styled, {css} from "styled-components";
 import {OptionButton} from "../option-button/option-button";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
+  ref?: ForwardedRef<HTMLDivElement>;
   id: string;
   selected?: boolean;
   hasOptions: boolean;
@@ -46,6 +48,7 @@ const ItemContentWrapper = styled.div`
 
 export const ListItemWrapper = ({
   children,
+  ref,
   id,
   selected,
   hasOptions,
@@ -56,7 +59,7 @@ export const ListItemWrapper = ({
     if (onChange) onChange(id);
   };
   return (
-    <Container checked={selected} onClick={handleClick}>
+    <Container ref={ref} checked={selected} onClick={handleClick}>
       <ItemContentWrapper>{children}</ItemContentWrapper>
       {hasOptions && <OptionButton id={id} onOptionsClick={onOptionsClick} />}
     </Container>

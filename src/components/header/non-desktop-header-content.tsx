@@ -20,6 +20,7 @@ import {
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
 import { color_brand_secondary } from "../../constants/colors";
+import { ThemeToggler } from "./theme-toggler";
 
 const MenuIcon = styled.img`
   display: block;
@@ -160,6 +161,14 @@ const ListButton = styled.div`
   cursor: pointer;
 `;
 
+const ToggleItem = styled(ListButton)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  margin-top: 12px;
+`;
+
 const Header = ({ theme, isOpen, setIsOpen }) => {
   const burgerIcon = theme === Theme.Light ? LightModeBurger : DarkModeBurger;
   const closeIcon = theme === Theme.Light ? LightModeClose : DarkModeClose;
@@ -184,7 +193,17 @@ const Header = ({ theme, isOpen, setIsOpen }) => {
   );
 };
 
-const Menu = ({ pathname, githubIcon }) => {
+const Menu = ({
+  pathname,
+  githubIcon,
+  theme,
+  setTheme,
+}: {
+  pathname: string;
+  githubIcon: string;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}) => {
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
   return (
@@ -236,12 +255,20 @@ const Menu = ({ pathname, githubIcon }) => {
         </LinksWrapper>
         <HorisontalLine />
         <ListButton id="help-button-tablet-or-mobile">Help</ListButton>
+        <ToggleItem id="theme-toggle-tablet-or-mobile">
+          Theme
+          <ThemeToggler theme={theme} setTheme={setTheme} />
+        </ToggleItem>
       </MenuLinks>
     </MenuContainer>
   );
 };
 
-export const NonDesktopHeaderContent = ({ theme, pathname }: MenuProps) => {
+export const NonDesktopHeaderContent = ({
+  theme,
+  setTheme,
+  pathname,
+}: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const githubIcon = theme === Theme.Light ? GitHubIconDark : GitHubIconLight;
 
@@ -253,7 +280,14 @@ export const NonDesktopHeaderContent = ({ theme, pathname }: MenuProps) => {
     <Fragment>
       <Header theme={theme} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
-      {isMenuOpen && <Menu pathname={pathname} githubIcon={githubIcon} />}
+      {isMenuOpen && (
+        <Menu
+          pathname={pathname}
+          githubIcon={githubIcon}
+          theme={theme}
+          setTheme={setTheme}
+        />
+      )}
     </Fragment>
   );
 };
