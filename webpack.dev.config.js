@@ -136,6 +136,13 @@ module.exports = (env) => {
           options: {
             name: "[name].[ext]",
           },
+          resourceQuery: { not: [/svgr/] },
+        },
+        {
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          resourceQuery: /svgr/,
+          use: ["@svgr/webpack"],
         },
         {
           test: /\.css$/,

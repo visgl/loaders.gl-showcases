@@ -1,4 +1,5 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
+import { DefaultTheme } from "styled-components";
 
 export enum Theme {
   Dark,
@@ -69,14 +70,9 @@ export type LayoutProperties = {
   mobile: string | number;
 };
 
-type AppTheme = {
-  name: Theme;
-  colors: { [name: string]: string };
-};
-
 export type AppThemes = {
-  [Theme.Dark]: AppTheme;
-  [Theme.Light]: AppTheme;
+  [Theme.Dark]: DefaultTheme;
+  [Theme.Light]: DefaultTheme;
 };
 
 export type LayerExample = {
