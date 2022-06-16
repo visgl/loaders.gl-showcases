@@ -160,7 +160,6 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
-  const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
@@ -173,14 +172,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
   const ARCGIS_STREET_MAP_SURFACE_IMAGES =
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
   const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
-  rScaler: 256,
-  gScaler: 1,
-  bScaler: 1 / 256,
-  offset: -32768,
-};
-const TERRAIN_LAYER_MAX_ZOOM = 15;
+    rScaler: 256,
+    gScaler: 1,
+    bScaler: 1 / 256,
+    offset: -32768,
+  };
+  const TERRAIN_LAYER_MAX_ZOOM = 15;
 
   useEffect(() => {
     setActiveRightPanel(ActiveButton.none);
@@ -229,6 +228,10 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
     });
   };
 
+  const onMapClick = ({ selectedMapStyle }) => {
+    setSelectedMapStyle(selectedMapStyle);
+  };
+
   const onTerrainTileLoad = (tile) => {
     const {
       bbox: { east, north, south, west },
@@ -255,7 +258,7 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
   const renderLayers = () => {
     const layers: any = [];
 
-    if (useTerrainLayer) {
+    if (selectedMapStyle === "Terrain") {
       const terrainLayer = renderTerrainLayer();
       layers.push(terrainLayer);
     }
@@ -273,14 +276,6 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
     setActiveRightPanel((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );
-  };
-
-  const onMapClick = ({ selectedMapStyle }) => {
-    setSelectedMapStyle(selectedMapStyle);
-  };
-
-  const onTerrainClick = () => {
-    setUseTerrainLayer((prevValue) => !prevValue);
   };
 
   const layers = renderLayers();
@@ -318,7 +313,6 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
                 throw new Error("Function not implemented.");
               }}
               onMapClick={onMapClick}
-              onTerrainClick={onTerrainClick}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
@@ -359,7 +353,6 @@ const TERRAIN_LAYER_MAX_ZOOM = 15;
                 throw new Error("Function not implemented.");
               }}
               onMapClick={onMapClick}
-              onTerrainClick={onTerrainClick}
               type={ListItemType.Radio}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)

@@ -6,7 +6,6 @@ type MapOptionPanelProps = {
   insertButtonSize: number;
   baseMaps: any[];
   onMapClick: ({ selectedMapStyle }) => void;
-  onTerrainClick: () => void;
   onMapOptionsClick: (id: string) => void;
   onBaseMapInsert: () => void;
 };
@@ -53,7 +52,6 @@ export const MapOptionPanel = ({
   insertButtonSize,
   onMapClick,
   onMapOptionsClick,
-  onTerrainClick,
   onBaseMapInsert
 }: MapOptionPanelProps) => {
   return (
@@ -69,7 +67,6 @@ export const MapOptionPanel = ({
               iconUrl={baseMap.url}
               hasOptions={true}
               onOptionsClick={onMapOptionsClick}
-              onTerrainClick={onTerrainClick}
               onMapClick={onMapClick}
             />
           );

@@ -1,7 +1,7 @@
 import { COLORED_BY } from "../utils";
-import dark from '../assets/base-map-photos/dark-map.png';
-import light from '../assets/base-map-photos/light-map.png';
-import terrain from '../assets/base-map-photos/terrain-map.png';
+import dark from "../assets/base-map-photos/dark-map.png";
+import light from "../assets/base-map-photos/light-map.png";
+import terrain from "../assets/base-map-photos/terrain-map.png";
 
 export const MAP_STYLES = {
   Light:
@@ -10,9 +10,9 @@ export const MAP_STYLES = {
 };
 
 export const EXAMPLES_BASE_MAP = [
-  {id: 'Dark', name: 'Dark', url: dark},
-  {id: 'Light', name: 'Light', url: light},
-  {id: 'Terrain', name: 'Terrain', url: terrain},
+  { id: "Dark", name: "Dark", url: dark },
+  { id: "Light", name: "Light", url: light },
+  { id: "Terrain", name: "Terrain", url: terrain },
 ];
 
 export const INITIAL_MAP_STYLE = MAP_STYLES["Dark"];

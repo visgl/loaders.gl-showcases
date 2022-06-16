@@ -1,6 +1,6 @@
-import styled, {css} from "styled-components";
-import {OptionButton} from "../option-button/option-button";
-import {MAP_STYLES} from '../../constants/map-styles';
+import styled, { css } from "styled-components";
+import { OptionButton } from "../option-button/option-button";
+import { MAP_STYLES } from "../../constants/map-styles";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -9,7 +9,6 @@ type BaseMapsItemProps = {
   hasOptions: boolean;
   onChange?: (id: string) => void;
   onMapClick?: ({ selectedMapStyle }) => void;
-  onTerrainClick?: () => void;
   onOptionsClick: (id: string) => void;
 };
 
@@ -26,16 +25,16 @@ const Container = styled.div<ContainerProps>`
   cursor: pointer;
   margin-bottom: 8px;
 
-  ${({checked}) =>
+  ${({ checked }) =>
     checked &&
     css`
-      background: ${({theme}) => theme.colors.mainHiglightColor};
+      background: ${({ theme }) => theme.colors.mainHiglightColor};
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     `}
 
   &:hover {
-    background: ${({theme}) => theme.colors.mainDimColor};
+    background: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
   }
@@ -54,28 +53,18 @@ export const ListItemWrapper = ({
   hasOptions,
   onOptionsClick,
   onMapClick,
-  onTerrainClick,
   onChange,
 }: BaseMapsItemProps) => {
   const handleClick = () => {
-
-    console.log(onMapClick, onTerrainClick)
-    if (onChange) { 
+    if (onChange) {
       onChange(id);
     }
 
-    if (onTerrainClick) {
-      onTerrainClick();
-      onMapClick = undefined;
-    }
-
     if (onMapClick) {
-        onMapClick({ selectedMapStyle: MAP_STYLES[id] });
-      }
-
-    // if (onTerrainClick) {
-    //   onTerrainClick();
-    // }
+      onMapClick({
+        selectedMapStyle: MAP_STYLES[id] ? MAP_STYLES[id] : "Terrain",
+      });
+    }
   };
 
   return (

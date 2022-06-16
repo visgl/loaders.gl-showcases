@@ -23,7 +23,6 @@ type LayersPanelProps = {
   type: ListItemType;
   onLayersSelect: (ids: string[]) => void;
   onMapClick: ({ selectedMapStyle }) => void;
-  onTerrainClick: () => void;
   onClose: () => void;
 };
 
@@ -158,7 +157,6 @@ export const LayersPanel = ({
   type,
   onLayersSelect,
   onMapClick,
-  onTerrainClick,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
@@ -230,7 +228,6 @@ export const LayersPanel = ({
             insertButtonSize={ButtonSizes.Big}
             baseMaps={maps}
             onMapClick={onMapClick}
-            onTerrainClick={onTerrainClick}
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}
