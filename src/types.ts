@@ -1,5 +1,4 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
-import { WebMercatorViewport } from "react-map-gl";
 
 export enum Theme {
   Dark,
@@ -32,7 +31,7 @@ export enum ActiveButton {
 export enum ActionButtonVariant {
   primary,
   secondary,
-  cancel
+  cancel,
 }
 
 export type TileWarning = {
@@ -85,5 +84,4 @@ export type LayerExample = {
   name: string;
   url: string;
   token?: string;
-  vieport?: WebMercatorViewport
-}
+};
