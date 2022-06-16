@@ -74,3 +74,10 @@ export type AppThemes = {
   [Theme.Dark]: DefaultTheme;
   [Theme.Light]: DefaultTheme;
 };
+
+export type LayerExample = {
+  id?: string;
+  name: string;
+  url: string;
+  token?: string;
+};

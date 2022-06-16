@@ -17,6 +17,7 @@ type LayersControlPanelProps = {
   type: ListItemType;
   baseMaps: any[];
   onLayersSelect: (id: string) => void;
+  onLayerInsertClick: () => void;
 };
 
 const LayersContainer = styled.div`
@@ -80,6 +81,7 @@ export const LayersControlPanel = ({
   type,
   selectedLayerIds,
   onLayersSelect,
+  onLayerInsertClick,
 }: LayersControlPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
@@ -120,7 +122,7 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton>Insert layer</PlusButton>
+        <PlusButton onClick={onLayerInsertClick}>Insert layer</PlusButton>
         <PlusButton>Insert scene</PlusButton>
       </InsertButtons>
       {showLayerSettings && (
