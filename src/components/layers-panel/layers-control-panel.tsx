@@ -25,6 +25,7 @@ const LayersContainer = styled.div`
   flex-direction: column;
   width: 100%;
   overflow: auto;
+  position: relative;
 `;
 
 const LayersList = styled.div`
