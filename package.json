@@ -11,6 +11,7 @@
     "start-local-luma": "webpack serve --config ./webpack.dev.config.js --env luma",
     "build": "webpack --config ./webpack.prod.config.js",
     "test:unit": "jest --testPathIgnorePatterns=e2e.*.spec.ts",
+    "test:unit:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --testPathIgnorePatterns=e2e.*.spec.ts",
     "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
     "test": "yarn test:unit && yarn test:e2e",
     "lint": "eslint src"
@@ -21,7 +22,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
-    "@loaders.gl/i3s": "^3.2.0",
+    "@loaders.gl/i3s": "^3.2.3",
     "@luma.gl/core": "^8.5.10",
     "@probe.gl/stats-widget": "^3.5.0",
     "deck.gl": "^8.8.0-alpha.2",
