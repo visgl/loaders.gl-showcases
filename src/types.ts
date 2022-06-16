@@ -1,4 +1,5 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
+import { DefaultTheme } from "styled-components";
 
 export enum Theme {
   Dark,
@@ -31,7 +32,7 @@ export enum ActiveButton {
 export enum ActionButtonVariant {
   primary,
   secondary,
-  cancel
+  cancel,
 }
 
 export type TileWarning = {
@@ -69,13 +70,7 @@ export type LayoutProperties = {
   mobile: string | number;
 };
 
-type AppTheme = {
-  name: Theme;
-  colors: { [name: string]: string };
-};
-
 export type AppThemes = {
-  [Theme.Dark]: AppTheme;
-  [Theme.Light]: AppTheme;
+  [Theme.Dark]: DefaultTheme;
+  [Theme.Light]: DefaultTheme;
 };
-

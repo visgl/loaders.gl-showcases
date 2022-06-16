@@ -1,3 +1,4 @@
+import { ForwardedRef, forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
 import { ListItemType } from "../../types";
@@ -12,10 +13,6 @@ type ListItemProps = {
   hasOptions: boolean;
   onChange: (id: string) => void;
   onOptionsClick: (id: string) => void;
-};
-
-type OptionsButtonProps = {
-  onClick: (id: string) => void;
 };
 
 type ContainerProps = {
@@ -54,7 +51,14 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-const OptionsButton = styled.div<OptionsButtonProps>`
+const OptionsButton = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+`;
+
+const OptionsIcon = styled.div`
   position: relative;
   width: 4px;
   height: 4px;
@@ -88,25 +92,38 @@ const ItemContentWrapper = styled.div`
   align-items: center;
 `;
 
-export const ListItem = (props: ListItemProps) => {
-  const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
-    props;
-  return (
-    <Container checked={selected} onClick={() => onChange(id)}>
-      <ItemContentWrapper>
-        {type === ListItemType.Checkbox ? (
-          <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
-        ) : (
-          <RadioButton
-            id={id}
-            checked={selected}
-            onChange={() => onChange(id)}
-          />
-        )}
+export const ListItem = forwardRef(
+  (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+    const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
+      props;
+    return (
+      <Container ref={ref} checked={selected} onClick={() => onChange(id)}>
+        <ItemContentWrapper>
+          {type === ListItemType.Checkbox ? (
+            <Checkbox
+              id={id}
+              checked={selected}
+              onChange={() => onChange(id)}
+            />
+          ) : (
+            <RadioButton
+              id={id}
+              checked={selected}
+              onChange={() => onChange(id)}
+            />
+          )}
 
-        <Title>{title}</Title>
-      </ItemContentWrapper>
-      {hasOptions && <OptionsButton onClick={() => onOptionsClick(id)} />}
-    </Container>
-  );
-};
+          <Title>{title}</Title>
+        </ItemContentWrapper>
+        {hasOptions && (
+          <OptionsButton
+            className="layer-settings"
+            onClick={() => onOptionsClick(id)}
+          >
+            <OptionsIcon />
+          </OptionsButton>
+        )}
+      </Container>
+    );
+  }
+);
