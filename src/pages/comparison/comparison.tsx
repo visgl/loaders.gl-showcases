@@ -133,7 +133,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "bottom: 0;",
+    mobile: "bottom: 8px;",
   })};
 `;
 
@@ -154,7 +154,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "bottom: 0;",
+    mobile: "bottom: 8px;",
   })};
 `;
 
@@ -313,6 +313,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 throw new Error("Function not implemented.");
               }}
               onMapClick={onMapClick}
+              onLayerInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
@@ -353,6 +356,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 throw new Error("Function not implemented.");
               }}
               onMapClick={onMapClick}
+              onLayerInsert={function (): void {
+                throw new Error("Function not implemented.");
+              }}
               type={ListItemType.Radio}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)

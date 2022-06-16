@@ -1,9 +1,11 @@
 import styled, { css } from "styled-components";
 import { OptionButton } from "../option-button/option-button";
 import { MAP_STYLES } from "../../constants/map-styles";
+import { ForwardedRef } from "react";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
+  ref?: ForwardedRef<HTMLDivElement>;
   id: string;
   selected?: boolean;
   hasOptions: boolean;
@@ -48,6 +50,7 @@ const ItemContentWrapper = styled.div`
 
 export const ListItemWrapper = ({
   children,
+  ref,
   id,
   selected,
   hasOptions,
@@ -68,7 +71,7 @@ export const ListItemWrapper = ({
   };
 
   return (
-    <Container checked={selected} onClick={handleClick}>
+    <Container ref={ref} checked={selected} onClick={handleClick}>
       <ItemContentWrapper>{children}</ItemContentWrapper>
       {hasOptions && <OptionButton id={id} onOptionsClick={onOptionsClick} />}
     </Container>

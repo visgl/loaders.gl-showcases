@@ -1,3 +1,4 @@
+import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { ListItemType } from "../../types";
 import { Checkbox } from "../checkbox/checkbox";
@@ -20,25 +21,33 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
-  color: ${({theme}) => theme.colors.fontColor};
+  color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-export const ListItem = (props: ListItemProps) => {
-  const {id, title, type, selected, hasOptions, onChange, onOptionsClick} =
-    props;
-  return (
-    <ListItemWrapper
-      id={id}
-      hasOptions={hasOptions}
-      onOptionsClick={onOptionsClick}
-      selected={selected}
-      onChange={onChange}>
-      {type === ListItemType.Checkbox ? (
-        <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
-      ) : (
-        <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
-      )}
-      <Title>{title}</Title>
-    </ListItemWrapper>
-  );
-};
+export const ListItem = forwardRef(
+  (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+    const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
+      props;
+    return (
+      <ListItemWrapper
+        ref={ref}
+        id={id}
+        hasOptions={hasOptions}
+        onOptionsClick={onOptionsClick}
+        selected={selected}
+        onChange={onChange}
+      >
+        {type === ListItemType.Checkbox ? (
+          <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
+        ) : (
+          <RadioButton
+            id={id}
+            checked={selected}
+            onChange={() => onChange(id)}
+          />
+        )}
+        <Title>{title}</Title>
+      </ListItemWrapper>
+    );
+  }
+);
