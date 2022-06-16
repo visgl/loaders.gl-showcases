@@ -193,7 +193,7 @@ export const LayersPanel = ({
   const handleInsertLayer = (layer: LayerExample) => {
     const newLayer: LayerExample = {
       ...layer,
-      id: layer.name.replace(/" "/g, "-"),
+      id: layer.url.replace(/" "/g, "-"),
     };
 
     setLayers((prevValues) => [...prevValues, newLayer]);
