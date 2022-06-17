@@ -121,30 +121,29 @@ export const ControlPanel = ({
   useTerrainLayer,
   toggleTerrain,
   debugMode = false,
-  tileset
+  tileset,
 }) => {
-  const {id, name} = tileset;
+  const { id, name } = tileset;
   const [example, setExample] = useState(id);
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (id) {
       setExample(id);
-      setSearchParams({tileset: id})
+      setSearchParams({ tileset: id });
     }
-  }, [id])
+  }, [id]);
 
   const handleChangeExample = (event) => {
     const selectedExample = event.target.value;
     setExample(selectedExample);
-    onExampleChange(EXAMPLES[selectedExample]);
+    onExampleChange(EXAMPLES.find(({ id }) => id === selectedExample));
   };
 
   const renderExampleOptions = () => {
-    return Object.keys(EXAMPLES).map((key) => {
-      const example = EXAMPLES[key];
+    return EXAMPLES.map((example) => {
       return (
-        <option key={key} value={example.id}>
+        <option key={example.id} value={example.id}>
           {example.name}
         </option>
       );
@@ -162,7 +161,11 @@ export const ControlPanel = ({
   };
 
   const renderExamples = () => (
-    <TilesetDropDown id="tilesets" value={example} onChange={handleChangeExample}>
+    <TilesetDropDown
+      id="tilesets"
+      value={example}
+      onChange={handleChangeExample}
+    >
       {name === CUSTOM_EXAMPLE_VALUE && (
         <option key={"custom-example"} value={"custom-example"}>
           {CUSTOM_EXAMPLE}
