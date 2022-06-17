@@ -5,7 +5,7 @@ import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 const Container = styled.div<{ top: number }>`
   position: absolute;
   width: 202px;
-  right: 36px;
+  right: 4px;
   border-radius: 8px;
   top: ${({ top }) => `${top + 10}px`};
   background: ${({ theme }) => theme.colors.mainColor};
