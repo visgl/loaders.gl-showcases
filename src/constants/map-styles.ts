@@ -1,19 +1,10 @@
 import { COLORED_BY } from "../utils";
-import DarkMap from "../../public/icons/dark-map.png";
-import LightMap from "../../public/icons/light-map.png";
-import TerrainMap from "../../public/icons/terrain-map.png";
 
 export const MAP_STYLES = {
   Light:
     "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
   Dark: "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
 };
-
-export const EXAMPLES_BASE_MAP = [
-  { id: "Dark", name: "Dark", url: DarkMap },
-  { id: "Light", name: "Light", url: LightMap },
-  { id: "Terrain", name: "Terrain", url: TerrainMap },
-];
 
 export const INITIAL_MAP_STYLE = MAP_STYLES["Dark"];
 

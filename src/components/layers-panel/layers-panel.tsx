@@ -1,13 +1,15 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
-import { EXAMPLES_BASE_MAP } from "../../constants/map-styles";
 import { LayerExample, ListItemType, Theme } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { InsertPanel } from "../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
+import DarkMap from "../../../public/icons/dark-map.png";
+import LightMap from "../../../public/icons/light-map.png";
+import TerrainMap from "../../../public/icons/terrain-map.png";
 
 enum Tabs {
   Layers,
@@ -158,6 +160,11 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
+export const BASE_MAPS = [
+  { id: "dark", name: "Dark", url: DarkMap },
+  { id: "light", name: "Light", url: LightMap },
+  { id: "terrain", name: "Terrain", url: TerrainMap },
+];
 const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
@@ -168,7 +175,7 @@ export const LayersPanel = ({
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [maps] = useState(EXAMPLES_BASE_MAP);
+  const [maps] = useState(BASE_MAPS);
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
