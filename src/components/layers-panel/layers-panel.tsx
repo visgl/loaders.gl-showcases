@@ -22,9 +22,8 @@ enum ButtonSizes {
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  onLayersSelect: (ids: string[]) => void;
   onMapClick: ({ selectedMapStyle }) => void;
-  onLayerInsert: (layer: LayerExample) => void;
+  onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
 };
 
@@ -35,8 +34,6 @@ type TabProps = {
 type LayoutProps = {
   layout: string;
 };
-
-type LayersIds = string[];
 
 const Container = styled.div<LayoutProps>`
   display: flex;
@@ -168,7 +165,6 @@ export const LayersPanel = ({
   type,
   onLayersSelect,
   onMapClick,
-  onLayerInsert,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
@@ -176,38 +172,49 @@ export const LayersPanel = ({
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
-  const [selectedLayerIds, setSelectedLayerIds] = useState<LayersIds>([]);
+  const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const layout = useAppLayout();
 
-  const handleSelectLayers = (id: string): void => {
+  const handleSelectLayers = (id: string, examples?: LayerExample[]): void => {
+    let newSelectedLayersIds = selectedLayerIds;
     switch (type) {
       case ListItemType.Radio: {
-        setSelectedLayerIds([id]);
+        newSelectedLayersIds = [id];
         break;
       }
-      case ListItemType.Checkbox: {
+      case ListItemType.Checkbox:
+      default: {
         if (selectedLayerIds.includes(id)) {
-          setSelectedLayerIds((prevValues) =>
-            prevValues.filter((existedId) => existedId !== id)
+          newSelectedLayersIds = selectedLayerIds.filter(
+            (existedId) => existedId !== id
           );
         } else {
-          setSelectedLayerIds((prevValues) => [...prevValues, id]);
+          newSelectedLayersIds = [...selectedLayerIds, id];
         }
       }
     }
-    onLayersSelect(selectedLayerIds);
+    setSelectedLayerIds(newSelectedLayersIds);
+    onLayersSelect(
+      (examples || layers).filter(({ id }) =>
+        newSelectedLayersIds.includes(id || "")
+      )
+    );
   };
 
   const handleInsertLayer = (layer: LayerExample) => {
+    const id = layer.url.replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
-      id: layer.url.replace(/" "/g, "-"),
+      id,
     };
 
-    setLayers((prevValues) => [...prevValues, newLayer]);
+    setLayers((prevValues) => {
+      const newLayers = [...prevValues, newLayer];
+      handleSelectLayers(id, newLayers);
+      return newLayers;
+    });
     setShowInsertPanel(false);
-    onLayerInsert(newLayer);
   };
 
   return (

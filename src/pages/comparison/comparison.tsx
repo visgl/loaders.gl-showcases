@@ -1,17 +1,33 @@
 import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
-import { TerrainLayer } from "@deck.gl/geo-layers";
-import { MapController, MapView, WebMercatorViewport } from "@deck.gl/core";
+import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
+import {
+  MapController,
+  FlyToInterpolator,
+  COORDINATE_SYSTEM,
+  MapView,
+  WebMercatorViewport,
+} from "@deck.gl/core";
+import { I3SLoader, I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { load } from "@loaders.gl/core";
+import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
-
 import { StaticMap } from "react-map-gl";
+
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { getElevationByCentralTile } from "../../utils";
+import { getElevationByCentralTile, parseTilesetUrlParams } from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
-import { ActiveButton, ComparisonMode, ListItemType } from "../../types";
+import {
+  ActiveButton,
+  ComparisonMode,
+  LayerExample,
+  ListItemType,
+} from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
+
+const TRANSITION_DURAITON = 4000;
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -169,6 +185,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeRightPanel, setActiveRightPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
+  const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
+  const [layerRightSide, setLayerRightSide] = useState<LayerExample | null>(
+    null
+  );
+  const [flattenedSublayersLeftSide, setFlattenedSublayersLeftSide] = useState<
+    Tile3D[]
+  >([]);
+  const [flattenedSublayersRightSide, setFlattenedSublayersRightSide] =
+    useState<Tile3D[]>([]);
+  const [tokenLeftSide, setTokenLeftSide] = useState(null);
+  const [tokenRightSide, setTokenRightSide] = useState(null);
+  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
   const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
   const ARCGIS_STREET_MAP_SURFACE_IMAGES =
@@ -184,6 +212,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   useEffect(() => {
     setActiveRightPanel(ActiveButton.none);
     setActiveLeftPanel(ActiveButton.none);
+    setLayerLeftSide(null);
+    setLayerRightSide(null);
   }, [mode]);
 
   const layout = useAppLayout();
@@ -229,6 +259,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onMapClick = ({ selectedMapStyle }) => {
+    console.log(selectedMapStyle)
     setSelectedMapStyle(selectedMapStyle);
   };
 
@@ -255,17 +286,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const renderLayers = () => {
-    const layers: any = [];
-
-    if (selectedMapStyle === "Terrain") {
-      const terrainLayer = renderTerrainLayer();
-      layers.push(terrainLayer);
-    }
-
-    return layers;
-  };
-
   const handleChangeLeftPanelVisibility = (active: ActiveButton) => {
     setActiveLeftPanel((prevValue) =>
       prevValue === active ? ActiveButton.none : active
@@ -278,14 +298,145 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     );
   };
 
-  const layers = renderLayers();
+  /**
+   * Hook to call multiple changing function based on selected tileset.
+   */
+  useEffect(() => {
+    if (!layerLeftSide) {
+      setFlattenedSublayersLeftSide([]);
+      return;
+    }
+
+    async function fetchFlattenedSublayers(tilesetUrl) {
+      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      setFlattenedSublayersLeftSide(flattenedSublayers);
+    }
+
+    const params = parseTilesetUrlParams(layerLeftSide.url, layerLeftSide);
+    const { tilesetUrl, token } = params;
+
+    fetchFlattenedSublayers(tilesetUrl);
+
+    setTokenLeftSide(token);
+    setNeedTransitionToTileset(true);
+  }, [layerLeftSide]);
+
+  /**
+   * Hook to call multiple changing function based on selected tileset.
+   */
+  useEffect(() => {
+    if (!layerRightSide) {
+      setFlattenedSublayersRightSide([]);
+      return;
+    }
+
+    async function fetchFlattenedSublayers(tilesetUrl) {
+      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      setFlattenedSublayersRightSide(flattenedSublayers);
+    }
+
+    const params = parseTilesetUrlParams(layerRightSide.url, layerRightSide);
+    const { tilesetUrl, token } = params;
+
+    fetchFlattenedSublayers(tilesetUrl);
+
+    setTokenRightSide(token);
+    setNeedTransitionToTileset(true);
+  }, [layerRightSide]);
+
+  /**
+   * Tries to get Building Scene Layer sublayer urls if exists.
+   * @param {string} tilesetUrl
+   * @returns {string[]} Sublayer urls or tileset url.
+   * TODO Add filtration mode for sublayers which were selected by user.
+   */
+  const getFlattenedSublayers = async (tilesetUrl) => {
+    try {
+      const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
+      const sublayers = tileset?.sublayers.filter(
+        (sublayer) => sublayer.name !== "Overview"
+      );
+      return sublayers;
+    } catch (e) {
+      return [{ url: tilesetUrl, visibility: true }];
+    }
+  };
+
+  const onTilesetLoad = (tileset: Tileset3D) => {
+    if (needTransitionToTileset) {
+      const { zoom, cartographicCenter } = tileset;
+      const [longitude, latitude] = cartographicCenter || [];
+
+      const newViewState = {
+        ...viewState,
+        zoom: zoom + 2.5,
+        longitude,
+        latitude,
+      };
+
+      setViewState({
+        ...newViewState,
+        transitionDuration: TRANSITION_DURAITON,
+        transitionInterpolator: new FlyToInterpolator(),
+      });
+      setNeedTransitionToTileset(false);
+    }
+  };
+
+  const getLayers = (side: "left" | "right"): any[] => {
+    let flattenedSublayers = flattenedSublayersLeftSide;
+    let token = tokenLeftSide;
+    if (side === "right") {
+      flattenedSublayers = flattenedSublayersRightSide;
+      token = tokenRightSide;
+    }
+    let result: any[] = [];
+    if (flattenedSublayers) {
+      const loadOptions: {
+        i3s: {
+          coordinateSystem: number;
+          token?: string;
+        };
+      } = {
+        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+      };
+
+      if (token) {
+        loadOptions.i3s = { ...loadOptions.i3s, token };
+      }
+
+      result = [
+        ...result,
+        ...flattenedSublayers
+          .filter((sublayer) => sublayer.visibility)
+          .map(
+            (sublayer) =>
+              new Tile3DLayer({
+                id: `tile-layer-${sublayer.id}`,
+                data: sublayer.url,
+                loader: I3SLoader,
+                onTilesetLoad: onTilesetLoad,
+                pickable: false,
+                loadOptions,
+              })
+          ),
+      ];
+    }
+
+    if (selectedMapStyle === "Terrain") {
+      const terrainLayer = renderTerrainLayer();
+      result.push(terrainLayer);
+    }
+
+    return result;
+  };
 
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
         <DeckGL
           id="first-deck-container"
-          layers={layers}
+          layers={getLayers("left")}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
@@ -294,7 +445,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedMapStyle !== "Terrain" && (
+            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          )}
         </DeckGL>
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -309,12 +462,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
-              onLayersSelect={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               onMapClick={onMapClick}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
+              onLayersSelect={(layers: LayerExample[]) => {
+                setLayerLeftSide(layers[0]);
+                if (mode === ComparisonMode.withinLayer) {
+                  setLayerRightSide(layers[0]);
+                }
               }}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
@@ -328,7 +481,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <DeckWrapper layout={layout}>
         <DeckGL
           id="second-deck-container"
-          layers={layers}
+          layers={getLayers("right")}
           viewState={viewState}
           views={[VIEW]}
           onViewStateChange={onViewStateChange}
@@ -337,7 +490,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedMapStyle !== "Terrain" && (
+            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          )}
         </DeckGL>
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -352,13 +507,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              onLayersSelect={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               onMapClick={onMapClick}
-              onLayerInsert={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onLayersSelect={(layers: LayerExample[]) =>
+                setLayerRightSide(layers[0])
+              }
               type={ListItemType.Radio}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)

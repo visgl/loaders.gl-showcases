@@ -1,7 +1,7 @@
+import { ForwardedRef, forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { OptionButton } from "../option-button/option-button";
 import { MAP_STYLES } from "../../constants/map-styles";
-import { ForwardedRef } from "react";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -48,7 +48,7 @@ const ItemContentWrapper = styled.div`
   align-items: center;
 `;
 
-export const ListItemWrapper = ({
+export const ListItemWrapper = forwardRef(({
   children,
   ref,
   id,
@@ -76,4 +76,4 @@ export const ListItemWrapper = ({
       {hasOptions && <OptionButton id={id} onOptionsClick={onOptionsClick} />}
     </Container>
   );
-};
+});
