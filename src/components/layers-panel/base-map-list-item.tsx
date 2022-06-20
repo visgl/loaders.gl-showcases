@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import { ListItemWrapper } from "../layers-panel/list-item-wrapper";
+import { ListItemWrapper } from "./list-item-wrapper";
 
 type BaseMapsItemProps = {
   id: string;
   title: string;
+  selected: boolean;
   hasOptions: boolean;
   iconUrl: string;
-  onMapClick: ({ selectedMapStyle }) => void;
+  onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
 };
 
@@ -31,14 +32,19 @@ export const BaseMapListItem = ({
   title,
   hasOptions,
   iconUrl,
+  selected,
   onOptionsClick,
-  onMapClick,
+  onMapsSelect,
 }: BaseMapsItemProps) => {
+const handleClick = () => {
+  onMapsSelect(id);
+}
   return (
     <ListItemWrapper
       id={id}
+      selected={selected}
       hasOptions={hasOptions}
-      onMapClick={onMapClick}
+      onClick={handleClick}
       onOptionsClick={onOptionsClick}
     >
       <MapIcon url={iconUrl} />

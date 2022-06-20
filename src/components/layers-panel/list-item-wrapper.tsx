@@ -1,21 +1,19 @@
 import { ForwardedRef, forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { OptionButton } from "../option-button/option-button";
-import { MAP_STYLES } from "../../constants/map-styles";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
   ref?: ForwardedRef<HTMLDivElement>;
   id: string;
-  selected?: boolean;
+  selected: boolean;
   hasOptions: boolean;
-  onChange?: (id: string) => void;
-  onMapClick?: ({ selectedMapStyle }) => void;
+  onClick: () => void;
   onOptionsClick: (id: string) => void;
 };
 
 type ContainerProps = {
-  checked?: boolean;
+  checked: boolean;
 };
 
 const Container = styled.div<ContainerProps>`
@@ -48,32 +46,15 @@ const ItemContentWrapper = styled.div`
   align-items: center;
 `;
 
-export const ListItemWrapper = forwardRef(({
-  children,
-  ref,
-  id,
-  selected,
-  hasOptions,
-  onOptionsClick,
-  onMapClick,
-  onChange,
-}: BaseMapsItemProps) => {
-  const handleClick = () => {
-    if (onChange) {
-      onChange(id);
-    }
-
-    if (onMapClick) {
-      onMapClick({
-        selectedMapStyle: MAP_STYLES[id] ? MAP_STYLES[id] : "Terrain",
-      });
-    }
-  };
-
-  return (
-    <Container ref={ref} checked={selected} onClick={handleClick}>
-      <ItemContentWrapper>{children}</ItemContentWrapper>
-      {hasOptions && <OptionButton id={id} onOptionsClick={onOptionsClick} />}
-    </Container>
-  );
-});
+export const ListItemWrapper = forwardRef(
+  (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+    const { children, id, selected, hasOptions, onOptionsClick, onClick } =
+      props;
+    return (
+      <Container ref={ref} checked={selected} onClick={onClick}>
+        <ItemContentWrapper>{children}</ItemContentWrapper>
+        {hasOptions && <OptionButton id={id} onOptionsClick={onOptionsClick} />}
+      </Container>
+    );
+  }
+);

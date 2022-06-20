@@ -24,7 +24,7 @@ enum ButtonSizes {
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  onMapClick: ({ selectedMapStyle }) => void;
+  onMapsSelect: (maps) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
 };
@@ -160,10 +160,22 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
-export const BASE_MAPS = [
-  { id: "dark", name: "Dark", url: DarkMap },
-  { id: "light", name: "Light", url: LightMap },
-  { id: "terrain", name: "Terrain", url: TerrainMap },
+const BASE_MAPS = [
+  {
+    id: "Dark",
+    name: "Dark",
+    iconUrl: DarkMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+  },
+  {
+    id: "Light",
+    name: "Light",
+    iconUrl: LightMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+  },
+  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
 ];
 const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
@@ -171,7 +183,7 @@ export const LayersPanel = ({
   id,
   type,
   onLayersSelect,
-  onMapClick,
+  onMapsSelect,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
@@ -180,6 +192,7 @@ export const LayersPanel = ({
     getLayerExamples()
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
+  const [selectedMapIds, setSelectedMapIds] = useState<string[]>(["Dark"]); 
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const layout = useAppLayout();
 
@@ -205,6 +218,18 @@ export const LayersPanel = ({
     onLayersSelect(
       (examples || layers).filter(({ id }) =>
         newSelectedLayersIds.includes(id || "")
+      )
+    );
+  };
+
+  const handleSelectMaps = (id: string): void => {
+    let newSelectedMapIds = selectedMapIds;
+    newSelectedMapIds = [id];
+
+    setSelectedMapIds(newSelectedMapIds);
+    onMapsSelect(
+      (maps).filter(({ id }) =>
+        newSelectedMapIds.includes(id || "")
       )
     );
   };
@@ -259,7 +284,8 @@ export const LayersPanel = ({
           <MapOptionPanel
             insertButtonSize={ButtonSizes.Big}
             baseMaps={maps}
-            onMapClick={onMapClick}
+            selectedMapIds={selectedMapIds}
+            onMapsSelect={handleSelectMaps}
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}

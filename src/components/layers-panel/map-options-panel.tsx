@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import {BaseMapListItem} from "../base-map-list-item/base-map-list-item";
-import {PlusButton} from "../plus-button/plus-button";
+import { BaseMapListItem } from "./base-map-list-item";
+import { PlusButton } from "../plus-button/plus-button";
 
 type MapOptionPanelProps = {
   insertButtonSize: number;
   baseMaps: any[];
-  onMapClick: ({ selectedMapStyle }) => void;
+  selectedMapIds: string[];
+  onMapsSelect: (id: string) => void;
   onMapOptionsClick: (id: string) => void;
   onBaseMapInsert: () => void;
 };
@@ -17,7 +18,7 @@ const MapOptionTitle = styled.div`
   font-weight: 700;
   font-size: 16px;
   line-height: 19px;
-  color: ${({theme}) => theme.colors.fontColor};
+  color: ${({ theme }) => theme.colors.fontColor};
   margin-bottom: 24px;
 `;
 
@@ -50,32 +51,33 @@ const InsertButtons = styled.div`
 export const MapOptionPanel = ({
   baseMaps,
   insertButtonSize,
-  onMapClick,
+  selectedMapIds,
+  onMapsSelect,
   onMapOptionsClick,
-  onBaseMapInsert
+  onBaseMapInsert,
 }: MapOptionPanelProps) => {
   return (
     <MapOptionsContainer>
       <MapOptionTitle>Base Map</MapOptionTitle>
       <MapList>
-        {baseMaps.map(baseMap => {
+        {baseMaps.map((baseMap) => {
+          const isMapSelected = selectedMapIds.includes(baseMap.id);
           return (
             <BaseMapListItem
               key={baseMap.id}
               id={baseMap.id}
               title={baseMap.name}
-              iconUrl={baseMap.url}
+              iconUrl={baseMap.iconUrl}
+              selected={isMapSelected}
               hasOptions={true}
               onOptionsClick={onMapOptionsClick}
-              onMapClick={onMapClick}
+              onMapsSelect={onMapsSelect}
             />
           );
         })}
       </MapList>
       <InsertButtons>
-        <PlusButton
-          buttonSize={insertButtonSize}
-          onClick={onBaseMapInsert}>
+        <PlusButton buttonSize={insertButtonSize} onClick={onBaseMapInsert}>
           Insert Base Map
         </PlusButton>
       </InsertButtons>

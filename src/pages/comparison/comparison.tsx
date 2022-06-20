@@ -258,9 +258,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onMapClick = ({ selectedMapStyle }) => {
-    console.log(selectedMapStyle)
-    setSelectedMapStyle(selectedMapStyle);
+  const onMapsSelect = (maps) => {
+    setSelectedMapStyle(maps[0].mapUrl || "Terrain")
   };
 
   const onTerrainTileLoad = (tile) => {
@@ -462,7 +461,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
-              onMapClick={onMapClick}
+              onMapsSelect={onMapsSelect}
               onLayersSelect={(layers: LayerExample[]) => {
                 setLayerLeftSide(layers[0]);
                 if (mode === ComparisonMode.withinLayer) {
@@ -507,7 +506,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              onMapClick={onMapClick}
+              onMapsSelect={onMapsSelect}
               onLayersSelect={(layers: LayerExample[]) =>
                 setLayerRightSide(layers[0])
               }

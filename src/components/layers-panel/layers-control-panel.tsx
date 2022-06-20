@@ -104,7 +104,6 @@ export const LayersControlPanel = ({
       <LayersList>
         {layers.map((layer) => {
           const isLayerSelected = selectedLayerIds.includes(layer.id);
-
           return (
             <ListItem
               ref={(node) => addRefNode(node, layer.id)}

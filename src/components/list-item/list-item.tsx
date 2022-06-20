@@ -28,6 +28,10 @@ export const ListItem = forwardRef(
   (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
       props;
+
+    const handleClick = () => {
+      onChange(id);
+    };
     return (
       <ListItemWrapper
         ref={ref}
@@ -35,7 +39,7 @@ export const ListItem = forwardRef(
         hasOptions={hasOptions}
         onOptionsClick={onOptionsClick}
         selected={selected}
-        onChange={onChange}
+        onClick={handleClick}
       >
         {type === ListItemType.Checkbox ? (
           <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
