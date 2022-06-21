@@ -15,7 +15,12 @@ import styled from "styled-components";
 import { StaticMap } from "react-map-gl";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { getElevationByCentralTile, parseTilesetUrlParams } from "../../utils";
+import {
+  buildSublayersTree,
+  getElevationByCentralTile,
+  parseTilesetUrlParams,
+  useForceUpdate,
+} from "../../utils";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
@@ -24,8 +29,10 @@ import {
   ComparisonMode,
   LayerExample,
   ListItemType,
+  Sublayer,
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -176,6 +183,7 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
+  const forceUpdate = useForceUpdate();
   const [terrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
@@ -190,12 +198,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     null
   );
   const [flattenedSublayersLeftSide, setFlattenedSublayersLeftSide] = useState<
-    Tile3D[]
+    BuildingSceneSublayer[]
   >([]);
   const [flattenedSublayersRightSide, setFlattenedSublayersRightSide] =
-    useState<Tile3D[]>([]);
+    useState<BuildingSceneSublayer[]>([]);
   const [tokenLeftSide, setTokenLeftSide] = useState(null);
   const [tokenRightSide, setTokenRightSide] = useState(null);
+  const [sublayersLeftSide, setSublayersLeftSide] = useState<Sublayer[]>([]);
+  const [sublayersRightSide, setSublayersRightSide] = useState<Sublayer[]>([]);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
   useEffect(() => {
@@ -260,7 +270,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   /**
-   * Hook to call multiple changing function based on selected tileset.
+   * Hook to call multiple changing function based on selected tileset on the left side.
    */
   useEffect(() => {
     if (!layerLeftSide) {
@@ -269,7 +279,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
 
     async function fetchFlattenedSublayers(tilesetUrl) {
-      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      const flattenedSublayers = await getFlattenedSublayers(
+        tilesetUrl,
+        "left"
+      );
       setFlattenedSublayersLeftSide(flattenedSublayers);
     }
 
@@ -279,11 +292,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     fetchFlattenedSublayers(tilesetUrl);
 
     setTokenLeftSide(token);
+    setSublayersLeftSide([]);
     setNeedTransitionToTileset(true);
   }, [layerLeftSide]);
 
   /**
-   * Hook to call multiple changing function based on selected tileset.
+   * Hook to call multiple changing function based on selected tileset on the right side.
    */
   useEffect(() => {
     if (!layerRightSide) {
@@ -292,7 +306,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
 
     async function fetchFlattenedSublayers(tilesetUrl) {
-      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
+      const flattenedSublayers = await getFlattenedSublayers(
+        tilesetUrl,
+        "right"
+      );
       setFlattenedSublayersRightSide(flattenedSublayers);
     }
 
@@ -302,6 +319,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     fetchFlattenedSublayers(tilesetUrl);
 
     setTokenRightSide(token);
+    setSublayersRightSide([]);
     setNeedTransitionToTileset(true);
   }, [layerRightSide]);
 
@@ -311,9 +329,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
    * @returns {string[]} Sublayer urls or tileset url.
    * TODO Add filtration mode for sublayers which were selected by user.
    */
-  const getFlattenedSublayers = async (tilesetUrl) => {
+  const getFlattenedSublayers = async (tilesetUrl, side: "left" | "right") => {
     try {
       const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
+      const sublayersTree = buildSublayersTree(tileset.header.sublayers);
+      const childSublayers = sublayersTree?.sublayers || [];
+      if (side === "left") {
+        setSublayersLeftSide(childSublayers);
+      } else if (side === "right") {
+        setSublayersRightSide(childSublayers);
+      }
+
       const sublayers = tileset?.sublayers.filter(
         (sublayer) => sublayer.name !== "Overview"
       );
@@ -386,6 +412,25 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     return result;
   };
 
+  const updateSublayerVisibility = (
+    sublayer: Sublayer,
+    side: "left" | "right"
+  ) => {
+    if (sublayer.layerType === "3DObject") {
+      const flattenedSublayers =
+        side === "left"
+          ? flattenedSublayersLeftSide
+          : flattenedSublayersRightSide;
+      const flattenedSublayer = flattenedSublayers.find(
+        (fSublayer) => fSublayer.id === sublayer.id
+      );
+      if (flattenedSublayer) {
+        flattenedSublayer.visibility = sublayer.visibility;
+        forceUpdate();
+      }
+    }
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -416,6 +461,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               id="left-layers-panel"
               type={ListItemType.Radio}
               baseMaps={[]}
+              sublayers={sublayersLeftSide}
+              onUpdateSublayerVisibility={(sublayer: Sublayer) =>
+                updateSublayerVisibility(sublayer, "left")
+              }
               onLayersSelect={(layers: LayerExample[]) => {
                 setLayerLeftSide(layers[0]);
                 if (mode === ComparisonMode.withinLayer) {
@@ -463,6 +512,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               }
               type={ListItemType.Radio}
               baseMaps={[]}
+              sublayers={sublayersRightSide}
+              onUpdateSublayerVisibility={(sublayer: Sublayer) =>
+                updateSublayerVisibility(sublayer, "right")
+              }
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { ReactEventHandler, useCallback, useRef, useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { ListItemType } from "../../types";
 
@@ -18,6 +18,7 @@ type LayersControlPanelProps = {
   baseMaps: any[];
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
+  onLayerSettingsClick: ReactEventHandler;
 };
 
 const LayersContainer = styled.div`
@@ -83,6 +84,7 @@ export const LayersControlPanel = ({
   selectedLayerIds,
   onLayersSelect,
   onLayerInsertClick,
+  onLayerSettingsClick,
 }: LayersControlPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
@@ -137,7 +139,7 @@ export const LayersControlPanel = ({
             </LayerSettingsIcon>
             Point to layer
           </LayerSettingsItem>
-          <LayerSettingsItem>
+          <LayerSettingsItem onClick={onLayerSettingsClick}>
             <LayerSettingsIcon>
               <SettingsIcon fill={theme.colors.fontColor} />
             </LayerSettingsIcon>

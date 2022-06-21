@@ -1,3 +1,4 @@
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 
@@ -80,4 +81,10 @@ export type LayerExample = {
   name: string;
   url: string;
   token?: string;
+};
+
+export type Sublayer = BuildingSceneSublayer & {
+  expanded: boolean;
+  childNodesCount: number;
+  sublayers: Sublayer[];
 };

@@ -10,9 +10,9 @@ type ListItemProps = {
   title: string;
   type: ListItemType;
   selected: boolean;
-  hasOptions: boolean;
+  hasOptions?: boolean;
   onChange: (id: string) => void;
-  onOptionsClick: (id: string) => void;
+  onOptionsClick?: (id: string) => void;
 };
 
 type ContainerProps = {
@@ -115,7 +115,7 @@ export const ListItem = forwardRef(
 
           <Title>{title}</Title>
         </ItemContentWrapper>
-        {hasOptions && (
+        {hasOptions && onOptionsClick && (
           <OptionsButton
             className="layer-settings"
             onClick={() => onOptionsClick(id)}

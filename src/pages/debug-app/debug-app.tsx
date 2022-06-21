@@ -1,5 +1,5 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type { TileWarning } from "../../types";
+import type { Sublayer, TileWarning } from "../../types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
@@ -80,7 +80,10 @@ import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
 import { BoundingVolumeLayer } from "../../layers";
 
 import { Color, Font } from "../../constants/common";
-import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 
@@ -256,7 +259,7 @@ export const DebugApp = () => {
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
-  const [sublayers, setSublayers] = useState([]);
+  const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [terrainTiles, setTerrainTiles] = useState({});
@@ -381,7 +384,7 @@ export const DebugApp = () => {
     try {
       const mainTileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(mainTileset.header.sublayers);
-      setSublayers(sublayersTree.sublayers);
+      setSublayers(sublayersTree?.sublayers || []);
       const sublayers = mainTileset?.sublayers.filter(
         (sublayer) => sublayer.name !== "Overview"
       );
@@ -964,7 +967,9 @@ export const DebugApp = () => {
       fontWeight: "bold",
       marginTop: "10px",
       cursor: isResetButtonDisabled ? "auto" : "pointer",
-      color: isResetButtonDisabled ? "rgba(255,255,255,.6)" : color_canvas_inverted,
+      color: isResetButtonDisabled
+        ? "rgba(255,255,255,.6)"
+        : color_canvas_inverted,
       background: isResetButtonDisabled ? color_brand_primary : "#4F52CC",
     };
   };
