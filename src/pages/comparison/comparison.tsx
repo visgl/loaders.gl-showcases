@@ -258,8 +258,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onMapsSelect = (maps) => {
-    setSelectedMapStyle(maps[0].mapUrl || "Terrain")
+  const onMapsSelect = (map) => {
+    setSelectedMapStyle(map.mapUrl || "Terrain")
   };
 
   const onTerrainTileLoad = (tile) => {

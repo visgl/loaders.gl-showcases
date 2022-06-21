@@ -16,7 +16,7 @@ enum Tabs {
   MapOptions,
 }
 
-enum ButtonSizes {
+export enum ButtonSize {
   Small,
   Big,
 }
@@ -192,7 +192,7 @@ export const LayersPanel = ({
     getLayerExamples()
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
-  const [selectedMapIds, setSelectedMapIds] = useState<string[]>(["Dark"]); 
+  const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const layout = useAppLayout();
 
@@ -223,15 +223,8 @@ export const LayersPanel = ({
   };
 
   const handleSelectMaps = (id: string): void => {
-    let newSelectedMapIds = selectedMapIds;
-    newSelectedMapIds = [id];
-
-    setSelectedMapIds(newSelectedMapIds);
-    onMapsSelect(
-      (maps).filter(({ id }) =>
-        newSelectedMapIds.includes(id || "")
-      )
-    );
+    setSelectedMap(id);
+    onMapsSelect(maps.find((map) => map.id === id));
   };
 
   const handleInsertLayer = (layer: LayerExample) => {
@@ -272,7 +265,6 @@ export const LayersPanel = ({
       <Content>
         {tab === Tabs.Layers && (
           <LayersControlPanel
-            insertButtonSize={ButtonSizes.Small}
             layers={layers}
             type={type}
             selectedLayerIds={selectedLayerIds}
@@ -282,9 +274,8 @@ export const LayersPanel = ({
         )}
         {tab === Tabs.MapOptions && (
           <MapOptionPanel
-            insertButtonSize={ButtonSizes.Big}
             baseMaps={maps}
-            selectedMapIds={selectedMapIds}
+            selectedMap={selectedMap}
             onMapsSelect={handleSelectMaps}
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");
