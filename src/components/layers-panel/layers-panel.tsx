@@ -10,6 +10,7 @@ import { MapOptionPanel } from "./map-options-panel";
 import DarkMap from "../../../public/icons/dark-map.png";
 import LightMap from "../../../public/icons/light-map.png";
 import TerrainMap from "../../../public/icons/terrain-map.png";
+import CustomMap from "../../../public/icons/custom-map.svg";
 
 enum Tabs {
   Layers,
@@ -187,13 +188,14 @@ export const LayersPanel = ({
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [maps] = useState(BASE_MAPS);
+  const [maps, setMaps] = useState(BASE_MAPS);
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
   const [selectedMapIds, setSelectedMapIds] = useState<string[]>(["Dark"]); 
   const [showInsertPanel, setShowInsertPanel] = useState(false);
+  const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
 
   const handleSelectLayers = (id: string, examples?: LayerExample[]): void => {
@@ -222,13 +224,13 @@ export const LayersPanel = ({
     );
   };
 
-  const handleSelectMaps = (id: string): void => {
+  const handleSelectMaps = (id: string, baseMaps?): void => {
     let newSelectedMapIds = selectedMapIds;
     newSelectedMapIds = [id];
 
     setSelectedMapIds(newSelectedMapIds);
     onMapsSelect(
-      (maps).filter(({ id }) =>
+      (baseMaps || maps).filter(({ id }) =>
         newSelectedMapIds.includes(id || "")
       )
     );
@@ -247,6 +249,24 @@ export const LayersPanel = ({
       return newLayers;
     });
     setShowInsertPanel(false);
+  };
+
+  const handleInsertMap = (map) => {
+    const id = map.url.replace(/" "/g, "-");
+    const newMap = {
+      id,
+      mapUrl: map.url,
+      name: map.name,
+      token: map.token,
+      iconUrl: CustomMap
+    };
+
+    setMaps((prevValues) => {
+      const newMaps = [...prevValues, newMap];
+      handleSelectMaps(id, newMaps);
+      return newMaps;
+    });
+    setShowInsertMapPanel(false);
   };
 
   return (
@@ -289,9 +309,7 @@ export const LayersPanel = ({
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}
-            onBaseMapInsert={function (): void {
-              throw new Error("Function not implemented.");
-            }}
+            onBaseMapInsert={() => setShowInsertMapPanel(true)}
           />
         )}
       </Content>
@@ -302,6 +320,16 @@ export const LayersPanel = ({
             title={"Insert Layer"}
             onInsert={(layer) => handleInsertLayer(layer)}
             onCancel={() => setShowInsertPanel(false)}
+          />
+        </InsertPanelWrapper>
+      )}
+
+      {showInsertMapPanel && (
+        <InsertPanelWrapper>
+          <InsertPanel
+            title={"Insert Base Map"}
+            onInsert={(map) => handleInsertMap(map)}
+            onCancel={() => setShowInsertMapPanel(false)}
           />
         </InsertPanelWrapper>
       )}
