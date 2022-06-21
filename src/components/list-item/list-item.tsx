@@ -1,9 +1,11 @@
-import { ForwardedRef, forwardRef } from "react";
-import styled, { css } from "styled-components";
+import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
+import styled, { css, useTheme } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
-import { ListItemType } from "../../types";
+import { ExpandState, ListItemType, Theme } from "../../types";
 import { Checkbox } from "../checkbox/checkbox";
 import { RadioButton } from "../radio-button/radio-button";
+
+import ChevronIcon from "../../../public/icons/chevron.svg?svgr";
 
 type ListItemProps = {
   id: string;
@@ -11,8 +13,10 @@ type ListItemProps = {
   type: ListItemType;
   selected: boolean;
   hasOptions?: boolean;
+  expandState?: ExpandState;
   onChange: (id: string) => void;
   onOptionsClick?: (id: string) => void;
+  onExpandClick?: () => void;
 };
 
 type ContainerProps = {
@@ -92,10 +96,38 @@ const ItemContentWrapper = styled.div`
   align-items: center;
 `;
 
+const ExpandIcon = styled.div<{ expandState: ExpandState }>`
+  transform: rotate(
+    ${({ expandState }) =>
+      expandState === ExpandState.expanded ? "" : "-"}90deg
+  );
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const ListItem = forwardRef(
   (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
-      props;
+    const {
+      id,
+      title,
+      type,
+      selected,
+      hasOptions,
+      expandState,
+      onChange,
+      onOptionsClick,
+      onExpandClick,
+    } = props;
+    const theme = useTheme();
+
+    const onExpandClickHandler = (e: SyntheticEvent) => {
+      e.stopPropagation();
+      onExpandClick && onExpandClick();
+    };
+
     return (
       <Container ref={ref} checked={selected} onClick={() => onChange(id)}>
         <ItemContentWrapper>
@@ -122,6 +154,11 @@ export const ListItem = forwardRef(
           >
             <OptionsIcon />
           </OptionsButton>
+        )}
+        {expandState && (
+          <ExpandIcon expandState={expandState} onClick={onExpandClickHandler}>
+            <ChevronIcon fill={theme.colors.fontColor} />
+          </ExpandIcon>
         )}
       </Container>
     );

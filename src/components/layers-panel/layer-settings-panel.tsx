@@ -10,6 +10,7 @@ import { HorizontalLine } from "./horizontal-line";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  overflow: auto;
 `;
 
 const Header = styled.div<{ theme: DefaultTheme }>`

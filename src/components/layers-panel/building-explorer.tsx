@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { ListItemType, Sublayer } from "../../types";
+import styled, { css } from "styled-components";
+import { ExpandState, ListItemType, Sublayer } from "../../types";
 import { useForceUpdate } from "../../utils";
 import { ListItem } from "../list-item/list-item";
 
@@ -11,8 +11,12 @@ const BuildingExplorerSublayers = styled.div`
   overflow-x: hidden;
 `;
 
-const GroupContainer = styled.div`
-  padding-left: 44px;
+const GroupContainer = styled.div<{ needIndentation: boolean }>`
+  ${({ needIndentation = false }) =>
+    needIndentation &&
+    css`
+      margin-left: 44px;
+    `}
 `;
 
 export const BuildingExplorer = ({
@@ -45,20 +49,32 @@ export const BuildingExplorer = ({
     forceUpdate();
   };
 
-  const renderSublayers = (sublayers: Sublayer[]) => {
+  const toggleExpandState = (sublayer) => {
+    sublayer.expanded = !sublayer.expanded;
+    forceUpdate();
+  };
+
+  const renderSublayers = (sublayers: Sublayer[], hasParent = false) => {
     return sublayers.map((sublayer: Sublayer) => {
       const childLayers = sublayer.sublayers || [];
+      let expandState;
+      if (childLayers.length) {
+        expandState = sublayer.expanded
+          ? ExpandState.expanded
+          : ExpandState.collapsed;
+      }
       return (
-        <GroupContainer>
+        <GroupContainer key={sublayer.id} needIndentation={hasParent}>
           <ListItem
-            key={sublayer.id}
             id={sublayer.id.toString()}
             title={sublayer.name}
             type={ListItemType.Checkbox}
             selected={Boolean(sublayer.visibility)}
+            expandState={expandState}
             onChange={() => toggleSublayer(sublayer)}
+            onExpandClick={() => toggleExpandState(sublayer)}
           />
-          {sublayer.expanded ? renderSublayers(childLayers) : null}
+          {sublayer.expanded ? renderSublayers(childLayers, true) : null}
         </GroupContainer>
       );
     });

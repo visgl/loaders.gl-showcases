@@ -462,9 +462,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               type={ListItemType.Radio}
               baseMaps={[]}
               sublayers={sublayersLeftSide}
-              onUpdateSublayerVisibility={(sublayer: Sublayer) =>
-                updateSublayerVisibility(sublayer, "left")
-              }
+              onUpdateSublayerVisibility={(sublayer: Sublayer) => {
+                updateSublayerVisibility(sublayer, "left");
+                if (mode === ComparisonMode.withinLayer) {
+                  updateSublayerVisibility(sublayer, "right");
+                }
+              }}
               onLayersSelect={(layers: LayerExample[]) => {
                 setLayerLeftSide(layers[0]);
                 if (mode === ComparisonMode.withinLayer) {

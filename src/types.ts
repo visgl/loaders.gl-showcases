@@ -36,6 +36,11 @@ export enum ActionButtonVariant {
   cancel,
 }
 
+export enum ExpandState {
+  expanded = "expanded",
+  collapsed = "collapsed",
+}
+
 export type TileWarning = {
   type: string;
   title: string;

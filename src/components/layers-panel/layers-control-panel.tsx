@@ -16,6 +16,7 @@ type LayersControlPanelProps = {
   selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: any[];
+  hasSettings: boolean;
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
@@ -82,6 +83,7 @@ export const LayersControlPanel = ({
   layers,
   type,
   selectedLayerIds,
+  hasSettings = false,
   onLayersSelect,
   onLayerInsertClick,
   onLayerSettingsClick,
@@ -139,12 +141,14 @@ export const LayersControlPanel = ({
             </LayerSettingsIcon>
             Point to layer
           </LayerSettingsItem>
-          <LayerSettingsItem onClick={onLayerSettingsClick}>
-            <LayerSettingsIcon>
-              <SettingsIcon fill={theme.colors.fontColor} />
-            </LayerSettingsIcon>
-            Layer settings
-          </LayerSettingsItem>
+          {hasSettings && (
+            <LayerSettingsItem onClick={onLayerSettingsClick}>
+              <LayerSettingsIcon>
+                <SettingsIcon fill={theme.colors.fontColor} />
+              </LayerSettingsIcon>
+              Layer settings
+            </LayerSettingsItem>
+          )}
           <Devider />
           <LayerSettingsItem customColor={color_accent_primary} opacity={0.8}>
             <LayerSettingsIcon>

@@ -213,6 +213,7 @@ export const LayersPanel = ({
                 baseMaps={[]}
                 type={type}
                 selectedLayerIds={selectedLayerIds}
+                hasSettings={Boolean(sublayers.length)}
                 onLayersSelect={handleSelectLayers}
                 onLayerInsertClick={() => setShowInsertPanel(true)}
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
