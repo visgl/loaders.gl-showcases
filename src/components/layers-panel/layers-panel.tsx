@@ -235,10 +235,10 @@ export const LayersPanel = ({
             >
               Map Options
             </Tab>
-            <CloseButtonWrapper>
-              <CloseButton id="layers-panel-close-button" onClick={onClose} />
-            </CloseButtonWrapper>
           </PanelHeader>
+          <CloseButtonWrapper>
+            <CloseButton id="layers-panel-close-button" onClick={onClose} />
+          </CloseButtonWrapper>
           <HorizontalLine />
           <Content>
             {tab === Tabs.Layers && (

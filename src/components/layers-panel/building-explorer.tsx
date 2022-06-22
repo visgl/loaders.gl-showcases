@@ -6,7 +6,6 @@ import { ListItem } from "./list-item";
 const BuildingExplorerSublayers = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
   overflow-y: auto;
   overflow-x: hidden;
 `;
