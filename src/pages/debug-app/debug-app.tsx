@@ -31,9 +31,9 @@ import {
   useForceUpdate,
 } from "../../utils";
 import {
-  INITIAL_EXAMPLE_NAME,
   EXAMPLES,
   CUSTOM_EXAMPLE_VALUE,
+  INITIAL_EXAMPLE,
 } from "../../constants/i3s-examples";
 
 import {
@@ -279,11 +279,12 @@ export const DebugApp = () => {
       };
     }
 
-    if (tilesetParam in EXAMPLES) {
-      return EXAMPLES[tilesetParam];
+    const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
+    if (namedExample) {
+      return namedExample;
     }
 
-    return EXAMPLES[INITIAL_EXAMPLE_NAME];
+    return INITIAL_EXAMPLE;
   };
 
   const [mainTileset, setMainTileset] = useState(initMainTileset());
