@@ -27,6 +27,7 @@ type LayersPanelProps = {
   onMapsSelect: (maps) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
+  onPointToLayer: () => void;
 };
 
 type TabProps = {
@@ -185,6 +186,7 @@ export const LayersPanel = ({
   onLayersSelect,
   onMapsSelect,
   onClose,
+  onPointToLayer,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [maps] = useState(BASE_MAPS);
@@ -270,6 +272,7 @@ export const LayersPanel = ({
             selectedLayerIds={selectedLayerIds}
             onLayersSelect={handleSelectLayers}
             onLayerInsertClick={() => setShowInsertPanel(true)}
+            onPointToLayer={onPointToLayer}
           />
         )}
         {tab === Tabs.MapOptions && (

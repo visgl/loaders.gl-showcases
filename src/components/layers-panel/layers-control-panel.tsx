@@ -18,6 +18,7 @@ type LayersControlPanelProps = {
   type: ListItemType;
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
+  onPointToLayer: () => void;
 };
 
 const LayersContainer = styled.div`
@@ -83,6 +84,7 @@ export const LayersControlPanel = ({
   selectedLayerIds,
   onLayersSelect,
   onLayerInsertClick,
+  onPointToLayer,
 }: LayersControlPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
@@ -122,7 +124,9 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>Insert layer</PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+          Insert layer
+        </PlusButton>
         <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
       </InsertButtons>
       {showLayerSettings && (
@@ -130,12 +134,19 @@ export const LayersControlPanel = ({
           onCloseHandler={() => setShowLayerSettings(false)}
           forElementNode={settingsForItemRef.current.get(settingsLayerId)}
         >
-          <LayerSettingsItem>
-            <LayerSettingsIcon>
-              <LocationIcon fill={theme.colors.fontColor} />
-            </LayerSettingsIcon>
-            Point to layer
-          </LayerSettingsItem>
+          {selectedLayerIds.includes(settingsLayerId) && (
+            <LayerSettingsItem
+              onClick={() => {
+                setShowLayerSettings(false);
+                onPointToLayer();
+              }}
+            >
+              <LayerSettingsIcon>
+                <LocationIcon fill={theme.colors.fontColor} />
+              </LayerSettingsIcon>
+              Point to layer
+            </LayerSettingsItem>
+          )}
           <LayerSettingsItem>
             <LayerSettingsIcon>
               <SettingsIcon fill={theme.colors.fontColor} />
