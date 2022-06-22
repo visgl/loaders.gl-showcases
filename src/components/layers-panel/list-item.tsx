@@ -21,6 +21,8 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
+  width: 223px;
+  overflow: hidden;
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 

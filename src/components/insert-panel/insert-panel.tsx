@@ -1,14 +1,14 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-import { ActionButtonVariant, LayerExample } from "../../types";
+import { ActionButtonVariant } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { ActionButton } from "../action-button/action-button";
 import { InputText } from "../input-text/input-text";
 
 type InsertLayerProps = {
   title: string;
-  onInsert: (object: LayerExample) => void;
+  onInsert: (object: { name: string; url: string; token?: string }) => void;
   onCancel: () => void;
   children?: React.ReactNode;
 };

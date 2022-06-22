@@ -230,11 +230,16 @@ export const LayersPanel = ({
     baseMap && onMapsSelect(baseMap);
   };
 
-  const handleInsertLayer = (layer: LayerExample) => {
+  const handleInsertLayer = (layer: {
+    name: string;
+    url: string;
+    token?: string;
+  }) => {
     const id = layer.url.replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
       id,
+      custom: true,
     };
 
     setLayers((prevValues) => {
@@ -261,6 +266,13 @@ export const LayersPanel = ({
       return newMaps;
     });
     setShowInsertMapPanel(false);
+  };
+
+  const deleteLayer = (id: string) => {
+    setLayers((prevValues) => {
+      handleSelectLayers("");
+      return prevValues.filter(({ id: layerId }) => layerId !== id);
+    });
   };
 
   return (
@@ -291,6 +303,7 @@ export const LayersPanel = ({
             selectedLayerIds={selectedLayerIds}
             onLayersSelect={handleSelectLayers}
             onLayerInsertClick={() => setShowInsertPanel(true)}
+            deleteLayer={deleteLayer}
           />
         )}
         {tab === Tabs.MapOptions && (

@@ -76,10 +76,11 @@ export type AppThemes = {
 };
 
 export type LayerExample = {
-  id?: string;
+  id: string;
   name: string;
   url: string;
   token?: string;
+  custom?: boolean;
 };
 
 export type BaseMap = {

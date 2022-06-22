@@ -152,6 +152,7 @@ export const ViewerApp = () => {
 
     if (tilesetParam?.startsWith("http")) {
       return {
+        id: CUSTOM_EXAMPLE_VALUE,
         name: CUSTOM_EXAMPLE_VALUE,
         url: tilesetParam,
       };
