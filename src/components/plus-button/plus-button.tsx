@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
+import { ButtonSize } from "../layers-panel/layers-panel";
 
 type PlusButtonProps = {
   children?: React.ReactNode;
+  buttonSize: number;
   onClick?: () => void;
 };
 
@@ -22,10 +24,10 @@ const Button = styled.div`
   }
 `;
 
-const PlusIcon = styled.div`
+const PlusIcon = styled.div<{ buttonSize: number }>`
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
+  height: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
   // Keep rgba format to avoid issue with opacity inheritance and pseudo elements.
   background: rgba(96, 93, 236, 0.4);
   cursor: pointer;
@@ -59,10 +61,14 @@ const ButtonText = styled.div`
   color: ${color_brand_tertiary};
 `;
 
-export const PlusButton = ({ children, onClick }: PlusButtonProps) => {
+export const PlusButton = ({
+  children,
+  buttonSize,
+  onClick,
+}: PlusButtonProps) => {
   return (
     <Button onClick={onClick}>
-      <PlusIcon />
+      <PlusIcon buttonSize={buttonSize} />
       <ButtonText>{children}</ButtonText>
     </Button>
   );
