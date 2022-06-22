@@ -1,20 +1,18 @@
 import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
 import styled, { css, useTheme } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
-import { ExpandState, ListItemType, Theme } from "../../types";
-import { Checkbox } from "../checkbox/checkbox";
-import { RadioButton } from "../radio-button/radio-button";
 
 import ChevronIcon from "../../../public/icons/chevron.svg?svgr";
+import { ExpandState } from "../../types";
 
-type ListItemProps = {
+type BaseMapsItemProps = {
+  children: React.ReactNode;
+  ref?: ForwardedRef<HTMLDivElement>;
   id: string;
-  title: string;
-  type: ListItemType;
   selected: boolean;
   hasOptions?: boolean;
   expandState?: ExpandState;
-  onChange: (id: string) => void;
+  onClick: () => void;
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
 };
@@ -44,25 +42,16 @@ const Container = styled.div<ContainerProps>`
     background: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+  }
 `;
 
-const Title = styled.div`
-  margin-left: 16px;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  color: ${({ theme }) => theme.colors.fontColor};
+const ItemContentWrapper = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 const OptionsButton = styled.div`
-  width: 16px;
-  height: 16px;
-  display: flex;
-  justify-content: center;
-`;
-
-const OptionsIcon = styled.div`
   position: relative;
   width: 4px;
   height: 4px;
@@ -90,12 +79,6 @@ const OptionsIcon = styled.div`
   }
 `;
 
-const ItemContentWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
 const ExpandIcon = styled.div<{ expandState: ExpandState }>`
   transform: rotate(
     ${({ expandState }) =>
@@ -108,52 +91,28 @@ const ExpandIcon = styled.div<{ expandState: ExpandState }>`
   align-items: center;
 `;
 
-export const ListItem = forwardRef(
-  (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+export const ListItemWrapper = forwardRef(
+  (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
     const {
+      children,
       id,
-      title,
-      type,
       selected,
       hasOptions,
       expandState,
-      onChange,
       onOptionsClick,
+      onClick,
       onExpandClick,
     } = props;
     const theme = useTheme();
-
     const onExpandClickHandler = (e: SyntheticEvent) => {
       e.stopPropagation();
       onExpandClick && onExpandClick();
     };
-
     return (
-      <Container ref={ref} checked={selected} onClick={() => onChange(id)}>
-        <ItemContentWrapper>
-          {type === ListItemType.Checkbox ? (
-            <Checkbox
-              id={id}
-              checked={selected}
-              onChange={() => onChange(id)}
-            />
-          ) : (
-            <RadioButton
-              id={id}
-              checked={selected}
-              onChange={() => onChange(id)}
-            />
-          )}
-
-          <Title>{title}</Title>
-        </ItemContentWrapper>
+      <Container ref={ref} checked={selected} onClick={onClick}>
+        <ItemContentWrapper>{children}</ItemContentWrapper>
         {hasOptions && onOptionsClick && (
-          <OptionsButton
-            className="layer-settings"
-            onClick={() => onOptionsClick(id)}
-          >
-            <OptionsIcon />
-          </OptionsButton>
+          <OptionsButton id={id} onClick={() => onOptionsClick(id)} />
         )}
         {expandState && (
           <ExpandIcon expandState={expandState} onClick={onExpandClickHandler}>

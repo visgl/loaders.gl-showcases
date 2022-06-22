@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
+import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import {
   MapController,
   FlyToInterpolator,
@@ -7,10 +8,9 @@ import {
   MapView,
   WebMercatorViewport,
 } from "@deck.gl/core";
-import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader, I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { load } from "@loaders.gl/core";
-import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 import { StaticMap } from "react-map-gl";
 
@@ -184,9 +184,9 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
   const forceUpdate = useForceUpdate();
-  const [terrainTiles] = useState({});
+  const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [selectedMapStyle] = useState(INITIAL_MAP_STYLE);
+  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
@@ -207,6 +207,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [sublayersLeftSide, setSublayersLeftSide] = useState<Sublayer[]>([]);
   const [sublayersRightSide, setSublayersRightSide] = useState<Sublayer[]>([]);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
+
+  const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
+  const ARCGIS_STREET_MAP_SURFACE_IMAGES =
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+  const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
+    rScaler: 256,
+    gScaler: 1,
+    bScaler: 1 / 256,
+    offset: -32768,
+  };
+  const TERRAIN_LAYER_MAX_ZOOM = 15;
 
   useEffect(() => {
     setActiveRightPanel(ActiveButton.none);
@@ -254,6 +265,33 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState({
       ...viewState,
       position: [0, 0, elevation],
+    });
+  };
+
+  const onMapsSelect = (map) => {
+    setSelectedMapStyle(map.mapUrl || "Terrain");
+  };
+
+  const onTerrainTileLoad = (tile) => {
+    const {
+      bbox: { east, north, south, west },
+    } = tile;
+
+    setTerrainTiles((prevValue) => ({
+      ...prevValue,
+      [`${east};${north};${south};${west}`]: tile,
+    }));
+  };
+
+  const renderTerrainLayer = () => {
+    return new TerrainLayer({
+      id: "terrain",
+      maxZoom: TERRAIN_LAYER_MAX_ZOOM,
+      elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
+      elevationData: MAPZEN_TERRAIN_IMAGES,
+      texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
+      onTileLoad: (tile) => onTerrainTileLoad(tile),
+      color: [255, 255, 255],
     });
   };
 
@@ -409,6 +447,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           ),
       ];
     }
+
+    if (selectedMapStyle === "Terrain") {
+      const terrainLayer = renderTerrainLayer();
+      result.push(terrainLayer);
+    }
+
     return result;
   };
 
@@ -445,7 +489,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedMapStyle !== "Terrain" && (
+            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          )}
         </DeckGL>
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -460,7 +506,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
-              baseMaps={[]}
               sublayers={sublayersLeftSide}
               onUpdateSublayerVisibility={(sublayer: Sublayer) => {
                 updateSublayerVisibility(sublayer, "left");
@@ -468,6 +513,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                   updateSublayerVisibility(sublayer, "right");
                 }
               }}
+              onMapsSelect={onMapsSelect}
               onLayersSelect={(layers: LayerExample[]) => {
                 setLayerLeftSide(layers[0]);
                 if (mode === ComparisonMode.withinLayer) {
@@ -495,7 +541,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedMapStyle !== "Terrain" && (
+            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          )}
         </DeckGL>
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -510,11 +558,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
+              onMapsSelect={onMapsSelect}
               onLayersSelect={(layers: LayerExample[]) =>
                 setLayerRightSide(layers[0])
               }
               type={ListItemType.Radio}
-              baseMaps={[]}
               sublayers={sublayersRightSide}
               onUpdateSublayerVisibility={(sublayer: Sublayer) =>
                 updateSublayerVisibility(sublayer, "right")

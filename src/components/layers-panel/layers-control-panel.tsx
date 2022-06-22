@@ -2,7 +2,7 @@ import { ReactEventHandler, useCallback, useRef, useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { ListItemType } from "../../types";
 
-import { ListItem } from "../list-item/list-item";
+import { ListItem } from "./list-item";
 import { LayerSettingsMenu } from "./layer-settings-menu";
 import { PlusButton } from "../plus-button/plus-button";
 
@@ -10,12 +10,12 @@ import LocationIcon from "../../../public/icons/location.svg?svgr";
 import DeleteIcon from "../../../public/icons/delete.svg?svgr";
 import SettingsIcon from "../../../public/icons/settings.svg?svgr";
 import { color_accent_primary } from "../../constants/colors";
+import { ButtonSize } from "./layers-panel";
 
 type LayersControlPanelProps = {
   layers: any[];
   selectedLayerIds: string[];
   type: ListItemType;
-  baseMaps: any[];
   hasSettings: boolean;
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
@@ -107,7 +107,6 @@ export const LayersControlPanel = ({
       <LayersList>
         {layers.map((layer) => {
           const isLayerSelected = selectedLayerIds.includes(layer.id);
-
           return (
             <ListItem
               ref={(node) => addRefNode(node, layer.id)}
@@ -127,8 +126,10 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton onClick={onLayerInsertClick}>Insert layer</PlusButton>
-        <PlusButton>Insert scene</PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+          Insert layer
+        </PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
       </InsertButtons>
       {showLayerSettings && (
         <LayerSettingsMenu

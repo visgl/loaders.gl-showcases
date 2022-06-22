@@ -9,16 +9,25 @@ import { InsertPanel } from "../insert-panel/insert-panel";
 import { HorizontalLine } from "./horizontal-line";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { LayersControlPanel } from "./layers-control-panel";
+import { MapOptionPanel } from "./map-options-panel";
+import DarkMap from "../../../public/icons/dark-map.png";
+import LightMap from "../../../public/icons/light-map.png";
+import TerrainMap from "../../../public/icons/terrain-map.png";
 
 enum Tabs {
   Layers,
   MapOptions,
 }
 
+export enum ButtonSize {
+  Small,
+  Big,
+}
+
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  baseMaps: any[];
+  onMapsSelect: (maps) => void;
   sublayers: Sublayer[];
   onUpdateSublayerVisibility: (Sublayer) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
@@ -122,6 +131,23 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
+const BASE_MAPS = [
+  {
+    id: "Dark",
+    name: "Dark",
+    iconUrl: DarkMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+  },
+  {
+    id: "Light",
+    name: "Light",
+    iconUrl: LightMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+  },
+  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
+];
 const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
@@ -130,13 +156,16 @@ export const LayersPanel = ({
   sublayers,
   onLayersSelect,
   onUpdateSublayerVisibility,
+  onMapsSelect,
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
+  const [maps] = useState(BASE_MAPS);
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
+  const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const layout = useAppLayout();
@@ -165,6 +194,11 @@ export const LayersPanel = ({
         newSelectedLayersIds.includes(id || "")
       )
     );
+  };
+
+  const handleSelectMaps = (id: string): void => {
+    setSelectedMap(id);
+    onMapsSelect(maps.find((map) => map.id === id));
   };
 
   const handleInsertLayer = (layer: LayerExample) => {
@@ -201,22 +235,34 @@ export const LayersPanel = ({
             >
               Map Options
             </Tab>
+            <CloseButtonWrapper>
+              <CloseButton id="layers-panel-close-button" onClick={onClose} />
+            </CloseButtonWrapper>
           </PanelHeader>
-          <CloseButtonWrapper>
-            <CloseButton id="layers-panel-close-button" onClick={onClose} />
-          </CloseButtonWrapper>
           <HorizontalLine />
           <Content>
             {tab === Tabs.Layers && (
               <LayersControlPanel
                 layers={layers}
-                baseMaps={[]}
                 type={type}
                 selectedLayerIds={selectedLayerIds}
                 hasSettings={Boolean(sublayers.length)}
                 onLayersSelect={handleSelectLayers}
                 onLayerInsertClick={() => setShowInsertPanel(true)}
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
+              />
+            )}
+            {tab === Tabs.MapOptions && (
+              <MapOptionPanel
+                baseMaps={maps}
+                selectedMap={selectedMap}
+                onMapsSelect={handleSelectMaps}
+                onMapOptionsClick={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+                onBaseMapInsert={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
               />
             )}
           </Content>

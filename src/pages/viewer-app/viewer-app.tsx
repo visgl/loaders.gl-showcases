@@ -33,7 +33,7 @@ import {
 } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { INITIAL_EXAMPLE_NAME, EXAMPLES } from "../../constants/i3s-examples";
+import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
@@ -44,6 +44,7 @@ import {
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
 import { Sublayer } from "../../types";
+import { LayerExample } from "../../types";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -147,7 +148,7 @@ export const ViewerApp = () => {
     useState<StatsWidget | null>(null);
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
-  const initMainTileset = () => {
+  const initMainTileset = (): LayerExample => {
     const tilesetParam = parseTilesetFromUrl();
 
     if (tilesetParam?.startsWith("http")) {
@@ -161,7 +162,7 @@ export const ViewerApp = () => {
       return EXAMPLES[tilesetParam];
     }
 
-    return EXAMPLES[INITIAL_EXAMPLE_NAME];
+    return INITIAL_EXAMPLE;
   };
 
   const [mainTileset, setMainTileset] = useState(initMainTileset());
