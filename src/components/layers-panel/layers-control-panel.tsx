@@ -1,6 +1,12 @@
-import { ReactEventHandler, useCallback, useRef, useState } from "react";
+import {
+  ReactEventHandler,
+  Fragment,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import styled, { useTheme } from "styled-components";
-import { ListItemType } from "../../types";
+import { LayerExample, ListItemType } from "../../types";
 
 import { ListItem } from "./list-item";
 import { LayerSettingsMenu } from "./layer-settings-menu";
@@ -10,16 +16,18 @@ import LocationIcon from "../../../public/icons/location.svg?svgr";
 import DeleteIcon from "../../../public/icons/delete.svg?svgr";
 import SettingsIcon from "../../../public/icons/settings.svg?svgr";
 import { color_accent_primary } from "../../constants/colors";
+import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
 
 type LayersControlPanelProps = {
-  layers: any[];
+  layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
   hasSettings: boolean;
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
+  deleteLayer: (id: string) => void;
 };
 
 const LayersContainer = styled.div`
@@ -87,10 +95,12 @@ export const LayersControlPanel = ({
   onLayersSelect,
   onLayerInsertClick,
   onLayerSettingsClick,
+  deleteLayer,
 }: LayersControlPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
+  const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
   const theme = useTheme();
 
   const addRefNode = useCallback(
@@ -102,26 +112,85 @@ export const LayersControlPanel = ({
     []
   );
 
+  const renderSettingsMenu = () => {
+    if (!showLayerSettings || !settingsLayerId) {
+      return null;
+    }
+    const layer = layers.find(({ id }) => id === settingsLayerId);
+    return (
+      <LayerSettingsMenu
+        onCloseHandler={() => setShowLayerSettings(false)}
+        forElementNode={settingsForItemRef.current.get(settingsLayerId)}
+      >
+        <LayerSettingsItem>
+          <LayerSettingsIcon>
+            <LocationIcon fill={theme.colors.fontColor} />
+          </LayerSettingsIcon>
+          Point to layer
+        </LayerSettingsItem>
+        {hasSettings && (
+          <LayerSettingsItem onClick={onLayerSettingsClick}>
+            <LayerSettingsIcon>
+              <SettingsIcon fill={theme.colors.fontColor} />
+            </LayerSettingsIcon>
+            Layer settings
+          </LayerSettingsItem>
+        )}
+
+        {layer?.custom && (
+          <>
+            <Devider />
+            <LayerSettingsItem
+              customColor={color_accent_primary}
+              opacity={0.8}
+              onClick={() => {
+                setLayerToDeleteId(settingsLayerId);
+                setShowLayerSettings(false);
+              }}
+            >
+              <LayerSettingsIcon>
+                <DeleteIcon fill={color_accent_primary} />
+              </LayerSettingsIcon>
+              Delete layer
+            </LayerSettingsItem>
+          </>
+        )}
+      </LayerSettingsMenu>
+    );
+  };
+
   return (
     <LayersContainer>
       <LayersList>
         {layers.map((layer) => {
           const isLayerSelected = selectedLayerIds.includes(layer.id);
           return (
-            <ListItem
-              ref={(node) => addRefNode(node, layer.id)}
-              key={layer.id}
-              id={layer.id}
-              title={layer.name}
-              type={type}
-              selected={isLayerSelected}
-              hasOptions={true}
-              onChange={onLayersSelect}
-              onOptionsClick={() => {
-                setShowLayerSettings(true);
-                setSettingsLayerId(layer.id);
-              }}
-            />
+            <Fragment key={layer.id}>
+              <ListItem
+                ref={(node) => addRefNode(node, layer.id)}
+                id={layer.id}
+                title={layer.name}
+                type={type}
+                selected={isLayerSelected}
+                hasOptions={true}
+                onChange={onLayersSelect}
+                onOptionsClick={() => {
+                  setShowLayerSettings(true);
+                  setSettingsLayerId(layer.id);
+                }}
+              />
+              {layerToDeleteId === layer.id && (
+                <DeleteConfirmation
+                  onKeepHandler={() => setLayerToDeleteId("")}
+                  onDeleteHandler={() => {
+                    deleteLayer(settingsLayerId);
+                    setLayerToDeleteId("");
+                  }}
+                >
+                  Delete layer?
+                </DeleteConfirmation>
+              )}
+            </Fragment>
           );
         })}
       </LayersList>
@@ -131,34 +200,7 @@ export const LayersControlPanel = ({
         </PlusButton>
         <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
       </InsertButtons>
-      {showLayerSettings && (
-        <LayerSettingsMenu
-          onCloseHandler={() => setShowLayerSettings(false)}
-          forElementNode={settingsForItemRef.current.get(settingsLayerId)}
-        >
-          <LayerSettingsItem>
-            <LayerSettingsIcon>
-              <LocationIcon fill={theme.colors.fontColor} />
-            </LayerSettingsIcon>
-            Point to layer
-          </LayerSettingsItem>
-          {hasSettings && (
-            <LayerSettingsItem onClick={onLayerSettingsClick}>
-              <LayerSettingsIcon>
-                <SettingsIcon fill={theme.colors.fontColor} />
-              </LayerSettingsIcon>
-              Layer settings
-            </LayerSettingsItem>
-          )}
-          <Devider />
-          <LayerSettingsItem customColor={color_accent_primary} opacity={0.8}>
-            <LayerSettingsIcon>
-              <DeleteIcon fill={color_accent_primary} />
-            </LayerSettingsIcon>
-            Delete layer
-          </LayerSettingsItem>
-        </LayerSettingsMenu>
-      )}
+      {renderSettingsMenu()}
     </LayersContainer>
   );
 };
