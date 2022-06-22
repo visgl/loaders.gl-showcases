@@ -226,8 +226,8 @@ export const LayersPanel = ({
 
   const handleSelectMaps = (id: string, baseMaps?: BaseMap[]): void => {
     setSelectedMap(id);
-    // @ts-ignore:next-line
-    onMapsSelect((baseMaps || maps).find((map) => map.id === id));
+    const baseMap = (baseMaps || maps).find((map) => map.id === id);
+    baseMap && onMapsSelect(baseMap);
   };
 
   const handleInsertLayer = (layer: LayerExample) => {
