@@ -37,10 +37,13 @@ import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
+import {
+  color_brand_primary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
-import { LayerExample } from "../../utils/types";
+import { LayerExample } from "../../types";
 
 const TRANSITION_DURAITON = 4000;
 
