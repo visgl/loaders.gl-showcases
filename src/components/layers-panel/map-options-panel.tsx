@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item";
 import { PlusButton } from "../plus-button/plus-button";
+import { ButtonSize } from "./layers-panel";
 
 type MapOptionPanelProps = {
-  insertButtonSize: number;
   baseMaps: any[];
-  selectedMapIds: string[];
+  selectedMap: string;
   onMapsSelect: (id: string) => void;
   onMapOptionsClick: (id: string) => void;
   onBaseMapInsert: () => void;
@@ -50,8 +50,7 @@ const InsertButtons = styled.div`
 
 export const MapOptionPanel = ({
   baseMaps,
-  insertButtonSize,
-  selectedMapIds,
+  selectedMap,
   onMapsSelect,
   onMapOptionsClick,
   onBaseMapInsert,
@@ -61,7 +60,7 @@ export const MapOptionPanel = ({
       <MapOptionTitle>Base Map</MapOptionTitle>
       <MapList>
         {baseMaps.map((baseMap) => {
-          const isMapSelected = selectedMapIds.includes(baseMap.id);
+          const isMapSelected = selectedMap === baseMap.id;
           return (
             <BaseMapListItem
               key={baseMap.id}
@@ -77,7 +76,7 @@ export const MapOptionPanel = ({
         })}
       </MapList>
       <InsertButtons>
-        <PlusButton buttonSize={insertButtonSize} onClick={onBaseMapInsert}>
+        <PlusButton buttonSize={ButtonSize.Big} onClick={onBaseMapInsert}>
           Insert Base Map
         </PlusButton>
       </InsertButtons>

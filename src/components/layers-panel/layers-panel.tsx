@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
-import { LayerExample, ListItemType, Theme } from "../../types";
+import { LayerExample, ListItemType, Theme, BaseMap } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { InsertPanel } from "../insert-panel/insert-panel";
@@ -17,7 +17,7 @@ enum Tabs {
   MapOptions,
 }
 
-enum ButtonSizes {
+export enum ButtonSize {
   Small,
   Big,
 }
@@ -25,7 +25,7 @@ enum ButtonSizes {
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  onMapsSelect: (maps) => void;
+  onMapsSelect: (map: BaseMap) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
 };
@@ -161,7 +161,7 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
-const BASE_MAPS = [
+const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
     name: "Dark",
@@ -188,12 +188,12 @@ export const LayersPanel = ({
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [maps, setMaps] = useState(BASE_MAPS);
+  const [maps, setMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
-  const [selectedMapIds, setSelectedMapIds] = useState<string[]>(["Dark"]); 
+  const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
@@ -224,16 +224,10 @@ export const LayersPanel = ({
     );
   };
 
-  const handleSelectMaps = (id: string, baseMaps?): void => {
-    let newSelectedMapIds = selectedMapIds;
-    newSelectedMapIds = [id];
-
-    setSelectedMapIds(newSelectedMapIds);
-    onMapsSelect(
-      (baseMaps || maps).filter(({ id }) =>
-        newSelectedMapIds.includes(id || "")
-      )
-    );
+  const handleSelectMaps = (id: string, baseMaps?: BaseMap[]): void => {
+    setSelectedMap(id);
+    // @ts-ignore:next-line
+    onMapsSelect((baseMaps || maps).find((map: BaseMap) => map.id === id));
   };
 
   const handleInsertLayer = (layer: LayerExample) => {
@@ -258,7 +252,7 @@ export const LayersPanel = ({
       mapUrl: map.url,
       name: map.name,
       token: map.token,
-      iconUrl: CustomMap
+      iconUrl: CustomMap,
     };
 
     setMaps((prevValues) => {
@@ -292,7 +286,6 @@ export const LayersPanel = ({
       <Content>
         {tab === Tabs.Layers && (
           <LayersControlPanel
-            insertButtonSize={ButtonSizes.Small}
             layers={layers}
             type={type}
             selectedLayerIds={selectedLayerIds}
@@ -302,9 +295,8 @@ export const LayersPanel = ({
         )}
         {tab === Tabs.MapOptions && (
           <MapOptionPanel
-            insertButtonSize={ButtonSizes.Big}
             baseMaps={maps}
-            selectedMapIds={selectedMapIds}
+            selectedMap={selectedMap}
             onMapsSelect={handleSelectMaps}
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");

@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { ListItemType } from "../../types";
 
-import { ListItem } from "../list-item/list-item";
+import { ListItem } from "./list-item";
 import { LayerSettingsMenu } from "./layer-settings-menu";
 import { PlusButton } from "../plus-button/plus-button";
 
@@ -10,9 +10,9 @@ import LocationIcon from "../../../public/icons/location.svg?svgr";
 import DeleteIcon from "../../../public/icons/delete.svg?svgr";
 import SettingsIcon from "../../../public/icons/settings.svg?svgr";
 import { color_accent_primary } from "../../constants/colors";
+import { ButtonSize } from "./layers-panel";
 
 type LayersControlPanelProps = {
-  insertButtonSize: number;
   layers: any[];
   selectedLayerIds: string[];
   type: ListItemType;
@@ -78,7 +78,6 @@ const Devider = styled.div`
 `;
 
 export const LayersControlPanel = ({
-  insertButtonSize,
   layers,
   type,
   selectedLayerIds,
@@ -123,8 +122,8 @@ export const LayersControlPanel = ({
         })}
       </LayersList>
       <InsertButtons>
-        <PlusButton buttonSize={insertButtonSize} onClick={onLayerInsertClick}>Insert layer</PlusButton>
-        <PlusButton buttonSize={insertButtonSize}>Insert scene</PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>Insert layer</PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
       </InsertButtons>
       {showLayerSettings && (
         <LayerSettingsMenu

@@ -2,7 +2,7 @@ import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { ListItemType } from "../../types";
 import { Checkbox } from "../checkbox/checkbox";
-import { ListItemWrapper } from "../layers-panel/list-item-wrapper";
+import { ListItemWrapper } from "./list-item-wrapper";
 import { RadioButton } from "../radio-button/radio-button";
 
 type ListItemProps = {

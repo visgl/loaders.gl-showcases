@@ -36,9 +36,9 @@ export const BaseMapListItem = ({
   onOptionsClick,
   onMapsSelect,
 }: BaseMapsItemProps) => {
-const handleClick = () => {
-  onMapsSelect(id);
-}
+  const handleClick = () => {
+    onMapsSelect(id);
+  };
   return (
     <ListItemWrapper
       id={id}
