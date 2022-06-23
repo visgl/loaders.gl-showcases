@@ -82,3 +82,11 @@ export type LayerExample = {
   token?: string;
   custom?: boolean;
 };
+
+export type BaseMap = {
+  id?: string;
+  name: string;
+  mapUrl: string | null;
+  iconUrl: string;
+  token?: string;
+}; 
