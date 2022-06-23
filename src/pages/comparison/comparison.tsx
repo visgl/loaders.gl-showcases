@@ -24,6 +24,7 @@ import {
   ComparisonMode,
   LayerExample,
   ListItemType,
+  BaseMap,
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 
@@ -262,7 +263,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onMapsSelect = (map) => {
+  const onMapsSelect = (map: BaseMap) => {
     setSelectedMapStyle(map.mapUrl || "Terrain");
   };
 
