@@ -38,6 +38,12 @@ type LayoutProps = {
   layout: string;
 };
 
+type CustomItem = {
+  name: string;
+  url: string;
+  token?: string;
+};
+
 const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
@@ -230,11 +236,7 @@ export const LayersPanel = ({
     baseMap && onMapsSelect(baseMap);
   };
 
-  const handleInsertLayer = (layer: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
+  const handleInsertLayer = (layer: CustomItem) => {
     const id = layer.url.replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
@@ -250,14 +252,15 @@ export const LayersPanel = ({
     setShowInsertPanel(false);
   };
 
-  const handleInsertMap = (map) => {
+  const handleInsertMap = (map: CustomItem) => {
     const id = map.url.replace(/" "/g, "-");
-    const newMap = {
+    const newMap: BaseMap = {
       id,
       mapUrl: map.url,
       name: map.name,
       token: map.token,
       iconUrl: CustomMap,
+      custom: true,
     };
 
     setMaps((prevValues) => {
@@ -272,6 +275,13 @@ export const LayersPanel = ({
     setLayers((prevValues) => {
       handleSelectLayers("");
       return prevValues.filter(({ id: layerId }) => layerId !== id);
+    });
+  };
+
+  const deleteMap = (id: string) => {
+    setMaps((prevValues) => {
+      handleSelectMaps("");
+      return prevValues.filter(({ id: mapId }) => mapId !== id);
     });
   };
 
@@ -312,6 +322,7 @@ export const LayersPanel = ({
             selectedMap={selectedMap}
             onMapsSelect={handleSelectMaps}
             onBaseMapInsert={() => setShowInsertMapPanel(true)}
+            deleteMap={deleteMap}
           />
         )}
       </Content>

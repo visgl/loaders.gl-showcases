@@ -88,7 +88,7 @@ export const ListItemWrapper = forwardRef(
         {hasOptions && (
           <OptionsButton
             id={id}
-            className="layer-settings"
+            className="settings"
             onClick={() => onOptionsClick(id)}
           >
             <OptionsIcon />

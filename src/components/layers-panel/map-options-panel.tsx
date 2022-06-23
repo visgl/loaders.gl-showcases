@@ -1,17 +1,19 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item";
 import { PlusButton } from "../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
-import { LayerSettingsMenu } from "./layer-settings-menu";
+import { SettingsMenu } from "./settings-menu";
 import { color_accent_primary } from "../../constants/colors";
 import DeleteIcon from "../../../public/icons/delete.svg?svgr";
+import { DeleteConfirmation } from "./delete-confirmation";
 
 type MapOptionPanelProps = {
   baseMaps: any[];
   selectedMap: string;
   onMapsSelect: (id: string) => void;
   onBaseMapInsert: () => void;
+  deleteMap: (id: string) => void;
 };
 
 const MapOptionTitle = styled.div`
@@ -30,6 +32,7 @@ const MapOptionsContainer = styled.div`
   flex-direction: column;
   width: 100%;
   overflow: auto;
+  position: relative;
 `;
 
 const MapList = styled.div`
@@ -51,7 +54,7 @@ const InsertButtons = styled.div`
   }
 `;
 
-const LayerSettingsItem = styled.div<{
+const MapSettingsItem = styled.div<{
   customColor?: string;
   opacity?: number;
 }>`
@@ -68,7 +71,7 @@ const LayerSettingsItem = styled.div<{
   cursor: pointer;
 `;
 
-const LayerSettingsIcon = styled.div`
+const MapSettingsIcon = styled.div`
   width: 20px;
   height: 20px;
   display: flex;
@@ -80,15 +83,17 @@ export const MapOptionPanel = ({
   selectedMap,
   onMapsSelect,
   onBaseMapInsert,
+  deleteMap,
 }: MapOptionPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsMapId, setSettingsMapId] = useState<string>("");
   const [showMapSettings, setShowMapSettings] = useState<boolean>(false);
+  const [mapToDeleteId, setMapToDeleteId] = useState<string>("");
 
   const addRefNode = useCallback(
-    (node: HTMLDivElement | null, layerId: string) => {
+    (node: HTMLDivElement | null, mapId: string) => {
       if (node !== null) {
-        settingsForItemRef.current.set(layerId, node);
+        settingsForItemRef.current.set(mapId, node);
       }
     },
     []
@@ -99,23 +104,24 @@ export const MapOptionPanel = ({
       return null;
     }
     return (
-      <LayerSettingsMenu
+      <SettingsMenu
         onCloseHandler={() => setShowMapSettings(false)}
         forElementNode={settingsForItemRef.current.get(settingsMapId)}
       >
-        <LayerSettingsItem
+        <MapSettingsItem
           customColor={color_accent_primary}
           opacity={0.8}
           onClick={() => {
+            setMapToDeleteId(settingsMapId);
             setShowMapSettings(false);
           }}
         >
-          <LayerSettingsIcon>
+          <MapSettingsIcon>
             <DeleteIcon fill={color_accent_primary} />
-          </LayerSettingsIcon>
-          Delete layer
-        </LayerSettingsItem>
-      </LayerSettingsMenu>
+          </MapSettingsIcon>
+          Delete map
+        </MapSettingsItem>
+      </SettingsMenu>
     );
   };
   return (
@@ -124,21 +130,35 @@ export const MapOptionPanel = ({
       <MapList>
         {baseMaps.map((baseMap) => {
           const isMapSelected = selectedMap === baseMap.id;
+          const isCustomMap = baseMap.custom || false;
           return (
-            <BaseMapListItem
-              ref={(node) => addRefNode(node, baseMap.id)}
-              key={baseMap.id}
-              id={baseMap.id}
-              title={baseMap.name}
-              iconUrl={baseMap.iconUrl}
-              selected={isMapSelected}
-              hasOptions={true}
-              onOptionsClick={() => {
-                setShowMapSettings(true);
-                setSettingsMapId(baseMap.id);
-              }}
-              onMapsSelect={onMapsSelect}
-            />
+            <Fragment key={baseMap.id}>
+              <BaseMapListItem
+                ref={(node) => addRefNode(node, baseMap.id)}
+                key={baseMap.id}
+                id={baseMap.id}
+                title={baseMap.name}
+                iconUrl={baseMap.iconUrl}
+                selected={isMapSelected}
+                hasOptions={isCustomMap}
+                onOptionsClick={() => {
+                  setShowMapSettings(true);
+                  setSettingsMapId(baseMap.id);
+                }}
+                onMapsSelect={onMapsSelect}
+              />
+              {mapToDeleteId === baseMap.id && (
+                <DeleteConfirmation
+                  onKeepHandler={() => setMapToDeleteId("")}
+                  onDeleteHandler={() => {
+                    deleteMap(settingsMapId);
+                    setMapToDeleteId("");
+                  }}
+                >
+                  Delete map?
+                </DeleteConfirmation>
+              )}
+            </Fragment>
           );
         })}
       </MapList>

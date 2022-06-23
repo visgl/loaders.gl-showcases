@@ -1,6 +1,9 @@
 import { ReactEventHandler, ReactNode } from "react";
 import styled, { DefaultTheme, useTheme } from "styled-components";
-import { color_accent_primary } from "../../constants/colors";
+import {
+  color_accent_primary,
+  color_accent_secondary,
+} from "../../constants/colors";
 
 const Container = styled.div<{ theme: DefaultTheme }>`
   font-style: normal;
@@ -39,7 +42,10 @@ export const DeleteConfirmation = ({
     <Container theme={theme}>
       {children}
       <ConfirmationButtons>
-        <ConfirmationButton onClick={onKeepHandler}>
+        <ConfirmationButton
+          onClick={onKeepHandler}
+          color={color_accent_secondary}
+        >
           No, keep
         </ConfirmationButton>
         <ConfirmationButton
