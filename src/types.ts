@@ -94,3 +94,10 @@ export type Sublayer = BuildingSceneSublayer & {
   childNodesCount: number;
   sublayers: Sublayer[];
 };
+export type BaseMap = {
+  id?: string;
+  name: string;
+  mapUrl: string | null;
+  iconUrl: string;
+  token?: string;
+};

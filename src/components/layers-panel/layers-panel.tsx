@@ -1,7 +1,13 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 import { EXAMPLES } from "../../constants/i3s-examples";
-import { LayerExample, ListItemType, Sublayer, Theme } from "../../types";
+import {
+  LayerExample,
+  ListItemType,
+  Sublayer,
+  Theme,
+  BaseMap,
+} from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { CloseButton } from "../close-button/close-button";
@@ -13,6 +19,7 @@ import { MapOptionPanel } from "./map-options-panel";
 import DarkMap from "../../../public/icons/dark-map.png";
 import LightMap from "../../../public/icons/light-map.png";
 import TerrainMap from "../../../public/icons/terrain-map.png";
+import CustomMap from "../../../public/icons/custom-map.svg";
 
 enum Tabs {
   Layers,
@@ -27,7 +34,7 @@ export enum ButtonSize {
 type LayersPanelProps = {
   id: string;
   type: ListItemType;
-  onMapsSelect: (maps) => void;
+  onMapsSelect: (map: BaseMap) => void;
   sublayers: Sublayer[];
   onUpdateSublayerVisibility: (Sublayer) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
@@ -131,7 +138,7 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const BASE_MAPS = [
+const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
     name: "Dark",
@@ -160,7 +167,7 @@ export const LayersPanel = ({
   onClose,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [maps] = useState(BASE_MAPS);
+  const [maps, setMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [layers, setLayers] = useState<LayerExample[]>(() =>
     getLayerExamples()
   );
@@ -168,6 +175,7 @@ export const LayersPanel = ({
   const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
+  const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
 
   const handleSelectLayers = (id: string, examples?: LayerExample[]): void => {
@@ -196,9 +204,10 @@ export const LayersPanel = ({
     );
   };
 
-  const handleSelectMaps = (id: string): void => {
+  const handleSelectMaps = (id: string, baseMaps?: BaseMap[]): void => {
     setSelectedMap(id);
-    onMapsSelect(maps.find((map) => map.id === id));
+    const baseMap = (baseMaps || maps).find((map) => map.id === id);
+    baseMap && onMapsSelect(baseMap);
   };
 
   const handleInsertLayer = (layer: {
@@ -219,6 +228,24 @@ export const LayersPanel = ({
       return newLayers;
     });
     setShowInsertPanel(false);
+  };
+
+  const handleInsertMap = (map) => {
+    const id = map.url.replace(/" "/g, "-");
+    const newMap = {
+      id,
+      mapUrl: map.url,
+      name: map.name,
+      token: map.token,
+      iconUrl: CustomMap,
+    };
+
+    setMaps((prevValues) => {
+      const newMaps = [...prevValues, newMap];
+      handleSelectMaps(id, newMaps);
+      return newMaps;
+    });
+    setShowInsertMapPanel(false);
   };
 
   const deleteLayer = (id: string) => {
@@ -273,9 +300,7 @@ export const LayersPanel = ({
                 onMapOptionsClick={function (): void {
                   throw new Error("Function not implemented.");
                 }}
-                onBaseMapInsert={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
+                onBaseMapInsert={() => setShowInsertMapPanel(true)}
               />
             )}
           </Content>
@@ -298,6 +323,16 @@ export const LayersPanel = ({
           onBackClick={() => setShowLayerSettings(false)}
           onCloseClick={onClose}
         />
+      )}
+
+      {showInsertMapPanel && (
+        <InsertPanelWrapper>
+          <InsertPanel
+            title={"Insert Base Map"}
+            onInsert={(map) => handleInsertMap(map)}
+            onCancel={() => setShowInsertMapPanel(false)}
+          />
+        </InsertPanelWrapper>
       )}
     </Container>
   );

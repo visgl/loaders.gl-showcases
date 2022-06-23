@@ -30,6 +30,7 @@ import {
   LayerExample,
   ListItemType,
   Sublayer,
+  BaseMap,
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
@@ -220,8 +221,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const TERRAIN_LAYER_MAX_ZOOM = 15;
 
   useEffect(() => {
-    setActiveRightPanel(ActiveButton.none);
-    setActiveLeftPanel(ActiveButton.none);
+    if (mode === ComparisonMode.acrossLayers) {
+      setActiveRightPanel(ActiveButton.options);
+    } else {
+      setActiveRightPanel(ActiveButton.none);
+    }
+    setActiveLeftPanel(ActiveButton.options);
     setLayerLeftSide(null);
     setLayerRightSide(null);
   }, [mode]);
@@ -268,7 +273,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onMapsSelect = (map) => {
+  const onMapsSelect = (map: BaseMap) => {
     setSelectedMapStyle(map.mapUrl || "Terrain");
   };
 
