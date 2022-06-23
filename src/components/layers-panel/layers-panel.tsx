@@ -290,9 +290,6 @@ export const LayersPanel = ({
             baseMaps={maps}
             selectedMap={selectedMap}
             onMapsSelect={handleSelectMaps}
-            onMapOptionsClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
             onBaseMapInsert={function (): void {
               throw new Error("Function not implemented.");
             }}

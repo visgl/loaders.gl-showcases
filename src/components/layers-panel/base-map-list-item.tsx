@@ -1,3 +1,4 @@
+import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { ListItemWrapper } from "./list-item-wrapper";
 
@@ -27,28 +28,32 @@ const MapIcon = styled.div<{ url: string }>`
   border-radius: 8px;
 `;
 
-export const BaseMapListItem = ({
-  id,
-  title,
-  hasOptions,
-  iconUrl,
-  selected,
-  onOptionsClick,
-  onMapsSelect,
-}: BaseMapsItemProps) => {
-  const handleClick = () => {
-    onMapsSelect(id);
-  };
-  return (
-    <ListItemWrapper
-      id={id}
-      selected={selected}
-      hasOptions={hasOptions}
-      onClick={handleClick}
-      onOptionsClick={onOptionsClick}
-    >
-      <MapIcon url={iconUrl} />
-      <Title>{title}</Title>
-    </ListItemWrapper>
-  );
-};
+export const BaseMapListItem = forwardRef(
+  (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
+    const {
+      id,
+      title,
+      hasOptions,
+      iconUrl,
+      selected,
+      onOptionsClick,
+      onMapsSelect,
+    } = props;
+    const handleClick = () => {
+      onMapsSelect(id);
+    };
+    return (
+      <ListItemWrapper
+        ref={ref}
+        id={id}
+        selected={selected}
+        hasOptions={hasOptions}
+        onClick={handleClick}
+        onOptionsClick={onOptionsClick}
+      >
+        <MapIcon url={iconUrl} />
+        <Title>{title}</Title>
+      </ListItemWrapper>
+    );
+  }
+);

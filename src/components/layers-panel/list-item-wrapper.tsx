@@ -4,7 +4,7 @@ import { color_brand_quaternary } from "../../constants/colors";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
-  ref?: ForwardedRef<HTMLDivElement>;
+  ref: ForwardedRef<HTMLDivElement>;
   id: string;
   selected: boolean;
   hasOptions: boolean;
