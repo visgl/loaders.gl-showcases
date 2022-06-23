@@ -22,7 +22,7 @@ const Title = styled.div`
 `;
 
 const MapIcon = styled.div<{ url: string }>`
-  background-image: url(${(props) => props.url});
+  background: url(${(props) => props.url}) no-repeat center #232430;
   width: 40px;
   height: 40px;
   border-radius: 8px;
