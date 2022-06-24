@@ -39,6 +39,7 @@ type LayersPanelProps = {
   onUpdateSublayerVisibility: (Sublayer) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
+  onPointToLayer: () => void;
 };
 
 type TabProps = {
@@ -165,6 +166,7 @@ export const LayersPanel = ({
   onUpdateSublayerVisibility,
   onMapsSelect,
   onClose,
+  onPointToLayer,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [maps, setMaps] = useState<BaseMap[]>(BASE_MAPS);
@@ -289,6 +291,7 @@ export const LayersPanel = ({
                 onLayersSelect={handleSelectLayers}
                 onLayerInsertClick={() => setShowInsertPanel(true)}
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
+                onPointToLayer={onPointToLayer}
                 deleteLayer={deleteLayer}
               />
             )}

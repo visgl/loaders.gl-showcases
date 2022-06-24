@@ -27,6 +27,7 @@ type LayersControlPanelProps = {
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
+  onPointToLayer: () => void;
   deleteLayer: (id: string) => void;
 };
 
@@ -95,6 +96,7 @@ export const LayersControlPanel = ({
   onLayersSelect,
   onLayerInsertClick,
   onLayerSettingsClick,
+  onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -122,12 +124,19 @@ export const LayersControlPanel = ({
         onCloseHandler={() => setShowLayerSettings(false)}
         forElementNode={settingsForItemRef.current.get(settingsLayerId)}
       >
-        <LayerSettingsItem>
-          <LayerSettingsIcon>
-            <LocationIcon fill={theme.colors.fontColor} />
-          </LayerSettingsIcon>
-          Point to layer
-        </LayerSettingsItem>
+        {selectedLayerIds.includes(settingsLayerId) && (
+          <LayerSettingsItem
+            onClick={() => {
+              setShowLayerSettings(false);
+              onPointToLayer();
+            }}
+          >
+            <LayerSettingsIcon>
+              <LocationIcon fill={theme.colors.fontColor} />
+            </LayerSettingsIcon>
+            Point to layer
+          </LayerSettingsItem>
+        )}
         {hasSettings && (
           <LayerSettingsItem onClick={onLayerSettingsClick}>
             <LayerSettingsIcon>
