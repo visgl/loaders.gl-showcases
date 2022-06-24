@@ -70,12 +70,12 @@ export const ThemeToggler = ({
       id="toggle-button-default"
       onClick={() => toggleTheme()}
     >
-      <Button active={theme === Theme.Dark}>
+      <Button active={theme === Theme.Dark} id="toggle-dark-default">
         <IconWrapper active={theme === Theme.Dark}>
           <DarkModeIcon />
         </IconWrapper>
       </Button>
-      <Button active={theme === Theme.Light}>
+      <Button active={theme === Theme.Light} id="toggle-light-default">
         <IconWrapper active={theme === Theme.Light}>
           <LightModeIcon />
         </IconWrapper>
