@@ -27,6 +27,7 @@ import {
   BaseMap,
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
+import { ComparisonParamsPanel } from "../../components/comparison-params-panel/comparison-params-panel";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -134,7 +135,7 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
-const LeftLayersPanelWrapper = styled.div<LayoutProps>`
+const LeftPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
@@ -154,7 +155,7 @@ const LeftLayersPanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
-const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
+const RightPanelWrapper = styled(LeftPanelWrapper)`
   left: auto;
   top: auto;
 
@@ -462,7 +463,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           />
         </LeftSideToolsPanelWrapper>
         {activeLeftPanel === ActiveButton.options && (
-          <LeftLayersPanelWrapper layout={layout}>
+          <LeftPanelWrapper layout={layout}>
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
@@ -477,7 +478,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
             />
-          </LeftLayersPanelWrapper>
+          </LeftPanelWrapper>
+        )}
+        {activeLeftPanel === ActiveButton.settings && (
+          <LeftPanelWrapper layout={layout}>
+            <ComparisonParamsPanel
+              id="left-comparison-params-panel"
+              onClose={() =>
+                handleChangeLeftPanelVisibility(ActiveButton.settings)
+              }
+            />
+          </LeftPanelWrapper>
         )}
       </DeckWrapper>
 
@@ -508,7 +519,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           />
         </RightSideToolsPanelWrapper>
         {activeRightPanel === ActiveButton.options && (
-          <RightLayersPanelWrapper layout={layout}>
+          <RightPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
               onMapsSelect={onMapsSelect}
@@ -520,7 +531,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }
             />
-          </RightLayersPanelWrapper>
+          </RightPanelWrapper>
+        )}
+        {activeRightPanel === ActiveButton.settings && (
+          <RightPanelWrapper layout={layout}>
+            <ComparisonParamsPanel
+              id="right-comparison-params-panel"
+              onClose={() =>
+                handleChangeRightPanelVisibility(ActiveButton.settings)
+              }
+            />
+          </RightPanelWrapper>
         )}
       </DeckWrapper>
     </Container>
