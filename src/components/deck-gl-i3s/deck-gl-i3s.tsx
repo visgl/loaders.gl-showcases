@@ -93,50 +93,56 @@ const colorMap = new ColorMap();
 
 type DeckGlI3sProps = {
   /** Minimap visibility */
-  showMinimap: boolean;
+  showMinimap?: boolean;
   /** If should create independent viewport for minimap */
-  createIndependentMinimapViewport: boolean;
+  createIndependentMinimapViewport?: boolean;
   /** Terrain visibility */
   showTerrain: boolean;
   /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
   mapStyle: string;
   /** Color mode for tiles */
-  tileColorMode: number;
+  tileColorMode?: number;
   /** User selected tiles colors */
-  coloredTilesMap: { [key: string]: string };
+  coloredTilesMap?: { [key: string]: string };
   /** Bounding volume type: OBB of MBS. Set to "" to hide bounding volumes visualisation */
-  boundingVolumeType: string;
+  boundingVolumeType?: string;
   /** Bounding volume color mode */
   boundingVolumeColorMode?: number;
   /** Allows layers picking to handle mouse events */
   pickable: boolean;
   /** Show wireframe representation of layers */
-  wireframe: boolean;
+  wireframe?: boolean;
   /** Layers loading data  */
   i3sLayers: { id?: string; url: string; token?: string | null }[];
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
-  loadDebugTextureImage: boolean;
+  loadDebugTextureImage?: boolean;
   /** Replace original texture with debug texture */
-  showDebugTexture: boolean;
+  showDebugTexture?: boolean;
   /** If `true` tileset will make traversal and load/unload tiles.
    * If `false` - the traversal is stopped, tiles are `frosen`, map doesn't react on viewState change */
-  loadTiles: boolean;
+  loadTiles?: boolean;
   /** If `true` picking will select I3S features
    * If `false` picking will select the whole tile
    */
-  featurePicking: boolean;
+  featurePicking?: boolean;
   /** Data for normals visualization */
-  normalsDebugData: NormalsDebugData | null;
+  normalsDebugData?: NormalsDebugData | null;
   /** Percentage of triangles to show normals for */
-  normalsTrianglesPercentage: number;
+  normalsTrianglesPercentage?: number;
   /** Normals lenght in meters */
-  normalsLength: number;
+  normalsLength?: number;
   /** http://<root-url>/SceneServer json */
   metadata: SceneLayer3D[] | null;
+  /** Basepath of the tileset of the selected tile */
+  selectedTilesetBasePath?: string | null;
   /** Tile, selected by picking event */
-  selectedTile: Tile3D | null;
+  selectedTile?: Tile3D | null;
+  /** Index of picked object */
+  selectedIndex?: number;
+  /** Deckgl flag to highlight picked objects automaticaly */
+  autoHighlight?: boolean;
   /** List of initialized tilesets */
   loadedTilesets: Tileset3D[];
   /** DeckGL after render callback */
@@ -171,10 +177,13 @@ export const DeckGlI3s = ({
   loadTiles = true,
   featurePicking = true,
   normalsDebugData,
-  normalsTrianglesPercentage,
-  normalsLength,
+  normalsTrianglesPercentage = 100,
+  normalsLength = 1,
   metadata,
+  selectedTilesetBasePath,
   selectedTile,
+  selectedIndex,
+  autoHighlight = false,
   loadedTilesets,
   onAfterRender,
   getTooltip,
@@ -502,17 +511,43 @@ export const DeckGlI3s = ({
     });
   };
 
-  const renderLayers = () => {
-    const loadOptions: {
-      i3s: {
-        coordinateSystem: number;
-        token?: string;
-      };
-    } = {
-      i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
-    };
+  const renderNormals = () => {
+    if (!normalsDebugData) {
+      return;
+    }
+    return new LineLayer({
+      id: "normals-debug",
+      data: normalsDebugData,
+      getSourcePosition: (_, { index, data }) =>
+        getNormalSourcePosition(index, data, normalsTrianglesPercentage),
+      getTargetPosition: (_, { index, data }) =>
+        getNormalTargetPosition(
+          index,
+          data,
+          normalsTrianglesPercentage,
+          normalsLength
+        ),
+      getColor: () => NORMALS_COLOR,
+      modelMatrix: normalsDebugData?.cartographicModelMatrix,
+      coordinateOrigin: normalsDebugData?.cartographicOrigin,
+      coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
+      getWidth: 1,
+    });
+  };
 
+  const renderLayers = () => {
     const tile3dLayers = i3sLayers.map((layer) => {
+      const loadOptions: {
+        i3s: {
+          coordinateSystem: number;
+          token?: string;
+        };
+      } = {
+        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+      };
+      if (layer.token) {
+        loadOptions.i3s.token = layer.token;
+      }
       return new Tile3DLayer({
         id: `tile-layer-${layer.id}`,
         data: layer.url,
@@ -520,15 +555,20 @@ export const DeckGlI3s = ({
         onTilesetLoad: onTilesetLoadHandler,
         onTileLoad: onTileLoadHandler,
         onTileUnload,
-        loadOptions: { ...loadOptions, token: layer.token },
+        loadOptions,
         pickable,
-        autoHighlight: true,
+        autoHighlight,
         _subLayerProps: {
           mesh: {
             wireframe,
           },
         },
         _getMeshColor: getMeshColor,
+        highlightedObjectIndex: autoHighlight
+          ? undefined
+          : layer.url === selectedTilesetBasePath
+          ? selectedIndex
+          : -1,
       });
     });
 
@@ -549,24 +589,7 @@ export const DeckGlI3s = ({
       ...tile3dLayers,
       renderFrustum(),
       renderBoundingVolumeLayer(),
-      new LineLayer({
-        id: "normals-debug",
-        data: normalsDebugData,
-        getSourcePosition: (_, { index, data }) =>
-          getNormalSourcePosition(index, data, normalsTrianglesPercentage),
-        getTargetPosition: (_, { index, data }) =>
-          getNormalTargetPosition(
-            index,
-            data,
-            normalsTrianglesPercentage,
-            normalsLength
-          ),
-        getColor: () => NORMALS_COLOR,
-        modelMatrix: normalsDebugData?.cartographicModelMatrix,
-        coordinateOrigin: normalsDebugData?.cartographicOrigin,
-        coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
-        getWidth: 1,
-      }),
+      renderNormals(),
       renderMainOnMinimap(),
     ];
   };

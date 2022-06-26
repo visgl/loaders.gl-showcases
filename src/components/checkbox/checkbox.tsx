@@ -58,7 +58,7 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
 
 export const Checkbox = ({ id, checked, onChange, ...rest }: CheckboxProps) => (
   <CheckboxContainer>
-    <HiddenCheckbox checked={checked} onChange={onChange} {...rest} />
+    <HiddenCheckbox id={id} checked={checked} onChange={onChange} {...rest} />
     <StyledCheckbox checked={checked}>
       <Icon id={`${id}-icon`} viewBox="0 0 24 24">
         <polyline points="20 6 9 17 4 12" />

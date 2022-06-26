@@ -1,5 +1,5 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type { NormalsDebugData, TileWarning } from "../../types";
+import type { LayerExample, NormalsDebugData, TileWarning } from "../../types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
@@ -176,11 +176,12 @@ export const DebugApp = () => {
   const [tilesetStatsWidget, setTilesetStatsWidget] =
     useState<StatsWidget | null>(null);
 
-  const initMainTileset = () => {
+  const initMainTileset = (): LayerExample => {
     const tilesetParam = parseTilesetFromUrl();
 
     if (tilesetParam?.startsWith("http")) {
       return {
+        id: tilesetParam,
         name: CUSTOM_EXAMPLE_VALUE,
         url: tilesetParam,
       };
@@ -501,6 +502,8 @@ export const DebugApp = () => {
   const handleShowNormals = (tile) => {
     if (normalsDebugData === null) {
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    } else {
+      setNormalsDebugData(null);
     }
   };
 
@@ -547,7 +550,7 @@ export const DebugApp = () => {
         <TileMetadata tile={selectedTile}></TileMetadata>
         <TileValidator
           tile={selectedTile}
-          showNormals={Boolean(normalsDebugData?.length)}
+          showNormals={Boolean(normalsDebugData)}
           trianglesPercentage={trianglesPercentage}
           normalsLength={normalsLength}
           handleShowNormals={handleShowNormals}
@@ -647,6 +650,7 @@ export const DebugApp = () => {
         normalsLength={normalsLength}
         metadata={metadata}
         selectedTile={selectedTile}
+        autoHighlight
         loadedTilesets={loadedTilesets}
         onAfterRender={() => updateStatWidgets()}
         getTooltip={getTooltip}
