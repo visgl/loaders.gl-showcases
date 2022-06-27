@@ -135,7 +135,6 @@ export const MapOptionPanel = ({
             <Fragment key={baseMap.id}>
               <BaseMapListItem
                 ref={(node) => addRefNode(node, baseMap.id)}
-                key={baseMap.id}
                 id={baseMap.id}
                 title={baseMap.name}
                 iconUrl={baseMap.iconUrl}

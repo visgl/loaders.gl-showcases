@@ -280,7 +280,7 @@ export const LayersPanel = ({
 
   const deleteMap = (id: string) => {
     setMaps((prevValues) => {
-      handleSelectMaps("");
+      handleSelectMaps("Dark");
       return prevValues.filter(({ id: mapId }) => mapId !== id);
     });
   };

@@ -1,9 +1,6 @@
 import { ReactEventHandler, ReactNode } from "react";
 import styled, { DefaultTheme, useTheme } from "styled-components";
-import {
-  color_accent_primary,
-  color_accent_secondary,
-} from "../../constants/colors";
+import { color_accent_primary } from "../../constants/colors";
 
 const Container = styled.div<{ theme: DefaultTheme }>`
   font-style: normal;
@@ -23,8 +20,8 @@ const ConfirmationButtons = styled.div`
   gap: 16px;
 `;
 
-const ConfirmationButton = styled.div<{ color?: string }>`
-  color: ${({ color }) => color || "inherit"};
+const ConfirmationButton = styled.div<{ color?: string; theme?: DefaultTheme }>`
+  color: ${({ color, theme }) => color || theme.colors.accentColor};
   cursor: pointer;
 `;
 
@@ -43,8 +40,8 @@ export const DeleteConfirmation = ({
       {children}
       <ConfirmationButtons>
         <ConfirmationButton
+          theme={theme}
           onClick={onKeepHandler}
-          color={color_accent_secondary}
         >
           No, keep
         </ConfirmationButton>
