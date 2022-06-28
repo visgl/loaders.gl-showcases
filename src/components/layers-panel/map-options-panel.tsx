@@ -5,7 +5,7 @@ import { ButtonSize } from "./layers-panel";
 
 type MapOptionPanelProps = {
   baseMaps: any[];
-  selectedMap: string;
+  selectedBaseMapId: string;
   onMapsSelect: (id: string) => void;
   onMapOptionsClick: (id: string) => void;
   onBaseMapInsert: () => void;
@@ -50,7 +50,7 @@ const InsertButtons = styled.div`
 
 export const MapOptionPanel = ({
   baseMaps,
-  selectedMap,
+  selectedBaseMapId,
   onMapsSelect,
   onMapOptionsClick,
   onBaseMapInsert,
@@ -60,7 +60,7 @@ export const MapOptionPanel = ({
       <MapOptionTitle>Base Map</MapOptionTitle>
       <MapList>
         {baseMaps.map((baseMap) => {
-          const isMapSelected = selectedMap === baseMap.id;
+          const isMapSelected = selectedBaseMapId === baseMap.id;
           return (
             <BaseMapListItem
               key={baseMap.id}

@@ -6,9 +6,7 @@ import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { InsertPanel } from "../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import DarkMap from "../../../public/icons/dark-map.png";
-import LightMap from "../../../public/icons/light-map.png";
-import TerrainMap from "../../../public/icons/terrain-map.png";
+
 import CustomMap from "../../../public/icons/custom-map.svg";
 
 enum Tabs {
@@ -26,6 +24,11 @@ type LayersPanelProps = {
   layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
+  baseMaps: BaseMap[];
+  selectedBaseMapId: string;
+  onBaseMapInsert: (baseMap: BaseMap) => void;
+  onBaseMapSelect: (id: string) => void;
+  onBaseMapDelete: (id: string) => void;
   onMapsSelect: (map: BaseMap) => void;
   onLayerSelect: (id: string) => void;
   onLayerInsert: (layer: LayerExample) => void;
@@ -165,24 +168,6 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
-const BASE_MAPS: BaseMap[] = [
-  {
-    id: "Dark",
-    name: "Dark",
-    iconUrl: DarkMap,
-    mapUrl:
-      "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-  },
-  {
-    id: "Light",
-    name: "Light",
-    iconUrl: LightMap,
-    mapUrl:
-      "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-  },
-  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
-];
-
 export const LayersPanel = ({
   id,
   type,
@@ -191,23 +176,18 @@ export const LayersPanel = ({
   onLayerInsert,
   onLayerSelect,
   onLayerDelete,
-  onMapsSelect,
+  baseMaps,
+  selectedBaseMapId,
+  onBaseMapInsert,
+  onBaseMapSelect,
   onClose,
   onPointToLayer,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
-  const [maps, setMaps] = useState<BaseMap[]>(BASE_MAPS);
 
-  const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
-
-  const handleSelectMaps = (id: string, baseMaps?: BaseMap[]): void => {
-    setSelectedMap(id);
-    const baseMap = (baseMaps || maps).find((map) => map.id === id);
-    baseMap && onMapsSelect(baseMap);
-  };
 
   const handleInsertLayer = (layer: {
     name: string;
@@ -235,11 +215,7 @@ export const LayersPanel = ({
       iconUrl: CustomMap,
     };
 
-    setMaps((prevValues) => {
-      const newMaps = [...prevValues, newMap];
-      handleSelectMaps(id, newMaps);
-      return newMaps;
-    });
+    onBaseMapInsert(newMap);
     setShowInsertMapPanel(false);
   };
 
@@ -277,9 +253,9 @@ export const LayersPanel = ({
         )}
         {tab === Tabs.MapOptions && (
           <MapOptionPanel
-            baseMaps={maps}
-            selectedMap={selectedMap}
-            onMapsSelect={handleSelectMaps}
+            baseMaps={baseMaps}
+            selectedBaseMapId={selectedBaseMapId}
+            onMapsSelect={onBaseMapSelect}
             onMapOptionsClick={function (): void {
               throw new Error("Function not implemented.");
             }}

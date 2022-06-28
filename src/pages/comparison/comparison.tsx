@@ -16,7 +16,7 @@ import { StaticMap } from "react-map-gl";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile, parseTilesetUrlParams } from "../../utils";
-import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { BASE_MAPS, INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import {
@@ -195,9 +195,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [rightSideSelectedExampleId, setRightSideSelectedExampleId] =
     useState<string>("");
 
+  const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
+  const [selectedBaseMapId, setSelectedBaseMapId] = useState<string>("Dark");
+
+  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
+
   const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
+
   const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
@@ -544,6 +549,23 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
+  const handleInsertBaseMap = (baseMap: BaseMap) => {
+    setBaseMaps((prevValues) => [...prevValues, baseMap]);
+    setSelectedBaseMapId(baseMap.id);
+  };
+
+  const handleSelectBaseMap = (baseMapId: string) => {
+    setSelectedBaseMapId(baseMapId);
+
+    const selectedBaseMap = baseMaps.find(
+      (baseMap) => baseMap.id === baseMapId
+    );
+
+    if (selectedBaseMap) {
+      setSelectedMapStyle(selectedBaseMap.mapUrl || "Terrain");
+    }
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -587,6 +609,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
+              baseMaps={baseMaps}
+              selectedBaseMapId={selectedBaseMapId}
+              onBaseMapInsert={handleInsertBaseMap}
+              onBaseMapSelect={handleSelectBaseMap}
+              onBaseMapDelete={function (): void {
+                throw new Error("Function not implemented.");
+              }}
             />
           </LeftLayersPanelWrapper>
         )}
@@ -635,6 +664,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }
+              baseMaps={baseMaps}
+              selectedBaseMapId={selectedBaseMapId}
+              onBaseMapInsert={handleInsertBaseMap}
+              onBaseMapSelect={handleSelectBaseMap}
+              onBaseMapDelete={function (): void {
+                throw new Error("Function not implemented.");
+              }}
             />
           </RightLayersPanelWrapper>
         )}

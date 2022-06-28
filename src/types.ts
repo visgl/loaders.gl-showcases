@@ -84,7 +84,7 @@ export type LayerExample = {
 };
 
 export type BaseMap = {
-  id?: string;
+  id: string;
   name: string;
   mapUrl: string | null;
   iconUrl: string;

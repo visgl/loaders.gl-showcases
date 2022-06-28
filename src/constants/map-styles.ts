@@ -1,4 +1,9 @@
+import { BaseMap } from "../types";
 import { COLORED_BY } from "../utils";
+
+import DarkMap from "../../public/icons/dark-map.png";
+import LightMap from "../../public/icons/light-map.png";
+import TerrainMap from "../../public/icons/terrain-map.png";
 
 export const MAP_STYLES = {
   Light:
@@ -51,3 +56,20 @@ export const BOUNDING_VOLUME_MESH_TYPE = {
 };
 
 export const INITIAL_BOUNDING_VOLUME_TYPE = BOUNDING_VOLUME_TYPE.MBS;
+
+
+export const BASE_MAPS: BaseMap[] = [
+  {
+    id: "Dark",
+    name: "Dark",
+    iconUrl: DarkMap,
+    mapUrl: MAP_STYLES.Dark,
+  },
+  {
+    id: "Light",
+    name: "Light",
+    iconUrl: LightMap,
+    mapUrl: MAP_STYLES.Light
+  },
+  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
+];
