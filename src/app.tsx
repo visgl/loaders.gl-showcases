@@ -12,6 +12,8 @@ import {
   dim_canvas_secondary,
   hilite_canvas_primary,
   hilite_canvas_secondary,
+  color_accent_secondary,
+  color_accent_tertiary
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -50,6 +52,7 @@ const THEMES: AppThemes = {
       mainHiglightColorInverted: hilite_canvas_secondary,
       mainDimColor: dim_canvas_primary,
       mainDimColorInverted: dim_canvas_secondary,
+      accentColor: color_accent_secondary,
       iconInactiveColor: hilite_canvas_secondary,
     },
     name: Theme.Dark,
@@ -64,6 +67,7 @@ const THEMES: AppThemes = {
       mainHiglightColorInverted: hilite_canvas_primary,
       mainDimColor: dim_canvas_secondary,
       mainDimColorInverted: dim_canvas_primary,
+      accentColor: color_accent_tertiary,
       iconInactiveColor: dim_canvas_primary,
     },
     name: Theme.Light,

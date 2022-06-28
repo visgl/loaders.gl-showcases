@@ -90,7 +90,8 @@ export type BaseMap = {
   mapUrl: string | null;
   iconUrl: string;
   token?: string;
-};
+  custom?: boolean;
+}; 
 
 export type NormalsDebugData = {
   src: {
