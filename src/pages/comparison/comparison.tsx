@@ -26,8 +26,8 @@ import {
   ListItemType,
   BaseMap,
 } from "../../types";
-import { LayersPanel } from "../../components/layers-panel/layers-panel";
-import { ComparisonParamsPanel } from "../../components/comparison-params-panel/comparison-params-panel";
+import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
+import { ComparisonParamsPanel } from "../../components/comparison/comparison-params-panel/comparison-params-panel";
 
 const TRANSITION_DURAITON = 4000;
 

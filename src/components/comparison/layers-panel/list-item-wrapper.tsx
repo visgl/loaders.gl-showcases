@@ -1,6 +1,6 @@
 import { ForwardedRef, forwardRef } from "react";
 import styled, { css } from "styled-components";
-import { color_brand_quaternary } from "../../constants/colors";
+import { color_brand_quaternary } from "../../../constants/colors";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;

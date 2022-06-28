@@ -1,16 +1,17 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { EXAMPLES } from "../../constants/i3s-examples";
-import { LayerExample, ListItemType, Theme, BaseMap } from "../../types";
+import { EXAMPLES } from "../../../constants/i3s-examples";
+import { LayerExample, ListItemType, BaseMap } from "../../../types";
 
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { InsertPanel } from "../insert-panel/insert-panel";
+import { useAppLayout } from "../../../utils/layout";
+import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import DarkMap from "../../../public/icons/dark-map.png";
-import LightMap from "../../../public/icons/light-map.png";
-import TerrainMap from "../../../public/icons/terrain-map.png";
-import CustomMap from "../../../public/icons/custom-map.svg";
+import DarkMap from "../../../../public/icons/dark-map.png";
+import LightMap from "../../../../public/icons/light-map.png";
+import TerrainMap from "../../../../public/icons/terrain-map.png";
+import CustomMap from "../../../../public/icons/custom-map.svg";
+import { Container, PanelHeader, CloseButton, HorizontalLine, Panels } from "../common";
 
 enum Tabs {
   Layers,
@@ -33,38 +34,6 @@ type LayersPanelProps = {
 type TabProps = {
   active: boolean;
 };
-
-type LayoutProps = {
-  layout: string;
-};
-
-const Container = styled.div<LayoutProps>`
-  display: flex;
-  flex-direction: column;
-  width: 359px;
-  background: ${({ theme }) => theme.colors.mainCanvasColor};
-  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
-  border-radius: 8px;
-  padding-bottom: 26px;
-  position: relative;
-
-  max-height: ${getCurrentLayoutProperty({
-    desktop: "408px",
-    tablet: "408px",
-    mobile: "calc(50vh - 110px)",
-  })};
-`;
-
-const PanelHeader = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  position: relative;
-  border-radius: 8px;
-  margin-top: 20px;
-  gap: 32px;
-`;
 
 const Tab = styled.div<TabProps>`
   position: relative;
@@ -99,41 +68,6 @@ const Tab = styled.div<TabProps>`
     `}
 `;
 
-const CloseButton = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  right: 20px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &::after,
-  &::before {
-    content: "";
-    position: absolute;
-    height: 16px;
-    width: 2px;
-    background-color: ${({ theme }) => theme.colors.fontColor};
-  }
-
-  &::before {
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    transform: rotate(-45deg);
-  }
-
-  &:hover {
-    &::before,
-    &::after {
-      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
-    }
-  }
-`;
-
 const Content = styled.div`
   height: 100%;
   display: flex;
@@ -143,14 +77,6 @@ const Content = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
-`;
-
-const HorizontalLine = styled.div`
-  margin: 35px 16px 16px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
-  border-radius: 1px;
-  background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
-  opacity: 0.12;
 `;
 
 const InsertPanelWrapper = styled.div`
@@ -277,7 +203,7 @@ export const LayersPanel = ({
 
   return (
     <Container id={id} layout={layout}>
-      <PanelHeader>
+      <PanelHeader panel={Panels.Layers}>
         <Tab
           id="layers-tab"
           active={tab === Tabs.Layers}

@@ -1,15 +1,15 @@
 import { Fragment, useCallback, useRef, useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { LayerExample, ListItemType } from "../../types";
+import { LayerExample, ListItemType } from "../../../types";
 
 import { ListItem } from "./list-item";
 import { LayerSettingsMenu } from "./layer-settings-menu";
-import { PlusButton } from "../plus-button/plus-button";
+import { PlusButton } from "../../plus-button/plus-button";
 
-import LocationIcon from "../../../public/icons/location.svg?svgr";
-import DeleteIcon from "../../../public/icons/delete.svg?svgr";
-import SettingsIcon from "../../../public/icons/settings.svg?svgr";
-import { color_accent_primary } from "../../constants/colors";
+import LocationIcon from "../../../../public/icons/location.svg?svgr";
+import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
+import SettingsIcon from "../../../../public/icons/settings.svg?svgr";
+import { color_accent_primary } from "../../../constants/colors";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
 

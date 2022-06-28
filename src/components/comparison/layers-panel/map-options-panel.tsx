@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 
 type MapOptionPanelProps = {

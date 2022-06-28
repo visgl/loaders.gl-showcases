@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useState } from "react";
 import styled from "styled-components";
-import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
+import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 
 const Container = styled.div<{ top: number }>`
   position: absolute;
