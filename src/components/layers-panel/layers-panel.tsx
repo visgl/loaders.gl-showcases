@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { EXAMPLES } from "../../constants/i3s-examples";
 import { LayerExample, ListItemType, Theme, BaseMap } from "../../types";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
@@ -24,11 +23,15 @@ export enum ButtonSize {
 
 type LayersPanelProps = {
   id: string;
+  layers: LayerExample[];
+  selectedLayerIds: string[];
   type: ListItemType;
   onMapsSelect: (map: BaseMap) => void;
-  onLayersSelect: (ids: LayerExample[]) => void;
+  onLayerSelect: (id: string) => void;
+  onLayerInsert: (layer: LayerExample) => void;
   onClose: () => void;
   onPointToLayer: () => void;
+  onLayerDelete: (id: string) => void;
 };
 
 type TabProps = {
@@ -179,52 +182,26 @@ const BASE_MAPS: BaseMap[] = [
   },
   { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
 ];
-const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
 export const LayersPanel = ({
   id,
   type,
-  onLayersSelect,
+  layers,
+  selectedLayerIds,
+  onLayerInsert,
+  onLayerSelect,
+  onLayerDelete,
   onMapsSelect,
   onClose,
   onPointToLayer,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [maps, setMaps] = useState<BaseMap[]>(BASE_MAPS);
-  const [layers, setLayers] = useState<LayerExample[]>(() =>
-    getLayerExamples()
-  );
-  const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
+
   const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
-
-  const handleSelectLayers = (id: string, examples?: LayerExample[]): void => {
-    let newSelectedLayersIds = selectedLayerIds;
-    switch (type) {
-      case ListItemType.Radio: {
-        newSelectedLayersIds = [id];
-        break;
-      }
-      case ListItemType.Checkbox:
-      default: {
-        if (selectedLayerIds.includes(id)) {
-          newSelectedLayersIds = selectedLayerIds.filter(
-            (existedId) => existedId !== id
-          );
-        } else {
-          newSelectedLayersIds = [...selectedLayerIds, id];
-        }
-      }
-    }
-    setSelectedLayerIds(newSelectedLayersIds);
-    onLayersSelect(
-      (examples || layers).filter(({ id }) =>
-        newSelectedLayersIds.includes(id || "")
-      )
-    );
-  };
 
   const handleSelectMaps = (id: string, baseMaps?: BaseMap[]): void => {
     setSelectedMap(id);
@@ -244,11 +221,7 @@ export const LayersPanel = ({
       custom: true,
     };
 
-    setLayers((prevValues) => {
-      const newLayers = [...prevValues, newLayer];
-      handleSelectLayers(id, newLayers);
-      return newLayers;
-    });
+    onLayerInsert(newLayer);
     setShowInsertPanel(false);
   };
 
@@ -268,13 +241,6 @@ export const LayersPanel = ({
       return newMaps;
     });
     setShowInsertMapPanel(false);
-  };
-
-  const deleteLayer = (id: string) => {
-    setLayers((prevValues) => {
-      handleSelectLayers("");
-      return prevValues.filter(({ id: layerId }) => layerId !== id);
-    });
   };
 
   return (
@@ -303,10 +269,10 @@ export const LayersPanel = ({
             layers={layers}
             type={type}
             selectedLayerIds={selectedLayerIds}
-            onLayersSelect={handleSelectLayers}
+            onLayerSelect={onLayerSelect}
             onLayerInsertClick={() => setShowInsertPanel(true)}
             onPointToLayer={onPointToLayer}
-            deleteLayer={deleteLayer}
+            deleteLayer={onLayerDelete}
           />
         )}
         {tab === Tabs.MapOptions && (

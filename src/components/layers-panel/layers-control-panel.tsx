@@ -17,7 +17,7 @@ type LayersControlPanelProps = {
   layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
-  onLayersSelect: (id: string) => void;
+  onLayerSelect: (id: string) => void;
   onLayerInsertClick: () => void;
   onPointToLayer: () => void;
   deleteLayer: (id: string) => void;
@@ -84,7 +84,7 @@ export const LayersControlPanel = ({
   layers,
   type,
   selectedLayerIds,
-  onLayersSelect,
+  onLayerSelect,
   onLayerInsertClick,
   onPointToLayer,
   deleteLayer,
@@ -170,7 +170,7 @@ export const LayersControlPanel = ({
                 type={type}
                 selected={isLayerSelected}
                 hasOptions={true}
-                onChange={onLayersSelect}
+                onChange={onLayerSelect}
                 onOptionsClick={() => {
                   setShowLayerSettings(true);
                   setSettingsLayerId(layer.id);

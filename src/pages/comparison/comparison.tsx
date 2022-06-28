@@ -27,6 +27,7 @@ import {
   BaseMap,
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
+import { EXAMPLES } from "../../constants/i3s-examples";
 
 const TRANSITION_DURAITON = 4000;
 
@@ -175,8 +176,25 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   })};
 `;
 
+const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
+
+  const [leftSideExamples, setLeftSideExamples] = useState<LayerExample[]>(() =>
+    getLayerExamples()
+  );
+
+  const [rightSideExamples, setRightSideExamples] = useState<LayerExample[]>(
+    () => getLayerExamples()
+  );
+
+  const [leftSideSelectedExamplId, setLeftSideSelectedExampleId] =
+    useState<string>("");
+
+  const [rightSideSelectedExampleId, setRightSideSelectedExampleId] =
+    useState<string>("");
+
   const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
@@ -460,6 +478,72 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     return result;
   };
 
+  const handleInsertExample = (
+    newLayer: LayerExample,
+    side: "left" | "right"
+  ) => {
+    switch (side) {
+      case "left":
+        setLeftSideExamples((prevValues) => [...prevValues, newLayer]);
+        setLayerLeftSide(newLayer);
+        setLeftSideSelectedExampleId(newLayer.id);
+        break;
+      case "right":
+        setRightSideExamples((prevValues) => [...prevValues, newLayer]);
+        setLayerRightSide(newLayer);
+        setRightSideSelectedExampleId(newLayer.id);
+        break;
+    }
+  };
+
+  const handleDeleteExample = (id: string, side: "left" | "right") => {
+    switch (side) {
+      case "left":
+        setLeftSideExamples((prevValues) =>
+          prevValues.filter((example) => example.id !== id)
+        );
+        setLayerLeftSide(null);
+        break;
+      case "right":
+        setRightSideExamples((prevValues) =>
+          prevValues.filter((example) => example.id !== id)
+        );
+        setLayerRightSide(null);
+        break;
+    }
+  };
+
+  const handleSelectExample = (id: string, side: "left" | "right") => {
+    switch (side) {
+      case "left": {
+        const selectedExample = leftSideExamples.find(
+          (example) => example.id === id
+        );
+
+        if (selectedExample) {
+          if (mode === ComparisonMode.withinLayer) {
+            setLayerRightSide(selectedExample);
+          }
+
+          setLayerLeftSide(selectedExample);
+          setLeftSideSelectedExampleId(id);
+        }
+
+        break;
+      }
+      case "right": {
+        const selectedExample = rightSideExamples.find(
+          (example) => example.id === id
+        );
+
+        if (selectedExample) {
+          setLayerRightSide(selectedExample);
+          setRightSideSelectedExampleId(id);
+        }
+      }
+    }
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -491,13 +575,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
+              layers={leftSideExamples}
+              selectedLayerIds={[leftSideSelectedExamplId]}
+              onLayerInsert={(newLayer) =>
+                handleInsertExample(newLayer, "left")
+              }
               onMapsSelect={onMapsSelect}
-              onLayersSelect={(layers: LayerExample[]) => {
-                setLayerLeftSide(layers[0]);
-                if (mode === ComparisonMode.withinLayer) {
-                  setLayerRightSide(layers[0]);
-                }
-              }}
+              onLayerSelect={(id: string) => handleSelectExample(id, "left")}
+              onLayerDelete={(id) => handleDeleteExample(id, "left")}
               onPointToLayer={() => onPointToLayer("left")}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
@@ -537,10 +622,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              onMapsSelect={onMapsSelect}
-              onLayersSelect={(layers: LayerExample[]) =>
-                setLayerRightSide(layers[0])
+              layers={rightSideExamples}
+              selectedLayerIds={[rightSideSelectedExampleId]}
+              onLayerInsert={(newLayer) =>
+                handleInsertExample(newLayer, "right")
               }
+              onMapsSelect={onMapsSelect}
+              onLayerSelect={(id: string) => handleSelectExample(id, "right")}
+              onLayerDelete={(id) => handleDeleteExample(id, "right")}
               onPointToLayer={() => onPointToLayer("right")}
               type={ListItemType.Radio}
               onClose={() =>
