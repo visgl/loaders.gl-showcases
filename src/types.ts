@@ -1,5 +1,6 @@
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
+import { Vector3, Matrix4 } from "@math.gl/core";
 
 export enum Theme {
   Dark,
@@ -91,3 +92,14 @@ export type BaseMap = {
   token?: string;
   custom?: boolean;
 }; 
+
+export type NormalsDebugData = {
+  src: {
+    normals: Uint32Array;
+    positions: Uint32Array;
+  };
+  length: number;
+  modelMatrix: Matrix4;
+  cartographicModelMatrix: Matrix4;
+  cartographicOrigin: Vector3;
+};

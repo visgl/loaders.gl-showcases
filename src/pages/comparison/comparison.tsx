@@ -197,6 +197,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<Tile3D[]>([]);
   const [tokenLeftSide, setTokenLeftSide] = useState(null);
   const [tokenRightSide, setTokenRightSide] = useState(null);
+  const [tilesetLeftSide, setTilesetLeftSide] = useState<Tileset3D | null>(
+    null
+  );
+  const [tilesetRightSide, setTilesetRightSide] = useState<Tileset3D | null>(
+    null
+  );
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
 
   const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
@@ -211,8 +217,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const TERRAIN_LAYER_MAX_ZOOM = 15;
 
   useEffect(() => {
-    setActiveRightPanel(ActiveButton.none);
-    setActiveLeftPanel(ActiveButton.none);
+    if (mode === ComparisonMode.acrossLayers) {
+      setActiveRightPanel(ActiveButton.options);
+    } else {
+      setActiveRightPanel(ActiveButton.none);
+    }
+    setActiveLeftPanel(ActiveButton.options);
     setLayerLeftSide(null);
     setLayerRightSide(null);
   }, [mode]);
@@ -260,7 +270,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onMapsSelect = (map: BaseMap) => {
-    setSelectedMapStyle(map.mapUrl || "Terrain")
+    setSelectedMapStyle(map.mapUrl || "Terrain");
+  };
+
+  const onPointToLayer = (side: "left" | "right") => {
+    if (side === "left" && tilesetLeftSide) {
+      pointToTileset(tilesetLeftSide);
+    }
+    if (side === "right" && tilesetRightSide) {
+      pointToTileset(tilesetRightSide);
+    }
   };
 
   const onTerrainTileLoad = (tile) => {
@@ -362,24 +381,33 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
-  const onTilesetLoad = (tileset: Tileset3D) => {
+  const pointToTileset = (tileset: Tileset3D) => {
+    const { zoom, cartographicCenter } = tileset;
+    const [longitude, latitude] = cartographicCenter || [];
+
+    const newViewState = {
+      ...viewState,
+      zoom: zoom + 2.5,
+      longitude,
+      latitude,
+    };
+
+    setViewState({
+      ...newViewState,
+      transitionDuration: TRANSITION_DURAITON,
+      transitionInterpolator: new FlyToInterpolator(),
+    });
+    setNeedTransitionToTileset(false);
+  };
+
+  const onTilesetLoad = (tileset: Tileset3D, side: "left" | "right") => {
     if (needTransitionToTileset) {
-      const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
-
-      const newViewState = {
-        ...viewState,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-      };
-
-      setViewState({
-        ...newViewState,
-        transitionDuration: TRANSITION_DURAITON,
-        transitionInterpolator: new FlyToInterpolator(),
-      });
-      setNeedTransitionToTileset(false);
+      if (side === "left") {
+        setTilesetLeftSide(tileset);
+      } else {
+        setTilesetRightSide(tileset);
+      }
+      pointToTileset(tileset);
     }
   };
 
@@ -415,7 +443,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 id: `tile-layer-${sublayer.id}`,
                 data: sublayer.url,
                 loader: I3SLoader,
-                onTilesetLoad: onTilesetLoad,
+                onTilesetLoad: (tileset: Tileset3D) =>
+                  onTilesetLoad(tileset, side),
                 pickable: false,
                 loadOptions,
               })
@@ -469,6 +498,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                   setLayerRightSide(layers[0]);
                 }
               }}
+              onPointToLayer={() => onPointToLayer("left")}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
@@ -511,6 +541,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onLayersSelect={(layers: LayerExample[]) =>
                 setLayerRightSide(layers[0])
               }
+              onPointToLayer={() => onPointToLayer("right")}
               type={ListItemType.Radio}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.options)
