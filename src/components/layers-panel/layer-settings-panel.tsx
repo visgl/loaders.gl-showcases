@@ -1,5 +1,5 @@
 import { ReactEventHandler } from "react";
-import styled, { DefaultTheme, useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 
 import ArrowLeftIcon from "../../../public/icons/arrow-left.svg?svgr";
 import { Sublayer } from "../../types";
@@ -13,7 +13,7 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-const Header = styled.div<{ theme: DefaultTheme }>`
+const Header = styled.div`
   display: flex;
   margin: 19px 6px 0px;
   justify-content: space-between;
@@ -56,7 +56,7 @@ export const LayerSettingsPanel = ({
   const theme = useTheme();
   return (
     <Container>
-      <Header theme={theme}>
+      <Header>
         <Button onClick={onBackClick}>
           <Icon>
             <ArrowLeftIcon fill={theme.colors.fontColor} />
