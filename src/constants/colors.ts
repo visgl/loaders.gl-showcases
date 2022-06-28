@@ -19,6 +19,8 @@ export const hilite_canvas_primary = "#393A45";
 export const hilite_canvas_secondary = "#DCDEE3";
 
 export const color_accent_primary = "#F95050";
+export const color_accent_secondary = "#60C2A4";
+export const color_accent_tertiary = "#33A985";
 
 export const dim_canvas_primary = "#616678";
 export const dim_canvas_secondary = "#CDCFD6";

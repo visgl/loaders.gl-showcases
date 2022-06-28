@@ -1,28 +1,18 @@
 import type { Tile3D } from "@loaders.gl/tiles";
 
-import { Vector3, Matrix4 } from "@math.gl/core";
+import { Vector3 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
+import { NormalsDebugData } from "../types";
 
 const VALUES_PER_VERTEX = 3;
 
 const scratchVector = new Vector3();
 
-type NormalsDebugData = {
-  src: {
-    normals: Uint32Array,
-    positions: Uint32Array
-  },
-  length: number,
-  modelMatrix: Matrix4,
-  cartographicModelMatrix: Matrix4,
-  cartographicOrigin: Vector3
-};
-
 type PositionsData = {
   src: {
-    positions: Float32Array,
-    normals: Float32Array
-  }
+    positions: Float32Array;
+    normals: Float32Array;
+  };
 };
 
 /**
@@ -30,14 +20,16 @@ type PositionsData = {
  * @param tile
  * @returns returs object with typed normals and positions array and length
  */
-export function generateBinaryNormalsDebugData(tile: Tile3D): NormalsDebugData | Record<string, unknown> {
+export function generateBinaryNormalsDebugData(
+  tile: Tile3D
+): NormalsDebugData | null {
   if (
     !tile.content ||
     !tile.content.attributes ||
     !tile.content.attributes.normals ||
     !tile.content.attributes.positions
   ) {
-    return {};
+    return null;
   }
 
   const normals = tile.content.attributes.normals.value;
@@ -70,7 +62,11 @@ export function generateBinaryNormalsDebugData(tile: Tile3D): NormalsDebugData |
  * @param trianglesPercentage - percent of triangles to show normals
  * @returns source position in cartographic coordinates
  */
-export function getNormalSourcePosition(index: number, data: PositionsData, trianglesPercentage: number): Vector3 | Record<string, unknown> {
+export function getNormalSourcePosition(
+  index: number,
+  data: PositionsData,
+  trianglesPercentage: number
+): Vector3 | Record<string, unknown> {
   const positions = data.src.positions;
   const normalsGap = getNormalsGap(positions, trianglesPercentage);
   let sourcePosition = {};
@@ -128,7 +124,10 @@ export function getNormalTargetPosition(
  * @param positions
  * @param trianglesPercentage
  */
-function getNormalsGap(positions: Float32Array, trianglesPercentage: number): number {
+function getNormalsGap(
+  positions: Float32Array,
+  trianglesPercentage: number
+): number {
   const triangleCount = positions.length / VALUES_PER_VERTEX;
   const trianglesToShow = Math.floor(
     triangleCount * (trianglesPercentage / 100)
