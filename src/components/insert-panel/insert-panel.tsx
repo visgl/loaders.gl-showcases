@@ -6,6 +6,9 @@ import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { ActionButton } from "../action-button/action-button";
 import { InputText } from "../input-text/input-text";
 
+const NO_NAME_ERROR = "Please enter name";
+const INVALID_URL_ERROR = "Invalid URL";
+
 type InsertLayerProps = {
   title: string;
   onInsert: (object: { name: string; url: string; token?: string }) => void;
@@ -69,8 +72,50 @@ export const InsertPanel = ({
   const [url, setUrl] = useState("");
   const [token, setToken] = useState("");
 
+  const [nameError, setNameError] = useState("");
+  const [urlError, setUrlError] = useState("");
+
+  const validateFields = () => {
+    let isFormValid = true;
+
+    if (!name) {
+      setNameError(NO_NAME_ERROR);
+      isFormValid = false;
+    }
+
+    try {
+      new URL(url);
+    } catch (_) {
+      setUrlError(INVALID_URL_ERROR);
+      isFormValid = false;
+    }
+
+    return isFormValid;
+  };
+
   const handleInsert = () => {
-    onInsert({ name, url, token });
+    const isFormValid = validateFields();
+
+    if (isFormValid) {
+      onInsert({ name, url, token });
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    switch (name) {
+      case "Name":
+        setName(value);
+        setNameError("");
+        break;
+      case "URL":
+        setUrl(value);
+        setUrlError("");
+        break;
+      case "Token":
+        setToken(value);
+    }
   };
 
   const layout = useAppLayout();
@@ -80,19 +125,24 @@ export const InsertPanel = ({
       <Title>{title}</Title>
       <InputsWrapper>
         <InputText
+          name="Name"
           label="Name"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          error={nameError}
+          onChange={handleInputChange}
         />
         <InputText
+          name="URL"
           label="URL"
           value={url}
-          onChange={(event) => setUrl(event.target.value)}
+          error={urlError}
+          onChange={handleInputChange}
         />
         <InputText
+          name="Token"
           label="Token"
           value={token}
-          onChange={(event) => setToken(event.target.value)}
+          onChange={handleInputChange}
         />
       </InputsWrapper>
       <ButtonsWrapper>

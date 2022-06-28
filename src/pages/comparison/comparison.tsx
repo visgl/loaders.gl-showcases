@@ -189,7 +189,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     () => getLayerExamples()
   );
 
-  const [leftSideSelectedExamplId, setLeftSideSelectedExampleId] =
+  const [leftSideSelectedExampleId, setLeftSideSelectedExampleId] =
     useState<string>("");
 
   const [rightSideSelectedExampleId, setRightSideSelectedExampleId] =
@@ -197,7 +197,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMapId, setSelectedBaseMapId] = useState<string>("Dark");
-
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
 
   const [terrainTiles, setTerrainTiles] = useState({});
@@ -552,6 +551,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const handleInsertBaseMap = (baseMap: BaseMap) => {
     setBaseMaps((prevValues) => [...prevValues, baseMap]);
     setSelectedBaseMapId(baseMap.id);
+    setSelectedMapStyle(baseMap.mapUrl || "Terrain");
   };
 
   const handleSelectBaseMap = (baseMapId: string) => {
@@ -561,9 +561,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       (baseMap) => baseMap.id === baseMapId
     );
 
-    if (selectedBaseMap) {
-      setSelectedMapStyle(selectedBaseMap.mapUrl || "Terrain");
-    }
+    setSelectedMapStyle(selectedBaseMap?.mapUrl || "Terrain");
+  };
+
+  const handleDeleteBaseMap = (baseMapId: string) => {
+    setSelectedBaseMapId("Dark");
+    setBaseMaps((prevValues) =>
+      prevValues.filter((baseMap) => baseMap.id !== baseMapId)
+    );
+
+    const darkMapStyle = baseMaps.find((baseMap) => baseMap.id === "Dark");
+
+    setSelectedMapStyle(darkMapStyle?.mapUrl || "Terrain");
   };
 
   return (
@@ -598,7 +607,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               id="left-layers-panel"
               type={ListItemType.Radio}
               layers={leftSideExamples}
-              selectedLayerIds={[leftSideSelectedExamplId]}
+              selectedLayerIds={[leftSideSelectedExampleId]}
               onLayerInsert={(newLayer) =>
                 handleInsertExample(newLayer, "left")
               }
@@ -613,9 +622,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               selectedBaseMapId={selectedBaseMapId}
               onBaseMapInsert={handleInsertBaseMap}
               onBaseMapSelect={handleSelectBaseMap}
-              onBaseMapDelete={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onBaseMapDelete={handleDeleteBaseMap}
             />
           </LeftLayersPanelWrapper>
         )}
@@ -668,9 +675,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               selectedBaseMapId={selectedBaseMapId}
               onBaseMapInsert={handleInsertBaseMap}
               onBaseMapSelect={handleSelectBaseMap}
-              onBaseMapDelete={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onBaseMapDelete={handleDeleteBaseMap}
             />
           </RightLayersPanelWrapper>
         )}

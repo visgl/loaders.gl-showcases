@@ -45,6 +45,12 @@ type LayoutProps = {
   layout: string;
 };
 
+type CustomItem = {
+  name: string;
+  url: string;
+  token?: string;
+};
+
 const Container = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
@@ -180,6 +186,7 @@ export const LayersPanel = ({
   selectedBaseMapId,
   onBaseMapInsert,
   onBaseMapSelect,
+  onBaseMapDelete,
   onClose,
   onPointToLayer,
 }: LayersPanelProps) => {
@@ -205,14 +212,15 @@ export const LayersPanel = ({
     setShowInsertPanel(false);
   };
 
-  const handleInsertMap = (map) => {
+  const handleInsertMap = (map: CustomItem) => {
     const id = map.url.replace(/" "/g, "-");
-    const newMap = {
+    const newMap: BaseMap = {
       id,
       mapUrl: map.url,
       name: map.name,
       token: map.token,
       iconUrl: CustomMap,
+      custom: true,
     };
 
     onBaseMapInsert(newMap);
@@ -256,10 +264,8 @@ export const LayersPanel = ({
             baseMaps={baseMaps}
             selectedBaseMapId={selectedBaseMapId}
             onMapsSelect={onBaseMapSelect}
-            onMapOptionsClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
             onBaseMapInsert={() => setShowInsertMapPanel(true)}
+            deleteMap={onBaseMapDelete}
           />
         )}
       </Content>
