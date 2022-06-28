@@ -4,6 +4,7 @@ import { color_brand_quinary } from "../../constants/colors";
 
 type InputProps = {
   id?: string;
+  name?: string;
   label?: string;
   value: string;
   error?: string;
