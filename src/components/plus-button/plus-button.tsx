@@ -4,7 +4,7 @@ import { ButtonSize } from "../comparison/layers-panel/layers-panel";
 
 type PlusButtonProps = {
   children?: React.ReactNode;
-  buttonSize: number;
+  buttonSize: ButtonSize;
   onClick?: () => void;
 };
 
