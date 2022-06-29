@@ -205,6 +205,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     null
   );
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
+  const [isCompressedGeometryLeft, setIsCompressedGeometryLeft] =
+    useState<boolean>(false);
+  const [isCompressedTexturesLeft, setIsCompressedTexturesLeft] =
+    useState<boolean>(false);
+  const [isCompressedGeometryRight, setIsCompressedGeometryRight] =
+    useState<boolean>(false);
+  const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
+    useState<boolean>(false);
+  const [counter, setCounter] = useState(0);
 
   const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
   const ARCGIS_STREET_MAP_SURFACE_IMAGES =
@@ -425,9 +434,21 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         i3s: {
           coordinateSystem: number;
           token?: string;
+          useDracoGeometry: boolean;
+          useCompressedTextures: boolean;
         };
       } = {
-        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+        i3s: {
+          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useDracoGeometry:
+            side === "left"
+              ? isCompressedGeometryLeft
+              : isCompressedGeometryRight,
+          useCompressedTextures:
+            side === "left"
+              ? isCompressedTexturesLeft
+              : isCompressedTexturesRight,
+        },
       };
 
       if (token) {
@@ -441,7 +462,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           .map(
             (sublayer) =>
               new Tile3DLayer({
-                id: `tile-layer-${sublayer.id}`,
+                id: `tile-layer-${sublayer.id}${counter}`,
                 data: sublayer.url,
                 loader: I3SLoader,
                 onTilesetLoad: (tileset: Tileset3D) =>
@@ -459,6 +480,26 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
 
     return result;
+  };
+
+  const handleGeometryChangeLeft = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedGeometryLeft((prevValue) => !prevValue);
+  };
+
+  const handleTexturesChangeLeft = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedTexturesLeft((prevValue) => !prevValue);
+  };
+
+  const handleGeometryChangeRight = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedGeometryRight((prevValue) => !prevValue);
+  };
+
+  const handleTexturesChangeRight = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedTexturesRight((prevValue) => !prevValue);
   };
 
   return (
@@ -510,6 +551,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftPanelWrapper layout={layout}>
             <ComparisonParamsPanel
               id="left-comparison-params-panel"
+              isCompressedGeometry={isCompressedGeometryLeft}
+              isCompressedTextures={isCompressedTexturesLeft}
+              onGeometryChange={handleGeometryChangeLeft}
+              onTexturesChange={handleTexturesChangeLeft}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.settings)
               }
@@ -564,6 +609,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightPanelWrapper layout={layout}>
             <ComparisonParamsPanel
               id="right-comparison-params-panel"
+              isCompressedGeometry={isCompressedGeometryRight}
+              isCompressedTextures={isCompressedTexturesRight}
+              onGeometryChange={handleGeometryChangeRight}
+              onTexturesChange={handleTexturesChangeRight}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.settings)
               }

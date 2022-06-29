@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled from "styled-components";
 import { useAppLayout } from "../../../utils/layout";
 import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
@@ -30,26 +29,22 @@ const ItemContainer = styled.div`
 
 type ComparisonParamsProps = {
   id: string;
+  isCompressedGeometry: boolean;
+  isCompressedTextures: boolean;
+  onGeometryChange: () => void;
+  onTexturesChange: () => void;
   onClose: () => void;
 };
 
 export const ComparisonParamsPanel = ({
   id,
+  isCompressedGeometry,
+  isCompressedTextures,
+  onGeometryChange,
+  onTexturesChange,
   onClose,
 }: ComparisonParamsProps) => {
-  const [isCompressedGeometry, setIsCompressedGeometry] =
-    useState<boolean>(false);
-  const [isCompressedTextures, setIsCompressedTextures] =
-    useState<boolean>(false);
   const layout = useAppLayout();
-
-  const handleGeometryChange = () => {
-    setIsCompressedGeometry((prevValue) => !prevValue);
-  };
-
-  const handleTexturesChange = () => {
-    setIsCompressedTextures((prevValue) => !prevValue);
-  };
 
   return (
     <Container id={id} layout={layout}>
@@ -66,7 +61,7 @@ export const ComparisonParamsPanel = ({
         <ToggleSwitch
           id={`${id}-geometry`}
           checked={isCompressedGeometry}
-          onChange={handleGeometryChange}
+          onChange={onGeometryChange}
         />
       </ItemContainer>
       <ItemContainer>
@@ -74,7 +69,7 @@ export const ComparisonParamsPanel = ({
         <ToggleSwitch
           id={`${id}-textures`}
           checked={isCompressedTextures}
-          onChange={handleTexturesChange}
+          onChange={onTexturesChange}
         />
       </ItemContainer>
     </Container>
