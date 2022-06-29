@@ -1,9 +1,9 @@
 import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
 import styled, { css, useTheme } from "styled-components";
-import { ExpandState } from "../../types";
-import { color_brand_quaternary } from "../../constants/colors";
+import { ExpandState } from "../../../types";
+import { color_brand_quaternary } from "../../../constants/colors";
 
-import ChevronIcon from "../../../public/icons/chevron.svg?svgr";
+import ChevronIcon from "../../../../public/icons/chevron.svg?svgr";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;

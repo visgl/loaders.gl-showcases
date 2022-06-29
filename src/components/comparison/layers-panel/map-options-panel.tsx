@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { SettingsMenu } from "./settings-menu";
-import { color_accent_primary } from "../../constants/colors";
-import DeleteIcon from "../../../public/icons/delete.svg?svgr";
+import { color_accent_primary } from "../../../constants/colors";
+import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
 import { DeleteConfirmation } from "./delete-confirmation";
 
 type MapOptionPanelProps = {

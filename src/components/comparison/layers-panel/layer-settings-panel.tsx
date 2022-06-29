@@ -1,11 +1,11 @@
 import { ReactEventHandler } from "react";
 import styled, { useTheme } from "styled-components";
 
-import ArrowLeftIcon from "../../../public/icons/arrow-left.svg?svgr";
-import { Sublayer } from "../../types";
-import { CloseButton } from "../close-button/close-button";
+import ArrowLeftIcon from "../../../../public/icons/arrow-left.svg?svgr";
+import { Sublayer } from "../../../types";
+import { CloseButton } from "../../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
-import { HorizontalLine } from "./horizontal-line";
+import { HorizontalLine } from "../common";
 
 const Container = styled.div`
   display: flex;
