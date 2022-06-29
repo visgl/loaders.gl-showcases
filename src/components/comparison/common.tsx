@@ -32,47 +32,12 @@ export const PanelHeader = styled.div<{ panel: number }>`
   display: flex;
   align-items: center;
   justify-content: ${(props) =>
-    props.panel === Panels.Layers ? "center" : "flex-start"};
+    props.panel === Panels.Layers ? "center" : "space-between"};
   background: transparent;
   position: relative;
   border-radius: 8px;
   margin-top: 20px;
   gap: 32px;
-`;
-
-export const CloseButton = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  right: 20px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &::after,
-  &::before {
-    content: "";
-    position: absolute;
-    height: 16px;
-    width: 2px;
-    background-color: ${({ theme }) => theme.colors.fontColor};
-  }
-
-  &::before {
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    transform: rotate(-45deg);
-  }
-
-  &:hover {
-    &::before,
-    &::after {
-      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
-    }
-  }
 `;
 
 export const HorizontalLine = styled.div<{ top?: number; bottom?: number }>`
