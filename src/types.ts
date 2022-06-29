@@ -1,3 +1,4 @@
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
@@ -34,6 +35,11 @@ export enum ActionButtonVariant {
   primary,
   secondary,
   cancel,
+}
+
+export enum ExpandState {
+  expanded = "expanded",
+  collapsed = "collapsed",
 }
 
 export type TileWarning = {
@@ -84,6 +90,11 @@ export type LayerExample = {
   custom?: boolean;
 };
 
+export type Sublayer = BuildingSceneSublayer & {
+  expanded: boolean;
+  childNodesCount: number;
+  sublayers: Sublayer[];
+};
 export type BaseMap = {
   id?: string;
   name: string;
@@ -91,7 +102,7 @@ export type BaseMap = {
   iconUrl: string;
   token?: string;
   custom?: boolean;
-}; 
+};
 
 export type NormalsDebugData = {
   src: {

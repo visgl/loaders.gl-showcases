@@ -1,3 +1,5 @@
+import { Sublayer } from "../types";
+
 /**
  * - deep copy the tree for React
  * - filter "preview" layer
@@ -5,7 +7,7 @@
  * @param {*} sublayers
  * @returns
  */
-export function buildSublayersTree(sublayers) {
+export function buildSublayersTree(sublayers): Sublayer | null {
   const fullModel = sublayers.find(
     (subtree) => subtree.modelName === "FullModel"
   );
@@ -13,7 +15,7 @@ export function buildSublayersTree(sublayers) {
   return result;
 }
 
-function postprocessNode(sublayer) {
+function postprocessNode(sublayer): Sublayer | null {
   const sublayerCopy = { ...sublayer, sublayers: undefined };
   sublayerCopy.expanded = false;
   if (sublayer.sublayers?.length) {
@@ -31,7 +33,10 @@ function postprocessNode(sublayer) {
   return sublayerCopy;
 }
 
-function postrocessSublayers(sublayers) {
+function postrocessSublayers(sublayers): {
+  childNodesCount: number;
+  sublayersCopy: Sublayer[];
+} {
   const sublayersCopy = [];
   let childNodesCount = 0;
   for (const sublayer of sublayers) {

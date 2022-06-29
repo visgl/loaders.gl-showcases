@@ -1,9 +1,15 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { EXAMPLES } from "../../../constants/i3s-examples";
-import { LayerExample, ListItemType, BaseMap } from "../../../types";
 
 import { useAppLayout } from "../../../utils/layout";
+import { EXAMPLES } from "../../../constants/i3s-examples";
+import {
+  LayerExample,
+  ListItemType,
+  Sublayer,
+  BaseMap,
+} from "../../../types";
+import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
@@ -14,10 +20,10 @@ import CustomMap from "../../../../public/icons/custom-map.svg";
 import {
   Container,
   PanelHeader,
-  CloseButton,
   HorizontalLine,
   Panels,
 } from "../common";
+import { LayerSettingsPanel } from "./layer-settings-panel";
 
 enum Tabs {
   Layers,
@@ -33,6 +39,8 @@ type LayersPanelProps = {
   id: string;
   type: ListItemType;
   onMapsSelect: (map: BaseMap) => void;
+  sublayers: Sublayer[];
+  onUpdateSublayerVisibility: (Sublayer) => void;
   onLayersSelect: (ids: LayerExample[]) => void;
   onClose: () => void;
   onPointToLayer: () => void;
@@ -100,6 +108,15 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
+const CloseButtonWrapper = styled.div`
+  position: absolute;
+  right: 6px;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+`;
+
 const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
@@ -122,7 +139,9 @@ const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 export const LayersPanel = ({
   id,
   type,
+  sublayers,
   onLayersSelect,
+  onUpdateSublayerVisibility,
   onMapsSelect,
   onClose,
   onPointToLayer,
@@ -135,6 +154,7 @@ export const LayersPanel = ({
   const [selectedLayerIds, setSelectedLayerIds] = useState<string[]>([]);
   const [selectedMap, setSelectedMap] = useState<string>("Dark");
   const [showInsertPanel, setShowInsertPanel] = useState(false);
+  const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
 
@@ -221,55 +241,71 @@ export const LayersPanel = ({
 
   return (
     <Container id={id} layout={layout}>
-      <PanelHeader panel={Panels.Layers}>
-        <Tab
-          id="layers-tab"
-          active={tab === Tabs.Layers}
-          onClick={() => setTab(Tabs.Layers)}
-        >
-          Layers
-        </Tab>
-        <Tab
-          id="map-options-tab"
-          active={tab === Tabs.MapOptions}
-          onClick={() => setTab(Tabs.MapOptions)}
-        >
-          Map Options
-        </Tab>
-        <CloseButton id="layers-panel-close-button" onClick={onClose} />
-      </PanelHeader>
-      <HorizontalLine />
-      <Content>
-        {tab === Tabs.Layers && (
-          <LayersControlPanel
-            layers={layers}
-            type={type}
-            selectedLayerIds={selectedLayerIds}
-            onLayersSelect={handleSelectLayers}
-            onLayerInsertClick={() => setShowInsertPanel(true)}
-            onPointToLayer={onPointToLayer}
-            deleteLayer={deleteLayer}
-          />
-        )}
-        {tab === Tabs.MapOptions && (
-          <MapOptionPanel
-            baseMaps={maps}
-            selectedMap={selectedMap}
-            onMapsSelect={handleSelectMaps}
-            onBaseMapInsert={() => setShowInsertMapPanel(true)}
-            deleteMap={deleteMap}
-          />
-        )}
-      </Content>
+      {!showLayerSettings && (
+        <>
+          <PanelHeader panel={Panels.Layers}>
+            <Tab
+              id="layers-tab"
+              active={tab === Tabs.Layers}
+              onClick={() => setTab(Tabs.Layers)}
+            >
+              Layers
+            </Tab>
+            <Tab
+              id="map-options-tab"
+              active={tab === Tabs.MapOptions}
+              onClick={() => setTab(Tabs.MapOptions)}
+            >
+              Map Options
+            </Tab>
+          </PanelHeader>
+          <CloseButtonWrapper>
+            <CloseButton id="layers-panel-close-button" onClick={onClose} />
+          </CloseButtonWrapper>
+          <HorizontalLine />
+          <Content>
+            {tab === Tabs.Layers && (
+              <LayersControlPanel
+                layers={layers}
+                type={type}
+                selectedLayerIds={selectedLayerIds}
+                hasSettings={Boolean(sublayers.length)}
+                onLayersSelect={handleSelectLayers}
+                onLayerInsertClick={() => setShowInsertPanel(true)}
+                onLayerSettingsClick={() => setShowLayerSettings(true)}
+                onPointToLayer={onPointToLayer}
+                deleteLayer={deleteLayer}
+              />
+            )}
+            {tab === Tabs.MapOptions && (
+              <MapOptionPanel
+                baseMaps={maps}
+                selectedMap={selectedMap}
+                onMapsSelect={handleSelectMaps}
+                onBaseMapInsert={() => setShowInsertMapPanel(true)}
+                deleteMap={deleteMap}
+              />
+            )}
+          </Content>
 
-      {showInsertPanel && (
-        <InsertPanelWrapper>
-          <InsertPanel
-            title={"Insert Layer"}
-            onInsert={(layer) => handleInsertLayer(layer)}
-            onCancel={() => setShowInsertPanel(false)}
-          />
-        </InsertPanelWrapper>
+          {showInsertPanel && (
+            <InsertPanelWrapper>
+              <InsertPanel
+                title={"Insert Layer"}
+                onInsert={(layer) => handleInsertLayer(layer)}
+                onCancel={() => setShowInsertPanel(false)}
+              />
+            </InsertPanelWrapper>
+          )}
+        </>
+      )}
+      {showLayerSettings && (
+        <LayerSettingsPanel
+          sublayers={sublayers}
+          onUpdateSublayerVisibility={onUpdateSublayerVisibility}
+          onBackClick={() => setShowLayerSettings(false)}
+          onCloseClick={onClose}
+        />
       )}
 
       {showInsertMapPanel && (
