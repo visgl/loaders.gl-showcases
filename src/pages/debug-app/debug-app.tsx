@@ -1,5 +1,10 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type { LayerExample, NormalsDebugData, TileWarning } from "../../types";
+import type {
+  LayerExample,
+  NormalsDebugData,
+  TileWarning,
+  Sublayer,
+} from "../../types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
@@ -167,7 +172,7 @@ export const DebugApp = () => {
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
-  const [sublayers, setSublayers] = useState([]);
+  const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
@@ -278,7 +283,7 @@ export const DebugApp = () => {
     try {
       const mainTileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(mainTileset.header.sublayers);
-      setSublayers(sublayersTree.sublayers);
+      setSublayers(sublayersTree?.sublayers || []);
       const sublayers = mainTileset?.sublayers.filter(
         (sublayer) => sublayer.name !== "Overview"
       );

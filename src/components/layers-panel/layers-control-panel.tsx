@@ -1,4 +1,10 @@
-import { Fragment, useCallback, useRef, useState } from "react";
+import {
+  ReactEventHandler,
+  Fragment,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import styled, { useTheme } from "styled-components";
 import { LayerExample, ListItemType } from "../../types";
 
@@ -17,8 +23,10 @@ type LayersControlPanelProps = {
   layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
+  hasSettings: boolean;
   onLayersSelect: (id: string) => void;
   onLayerInsertClick: () => void;
+  onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: () => void;
   deleteLayer: (id: string) => void;
 };
@@ -84,8 +92,10 @@ export const LayersControlPanel = ({
   layers,
   type,
   selectedLayerIds,
+  hasSettings = false,
   onLayersSelect,
   onLayerInsertClick,
+  onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
@@ -127,12 +137,14 @@ export const LayersControlPanel = ({
             Point to layer
           </LayerSettingsItem>
         )}
-        <LayerSettingsItem>
-          <LayerSettingsIcon>
-            <SettingsIcon fill={theme.colors.fontColor} />
-          </LayerSettingsIcon>
-          Layer settings
-        </LayerSettingsItem>
+        {hasSettings && (
+          <LayerSettingsItem onClick={onLayerSettingsClick}>
+            <LayerSettingsIcon>
+              <SettingsIcon fill={theme.colors.fontColor} />
+            </LayerSettingsIcon>
+            Layer settings
+          </LayerSettingsItem>
+        )}
 
         {layer?.custom && (
           <>
