@@ -32,6 +32,7 @@ import {
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
+import { Sublayer } from "../../types";
 import { LayerExample } from "../../types";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 
@@ -86,7 +87,7 @@ export const ViewerApp = () => {
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
-  const [sublayers, setSublayers] = useState([]);
+  const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
   const [metadata, setMetadata] = useState<SceneLayer3D[] | null>(null);
@@ -193,7 +194,7 @@ export const ViewerApp = () => {
     try {
       const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-      setSublayers(sublayersTree.sublayers);
+      setSublayers(sublayersTree?.sublayers || []);
       const sublayers = tileset?.sublayers.filter(
         (sublayer) => sublayer.name !== "Overview"
       );

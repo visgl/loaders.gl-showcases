@@ -1,6 +1,6 @@
 import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
-import { ListItemType } from "../../../types";
+import { ExpandState, ListItemType } from "../../../types";
 import { Checkbox } from "../../checkbox/checkbox";
 import { ListItemWrapper } from "./list-item-wrapper";
 import { RadioButton } from "../../radio-button/radio-button";
@@ -10,9 +10,11 @@ type ListItemProps = {
   title: string;
   type: ListItemType;
   selected: boolean;
-  hasOptions: boolean;
+  hasOptions?: boolean;
+  expandState?: ExpandState;
   onChange: (id: string) => void;
-  onOptionsClick: (id: string) => void;
+  onOptionsClick?: (id: string) => void;
+  onExpandClick?: () => void;
 };
 
 const Title = styled.div`
@@ -28,8 +30,17 @@ const Title = styled.div`
 
 export const ListItem = forwardRef(
   (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const { id, title, type, selected, hasOptions, onChange, onOptionsClick } =
-      props;
+    const {
+      id,
+      title,
+      type,
+      selected,
+      hasOptions,
+      expandState,
+      onChange,
+      onOptionsClick,
+      onExpandClick,
+    } = props;
 
     const handleClick = () => {
       onChange(id);
@@ -42,6 +53,8 @@ export const ListItem = forwardRef(
         onOptionsClick={onOptionsClick}
         selected={selected}
         onClick={handleClick}
+        expandState={expandState}
+        onExpandClick={onExpandClick}
       >
         {type === ListItemType.Checkbox ? (
           <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />

@@ -1,13 +1,8 @@
 import styled from "styled-components";
 import { useAppLayout } from "../../../utils/layout";
 import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
-import {
-  Container,
-  PanelHeader,
-  CloseButton,
-  HorizontalLine,
-  Panels,
-} from "../common";
+import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
+import { CloseButton } from "../../close-button/close-button";
 
 const Title = styled.div`
   margin-left: 16px;
@@ -55,7 +50,7 @@ export const ComparisonParamsPanel = ({
           onClick={onClose}
         />
       </PanelHeader>
-      <HorizontalLine />
+      <HorizontalLine top={20}/>
       <ItemContainer>
         <Title> Draco compressed geometry</Title>
         <ToggleSwitch

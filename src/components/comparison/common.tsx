@@ -32,7 +32,7 @@ export const PanelHeader = styled.div<{ panel: number }>`
   display: flex;
   align-items: center;
   justify-content: ${(props) =>
-    props.panel === Panels.Layers ? "center" : "flex-start"};
+    props.panel === Panels.Layers ? "center" : "space-between"};
   background: transparent;
   position: relative;
   border-radius: 8px;
@@ -40,43 +40,8 @@ export const PanelHeader = styled.div<{ panel: number }>`
   gap: 32px;
 `;
 
-export const CloseButton = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  right: 20px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &::after,
-  &::before {
-    content: "";
-    position: absolute;
-    height: 16px;
-    width: 2px;
-    background-color: ${({ theme }) => theme.colors.fontColor};
-  }
-
-  &::before {
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    transform: rotate(-45deg);
-  }
-
-  &:hover {
-    &::before,
-    &::after {
-      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
-    }
-  }
-`;
-
-export const HorizontalLine = styled.div`
-  margin: 20px 16px 16px 16px;
+export const HorizontalLine = styled.div<{ top?: number; bottom?: number }>`
+  margin: ${({ top = 24, bottom = 16 }) => `${top}px 16px ${bottom}px 16px`};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
