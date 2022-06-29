@@ -9,7 +9,7 @@ import styled, { useTheme } from "styled-components";
 import { LayerExample, ListItemType } from "../../types";
 
 import { ListItem } from "./list-item";
-import { LayerSettingsMenu } from "./layer-settings-menu";
+import { SettingsMenu } from "./settings-menu";
 import { PlusButton } from "../plus-button/plus-button";
 
 import LocationIcon from "../../../public/icons/location.svg?svgr";
@@ -120,7 +120,7 @@ export const LayersControlPanel = ({
     }
     const layer = layers.find(({ id }) => id === settingsLayerId);
     return (
-      <LayerSettingsMenu
+      <SettingsMenu
         onCloseHandler={() => setShowLayerSettings(false)}
         forElementNode={settingsForItemRef.current.get(settingsLayerId)}
       >
@@ -164,7 +164,7 @@ export const LayersControlPanel = ({
             </LayerSettingsItem>
           </>
         )}
-      </LayerSettingsMenu>
+      </SettingsMenu>
     );
   };
 

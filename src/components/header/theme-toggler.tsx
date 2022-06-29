@@ -1,12 +1,9 @@
-import styled from "styled-components";
+import styled, { DefaultTheme } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
-import { ActiveProps } from "./common";
 
-import DarkModeLightIcon from "../../../public/icons/dark-mode-light.svg";
-import DarkModeDarkIcon from "../../../public/icons/dark-mode-dark.svg";
+import DarkModeIcon from "../../../public/icons/dark-mode.svg?svgr";
+import LightModeIcon from "../../../public/icons/light-mode.svg?svgr";
 
-import LightModeLightIcon from "../../../public/icons/light-mode-light.svg";
-import LightModeDarkIcon from "../../../public/icons/light-mode-dark.svg";
 import { Theme } from "../../utils/enums";
 
 const ThemeToggleWrapper = styled.div`
@@ -22,31 +19,45 @@ const ThemeToggleWrapper = styled.div`
 
   &:hover {
     background: ${({ theme }) => theme.colors.mainDimColor};
+
+    & .inactive {
+      fill: ${({ theme }) => theme.colors.fontColor};
+    }
   }
 `;
 
-const ThemeToggleImage = styled.img<ActiveProps>`
-  display: block;
-  width: 13px;
-  height: 14px;
-
-  padding: 9px;
-  border-radius: 12px;
-
+const Button = styled.div<{ theme: DefaultTheme; active: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background-color: ${({ theme, active }) =>
+    active ? theme.colors.mainColor : "transparent"};
   cursor: pointer;
-  background: ${(props) =>
-    props.active ? props.theme.colors.mainColor : "transparent"};
-
-  &:hover {
-    background: #60c2a4;
-  }
 `;
 
-export const ThemeToggler = ({theme, setTheme}: {theme: Theme; setTheme: (theme: Theme) => void}) => {
-  const darkIcon = theme === Theme.Dark ? DarkModeDarkIcon : LightModeDarkIcon;
-  const lightIcon =
-    theme === Theme.Light ? LightModeLightIcon : DarkModeLightIcon;
+type ActiveProps = { active: boolean };
+const IconWrapper = styled.div.attrs<ActiveProps>((props) => ({
+  className: !props.active ? "inactive" : "",
+}))<ActiveProps>`
+  height: 16px;
+  fill: ${({ theme, active }) =>
+    active ? theme.colors.fontColor : theme.colors.iconInactiveColor};
+  }
+  dispaly: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
+export const ThemeToggler = ({
+  theme,
+  setTheme,
+}: {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}) => {
   const toggleTheme = () => {
     if (theme === Theme.Dark) {
       return setTheme(Theme.Light);
@@ -59,16 +70,16 @@ export const ThemeToggler = ({theme, setTheme}: {theme: Theme; setTheme: (theme:
       id="toggle-button-default"
       onClick={() => toggleTheme()}
     >
-      <ThemeToggleImage
-        id="toggle-dark-default"
-        active={theme === Theme.Dark ? 1 : 0}
-        src={darkIcon}
-      />
-      <ThemeToggleImage
-        id="toggle-light-default"
-        active={theme === Theme.Light ? 1 : 0}
-        src={lightIcon}
-      />
+      <Button active={theme === Theme.Dark} id="toggle-dark-default">
+        <IconWrapper active={theme === Theme.Dark}>
+          <DarkModeIcon />
+        </IconWrapper>
+      </Button>
+      <Button active={theme === Theme.Light} id="toggle-light-default">
+        <IconWrapper active={theme === Theme.Light}>
+          <LightModeIcon />
+        </IconWrapper>
+      </Button>
     </ThemeToggleWrapper>
   );
 };

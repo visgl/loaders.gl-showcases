@@ -143,7 +143,8 @@ const HelpButton = styled.button`
   color: ${(props) => props.theme.colors.fontColor};
   border: 1px solid ${color_brand_quaternary};
   border-radius: 12px;
-  padding: 7px 18px;
+  padding: 6px 18px;
+  line-height: 18px;
   background: transparent;
   margin-left: 42px;
   cursor: pointer;

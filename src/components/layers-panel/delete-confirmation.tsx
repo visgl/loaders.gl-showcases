@@ -20,8 +20,8 @@ const ConfirmationButtons = styled.div`
   gap: 16px;
 `;
 
-const ConfirmationButton = styled.div<{ color?: string }>`
-  color: ${({ color }) => color || "inherit"};
+const ConfirmationButton = styled.div<{ color?: string; theme?: DefaultTheme }>`
+  color: ${({ color, theme }) => color || theme.colors.accentColor};
   cursor: pointer;
 `;
 
@@ -39,7 +39,10 @@ export const DeleteConfirmation = ({
     <Container theme={theme}>
       {children}
       <ConfirmationButtons>
-        <ConfirmationButton onClick={onKeepHandler}>
+        <ConfirmationButton
+          theme={theme}
+          onClick={onKeepHandler}
+        >
           No, keep
         </ConfirmationButton>
         <ConfirmationButton

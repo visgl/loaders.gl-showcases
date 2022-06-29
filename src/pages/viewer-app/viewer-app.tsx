@@ -1,23 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
-import { StaticMap } from "react-map-gl";
 import styled from "styled-components";
 
 import { load } from "@loaders.gl/core";
 import { lumaStats } from "@luma.gl/core";
-import DeckGL from "@deck.gl/react";
 import {
-  MapController,
-  FlyToInterpolator,
-  COORDINATE_SYSTEM,
-  MapView,
-  WebMercatorViewport,
-} from "@deck.gl/core";
-import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
-import {
-  I3SLoader,
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
+  SceneLayer3D,
 } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
@@ -28,7 +18,6 @@ import {
   buildSublayersTree,
   initStats,
   sumTilesetsStats,
-  getElevationByCentralTile,
   useForceUpdate,
 } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,41 +34,7 @@ import { TileDetailsPanel } from "../../components/tile-details-panel/tile-detai
 import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
 import { Sublayer } from "../../types";
 import { LayerExample } from "../../types";
-
-const TRANSITION_DURAITON = 4000;
-
-const INITIAL_VIEW_STATE = {
-  longitude: -120,
-  latitude: 34,
-  height: 600,
-  width: 800,
-  pitch: 45,
-  maxPitch: 90,
-  bearing: 0,
-  minZoom: 2,
-  maxZoom: 30,
-  zoom: 14.5,
-  transitionDuration: 0,
-  transitionInterpolator: null,
-};
-
-const VIEW = new MapView({
-  id: "main",
-  controller: { inertia: true },
-  farZMultiplier: 2.02,
-});
-
-// https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
-const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
-const ARCGIS_STREET_MAP_SURFACE_IMAGES =
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
-  rScaler: 256,
-  gScaler: 1,
-  bScaler: 1 / 256,
-  offset: -32768,
-};
-const TERRAIN_LAYER_MAX_ZOOM = 15;
+import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -122,12 +77,8 @@ const StatsWidgetContainer = styled.div<{
 export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
   const forceUpdate = useForceUpdate();
-  // TODO init types
-  let currentViewport: WebMercatorViewport = null;
 
-  const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [token, setToken] = useState(null);
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState(null);
@@ -139,9 +90,7 @@ export const ViewerApp = () => {
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
-  const [terrainTiles, setTerrainTiles] = useState({});
-  const [metadata, setMetadata] = useState({ layers: [] });
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
+  const [metadata, setMetadata] = useState<SceneLayer3D[] | null>(null);
 
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] =
@@ -153,7 +102,7 @@ export const ViewerApp = () => {
 
     if (tilesetParam?.startsWith("http")) {
       return {
-        id: CUSTOM_EXAMPLE_VALUE,
+        id: tilesetParam,
         name: CUSTOM_EXAMPLE_VALUE,
         url: tilesetParam,
       };
@@ -230,7 +179,6 @@ export const ViewerApp = () => {
     setToken(token);
     setSublayers([]);
     setLoadedTilesets([]);
-    setNeedTransitionToTileset(true);
     setShowBuildingExplorer(false);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
@@ -268,109 +216,6 @@ export const ViewerApp = () => {
 
   const onTilesetLoad = (tileset: Tileset3D) => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
-
-    if (needTransitionToTileset) {
-      const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
-      const viewport = currentViewport;
-      let pLongitue = longitude;
-      let pLatitude = latitude;
-
-      if (viewport) {
-        const { pitch, bearing } = viewState;
-        // @ts-expect-error - roperty 'fullExtent' does not exist on type 'never'.
-        const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
-        /**
-         * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
-         * For elevated tilesets cartographic center position of a tileset is not correct
-         * to use it as viewState position because these positions are different.
-         * We need to calculate projection of camera direction onto the ellipsoid surface.
-         * We use this projection as offset to add it to the tileset cartographic center position.
-         */
-        const projection = zmin * Math.tan((pitch * Math.PI) / 180);
-        /**
-         * Convert to world coordinate system to shift the position on some distance in meters
-         */
-        const projectedPostion = viewport.projectPosition([
-          longitude,
-          latitude,
-        ]);
-        /**
-         * Shift longitude
-         */
-        projectedPostion[0] +=
-          projection *
-          Math.sin((bearing * Math.PI) / 180) *
-          viewport.distanceScales.unitsPerMeter[0];
-        /**
-         * Shift latitude
-         */
-        projectedPostion[1] +=
-          projection *
-          Math.cos((bearing * Math.PI) / 180) *
-          viewport.distanceScales.unitsPerMeter[1];
-        /**
-         * Convert resulting coordinates to catrographic
-         */
-
-        [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
-      }
-
-      const newViewState = {
-        ...viewState,
-        zoom: zoom + 2.5,
-        longitude: pLongitue,
-        latitude: pLatitude,
-      };
-
-      setTileset(tileset);
-      setViewState({
-        ...newViewState,
-        transitionDuration: TRANSITION_DURAITON,
-        transitionInterpolator: new FlyToInterpolator(),
-      });
-      setNeedTransitionToTileset(false);
-    }
-  };
-
-  const onViewStateChange = ({ interactionState, viewState }) => {
-    const { longitude, latitude, position } = viewState;
-
-    const [, , oldElevation] = position || [0, 0, 0];
-    const viewportCenterTerrainElevation =
-      getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
-
-    let cameraTerrainElevation = null;
-
-    if (currentViewport) {
-      const cameraPosition = currentViewport.unprojectPosition(
-        currentViewport.cameraPosition
-      );
-      // @ts-expect-error - Type '0' is not assignable to type 'null'.
-      cameraTerrainElevation =
-        getElevationByCentralTile(
-          cameraPosition[0],
-          cameraPosition[1],
-          terrainTiles
-        ) || 0;
-    }
-    let elevation =
-      cameraTerrainElevation === null ||
-      viewportCenterTerrainElevation > cameraTerrainElevation
-        ? viewportCenterTerrainElevation
-        : cameraTerrainElevation;
-    if (!interactionState.isZooming) {
-      if (oldElevation - elevation > 5) {
-        elevation = oldElevation - 5;
-      } else if (elevation - oldElevation > 5) {
-        elevation = oldElevation + 5;
-      }
-    }
-
-    setViewState({
-      ...viewState,
-      position: [0, 0, elevation],
-    });
   };
 
   const onSelectMapStyle = ({ selectedMapStyle }) => {
@@ -381,31 +226,8 @@ export const ViewerApp = () => {
     setUseTerrainLayer((prevValue) => !prevValue);
   };
 
-  const onTerrainTileLoad = (tile) => {
-    const {
-      bbox: { east, north, south, west },
-    } = tile;
-
-    setTerrainTiles((prevValue) => ({
-      ...prevValue,
-      [`${east};${north};${south};${west}`]: tile,
-    }));
-  };
-
-  const renderTerrainLayer = () => {
-    return new TerrainLayer({
-      id: "terrain",
-      maxZoom: TERRAIN_LAYER_MAX_ZOOM,
-      elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
-      elevationData: MAPZEN_TERRAIN_IMAGES,
-      texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
-      onTileLoad: (tile) => onTerrainTileLoad(tile),
-      color: [255, 255, 255],
-    });
-  };
-
   const isLayerPickable = () => {
-    const layerType = tileset?.tileset?.layerType;
+    const layerType = loadedTilesets?.[0]?.tileset?.layerType;
 
     switch (layerType) {
       case "IntegratedMesh":
@@ -413,48 +235,6 @@ export const ViewerApp = () => {
       default:
         return true;
     }
-  };
-
-  const renderLayers = () => {
-    const loadOptions: {
-      i3s: {
-        coordinateSystem: number;
-        token?: string;
-      };
-    } = {
-      i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
-    };
-
-    if (token) {
-      loadOptions.i3s = { ...loadOptions.i3s, token };
-    }
-
-    const layers = flattenedSublayers
-      .filter((sublayer) => sublayer.visibility)
-      .map(
-        (sublayer) =>
-          new Tile3DLayer({
-            id: `tile-layer-${sublayer.id}`,
-            data: sublayer.url,
-            loader: I3SLoader,
-            onTilesetLoad: onTilesetLoad,
-            onTileLoad: () => updateStatWidgets(),
-            onTileUnload: () => updateStatWidgets(),
-            pickable: isLayerPickable(),
-            loadOptions,
-            highlightedObjectIndex:
-              sublayer.url === selectedTilesetBasePath
-                ? selectedFeatureIndex
-                : -1,
-          })
-      );
-
-    if (useTerrainLayer) {
-      const terrainLayer = renderTerrainLayer();
-      layers.push(terrainLayer);
-    }
-
-    return layers;
   };
 
   const handleClosePanel = () => {
@@ -584,7 +364,15 @@ export const ViewerApp = () => {
     );
   };
 
-  const layers = renderLayers();
+  const getI3sLayers = () => {
+    return flattenedSublayers
+      .filter((sublayer) => sublayer.visibility)
+      .map((sublayer) => ({
+        id: sublayer.id,
+        url: sublayer.url,
+        token,
+      }));
+  };
 
   return (
     <>
@@ -592,28 +380,23 @@ export const ViewerApp = () => {
       {selectedFeatureAttributes && renderAttributesPanel()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
       {renderMemory()}
-      <DeckGL
-        layers={layers}
-        viewState={viewState}
-        views={[VIEW]}
-        onViewStateChange={onViewStateChange}
-        controller={{
-          type: MapController,
-          maxPitch: 60,
-          inertia: true,
-          scrollZoom: { speed: 0.01, smooth: true },
-        }}
+      <DeckGlI3s
+        showTerrain={useTerrainLayer}
+        mapStyle={selectedMapStyle}
+        pickable={isLayerPickable()}
+        i3sLayers={getI3sLayers()}
+        lastLayerSelectedId={mainTileset.url}
+        metadata={metadata}
+        loadedTilesets={loadedTilesets}
+        selectedTilesetBasePath={selectedTilesetBasePath}
+        selectedIndex={selectedFeatureIndex}
         onAfterRender={() => updateStatWidgets()}
-        getTooltip={() => getTooltip()}
-        onClick={(info) => handleClick(info)}
-      >
-        {({ viewport }) => {
-          currentViewport = viewport;
-        }}
-        {!useTerrainLayer && (
-          <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
-        )}
-      </DeckGL>
+        getTooltip={getTooltip}
+        onClick={handleClick}
+        onTilesetLoad={onTilesetLoad}
+        onTileLoad={() => updateStatWidgets()}
+        onTileUnload={() => updateStatWidgets()}
+      />
     </>
   );
 };

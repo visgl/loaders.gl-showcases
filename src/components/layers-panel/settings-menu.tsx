@@ -16,7 +16,7 @@ const Container = styled.div<{ top: number }>`
   padding: 16px;
 `;
 
-export const LayerSettingsMenu = ({
+export const SettingsMenu = ({
   forElementNode,
   onCloseHandler,
   children,
@@ -28,7 +28,7 @@ export const LayerSettingsMenu = ({
   const [refNode, setRefNode] = useState<HTMLDivElement | null>(null);
   const settingsButtonNode =
     forElementNode &&
-    forElementNode.getElementsByClassName("layer-settings")?.[0];
+    forElementNode.getElementsByClassName("settings")?.[0];
   useClickOutside([refNode, settingsButtonNode], onCloseHandler);
 
   const changeRefNode = useCallback((node: HTMLDivElement | null) => {

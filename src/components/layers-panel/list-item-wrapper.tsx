@@ -7,7 +7,7 @@ import ChevronIcon from "../../../public/icons/chevron.svg?svgr";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
-  ref?: ForwardedRef<HTMLDivElement>;
+  ref: ForwardedRef<HTMLDivElement>;
   id: string;
   selected: boolean;
   hasOptions?: boolean;
@@ -118,7 +118,7 @@ export const ListItemWrapper = forwardRef(
         {hasOptions && onOptionsClick && (
           <OptionsButton
             id={id}
-            className="layer-settings"
+            className="settings"
             onClick={() => onOptionsClick(id)}
           >
             <OptionsIcon />
