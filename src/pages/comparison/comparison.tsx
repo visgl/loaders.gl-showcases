@@ -16,7 +16,7 @@ import { StaticMap } from "react-map-gl";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile, parseTilesetUrlParams } from "../../utils";
-import { BASE_MAPS, INITIAL_MAP_STYLE } from "../../constants/map-styles";
+import { INITIAL_MAP_STYLE, MAP_STYLES } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import {
@@ -28,6 +28,26 @@ import {
 } from "../../types";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { EXAMPLES } from "../../constants/i3s-examples";
+
+import DarkMap from "../../../public/icons/dark-map.png";
+import LightMap from "../../../public/icons/light-map.png";
+import TerrainMap from "../../../public/icons/terrain-map.png";
+
+export const BASE_MAPS: BaseMap[] = [
+  {
+    id: "Dark",
+    name: "Dark",
+    iconUrl: DarkMap,
+    mapUrl: MAP_STYLES.Dark,
+  },
+  {
+    id: "Light",
+    name: "Light",
+    iconUrl: LightMap,
+    mapUrl: MAP_STYLES.Light,
+  },
+  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
+];
 
 const TRANSITION_DURAITON = 4000;
 
