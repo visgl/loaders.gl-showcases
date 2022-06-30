@@ -1,6 +1,6 @@
 import { ReactEventHandler, ReactNode } from "react";
 import styled, { DefaultTheme, useTheme } from "styled-components";
-import { color_accent_primary } from "../../constants/colors";
+import { color_accent_primary } from "../../../constants/colors";
 
 const Container = styled.div<{ theme: DefaultTheme }>`
   font-style: normal;

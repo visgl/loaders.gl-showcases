@@ -1,20 +1,20 @@
 import { useCallback, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { SettingsMenu } from "./settings-menu";
-import { color_accent_primary } from "../../constants/colors";
-import DeleteIcon from "../../../public/icons/delete.svg?svgr";
+import { color_accent_primary } from "../../../constants/colors";
+import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
 import { DeleteConfirmation } from "./delete-confirmation";
-import { BaseMap } from "../../types";
+import { BaseMap } from "../../../types";
 
 type MapOptionPanelProps = {
   baseMaps: BaseMap[];
   selectedBaseMapId: string;
-  onMapsSelect: (id: string) => void;
+  selectBaseMap: (id: string) => void;
   insertBaseMap: () => void;
-  deleteMap: (id: string) => void;
+  deleteBaseMap: (id: string) => void;
 };
 
 const MapOptionTitle = styled.div`
@@ -82,9 +82,9 @@ const MapSettingsIcon = styled.div`
 export const MapOptionPanel = ({
   baseMaps,
   selectedBaseMapId,
-  onMapsSelect,
+  selectBaseMap,
   insertBaseMap,
-  deleteMap,
+  deleteBaseMap,
 }: MapOptionPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsMapId, setSettingsMapId] = useState<string>("");
@@ -146,13 +146,13 @@ export const MapOptionPanel = ({
                   setShowMapSettings(true);
                   setSettingsMapId(baseMap.id);
                 }}
-                onMapsSelect={onMapsSelect}
+                onMapsSelect={selectBaseMap}
               />
               {mapToDeleteId === baseMap.id && (
                 <DeleteConfirmation
                   onKeepHandler={() => setMapToDeleteId("")}
                   onDeleteHandler={() => {
-                    deleteMap(settingsMapId);
+                    deleteBaseMap(settingsMapId);
                     setMapToDeleteId("");
                   }}
                 >

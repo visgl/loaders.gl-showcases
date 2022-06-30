@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
-import { ButtonSize } from "../layers-panel/layers-panel";
+import { ButtonSize } from "../comparison/layers-panel/layers-panel";
 
 type PlusButtonProps = {
   children?: React.ReactNode;

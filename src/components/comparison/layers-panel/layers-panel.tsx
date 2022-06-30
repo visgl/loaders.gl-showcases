@@ -1,13 +1,15 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { LayerExample, ListItemType, Theme, BaseMap } from "../../types";
 
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { InsertPanel } from "../insert-panel/insert-panel";
+import { useAppLayout } from "../../../utils/layout";
+import { LayerExample, ListItemType, Sublayer, BaseMap } from "../../../types";
+import { CloseButton } from "../../close-button/close-button";
+import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-
-import CustomMap from "../../../public/icons/custom-map.svg";
+import CustomMap from "../../../../public/icons/custom-map.svg";
+import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
+import { LayerSettingsPanel } from "./layer-settings-panel";
 
 enum Tabs {
   Layers,
@@ -22,6 +24,7 @@ export enum ButtonSize {
 type LayersPanelProps = {
   id: string;
   layers: LayerExample[];
+  sublayers: Sublayer[];
   selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: BaseMap[];
@@ -29,20 +32,16 @@ type LayersPanelProps = {
   insertBaseMap: (baseMap: BaseMap) => void;
   selectBaseMap: (id: string) => void;
   deleteBaseMap: (id: string) => void;
-  onMapsSelect: (map: BaseMap) => void;
-  onLayerSelect: (id: string) => void;
   onLayerInsert: (layer: LayerExample) => void;
+  onLayerSelect: (id: string) => void;
+  onLayerDelete: (id: string) => void;
+  onUpdateSublayerVisibility: (Sublayer) => void;
   onClose: () => void;
   onPointToLayer: () => void;
-  onLayerDelete: (id: string) => void;
 };
 
 type TabProps = {
   active: boolean;
-};
-
-type LayoutProps = {
-  layout: string;
 };
 
 type CustomItem = {
@@ -50,34 +49,6 @@ type CustomItem = {
   url: string;
   token?: string;
 };
-
-const Container = styled.div<LayoutProps>`
-  display: flex;
-  flex-direction: column;
-  width: 359px;
-  background: ${({ theme }) => theme.colors.mainCanvasColor};
-  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
-  border-radius: 8px;
-  padding-bottom: 26px;
-  position: relative;
-
-  max-height: ${getCurrentLayoutProperty({
-    desktop: "408px",
-    tablet: "408px",
-    mobile: "calc(50vh - 110px)",
-  })};
-`;
-
-const PanelHeader = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  position: relative;
-  border-radius: 8px;
-  margin-top: 20px;
-  gap: 32px;
-`;
 
 const Tab = styled.div<TabProps>`
   position: relative;
@@ -112,41 +83,6 @@ const Tab = styled.div<TabProps>`
     `}
 `;
 
-const CloseButton = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  right: 20px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &::after,
-  &::before {
-    content: "";
-    position: absolute;
-    height: 16px;
-    width: 2px;
-    background-color: ${({ theme }) => theme.colors.fontColor};
-  }
-
-  &::before {
-    transform: rotate(45deg);
-  }
-
-  &::after {
-    transform: rotate(-45deg);
-  }
-
-  &:hover {
-    &::before,
-    &::after {
-      background-color: ${({ theme }) => theme.colors.mainDimColorInverted};
-    }
-  }
-`;
-
 const Content = styled.div`
   height: 100%;
   display: flex;
@@ -158,14 +94,6 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const HorizontalLine = styled.div`
-  margin: 35px 16px 16px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
-  border-radius: 1px;
-  background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
-  opacity: 0.12;
-`;
-
 const InsertPanelWrapper = styled.div`
   position: absolute;
   top: 24px;
@@ -174,10 +102,20 @@ const InsertPanelWrapper = styled.div`
   left: calc(50% - 168px);
 `;
 
+const CloseButtonWrapper = styled.div`
+  position: absolute;
+  right: 6px;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+`;
+
 export const LayersPanel = ({
   id,
   type,
   layers,
+  sublayers,
   selectedLayerIds,
   onLayerInsert,
   onLayerSelect,
@@ -187,12 +125,14 @@ export const LayersPanel = ({
   insertBaseMap,
   selectBaseMap,
   deleteBaseMap,
+  onUpdateSublayerVisibility,
   onClose,
   onPointToLayer,
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
 
   const [showInsertPanel, setShowInsertPanel] = useState(false);
+  const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const layout = useAppLayout();
 
@@ -229,55 +169,71 @@ export const LayersPanel = ({
 
   return (
     <Container id={id} layout={layout}>
-      <PanelHeader>
-        <Tab
-          id="layers-tab"
-          active={tab === Tabs.Layers}
-          onClick={() => setTab(Tabs.Layers)}
-        >
-          Layers
-        </Tab>
-        <Tab
-          id="map-options-tab"
-          active={tab === Tabs.MapOptions}
-          onClick={() => setTab(Tabs.MapOptions)}
-        >
-          Map Options
-        </Tab>
-        <CloseButton id="layers-panel-close-button" onClick={onClose} />
-      </PanelHeader>
-      <HorizontalLine />
-      <Content>
-        {tab === Tabs.Layers && (
-          <LayersControlPanel
-            layers={layers}
-            type={type}
-            selectedLayerIds={selectedLayerIds}
-            onLayerSelect={onLayerSelect}
-            onLayerInsertClick={() => setShowInsertPanel(true)}
-            onPointToLayer={onPointToLayer}
-            deleteLayer={onLayerDelete}
-          />
-        )}
-        {tab === Tabs.MapOptions && (
-          <MapOptionPanel
-            baseMaps={baseMaps}
-            selectedBaseMapId={selectedBaseMapId}
-            onMapsSelect={selectBaseMap}
-            insertBaseMap={() => setShowInsertMapPanel(true)}
-            deleteMap={deleteBaseMap}
-          />
-        )}
-      </Content>
+      {!showLayerSettings && (
+        <>
+          <PanelHeader panel={Panels.Layers}>
+            <Tab
+              id="layers-tab"
+              active={tab === Tabs.Layers}
+              onClick={() => setTab(Tabs.Layers)}
+            >
+              Layers
+            </Tab>
+            <Tab
+              id="map-options-tab"
+              active={tab === Tabs.MapOptions}
+              onClick={() => setTab(Tabs.MapOptions)}
+            >
+              Map Options
+            </Tab>
+          </PanelHeader>
+          <CloseButtonWrapper>
+            <CloseButton id="layers-panel-close-button" onClick={onClose} />
+          </CloseButtonWrapper>
+          <HorizontalLine />
+          <Content>
+            {tab === Tabs.Layers && (
+              <LayersControlPanel
+                layers={layers}
+                type={type}
+                selectedLayerIds={selectedLayerIds}
+                hasSettings={Boolean(sublayers.length)}
+                onLayerSelect={onLayerSelect}
+                onLayerInsertClick={() => setShowInsertPanel(true)}
+                onLayerSettingsClick={() => setShowLayerSettings(true)}
+                onPointToLayer={onPointToLayer}
+                deleteLayer={onLayerDelete}
+              />
+            )}
+            {tab === Tabs.MapOptions && (
+              <MapOptionPanel
+                baseMaps={baseMaps}
+                selectedBaseMapId={selectedBaseMapId}
+                selectBaseMap={selectBaseMap}
+                insertBaseMap={() => setShowInsertMapPanel(true)}
+                deleteBaseMap={deleteBaseMap}
+              />
+            )}
+          </Content>
 
-      {showInsertPanel && (
-        <InsertPanelWrapper>
-          <InsertPanel
-            title={"Insert Layer"}
-            onInsert={(layer) => handleInsertLayer(layer)}
-            onCancel={() => setShowInsertPanel(false)}
-          />
-        </InsertPanelWrapper>
+          {showInsertPanel && (
+            <InsertPanelWrapper>
+              <InsertPanel
+                title={"Insert Layer"}
+                onInsert={(layer) => handleInsertLayer(layer)}
+                onCancel={() => setShowInsertPanel(false)}
+              />
+            </InsertPanelWrapper>
+          )}
+        </>
+      )}
+      {showLayerSettings && (
+        <LayerSettingsPanel
+          sublayers={sublayers}
+          onUpdateSublayerVisibility={onUpdateSublayerVisibility}
+          onBackClick={() => setShowLayerSettings(false)}
+          onCloseClick={onClose}
+        />
       )}
 
       {showInsertMapPanel && (
