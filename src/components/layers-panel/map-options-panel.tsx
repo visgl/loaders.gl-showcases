@@ -13,7 +13,7 @@ type MapOptionPanelProps = {
   baseMaps: BaseMap[];
   selectedBaseMapId: string;
   onMapsSelect: (id: string) => void;
-  onBaseMapInsert: () => void;
+  insertBaseMap: () => void;
   deleteMap: (id: string) => void;
 };
 
@@ -83,7 +83,7 @@ export const MapOptionPanel = ({
   baseMaps,
   selectedBaseMapId,
   onMapsSelect,
-  onBaseMapInsert,
+  insertBaseMap,
   deleteMap,
 }: MapOptionPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -164,7 +164,7 @@ export const MapOptionPanel = ({
         })}
       </MapList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Big} onClick={onBaseMapInsert}>
+        <PlusButton buttonSize={ButtonSize.Big} onClick={insertBaseMap}>
           Insert Base Map
         </PlusButton>
       </InsertButtons>

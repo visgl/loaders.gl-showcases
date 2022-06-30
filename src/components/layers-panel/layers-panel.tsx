@@ -26,9 +26,9 @@ type LayersPanelProps = {
   type: ListItemType;
   baseMaps: BaseMap[];
   selectedBaseMapId: string;
-  onBaseMapInsert: (baseMap: BaseMap) => void;
-  onBaseMapSelect: (id: string) => void;
-  onBaseMapDelete: (id: string) => void;
+  insertBaseMap: (baseMap: BaseMap) => void;
+  selectBaseMap: (id: string) => void;
+  deleteBaseMap: (id: string) => void;
   onMapsSelect: (map: BaseMap) => void;
   onLayerSelect: (id: string) => void;
   onLayerInsert: (layer: LayerExample) => void;
@@ -184,9 +184,9 @@ export const LayersPanel = ({
   onLayerDelete,
   baseMaps,
   selectedBaseMapId,
-  onBaseMapInsert,
-  onBaseMapSelect,
-  onBaseMapDelete,
+  insertBaseMap,
+  selectBaseMap,
+  deleteBaseMap,
   onClose,
   onPointToLayer,
 }: LayersPanelProps) => {
@@ -223,7 +223,7 @@ export const LayersPanel = ({
       custom: true,
     };
 
-    onBaseMapInsert(newMap);
+    insertBaseMap(newMap);
     setShowInsertMapPanel(false);
   };
 
@@ -263,9 +263,9 @@ export const LayersPanel = ({
           <MapOptionPanel
             baseMaps={baseMaps}
             selectedBaseMapId={selectedBaseMapId}
-            onMapsSelect={onBaseMapSelect}
-            onBaseMapInsert={() => setShowInsertMapPanel(true)}
-            deleteMap={onBaseMapDelete}
+            onMapsSelect={selectBaseMap}
+            insertBaseMap={() => setShowInsertMapPanel(true)}
+            deleteMap={deleteBaseMap}
           />
         )}
       </Content>

@@ -16,7 +16,7 @@ import { StaticMap } from "react-map-gl";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { getElevationByCentralTile, parseTilesetUrlParams } from "../../utils";
-import { INITIAL_MAP_STYLE, MAP_STYLES } from "../../constants/map-styles";
+import { MAP_STYLES } from "../../constants/map-styles";
 import { color_brand_primary } from "../../constants/colors";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import {
@@ -196,28 +196,15 @@ const RightLayersPanelWrapper = styled(LeftLayersPanelWrapper)`
   })};
 `;
 
-const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
-
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   let currentViewport: WebMercatorViewport = null;
 
-  const [leftSideExamples, setLeftSideExamples] = useState<LayerExample[]>(() =>
-    getLayerExamples()
-  );
-
-  const [rightSideExamples, setRightSideExamples] = useState<LayerExample[]>(
-    () => getLayerExamples()
-  );
-
-  const [leftSideSelectedExampleId, setLeftSideSelectedExampleId] =
-    useState<string>("");
-
-  const [rightSideSelectedExampleId, setRightSideSelectedExampleId] =
-    useState<string>("");
-
+  const [examplesLeftSide, setExamplesLeftSide] =
+    useState<LayerExample[]>(EXAMPLES);
+  const [examplesRightSide, setExamplesRightSide] =
+    useState<LayerExample[]>(EXAMPLES);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
-  const [selectedBaseMapId, setSelectedBaseMapId] = useState<string>("Dark");
-  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
+  const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
 
   const [terrainTiles, setTerrainTiles] = useState({});
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -309,10 +296,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       ...viewState,
       position: [0, 0, elevation],
     });
-  };
-
-  const onMapsSelect = (map: BaseMap) => {
-    setSelectedMapStyle(map.mapUrl || "Terrain");
   };
 
   const onPointToLayer = (side: "left" | "right") => {
@@ -494,7 +477,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       ];
     }
 
-    if (selectedMapStyle === "Terrain") {
+    if (selectedBaseMap.id === "Terrain") {
       const terrainLayer = renderTerrainLayer();
       result.push(terrainLayer);
     }
@@ -508,14 +491,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   ) => {
     switch (side) {
       case "left":
-        setLeftSideExamples((prevValues) => [...prevValues, newLayer]);
+        setExamplesLeftSide((prevValues) => [...prevValues, newLayer]);
         setLayerLeftSide(newLayer);
-        setLeftSideSelectedExampleId(newLayer.id);
         break;
       case "right":
-        setRightSideExamples((prevValues) => [...prevValues, newLayer]);
+        setExamplesRightSide((prevValues) => [...prevValues, newLayer]);
         setLayerRightSide(newLayer);
-        setRightSideSelectedExampleId(newLayer.id);
         break;
     }
   };
@@ -523,13 +504,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const handleDeleteExample = (id: string, side: "left" | "right") => {
     switch (side) {
       case "left":
-        setLeftSideExamples((prevValues) =>
+        setExamplesLeftSide((prevValues) =>
           prevValues.filter((example) => example.id !== id)
         );
         setLayerLeftSide(null);
         break;
       case "right":
-        setRightSideExamples((prevValues) =>
+        setExamplesRightSide((prevValues) =>
           prevValues.filter((example) => example.id !== id)
         );
         setLayerRightSide(null);
@@ -540,7 +521,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const handleSelectExample = (id: string, side: "left" | "right") => {
     switch (side) {
       case "left": {
-        const selectedExample = leftSideExamples.find(
+        const selectedExample = examplesLeftSide.find(
           (example) => example.id === id
         );
 
@@ -550,19 +531,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           }
 
           setLayerLeftSide(selectedExample);
-          setLeftSideSelectedExampleId(id);
         }
 
         break;
       }
       case "right": {
-        const selectedExample = rightSideExamples.find(
+        const selectedExample = examplesRightSide.find(
           (example) => example.id === id
         );
 
         if (selectedExample) {
           setLayerRightSide(selectedExample);
-          setRightSideSelectedExampleId(id);
         }
       }
     }
@@ -570,30 +549,28 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const handleInsertBaseMap = (baseMap: BaseMap) => {
     setBaseMaps((prevValues) => [...prevValues, baseMap]);
-    setSelectedBaseMapId(baseMap.id);
-    setSelectedMapStyle(baseMap.mapUrl || "Terrain");
+    setSelectedBaseMap(baseMap);
   };
 
   const handleSelectBaseMap = (baseMapId: string) => {
-    setSelectedBaseMapId(baseMapId);
+    const baseMap = baseMaps.find((map) => map.id === baseMapId);
 
-    const selectedBaseMap = baseMaps.find(
-      (baseMap) => baseMap.id === baseMapId
-    );
-
-    setSelectedMapStyle(selectedBaseMap?.mapUrl || "Terrain");
+    if (baseMap) {
+      setSelectedBaseMap(baseMap);
+    }
   };
 
   const handleDeleteBaseMap = (baseMapId: string) => {
-    setSelectedBaseMapId("Dark");
+    // setSelectedBaseMapId("Dark");
     setBaseMaps((prevValues) =>
       prevValues.filter((baseMap) => baseMap.id !== baseMapId)
     );
 
-    const darkMapStyle = baseMaps.find((baseMap) => baseMap.id === "Dark");
-
-    setSelectedMapStyle(darkMapStyle?.mapUrl || "Terrain");
+    setSelectedBaseMap(BASE_MAPS[0]);
   };
+
+  const selectedLeftSideLayerIds = layerLeftSide ? [layerLeftSide.id] : [];
+  const selectedRightSideLayerIds = layerRightSide ? [layerRightSide.id] : [];
 
   return (
     <Container layout={layout}>
@@ -609,8 +586,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          {selectedMapStyle !== "Terrain" && (
-            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedBaseMap.id !== "Terrain" && (
+            <StaticMap mapStyle={selectedBaseMap.mapUrl} preventStyleDiffing />
           )}
         </DeckGL>
         <LeftSideToolsPanelWrapper layout={layout}>
@@ -626,12 +603,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             <LayersPanel
               id="left-layers-panel"
               type={ListItemType.Radio}
-              layers={leftSideExamples}
-              selectedLayerIds={[leftSideSelectedExampleId]}
+              layers={examplesLeftSide}
+              selectedLayerIds={selectedLeftSideLayerIds}
               onLayerInsert={(newLayer) =>
                 handleInsertExample(newLayer, "left")
               }
-              onMapsSelect={onMapsSelect}
+              onMapsSelect={setSelectedBaseMap}
               onLayerSelect={(id: string) => handleSelectExample(id, "left")}
               onLayerDelete={(id) => handleDeleteExample(id, "left")}
               onPointToLayer={() => onPointToLayer("left")}
@@ -639,10 +616,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 handleChangeLeftPanelVisibility(ActiveButton.options)
               }
               baseMaps={baseMaps}
-              selectedBaseMapId={selectedBaseMapId}
-              onBaseMapInsert={handleInsertBaseMap}
-              onBaseMapSelect={handleSelectBaseMap}
-              onBaseMapDelete={handleDeleteBaseMap}
+              selectedBaseMapId={selectedBaseMap.id}
+              insertBaseMap={handleInsertBaseMap}
+              selectBaseMap={handleSelectBaseMap}
+              deleteBaseMap={handleDeleteBaseMap}
             />
           </LeftLayersPanelWrapper>
         )}
@@ -661,8 +638,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           {({ viewport }) => {
             currentViewport = viewport;
           }}
-          {selectedMapStyle !== "Terrain" && (
-            <StaticMap mapStyle={selectedMapStyle} preventStyleDiffing />
+          {selectedBaseMap.id !== "Terrain" && (
+            <StaticMap mapStyle={selectedBaseMap.mapUrl} preventStyleDiffing />
           )}
         </DeckGL>
         <RightSideToolsPanelWrapper layout={layout}>
@@ -678,12 +655,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightLayersPanelWrapper layout={layout}>
             <LayersPanel
               id="right-layers-panel"
-              layers={rightSideExamples}
-              selectedLayerIds={[rightSideSelectedExampleId]}
+              layers={examplesRightSide}
+              selectedLayerIds={selectedRightSideLayerIds}
               onLayerInsert={(newLayer) =>
                 handleInsertExample(newLayer, "right")
               }
-              onMapsSelect={onMapsSelect}
+              onMapsSelect={setSelectedBaseMap}
               onLayerSelect={(id: string) => handleSelectExample(id, "right")}
               onLayerDelete={(id) => handleDeleteExample(id, "right")}
               onPointToLayer={() => onPointToLayer("right")}
@@ -692,10 +669,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 handleChangeRightPanelVisibility(ActiveButton.options)
               }
               baseMaps={baseMaps}
-              selectedBaseMapId={selectedBaseMapId}
-              onBaseMapInsert={handleInsertBaseMap}
-              onBaseMapSelect={handleSelectBaseMap}
-              onBaseMapDelete={handleDeleteBaseMap}
+              selectedBaseMapId={selectedBaseMap.id}
+              insertBaseMap={handleInsertBaseMap}
+              selectBaseMap={handleSelectBaseMap}
+              deleteBaseMap={handleDeleteBaseMap}
             />
           </RightLayersPanelWrapper>
         )}
