@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 
 import { useAppLayout } from "../../../utils/layout";
 import { EXAMPLES } from "../../../constants/i3s-examples";
+import { BASE_MAPS } from "../../../constants/map-styles";
 import {
   LayerExample,
   ListItemType,
@@ -13,9 +14,6 @@ import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import DarkMap from "../../../../public/icons/dark-map.png";
-import LightMap from "../../../../public/icons/light-map.png";
-import TerrainMap from "../../../../public/icons/terrain-map.png";
 import CustomMap from "../../../../public/icons/custom-map.svg";
 import {
   Container,
@@ -117,23 +115,6 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const BASE_MAPS: BaseMap[] = [
-  {
-    id: "Dark",
-    name: "Dark",
-    iconUrl: DarkMap,
-    mapUrl:
-      "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-  },
-  {
-    id: "Light",
-    name: "Light",
-    iconUrl: LightMap,
-    mapUrl:
-      "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-  },
-  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: null },
-];
 const getLayerExamples = (): LayerExample[] => Object.values(EXAMPLES);
 
 export const LayersPanel = ({

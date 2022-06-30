@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { getTile3d } from "../../../test/tile-stub";
 import { TileTooltip } from "./tile-tooltip";
 
+jest.mock("../../../constants/map-styles", () => "No data");
+
 describe("Tooltip Panel", () => {
   let tile3d;
   beforeEach(() => {
