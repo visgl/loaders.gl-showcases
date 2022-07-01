@@ -7,13 +7,14 @@ import { SettingsMenu } from "./settings-menu";
 import { color_accent_primary } from "../../../constants/colors";
 import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
 import { DeleteConfirmation } from "./delete-confirmation";
+import { BaseMap } from "../../../types";
 
 type MapOptionPanelProps = {
-  baseMaps: any[];
-  selectedMap: string;
-  onMapsSelect: (id: string) => void;
-  onBaseMapInsert: () => void;
-  deleteMap: (id: string) => void;
+  baseMaps: BaseMap[];
+  selectedBaseMapId: string;
+  selectBaseMap: (id: string) => void;
+  insertBaseMap: () => void;
+  deleteBaseMap: (id: string) => void;
 };
 
 const MapOptionTitle = styled.div`
@@ -80,10 +81,10 @@ const MapSettingsIcon = styled.div`
 
 export const MapOptionPanel = ({
   baseMaps,
-  selectedMap,
-  onMapsSelect,
-  onBaseMapInsert,
-  deleteMap,
+  selectedBaseMapId,
+  selectBaseMap,
+  insertBaseMap,
+  deleteBaseMap,
 }: MapOptionPanelProps) => {
   const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsMapId, setSettingsMapId] = useState<string>("");
@@ -129,8 +130,9 @@ export const MapOptionPanel = ({
       <MapOptionTitle>Base Map</MapOptionTitle>
       <MapList>
         {baseMaps.map((baseMap) => {
-          const isMapSelected = selectedMap === baseMap.id;
+          const isMapSelected = selectedBaseMapId === baseMap.id;
           const isCustomMap = baseMap.custom || false;
+
           return (
             <Fragment key={baseMap.id}>
               <BaseMapListItem
@@ -144,13 +146,13 @@ export const MapOptionPanel = ({
                   setShowMapSettings(true);
                   setSettingsMapId(baseMap.id);
                 }}
-                onMapsSelect={onMapsSelect}
+                onMapsSelect={selectBaseMap}
               />
               {mapToDeleteId === baseMap.id && (
                 <DeleteConfirmation
                   onKeepHandler={() => setMapToDeleteId("")}
                   onDeleteHandler={() => {
-                    deleteMap(settingsMapId);
+                    deleteBaseMap(settingsMapId);
                     setMapToDeleteId("");
                   }}
                 >
@@ -162,7 +164,7 @@ export const MapOptionPanel = ({
         })}
       </MapList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Big} onClick={onBaseMapInsert}>
+        <PlusButton buttonSize={ButtonSize.Big} onClick={insertBaseMap}>
           Insert Base Map
         </PlusButton>
       </InsertButtons>
