@@ -90,7 +90,9 @@ export const ViewerApp = () => {
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);
-  const [metadata, setMetadata] = useState<SceneLayer3D[] | null>(null);
+  const [metadata, setMetadata] = useState<{ layers: SceneLayer3D[] } | null>(
+    null
+  );
 
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] =
