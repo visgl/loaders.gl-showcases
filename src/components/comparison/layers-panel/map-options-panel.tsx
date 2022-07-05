@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, Fragment } from "react";
 import styled from "styled-components";
-import { BaseMapListItem } from "./base-map-list-item";
+import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
 import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { SettingsMenu } from "./settings-menu";

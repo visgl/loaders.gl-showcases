@@ -11,6 +11,10 @@ module.exports = {
   // Stop running tests after `n` failures
   // bail: 0,
 
+  moduleNameMapper: {
+    "\\.svg?svgr$": "<rootDir>/__mocks__/svg.js",
+  },
+
   // The directory where Jest should store its cached dependency information
   // cacheDirectory: "/tmp/jest_rs",
 
