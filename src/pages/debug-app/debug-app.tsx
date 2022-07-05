@@ -158,7 +158,9 @@ const colorMap = new ColorMap();
 export const DebugApp = () => {
   const forceUpdate = useForceUpdate();
   let statsWidgetContainer = useRef(null);
-  const [metadata, setMetadata] = useState<SceneLayer3D[] | null>(null);
+  const [metadata, setMetadata] = useState<{ layers: SceneLayer3D[] } | null>(
+    null
+  );
   const [token, setToken] = useState<string | null>(null);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [debugOptions, setDebugOptions] = useState(INITIAL_DEBUG_OPTIONS_STATE);

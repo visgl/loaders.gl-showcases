@@ -97,7 +97,7 @@ type DeckGlI3sProps = {
   /** If should create independent viewport for minimap */
   createIndependentMinimapViewport?: boolean;
   /** Terrain visibility */
-  showTerrain: boolean;
+  showTerrain?: boolean;
   /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
   mapStyle?: string;
   /** Color mode for tiles */
@@ -134,7 +134,7 @@ type DeckGlI3sProps = {
   /** Normals lenght in meters */
   normalsLength?: number;
   /** http://<root-url>/SceneServer json */
-  metadata: SceneLayer3D[] | null;
+  metadata: { layers: SceneLayer3D[] } | null;
   /** Basepath of the tileset of the selected tile */
   selectedTilesetBasePath?: string | null;
   /** Tile, selected by picking event */
@@ -338,7 +338,6 @@ export const DeckGlI3s = ({
         main: { pitch, bearing },
       } = viewState;
 
-      // @ts-expect-error - Property 'layers' does not exist on type 'never'.
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
       /**
        * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
@@ -397,9 +396,7 @@ export const DeckGlI3s = ({
       viewportTraversersMap,
       loadTiles,
     });
-    if (onTilesetLoad) {
-      onTilesetLoad(tileset);
-    }
+    onTilesetLoad(tileset);
   };
 
   const onTileLoadHandler = (tile) => {
@@ -412,9 +409,7 @@ export const DeckGlI3s = ({
     } else {
       selectOriginalTextureForTile(tile);
     }
-    if (onTileLoad) {
-      onTileLoad(tile);
-    }
+    onTileLoad(tile);
   };
 
   const onTerrainTileLoad = (tile) => {

@@ -24,7 +24,7 @@ type LayersControlPanelProps = {
   selectedLayerIds: string[];
   type: ListItemType;
   hasSettings: boolean;
-  onLayersSelect: (id: string) => void;
+  onLayerSelect: (id: string) => void;
   onLayerInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: () => void;
@@ -92,8 +92,8 @@ export const LayersControlPanel = ({
   layers,
   type,
   selectedLayerIds,
+  onLayerSelect,
   hasSettings = false,
-  onLayersSelect,
   onLayerInsertClick,
   onLayerSettingsClick,
   onPointToLayer,
@@ -182,7 +182,7 @@ export const LayersControlPanel = ({
                 type={type}
                 selected={isLayerSelected}
                 hasOptions={true}
-                onChange={onLayersSelect}
+                onChange={onLayerSelect}
                 onOptionsClick={() => {
                   setShowLayerSettings(true);
                   setSettingsLayerId(layer.id);
