@@ -491,6 +491,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
         <DeckGlI3s
+          id="first-deck-container"
           parentViewState={viewState}
           showTerrain={selectedBaseMap.id === "Terrain"}
           mapStyle={selectedBaseMap.mapUrl}
@@ -553,6 +554,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <Devider layout={layout} />
       <DeckWrapper layout={layout}>
         <DeckGlI3s
+          id="second-deck-container"
           parentViewState={viewState}
           showTerrain={selectedBaseMap.id === "Terrain"}
           mapStyle={selectedBaseMap.mapUrl}

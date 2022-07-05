@@ -92,6 +92,8 @@ const NORMALS_COLOR = [255, 0, 0];
 const colorMap = new ColorMap();
 
 type DeckGlI3sProps = {
+  /** DeckGL component id */
+  id?: string;
   /**
    * View state controlled by parent component
    * if is not set `viewState` state variable will be used
@@ -166,6 +168,7 @@ type DeckGlI3sProps = {
 };
 
 export const DeckGlI3s = ({
+  id,
   parentViewState,
   showMinimap,
   createIndependentMinimapViewport = false,
@@ -674,6 +677,7 @@ export const DeckGlI3s = ({
 
   return (
     <DeckGL
+      id={id}
       layers={renderLayers()}
       viewState={getViewState()}
       views={getViews()}
