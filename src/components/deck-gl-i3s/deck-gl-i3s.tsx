@@ -644,13 +644,15 @@ export const DeckGlI3s = ({
       {!showTerrain && (
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
       )}
-      <View id="minimap">
-        <StaticMap
-          reuseMaps
-          mapStyle={mapStyle && CONTRAST_MAP_STYLES[mapStyle]}
-          preventStyleDiffing={true}
-        />
-      </View>
+      {mapStyle && (
+        <View id="minimap">
+          <StaticMap
+            reuseMaps
+            mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
+            preventStyleDiffing={true}
+          />
+        </View>
+      )}
     </DeckGL>
   );
 };
