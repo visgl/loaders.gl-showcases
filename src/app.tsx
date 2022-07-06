@@ -41,7 +41,7 @@ const GlobalStyle = createGlobalStyle`
 /**
  * @todo Add colors and styles for each theme.
  */
-const THEMES: AppThemes = {
+export const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
       mainColor: color_brand_primary,

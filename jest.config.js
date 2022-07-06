@@ -12,7 +12,8 @@ module.exports = {
   // bail: 0,
 
   moduleNameMapper: {
-    "\\.svg?svgr$": "<rootDir>/__mocks__/svg.js",
+    "\\.png": "<rootDir>/__mocks__/fileMock.js",
+    "\\.svg": "<rootDir>/__mocks__/svg.js",
   },
 
   // The directory where Jest should store its cached dependency information
