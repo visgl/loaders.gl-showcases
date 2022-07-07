@@ -1,1 +1,1 @@
-export default "SvgrURL";
+export default "div";
