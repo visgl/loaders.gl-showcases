@@ -13,7 +13,7 @@ import {
   hilite_canvas_primary,
   hilite_canvas_secondary,
   color_accent_secondary,
-  color_accent_tertiary
+  color_accent_tertiary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -41,7 +41,7 @@ const GlobalStyle = createGlobalStyle`
 /**
  * @todo Add colors and styles for each theme.
  */
-export const THEMES: AppThemes = {
+const THEMES: AppThemes = {
   [Theme.Dark]: {
     colors: {
       mainColor: color_brand_primary,
