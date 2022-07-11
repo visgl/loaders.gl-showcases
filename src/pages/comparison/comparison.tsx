@@ -221,14 +221,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   );
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
   const [isCompressedGeometryLeft, setIsCompressedGeometryLeft] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedTexturesLeft, setIsCompressedTexturesLeft] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedGeometryRight, setIsCompressedGeometryRight] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
-    useState<boolean>(false);
-  const [, setCounter] = useState(0);
+    useState<boolean>(true);
 
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
@@ -377,22 +376,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const handleGeometryChangeLeft = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedGeometryLeft((prevValue) => !prevValue);
   };
 
   const handleTexturesChangeLeft = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedTexturesLeft((prevValue) => !prevValue);
   };
 
   const handleGeometryChangeRight = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedGeometryRight((prevValue) => !prevValue);
   };
 
   const handleTexturesChangeRight = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedTexturesRight((prevValue) => !prevValue);
   };
 
@@ -590,7 +585,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <DeckWrapper layout={layout}>
         <DeckGlI3s
           id="second-deck-container"
-          parentViewState={viewState}
+          parentViewState={{
+            ...viewState,
+            main: {
+              ...viewState.main,
+              transitionDuration: undefined,
+              transitionInterpolator: undefined,
+            },
+          }}
           showTerrain={selectedBaseMap.id === "Terrain"}
           mapStyle={selectedBaseMap.mapUrl}
           i3sLayers={getI3sLayers("right")}

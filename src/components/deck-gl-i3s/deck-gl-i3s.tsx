@@ -207,7 +207,8 @@ export const DeckGlI3s = ({
   onClick,
   onTilesetLoad,
   onTileLoad,
-  onTileUnload,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onTileUnload = () => {},
 }: DeckGlI3sProps) => {
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
@@ -610,7 +611,7 @@ export const DeckGlI3s = ({
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,
