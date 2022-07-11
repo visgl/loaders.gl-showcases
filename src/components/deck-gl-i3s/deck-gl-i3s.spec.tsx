@@ -202,11 +202,17 @@ describe("Deck.gl I3S map component", () => {
         autoHighlight,
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
-      expect(id).toBe("tile-layer-undefined");
+      expect(id).toBe(
+        "tile-layer-undefined-draco-true-compressed-textures-true"
+      );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
       expect(loadOptions).toEqual({
-        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+        i3s: {
+          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useCompressedTextures: true,
+          useDracoGeometry: true,
+        },
       });
       expect(pickable).toBe(false);
       expect(autoHighlight).toBe(false);
@@ -259,6 +265,8 @@ describe("Deck.gl I3S map component", () => {
       expect(loadOptions).toEqual({
         i3s: {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useCompressedTextures: true,
+          useDracoGeometry: true,
           token: "<abcdefg123456>",
         },
       });
@@ -284,8 +292,13 @@ describe("Deck.gl I3S map component", () => {
 
       callRender(rerender, { onTileLoad: undefined });
       const { onTileLoad: onTileLoad2 } = Tile3DLayer.mock.lastCall[0];
-       act(() => onTileLoad2(tile3d));
-       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
+      act(() => onTileLoad2(tile3d));
+      expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
+
+      callRender(rerender, { onTileUnload: undefined });
+      const { onTileUnload: onTileUnload2 } = Tile3DLayer.mock.lastCall[0];
+      expect(() => act(() => onTileUnload2(tile3d))).not.toThrow();
+      expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
     });
 
     it("Should call Tile3DLayer color callback", () => {
