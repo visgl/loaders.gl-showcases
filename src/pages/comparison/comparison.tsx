@@ -42,6 +42,7 @@ import { EXAMPLES } from "../../constants/i3s-examples";
 import DarkMap from "../../../public/icons/dark-map.png";
 import LightMap from "../../../public/icons/light-map.png";
 import TerrainMap from "../../../public/icons/terrain-map.png";
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 
 export const BASE_MAPS: BaseMap[] = [
   {
@@ -167,6 +168,7 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
 
 const LeftPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
+  z-index: 2;
 
   left: ${getCurrentLayoutProperty({
     desktop: "100px",
@@ -553,7 +555,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setCounter((prevValue) => prevValue + 1);
     setIsCompressedTexturesRight((prevValue) => !prevValue);
   };
-  
+
   const handleInsertExample = (
     newLayer: LayerExample,
     side: "left" | "right"
@@ -801,6 +803,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           </RightPanelWrapper>
         )}
       </DeckWrapper>
+      <MapControllPanel />
     </Container>
   );
 };

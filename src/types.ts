@@ -42,6 +42,13 @@ export enum ExpandState {
   collapsed = "collapsed",
 }
 
+export enum CollapseDirection {
+  top,
+  bottom,
+  left,
+  right,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
