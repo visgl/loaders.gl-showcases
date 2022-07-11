@@ -220,6 +220,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     null
   );
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
+  const [isCompressedGeometryLeft, setIsCompressedGeometryLeft] =
+    useState<boolean>(false);
+  const [isCompressedTexturesLeft, setIsCompressedTexturesLeft] =
+    useState<boolean>(false);
+  const [isCompressedGeometryRight, setIsCompressedGeometryRight] =
+    useState<boolean>(false);
+  const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
+    useState<boolean>(false);
+  const [, setCounter] = useState(0);
 
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
@@ -367,6 +376,26 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
+  const handleGeometryChangeLeft = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedGeometryLeft((prevValue) => !prevValue);
+  };
+
+  const handleTexturesChangeLeft = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedTexturesLeft((prevValue) => !prevValue);
+  };
+
+  const handleGeometryChangeRight = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedGeometryRight((prevValue) => !prevValue);
+  };
+
+  const handleTexturesChangeRight = () => {
+    setCounter((prevValue) => prevValue + 1);
+    setIsCompressedTexturesRight((prevValue) => !prevValue);
+  };
+
   const handleInsertExample = (
     newLayer: LayerExample,
     side: "left" | "right"
@@ -497,6 +526,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           mapStyle={selectedBaseMap.mapUrl}
           i3sLayers={getI3sLayers("left")}
           lastLayerSelectedId={tilesetLeftSide?.url || ""}
+          useDracoGeometry={isCompressedGeometryLeft}
+          useCompressedTextures={isCompressedTexturesLeft}
           onViewStateChange={onViewStateChange}
           onTilesetLoad={(tileset: Tileset3D) => onTilesetLoad(tileset, "left")}
         />
@@ -543,6 +574,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftPanelWrapper layout={layout}>
             <ComparisonParamsPanel
               id="left-comparison-params-panel"
+              isCompressedGeometry={isCompressedGeometryLeft}
+              isCompressedTextures={isCompressedTexturesLeft}
+              onGeometryChange={handleGeometryChangeLeft}
+              onTexturesChange={handleTexturesChangeLeft}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.settings)
               }
@@ -560,6 +595,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           mapStyle={selectedBaseMap.mapUrl}
           i3sLayers={getI3sLayers("right")}
           lastLayerSelectedId={tilesetRightSide?.url || ""}
+          useDracoGeometry={isCompressedGeometryRight}
+          useCompressedTextures={isCompressedTexturesRight}
           onViewStateChange={onViewStateChange}
           onTilesetLoad={(tileset: Tileset3D) =>
             onTilesetLoad(tileset, "right")
@@ -606,6 +643,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightPanelWrapper layout={layout}>
             <ComparisonParamsPanel
               id="right-comparison-params-panel"
+              isCompressedGeometry={isCompressedGeometryRight}
+              isCompressedTextures={isCompressedTexturesRight}
+              onGeometryChange={handleGeometryChangeRight}
+              onTexturesChange={handleTexturesChangeRight}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.settings)
               }

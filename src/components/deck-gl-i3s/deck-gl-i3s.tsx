@@ -152,6 +152,10 @@ type DeckGlI3sProps = {
   autoHighlight?: boolean;
   /** List of initialized tilesets */
   loadedTilesets?: Tileset3D[];
+  /** I3S option to choose type of geometry */
+  useDracoGeometry?: boolean;
+  /** I3S option to choose type of textures */
+  useCompressedTextures?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
@@ -195,6 +199,8 @@ export const DeckGlI3s = ({
   selectedIndex,
   autoHighlight = false,
   loadedTilesets = [],
+  useDracoGeometry = true,
+  useCompressedTextures = true,
   onViewStateChange,
   onAfterRender,
   getTooltip,
@@ -589,10 +595,16 @@ export const DeckGlI3s = ({
       const loadOptions: {
         i3s: {
           coordinateSystem: number;
+          useDracoGeometry: boolean;
+          useCompressedTextures: boolean;
           token?: string;
         };
       } = {
-        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+        i3s: {
+          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useDracoGeometry,
+          useCompressedTextures,
+        },
       };
       if (layer.token) {
         loadOptions.i3s.token = layer.token;
