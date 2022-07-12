@@ -44,10 +44,15 @@ const IconButton = styled.div<{
 `;
 
 type ExpandIconProps = {
+  /** expanded/collapsed */
   expandState: ExpandState;
+  /** direction expander collapse to */
   collapseDirection?: CollapseDirection;
+  /** icon color for expanded state */
   fillExpanded?: string;
+  /** icon color for collapsed state */
   fillCollapsed?: string;
+  /** click event handler */
   onClick: (e: SyntheticEvent) => void;
 };
 export const ExpandIcon = ({

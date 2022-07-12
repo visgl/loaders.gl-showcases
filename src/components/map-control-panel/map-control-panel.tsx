@@ -77,7 +77,7 @@ export const MapControllPanel = () => {
   };
 
   return (
-    <Container>
+    <Container id="map-control-panel">
       <ExpandIcon
         expandState={expandState}
         collapseDirection={CollapseDirection.bottom}
