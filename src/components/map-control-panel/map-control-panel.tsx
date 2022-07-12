@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState } from "../../types";
+import { CollapseDirection, ExpandState, MapControlMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg?svgr";
@@ -8,6 +8,10 @@ import MinusIcon from "../../../public/icons/minus.svg?svgr";
 import PanIcon from "../../../public/icons/pan.svg?svgr";
 import OrbitIcon from "../../../public/icons/orbit.svg?svgr";
 import CompassIcon from "../../../public/icons/compass.svg?svgr";
+import {
+  color_brand_tertiary,
+  color_canvas_inverted,
+} from "../../constants/colors";
 
 const Container = styled.div`
   position: absolute;
@@ -22,7 +26,7 @@ const Container = styled.div`
   gap: 10px;
 `;
 
-const Button = styled.button`
+const Button = styled.button<{ active?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,14 +34,18 @@ const Button = styled.button`
   width: 44px;
   height: 44px;
   cursor: pointer;
-  background-color: ${({ theme }) => theme.colors.mainColor};
+  background-color: ${({ theme, active = false }) =>
+    active ? color_brand_tertiary : theme.colors.mainColor};
   background-position: center;
   border: none;
-  fill: ${({ theme }) => theme.colors.buttonIconColor};
+  fill: ${({ theme, active }) =>
+    active ? color_canvas_inverted : theme.colors.buttonIconColor};
 
   &:hover {
-    fill: ${({ theme }) => theme.colors.buttonDimIconColor};
-    background-color: ${({ theme }) => theme.colors.buttonDimColor};
+    fill: ${({ theme, active }) =>
+      active ? color_canvas_inverted : theme.colors.buttonDimIconColor};
+    background-color: ${({ theme, active = false }) =>
+      active ? color_brand_tertiary : theme.colors.buttonDimColor};
   }
 `;
 
@@ -45,7 +53,11 @@ export const MapControllPanel = () => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
+  const [mapControlMode, setMapControllMode] = useState<MapControlMode>(
+    MapControlMode.pan
+  );
   const theme = useTheme();
+
   const onExpandClickHandler = () => {
     setExpandState((prev) => {
       if (prev === ExpandState.expanded) {
@@ -54,6 +66,16 @@ export const MapControllPanel = () => {
       return ExpandState.expanded;
     });
   };
+
+  const toggleMapControlMode = () => {
+    setMapControllMode((prev) => {
+      if (prev === MapControlMode.pan) {
+        return MapControlMode.rotate;
+      }
+      return MapControlMode.pan;
+    });
+  };
+
   return (
     <Container>
       <ExpandIcon
@@ -71,10 +93,16 @@ export const MapControllPanel = () => {
           <Button>
             <MinusIcon />
           </Button>
-          <Button>
+          <Button
+            active={mapControlMode === MapControlMode.pan}
+            onClick={toggleMapControlMode}
+          >
             <PanIcon />
           </Button>
-          <Button>
+          <Button
+            active={mapControlMode === MapControlMode.rotate}
+            onClick={toggleMapControlMode}
+          >
             <OrbitIcon />
           </Button>
         </>

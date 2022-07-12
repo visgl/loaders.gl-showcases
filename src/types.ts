@@ -49,6 +49,11 @@ export enum CollapseDirection {
   right,
 }
 
+export enum MapControlMode {
+  pan,
+  rotate,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
