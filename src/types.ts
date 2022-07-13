@@ -43,6 +43,18 @@ export enum ExpandState {
   collapsed = "collapsed",
 }
 
+export enum CollapseDirection {
+  top,
+  bottom,
+  left,
+  right,
+}
+
+export enum MapControlMode {
+  pan,
+  rotate,
+}
+
 export type TileWarning = {
   type: string;
   title: string;

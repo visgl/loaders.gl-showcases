@@ -32,6 +32,7 @@ import { EXAMPLES } from "../../constants/i3s-examples";
 import DarkMap from "../../../public/icons/dark-map.png";
 import LightMap from "../../../public/icons/light-map.png";
 import TerrainMap from "../../../public/icons/terrain-map.png";
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 
 export const BASE_MAPS: BaseMap[] = [
@@ -145,6 +146,7 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
 
 const LeftPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
+  z-index: 2;
 
   left: ${getCurrentLayoutProperty({
     desktop: "100px",
@@ -656,6 +658,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           </RightPanelWrapper>
         )}
       </DeckWrapper>
+      <MapControllPanel />
     </Container>
   );
 };

@@ -1,9 +1,8 @@
 import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
-import styled, { css, useTheme } from "styled-components";
+import styled, { css } from "styled-components";
 import { ExpandState } from "../../../types";
 import { color_brand_quaternary } from "../../../constants/colors";
-
-import ChevronIcon from "../../../../public/icons/chevron.svg?svgr";
+import { ExpandIcon } from "../../expand-icon/expand-icon";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -83,18 +82,6 @@ const OptionsIcon = styled.div`
   }
 `;
 
-const ExpandIcon = styled.div<{ expandState: ExpandState }>`
-  transform: rotate(
-    ${({ expandState }) =>
-      expandState === ExpandState.expanded ? "" : "-"}90deg
-  );
-  width: 24px;
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const ListItemWrapper = forwardRef(
   (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
     const {
@@ -107,7 +94,6 @@ export const ListItemWrapper = forwardRef(
       onClick,
       onExpandClick,
     } = props;
-    const theme = useTheme();
     const onExpandClickHandler = (e: SyntheticEvent) => {
       e.stopPropagation();
       onExpandClick && onExpandClick();
@@ -125,9 +111,7 @@ export const ListItemWrapper = forwardRef(
           </OptionsButton>
         )}
         {expandState && (
-          <ExpandIcon expandState={expandState} onClick={onExpandClickHandler}>
-            <ChevronIcon fill={theme.colors.fontColor} />
-          </ExpandIcon>
+          <ExpandIcon expandState={expandState} onClick={onExpandClickHandler}/>
         )}
       </Container>
     );
