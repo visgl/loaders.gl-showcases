@@ -1,8 +1,8 @@
 import styled, { DefaultTheme } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
 
-import DarkModeIcon from "../../../public/icons/dark-mode.svg?svgr";
-import LightModeIcon from "../../../public/icons/light-mode.svg?svgr";
+import DarkModeIcon from "../../../public/icons/dark-mode.svg";
+import LightModeIcon from "../../../public/icons/light-mode.svg";
 
 import { Theme } from "../../utils/enums";
 

@@ -8,8 +8,7 @@ import {
   faInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const Container = styled.div`
@@ -39,11 +38,11 @@ const ToolButton = styled.button<{ active: boolean }>`
   border-radius: 5px;
   width: 100%;
   background: ${(props) => (props.active ? "#4F52CC" : "transparent")};
-  color: ${(props) => (props.active ? color_canvas_inverted : "rgba(255, 255 , 255, .8)")};
+  color: ${(props) => (props.active ? color_canvas_primary_inverted : "rgba(255, 255 , 255, .8)")};
   cursor: pointer;
 
   &:hover {
-    color: ${color_canvas_inverted};
+    color: ${color_canvas_primary_inverted};
   }
 `;
 
@@ -94,12 +93,12 @@ const TooltipCard = styled.div`
     color: ${color_brand_primary};
     justify-content: center;
     align-items: center;
-    background-color: ${color_canvas_inverted};
+    background-color: ${color_canvas_primary_inverted};
     width: 120px;
     border-radius: 4px;
 
     &:before {
-      border-color: transparent transparent ${color_canvas_inverted}  ${color_canvas_inverted};
+      border-color: transparent transparent ${color_canvas_primary_inverted}  ${color_canvas_primary_inverted};
     }
   }
 `;

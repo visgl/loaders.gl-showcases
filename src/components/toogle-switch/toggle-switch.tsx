@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { color_canvas_inverted } from "../../constants/colors";
+import { color_canvas_primary_inverted } from "../../constants/colors";
 
 const Switch = styled.div`
   position: relative;
@@ -41,7 +41,7 @@ const Slider = styled.span`
   transition: 0.4s;
   border-radius: 8px;
   &::after {
-    color: ${color_canvas_inverted};
+    color: ${color_canvas_primary_inverted};
   }
   &::before {
     position: absolute;
@@ -50,7 +50,7 @@ const Slider = styled.span`
     content: "";
     width: 13px;
     height: 13px;
-    background-color: ${color_canvas_inverted};
+    background-color: ${color_canvas_primary_inverted};
     transition: 0.4s;
     border-radius: 8px;
   }

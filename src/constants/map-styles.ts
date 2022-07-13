@@ -1,3 +1,4 @@
+import { BaseMap } from "../types";
 import { COLORED_BY } from "../utils";
 
 export const MAP_STYLES = {
@@ -16,6 +17,20 @@ export const CONTRAST_MAP_STYLES = {
   "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json":
     "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
 };
+
+export const BASE_MAPS: BaseMap[] = [
+  {
+    id: "Dark",
+    name: "Dark",
+    mapUrl: MAP_STYLES.Dark,
+  },
+  {
+    id: "Light",
+    name: "Light",
+    mapUrl: MAP_STYLES.Light,
+  },
+  { id: "Terrain", name: "Terrain", mapUrl: "" },
+];
 
 export const TILE_COLOR_MODES = {
   Original: COLORED_BY.ORIGINAL,

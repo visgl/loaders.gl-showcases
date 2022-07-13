@@ -60,8 +60,7 @@ import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
 
 import { Color, Font } from "../../constants/common";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
@@ -121,7 +120,7 @@ const MATERIAL_PICKER_STYLE = {
 const TILE_COLOR_SELECTOR = "Tile Color Selector";
 
 const HEADER_STYLE = {
-  color: color_canvas_inverted,
+  color: color_canvas_primary_inverted,
 };
 
 const CURSOR_STYLE = {
@@ -502,7 +501,7 @@ export const DebugApp = () => {
       cursor: isResetButtonDisabled ? "auto" : "pointer",
       color: isResetButtonDisabled
         ? "rgba(255,255,255,.6)"
-        : color_canvas_inverted,
+        : color_canvas_primary_inverted,
       background: isResetButtonDisabled ? color_brand_primary : "#4F52CC",
     };
   };

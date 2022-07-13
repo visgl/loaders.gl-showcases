@@ -2,8 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { Property } from "csstype";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
@@ -16,7 +15,7 @@ const FrameWrap = styled.div<{ isMinimapShown: boolean }>`
   -moz-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  background: ${color_canvas_inverted};
+  background: ${color_canvas_primary_inverted};
   border: 8px solid ${color_brand_primary};
   border-radius: 8px;
   overflow-y: auto;

@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
 import styled from "styled-components";
-import { color_brand_quinary } from "../../constants/colors";
+import { color_accent_primary } from "../../constants/colors";
 
 type InputProps = {
   id?: string;
@@ -35,13 +35,13 @@ const Input = styled.input<InputErrorProps>`
   background: ${({ theme }) => theme.colors.mainHiglightColor};
   border: 1px solid
     ${({ theme, error }) =>
-      error ? color_brand_quinary : theme.colors.mainHiglightColor};
+      error ? color_accent_primary : theme.colors.mainHiglightColor};
 
   &:hover {
     background: ${({ theme }) => theme.colors.mainDimColor};
     border: 1px solid
       ${({ theme, error }) =>
-        error ? color_brand_quinary : theme.colors.mainDimColor};
+        error ? color_accent_primary : theme.colors.mainDimColor};
   }
 
   &:focus {
@@ -62,7 +62,7 @@ const Label = styled.label<LabelProps>`
 const ErrorMessage = styled.span`
   display: block;
   margin-top: 8px;
-  color: ${color_brand_quinary};
+  color: ${color_accent_primary};
   font-style: normal;
   font-weight: 500;
   font-size: 14px;

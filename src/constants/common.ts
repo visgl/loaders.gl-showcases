@@ -1,5 +1,5 @@
 export const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
-import { color_brand_primary, color_canvas_inverted } from "./colors";
+import { color_brand_primary, color_canvas_primary_inverted, } from "./colors";
 
 export const DropDownStyle = `
   position: static;
@@ -13,7 +13,7 @@ export const DropDownStyle = `
   border-radius: 4px;
   box-sizing: border-box;
     option {
-      color: ${color_canvas_inverted};
+      color: ${color_canvas_primary_inverted};
       background: ${color_brand_primary};
       display: flex;
       white-space: pre;
@@ -28,7 +28,7 @@ export const DropDownStyle = `
 
 export const Color = `
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
 `;
 
 export const Font = `

@@ -5,7 +5,6 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { MAP_STYLES } from "../../constants/map-styles";
 import {
   buildSublayersTree,
   parseTilesetUrlParams,
@@ -26,30 +25,10 @@ import {
 import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../../components/comparison/comparison-params-panel/comparison-params-panel";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-
 import { EXAMPLES } from "../../constants/i3s-examples";
-
-import DarkMap from "../../../public/icons/dark-map.png";
-import LightMap from "../../../public/icons/light-map.png";
-import TerrainMap from "../../../public/icons/terrain-map.png";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-
-export const BASE_MAPS: BaseMap[] = [
-  {
-    id: "Dark",
-    name: "Dark",
-    iconUrl: DarkMap,
-    mapUrl: MAP_STYLES.Dark,
-  },
-  {
-    id: "Light",
-    name: "Light",
-    iconUrl: LightMap,
-    mapUrl: MAP_STYLES.Light,
-  },
-  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap, mapUrl: "" },
-];
+import { BASE_MAPS } from "../../constants/map-styles";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
