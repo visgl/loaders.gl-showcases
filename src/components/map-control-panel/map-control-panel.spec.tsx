@@ -5,9 +5,13 @@ import { MapControllPanel } from "./map-control-panel";
 describe("MapControllPanel", () => {
   let componentElement;
   let rerenderFunc;
+  const onZoomIn = jest.fn();
+  const onZoomOut = jest.fn();
 
   beforeEach(() => {
-    const { rerender, container } = renderWithTheme(<MapControllPanel />);
+    const { rerender, container } = renderWithTheme(
+      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
+    );
     rerenderFunc = rerender;
     componentElement = container.firstChild;
   });
@@ -24,11 +28,17 @@ describe("MapControllPanel", () => {
     const expander = componentElement?.childNodes[0];
     expect(expander).toBeInTheDocument();
     userEvent.click(expander);
-    renderWithTheme(<MapControllPanel />, rerenderFunc);
+    renderWithTheme(
+      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      rerenderFunc
+    );
     expect(componentElement?.childNodes.length).toBe(2);
 
     userEvent.click(expander);
-    renderWithTheme(<MapControllPanel />, rerenderFunc);
+    renderWithTheme(
+      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      rerenderFunc
+    );
     expect(componentElement?.childNodes.length).toBe(6);
   });
 });
