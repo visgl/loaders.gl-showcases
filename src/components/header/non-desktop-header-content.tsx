@@ -160,12 +160,12 @@ const Header = ({ isOpen, setIsOpen }) => {
   return (
     <>
       {!isOpen && (
-        <Button onClick={() => setIsOpen(true)}>
+        <Button id="burger-menu" onClick={() => setIsOpen(true)}>
           <BurgerIcon fill={theme.colors.fontColor} />
         </Button>
       )}
       {isOpen && (
-        <Button onClick={() => setIsOpen(false)}>
+        <Button id="close-header-menu" onClick={() => setIsOpen(false)}>
           <CloseIcon fill={theme.colors.fontColor} />
         </Button>
       )}
