@@ -93,59 +93,8 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Deck.gl I3S map component", () => {
-  beforeEach(() => {
-    DeckGL.mockClear();
-    TerrainLayer.mockClear();
-    (load as unknown as jest.Mock<typeof load>).mockClear();
-    (Tileset3D as jest.Mock<Tileset3D>).mockClear();
-    (
-      selectDebugTextureForTileset as jest.Mock<
-        typeof selectDebugTextureForTileset
-      >
-    ).mockClear();
-    (
-      selectOriginalTextureForTileset as jest.Mock<
-        typeof selectOriginalTextureForTileset
-      >
-    ).mockClear();
-    (
-      selectDebugTextureForTile as jest.Mock<typeof selectDebugTextureForTile>
-    ).mockClear();
-    (
-      selectOriginalTextureForTile as jest.Mock<
-        typeof selectOriginalTextureForTile
-      >
-    ).mockClear();
-    (
-      getFrustumBounds as unknown as jest.Mock<typeof getFrustumBounds>
-    ).mockClear();
-    (
-      getElevationByCentralTile as unknown as jest.Mock<
-        typeof getElevationByCentralTile
-      >
-    ).mockClear();
-    Tile3DLayer.mockClear();
-    LineLayer.mockClear();
-    simpleCallbackMock.mockClear();
-    (
-      BoundingVolumeLayer as unknown as jest.Mock<typeof BoundingVolumeLayer>
-    ).mockClear();
-    getColorMock.mockClear();
-    (buildMinimapData as jest.Mock<typeof buildMinimapData>).mockClear();
-    (
-      getNormalSourcePosition as unknown as jest.Mock<
-        typeof getNormalSourcePosition
-      >
-    ).mockClear();
-    (
-      getNormalTargetPosition as unknown as jest.Mock<
-        typeof getNormalTargetPosition
-      >
-    ).mockClear();
-  });
-
   it("Should render", () => {
-    callRender(render);
+    callRender(render, { loadedTilesets: undefined });
     expect(DeckGL).toHaveBeenCalled();
     const {
       children,
@@ -253,11 +202,17 @@ describe("Deck.gl I3S map component", () => {
         autoHighlight,
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
-      expect(id).toBe("tile-layer-undefined");
+      expect(id).toBe(
+        "tile-layer-undefined-draco-true-compressed-textures-true"
+      );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
       expect(loadOptions).toEqual({
-        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+        i3s: {
+          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useCompressedTextures: true,
+          useDracoGeometry: true,
+        },
       });
       expect(pickable).toBe(false);
       expect(autoHighlight).toBe(false);
@@ -310,13 +265,15 @@ describe("Deck.gl I3S map component", () => {
       expect(loadOptions).toEqual({
         i3s: {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useCompressedTextures: true,
+          useDracoGeometry: true,
           token: "<abcdefg123456>",
         },
       });
     });
 
     it("Should call Tile3DLayer tileset callbacks", () => {
-      callRender(render);
+      const { rerender } = callRender(render);
       expect(Tile3DLayer).toHaveBeenCalled();
       const { onTileLoad, onTilesetLoad, onTileUnload } =
         Tile3DLayer.mock.lastCall[0];
@@ -330,9 +287,18 @@ describe("Deck.gl I3S map component", () => {
       expect(() => onTilesetLoad(getTileset3d())).toThrow();
 
       expect(onTilesetLoad).toBeTruthy();
-      act(() => onTileLoad(tile3d));
       act(() => onTileUnload(tile3d));
-      expect(simpleCallbackMock).toHaveBeenCalledTimes(3);
+      expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
+
+      callRender(rerender, { onTileLoad: undefined });
+      const { onTileLoad: onTileLoad2 } = Tile3DLayer.mock.lastCall[0];
+      act(() => onTileLoad2(tile3d));
+      expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
+
+      callRender(rerender, { onTileUnload: undefined });
+      const { onTileUnload: onTileUnload2 } = Tile3DLayer.mock.lastCall[0];
+      expect(() => act(() => onTileUnload2(tile3d))).not.toThrow();
+      expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
     });
 
     it("Should call Tile3DLayer color callback", () => {
@@ -375,6 +341,13 @@ describe("Deck.gl I3S map component", () => {
       act(() => onTileLoadSecond(tile3d));
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
+    });
+
+    it("Should not be pickable", () => {
+      callRender(render, { pickable: undefined });
+      expect(Tile3DLayer).toHaveBeenCalled();
+      const { pickable } = Tile3DLayer.mock.lastCall[0];
+      expect(pickable).toBe(false);
     });
   });
 
