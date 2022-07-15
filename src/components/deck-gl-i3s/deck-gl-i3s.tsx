@@ -29,7 +29,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { NormalsDebugData } from "../../types";
+import { NormalsDebugData, ViewStateSet } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -92,6 +92,13 @@ const NORMALS_COLOR = [255, 0, 0];
 const colorMap = new ColorMap();
 
 type DeckGlI3sProps = {
+  /** DeckGL component id */
+  id?: string;
+  /**
+   * View state controlled by parent component
+   * if is not set `viewState` state variable will be used
+   */
+  parentViewState?: ViewStateSet;
   /** Minimap visibility */
   showMinimap?: boolean;
   /** If should create independent viewport for minimap */
@@ -109,11 +116,11 @@ type DeckGlI3sProps = {
   /** Bounding volume color mode */
   boundingVolumeColorMode?: number;
   /** Allows layers picking to handle mouse events */
-  pickable: boolean;
+  pickable?: boolean;
   /** Show wireframe representation of layers */
   wireframe?: boolean;
   /** Layers loading data  */
-  i3sLayers: { id?: string; url: string; token?: string | null }[];
+  i3sLayers: { id?: number; url?: string; token?: string | null }[];
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -134,7 +141,7 @@ type DeckGlI3sProps = {
   /** Normals lenght in meters */
   normalsLength?: number;
   /** http://<root-url>/SceneServer json */
-  metadata: { layers: SceneLayer3D[] } | null;
+  metadata?: { layers: SceneLayer3D[] } | null;
   /** Basepath of the tileset of the selected tile */
   selectedTilesetBasePath?: string | null;
   /** Tile, selected by picking event */
@@ -144,9 +151,14 @@ type DeckGlI3sProps = {
   /** Deckgl flag to highlight picked objects automaticaly */
   autoHighlight?: boolean;
   /** List of initialized tilesets */
-  loadedTilesets: Tileset3D[];
+  loadedTilesets?: Tileset3D[];
+  /** I3S option to choose type of geometry */
+  useDracoGeometry?: boolean;
+  /** I3S option to choose type of textures */
+  useCompressedTextures?: boolean;
+  onViewStateChange?: (viewStates: ViewStateSet) => void;
   /** DeckGL after render callback */
-  onAfterRender: () => void;
+  onAfterRender?: () => void;
   /** DeckGL callback. On layer hover behavior */
   getTooltip?: (info: { object: Tile3D; index: number; layer: any }) => void;
   /** DeckGL callback. On layer click behavior */
@@ -154,12 +166,14 @@ type DeckGlI3sProps = {
   /** Tile3DLayer callback. Triggers after a tileset was initialized */
   onTilesetLoad: (tileset: Tileset3D) => void;
   /** Tile3DLayer callback. Triggers after tile content was loaded */
-  onTileLoad: (tile: Tile3D) => void;
+  onTileLoad?: (tile: Tile3D) => void;
   /** Tile3DLayer callback. Triggers after tile contenst was unloaded */
-  onTileUnload: (tile: Tile3D) => void;
+  onTileUnload?: (tile: Tile3D) => void;
 };
 
 export const DeckGlI3s = ({
+  id,
+  parentViewState,
   showMinimap,
   createIndependentMinimapViewport = false,
   showTerrain = false,
@@ -168,7 +182,7 @@ export const DeckGlI3s = ({
   coloredTilesMap,
   boundingVolumeType = "",
   boundingVolumeColorMode,
-  pickable,
+  pickable = false,
   wireframe,
   i3sLayers,
   lastLayerSelectedId,
@@ -184,15 +198,19 @@ export const DeckGlI3s = ({
   selectedTile,
   selectedIndex,
   autoHighlight = false,
-  loadedTilesets,
+  loadedTilesets = [],
+  useDracoGeometry = true,
+  useCompressedTextures = true,
+  onViewStateChange,
   onAfterRender,
   getTooltip,
   onClick,
   onTilesetLoad,
   onTileLoad,
-  onTileUnload,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onTileUnload = () => {},
 }: DeckGlI3sProps) => {
-  const [viewState, setViewState] = useState({
+  const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
     minimap: {
       latitude: INITIAL_VIEW_STATE.latitude,
@@ -263,11 +281,15 @@ export const DeckGlI3s = ({
   }, [showDebugTexture]);
 
   const getViewState = () =>
-    showMinimap ? viewState : { main: viewState.main };
+    parentViewState || (showMinimap && viewState) || { main: viewState.main };
 
   const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
 
-  const onViewStateChange = ({ interactionState, viewState, viewId }) => {
+  const onViewStateChangeHandler = ({
+    interactionState,
+    viewState,
+    viewId,
+  }) => {
     const {
       longitude,
       latitude,
@@ -302,28 +324,60 @@ export const DeckGlI3s = ({
       }
     }
 
-    if (viewId === "minimap") {
-      setViewState((prevValues) => ({
-        main: {
-          ...prevValues.main,
-          longitude: viewState.longitude,
-          latitude: viewState.latitude,
-          position: [0, 0, elevation],
-        },
-        minimap: viewState,
-      }));
+    if (parentViewState && onViewStateChange) {
+      let newViewState;
+      if (viewId === "minimap") {
+        newViewState = {
+          main: {
+            ...parentViewState.main,
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+            position: [0, 0, elevation],
+          },
+          minimap: viewState,
+        };
+      } else {
+        newViewState = {
+          main: {
+            ...viewState,
+            position: [0, 0, elevation],
+          },
+          minimap: {
+            ...parentViewState.minimap,
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+          },
+        };
+      }
+      onViewStateChange(newViewState);
     } else {
-      setViewState((prevValues) => ({
-        main: {
-          ...viewState,
-          position: [0, 0, elevation],
-        },
-        minimap: {
-          ...prevValues.minimap,
-          longitude: viewState.longitude,
-          latitude: viewState.latitude,
-        },
-      }));
+      setViewState((prevValues) => {
+        let newViewState;
+        if (viewId === "minimap") {
+          newViewState = {
+            main: {
+              ...prevValues.main,
+              longitude: viewState.longitude,
+              latitude: viewState.latitude,
+              position: [0, 0, elevation],
+            },
+            minimap: viewState,
+          };
+        } else {
+          newViewState = {
+            main: {
+              ...viewState,
+              position: [0, 0, elevation],
+            },
+            minimap: {
+              ...prevValues.minimap,
+              longitude: viewState.longitude,
+              latitude: viewState.latitude,
+            },
+          };
+        }
+        return newViewState;
+      });
     }
   };
 
@@ -370,7 +424,7 @@ export const DeckGlI3s = ({
        */
       [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
 
-      setViewState({
+      const newViewState = {
         main: {
           ...viewState.main,
           zoom: zoom + 2.5,
@@ -384,8 +438,13 @@ export const DeckGlI3s = ({
           longitude: pLongitue,
           latitude: pLatitude,
         },
-      });
+      };
       setNeedTransitionToTileset(false);
+      if (parentViewState && onViewStateChange) {
+        onViewStateChange(newViewState);
+      } else {
+        setViewState(newViewState);
+      }
     }
 
     const viewportTraversersMap = {
@@ -409,7 +468,9 @@ export const DeckGlI3s = ({
     } else {
       selectOriginalTextureForTile(tile);
     }
-    onTileLoad(tile);
+    if (onTileLoad) {
+      onTileLoad(tile);
+    }
   };
 
   const onTerrainTileLoad = (tile) => {
@@ -535,16 +596,22 @@ export const DeckGlI3s = ({
       const loadOptions: {
         i3s: {
           coordinateSystem: number;
+          useDracoGeometry: boolean;
+          useCompressedTextures: boolean;
           token?: string;
         };
       } = {
-        i3s: { coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS },
+        i3s: {
+          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+          useDracoGeometry,
+          useCompressedTextures,
+        },
       };
       if (layer.token) {
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,
@@ -623,11 +690,12 @@ export const DeckGlI3s = ({
 
   return (
     <DeckGL
+      id={id}
       layers={renderLayers()}
       viewState={getViewState()}
       views={getViews()}
       layerFilter={layerFilter}
-      onViewStateChange={onViewStateChange}
+      onViewStateChange={onViewStateChangeHandler}
       controller={{
         type: MapController,
         maxPitch: 60,

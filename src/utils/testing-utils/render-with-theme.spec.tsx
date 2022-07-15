@@ -13,6 +13,6 @@ describe("Render width theme", () => {
     const item = getByRole(dom.container, "greeting");
     const color = getComputedStyle(item).getPropertyValue("color");
 
-    expect(color).toEqual("white");
+    expect(color).toEqual("rgb(0, 0, 0)");
   });
 });

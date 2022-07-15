@@ -66,6 +66,7 @@ import {
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -173,7 +174,9 @@ export const DebugApp = () => {
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
-  const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
+  const [flattenedSublayers, setFlattenedSublayers] = useState<
+    BuildingSceneSublayer[]
+  >([]);
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);

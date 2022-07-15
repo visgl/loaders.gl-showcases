@@ -2,6 +2,7 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
+import { ViewState } from "@deck.gl/core";
 
 export enum Theme {
   Dark,
@@ -40,6 +41,18 @@ export enum ActionButtonVariant {
 export enum ExpandState {
   expanded = "expanded",
   collapsed = "collapsed",
+}
+
+export enum CollapseDirection {
+  top,
+  bottom,
+  left,
+  right,
+}
+
+export enum MapControlMode {
+  pan,
+  rotate,
 }
 
 export type TileWarning = {
@@ -113,4 +126,9 @@ export type NormalsDebugData = {
   modelMatrix: Matrix4;
   cartographicModelMatrix: Matrix4;
   cartographicOrigin: Vector3;
+};
+
+export type ViewStateSet = {
+  main?: ViewState;
+  minimap?: ViewState;
 };

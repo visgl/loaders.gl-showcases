@@ -25,7 +25,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
 import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
-import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { Tileset3D } from "@loaders.gl/tiles";
 import {
   color_brand_primary,
   color_canvas_inverted,
@@ -35,6 +35,7 @@ import { FeatureAttributes } from "../../components/feature-attributes/feature-a
 import { Sublayer } from "../../types";
 import { LayerExample } from "../../types";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -86,7 +87,9 @@ export const ViewerApp = () => {
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
-  const [flattenedSublayers, setFlattenedSublayers] = useState<Tile3D[]>([]);
+  const [flattenedSublayers, setFlattenedSublayers] = useState<
+    BuildingSceneSublayer[]
+  >([]);
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [useTerrainLayer, setUseTerrainLayer] = useState(false);

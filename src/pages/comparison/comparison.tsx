@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
-import DeckGL from "@deck.gl/react";
-import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
-import {
-  MapController,
-  FlyToInterpolator,
-  COORDINATE_SYSTEM,
-  MapView,
-  WebMercatorViewport,
-} from "@deck.gl/core";
-import { I3SLoader, I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { load } from "@loaders.gl/core";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
-import { StaticMap } from "react-map-gl";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { BASE_MAPS } from "../../constants/map-styles";
 import {
   buildSublayersTree,
-  getElevationByCentralTile,
   parseTilesetUrlParams,
   useForceUpdate,
 } from "../../utils";
@@ -31,6 +20,7 @@ import {
   ListItemType,
   Sublayer,
   BaseMap,
+  ViewStateSet,
 } from "../../types";
 
 import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
@@ -39,7 +29,9 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
 
-const TRANSITION_DURAITON = 4000;
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -50,30 +42,19 @@ type LayoutProps = {
 };
 
 const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
-  pitch: 45,
-  maxPitch: 90,
-  bearing: 0,
-  minZoom: 2,
-  maxZoom: 30,
-  zoom: 2,
-  transitionDuration: 0,
-  transitionInterpolator: null,
+  main: {
+    longitude: 0,
+    latitude: 0,
+    pitch: 45,
+    maxPitch: 90,
+    bearing: 0,
+    minZoom: 2,
+    maxZoom: 30,
+    zoom: 2,
+    transitionDuration: 0,
+    transitionInterpolator: null,
+  },
 };
-
-const CONTROLLER_PROPS = {
-  type: MapController,
-  maxPitch: 60,
-  inertia: true,
-  scrollZoom: { speed: 0.01, smooth: true },
-};
-
-const VIEW = new MapView({
-  id: "main",
-  controller: { inertia: true },
-  farZMultiplier: 2.02,
-});
 
 const Container = styled.div<LayoutProps>`
   display: flex;
@@ -147,6 +128,7 @@ const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
 
 const LeftPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
+  z-index: 2;
 
   left: ${getCurrentLayoutProperty({
     desktop: "100px",
@@ -187,8 +169,6 @@ const RightPanelWrapper = styled(LeftPanelWrapper)`
 `;
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
-  let currentViewport: WebMercatorViewport = null;
-
   const forceUpdate = useForceUpdate();
 
   const [examplesLeftSide, setExamplesLeftSide] =
@@ -197,8 +177,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<LayerExample[]>(EXAMPLES);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [terrainTiles, setTerrainTiles] = useState({});
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
@@ -226,25 +205,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   );
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
   const [isCompressedGeometryLeft, setIsCompressedGeometryLeft] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedTexturesLeft, setIsCompressedTexturesLeft] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedGeometryRight, setIsCompressedGeometryRight] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
-    useState<boolean>(false);
-  const [counter, setCounter] = useState(0);
-
-  const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
-  const ARCGIS_STREET_MAP_SURFACE_IMAGES =
-    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-  const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
-    rScaler: 256,
-    gScaler: 1,
-    bScaler: 1 / 256,
-    offset: -32768,
-  };
-  const TERRAIN_LAYER_MAX_ZOOM = 15;
+    useState<boolean>(true);
 
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
@@ -259,44 +226,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const layout = useAppLayout();
 
-  const onViewStateChange = ({ interactionState, viewState }) => {
-    const { longitude, latitude, position } = viewState;
-
-    const [, , oldElevation] = position || [0, 0, 0];
-    const viewportCenterTerrainElevation =
-      getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
-
-    let cameraTerrainElevation = null;
-
-    if (currentViewport) {
-      const cameraPosition = currentViewport.unprojectPosition(
-        currentViewport.cameraPosition
-      );
-      // @ts-expect-error - Type '0' is not assignable to type 'null'.
-      cameraTerrainElevation =
-        getElevationByCentralTile(
-          cameraPosition[0],
-          cameraPosition[1],
-          terrainTiles
-        ) || 0;
-    }
-    let elevation =
-      cameraTerrainElevation === null ||
-      viewportCenterTerrainElevation > cameraTerrainElevation
-        ? viewportCenterTerrainElevation
-        : cameraTerrainElevation;
-    if (!interactionState.isZooming) {
-      if (oldElevation - elevation > 5) {
-        elevation = oldElevation - 5;
-      } else if (elevation - oldElevation > 5) {
-        elevation = oldElevation + 5;
-      }
-    }
-
-    setViewState({
-      ...viewState,
-      position: [0, 0, elevation],
-    });
+  const onViewStateChange = (viewStateSet: ViewStateSet) => {
+    setViewState(viewStateSet);
   };
 
   const onPointToLayer = (side: "left" | "right") => {
@@ -306,29 +237,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (side === "right" && tilesetRightSide) {
       pointToTileset(tilesetRightSide);
     }
-  };
-
-  const onTerrainTileLoad = (tile) => {
-    const {
-      bbox: { east, north, south, west },
-    } = tile;
-
-    setTerrainTiles((prevValue) => ({
-      ...prevValue,
-      [`${east};${north};${south};${west}`]: tile,
-    }));
-  };
-
-  const renderTerrainLayer = () => {
-    return new TerrainLayer({
-      id: "terrain",
-      maxZoom: TERRAIN_LAYER_MAX_ZOOM,
-      elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
-      elevationData: MAPZEN_TERRAIN_IMAGES,
-      texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
-      onTileLoad: (tile) => onTerrainTileLoad(tile),
-      color: [255, 255, 255],
-    });
   };
 
   const handleChangeLeftPanelVisibility = (active: ActiveButton) => {
@@ -436,8 +344,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
     setViewState({
       ...newViewState,
-      transitionDuration: TRANSITION_DURAITON,
-      transitionInterpolator: new FlyToInterpolator(),
     });
     setNeedTransitionToTileset(false);
   };
@@ -453,87 +359,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
-  const getLayers = (side: "left" | "right"): any[] => {
-    let flattenedSublayers = flattenedSublayersLeftSide;
-    let token = tokenLeftSide;
-    if (side === "right") {
-      flattenedSublayers = flattenedSublayersRightSide;
-      token = tokenRightSide;
-    }
-    let result: any[] = [];
-    if (flattenedSublayers) {
-      const loadOptions: {
-        i3s: {
-          coordinateSystem: number;
-          token?: string;
-          useDracoGeometry: boolean;
-          useCompressedTextures: boolean;
-        };
-      } = {
-        i3s: {
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-          useDracoGeometry:
-            side === "left"
-              ? isCompressedGeometryLeft
-              : isCompressedGeometryRight,
-          useCompressedTextures:
-            side === "left"
-              ? isCompressedTexturesLeft
-              : isCompressedTexturesRight,
-        },
-      };
-
-      if (token) {
-        loadOptions.i3s = { ...loadOptions.i3s, token };
-      }
-
-      result = [
-        ...result,
-        ...flattenedSublayers
-          .filter((sublayer) => sublayer.visibility)
-          .map(
-            (sublayer) =>
-              new Tile3DLayer({
-                id: `tile-layer-${sublayer.id}${counter}`,
-                data: sublayer.url,
-                loader: I3SLoader,
-                onTilesetLoad: (tileset: Tileset3D) =>
-                  onTilesetLoad(tileset, side),
-                pickable: false,
-                loadOptions,
-              })
-          ),
-      ];
-    }
-
-    if (selectedBaseMap.id === "Terrain") {
-      const terrainLayer = renderTerrainLayer();
-      result.push(terrainLayer);
-    }
-
-    return result;
-  };
-
   const handleGeometryChangeLeft = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedGeometryLeft((prevValue) => !prevValue);
   };
 
   const handleTexturesChangeLeft = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedTexturesLeft((prevValue) => !prevValue);
   };
 
   const handleGeometryChangeRight = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedGeometryRight((prevValue) => !prevValue);
   };
 
   const handleTexturesChangeRight = () => {
-    setCounter((prevValue) => prevValue + 1);
     setIsCompressedTexturesRight((prevValue) => !prevValue);
   };
-  
+
   const handleInsertExample = (
     newLayer: LayerExample,
     side: "left" | "right"
@@ -639,24 +480,36 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const selectedLeftSideLayerIds = layerLeftSide ? [layerLeftSide.id] : [];
   const selectedRightSideLayerIds = layerRightSide ? [layerRightSide.id] : [];
 
+  const getI3sLayers = (side: "left" | "right") => {
+    const flattenedSublayers =
+      side === "left"
+        ? flattenedSublayersLeftSide
+        : flattenedSublayersRightSide;
+    const token = side === "left" ? tokenLeftSide : tokenRightSide;
+    return flattenedSublayers
+      .filter((sublayer) => sublayer.visibility)
+      .map((sublayer) => ({
+        id: sublayer.id,
+        url: sublayer.url,
+        token,
+      }));
+  };
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
-        <DeckGL
+        <DeckGlI3s
           id="first-deck-container"
-          layers={getLayers("left")}
-          viewState={viewState}
-          views={[VIEW]}
+          parentViewState={viewState}
+          showTerrain={selectedBaseMap.id === "Terrain"}
+          mapStyle={selectedBaseMap.mapUrl}
+          i3sLayers={getI3sLayers("left")}
+          lastLayerSelectedId={tilesetLeftSide?.url || ""}
+          useDracoGeometry={isCompressedGeometryLeft}
+          useCompressedTextures={isCompressedTexturesLeft}
           onViewStateChange={onViewStateChange}
-          controller={CONTROLLER_PROPS}
-        >
-          {({ viewport }) => {
-            currentViewport = viewport;
-          }}
-          {selectedBaseMap.id !== "Terrain" && (
-            <StaticMap mapStyle={selectedBaseMap.mapUrl} preventStyleDiffing />
-          )}
-        </DeckGL>
+          onTilesetLoad={(tileset: Tileset3D) => onTilesetLoad(tileset, "left")}
+        />
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-left"
@@ -714,21 +567,27 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
       <Devider layout={layout} />
       <DeckWrapper layout={layout}>
-        <DeckGL
+        <DeckGlI3s
           id="second-deck-container"
-          layers={getLayers("right")}
-          viewState={viewState}
-          views={[VIEW]}
-          onViewStateChange={onViewStateChange}
-          controller={CONTROLLER_PROPS}
-        >
-          {({ viewport }) => {
-            currentViewport = viewport;
+          parentViewState={{
+            ...viewState,
+            main: {
+              ...viewState.main,
+              transitionDuration: undefined,
+              transitionInterpolator: undefined,
+            },
           }}
-          {selectedBaseMap.id !== "Terrain" && (
-            <StaticMap mapStyle={selectedBaseMap.mapUrl} preventStyleDiffing />
-          )}
-        </DeckGL>
+          showTerrain={selectedBaseMap.id === "Terrain"}
+          mapStyle={selectedBaseMap.mapUrl}
+          i3sLayers={getI3sLayers("right")}
+          lastLayerSelectedId={tilesetRightSide?.url || ""}
+          useDracoGeometry={isCompressedGeometryRight}
+          useCompressedTextures={isCompressedTexturesRight}
+          onViewStateChange={onViewStateChange}
+          onTilesetLoad={(tileset: Tileset3D) =>
+            onTilesetLoad(tileset, "right")
+          }
+        />
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="tools-panel-right"
@@ -781,6 +640,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           </RightPanelWrapper>
         )}
       </DeckWrapper>
+      <MapControllPanel />
     </Container>
   );
 };
