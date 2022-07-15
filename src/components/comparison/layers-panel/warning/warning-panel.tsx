@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
-import { ActionButton } from "../../action-button/action-button";
-import { LayoutProps } from "../common";
-import WarningIcon from "../../../../public/icons/warning.svg?svgr";
+import { getCurrentLayoutProperty, useAppLayout } from "../../../../utils/layout";
+import { ActionButton } from "../../../action-button/action-button";
+import { LayoutProps } from "../../common";
+import WarningIcon from "../../../../../public/icons/warning.svg?svgr";
 
 const Container = styled.div<LayoutProps>`
   position: relative;
@@ -54,7 +54,7 @@ type ExistedLayerWarningProps = {
   onConfirm: () => void;
 };
 
-export const ExistedLayerWarning = ({
+export const WarningPanel = ({
   title,
   onConfirm,
 }: ExistedLayerWarningProps) => {

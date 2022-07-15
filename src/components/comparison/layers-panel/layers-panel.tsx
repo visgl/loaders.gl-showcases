@@ -10,7 +10,7 @@ import { MapOptionPanel } from "./map-options-panel";
 import CustomMap from "../../../../public/icons/custom-map.svg";
 import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
-import { ExistedLayerWarning } from "./existed-layer-warning";
+import { WarningPanel } from "./warning/warning-panel";
 
 enum Tabs {
   Layers,
@@ -112,7 +112,8 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const WARNING = "You are trying to add an existing area to the map";
+const EXISTING_AREA_WARNING =
+  "You are trying to add an existing area to the map";
 
 export const LayersPanel = ({
   id,
@@ -145,7 +146,7 @@ export const LayersPanel = ({
     url: string;
     token?: string;
   }) => {
-    const existedLayer = layers.find(
+    const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
 
@@ -232,8 +233,8 @@ export const LayersPanel = ({
 
           {showExistedLayerWarning && (
             <PanelWrapper>
-              <ExistedLayerWarning
-                title={WARNING}
+              <WarningPanel
+                title={EXISTING_AREA_WARNING}
                 onConfirm={() => setShowExistedLayerWarning(false)}
               />
             </PanelWrapper>
