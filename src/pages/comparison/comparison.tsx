@@ -369,7 +369,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const onZoomIn = () => {
     const { zoom, maxZoom } = viewState.main;
 
-    if (zoom === maxZoom) {
+    if (zoom >= maxZoom) {
       return;
     }
 
@@ -384,7 +384,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const onZoomOut = () => {
     const { zoom, minZoom } = viewState.main;
 
-    if (zoom === minZoom) {
+    if (zoom <= minZoom) {
       return;
     }
 
