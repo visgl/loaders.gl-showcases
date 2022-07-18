@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { screen } from "@testing-library/react";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { ComparisonParamsPanel } from "./comparison-params-panel";
