@@ -130,7 +130,12 @@ export const ControlPanel = ({
   useEffect(() => {
     if (id) {
       setExample(id);
-      setSearchParams({ tileset: id });
+
+      const isTilesetUrl = id.startsWith("http");
+
+      if (!isTilesetUrl) {
+        setSearchParams({ tileset: id });
+      }
     }
   }, [id]);
 
