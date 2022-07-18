@@ -223,8 +223,8 @@ export const ViewerApp = () => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
   };
 
-  const onSelectMapStyle = ({ selectedMapStyle }) => {
-    setSelectedMapStyle(selectedMapStyle);
+  const onSelectMapStyle = (mapUrl: string) => {
+    setSelectedMapStyle(mapUrl);
   };
 
   const toggleTerrain = () => {

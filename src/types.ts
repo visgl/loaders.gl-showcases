@@ -111,7 +111,7 @@ export type Sublayer = BuildingSceneSublayer & {
 export type BaseMap = {
   id: string;
   name: string;
-  mapUrl: string;
+  mapUrl?: string;
   iconUrl: string;
   token?: string;
   custom?: boolean;

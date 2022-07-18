@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { EXAMPLES, CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
-import { MAP_STYLES } from "../../constants/map-styles";
+import { BASE_MAPS } from "../../constants/map-styles";
 import { useSearchParams } from "react-router-dom";
 
 import { ToggleSwitch } from "../../components";
@@ -121,7 +121,7 @@ export const ControlPanel = ({
   onExampleChange,
   onMapStyleChange,
   selectedMapStyle,
-  mapStyles = MAP_STYLES,
+  baseMaps = BASE_MAPS,
   useTerrainLayer,
   toggleTerrain,
   debugMode = false,
@@ -155,10 +155,11 @@ export const ControlPanel = ({
   };
 
   const renderMapStyleOptions = () => {
-    return Object.keys(mapStyles).map((key) => {
+    const mapStylesWithoutTerrain = baseMaps.filter((map) => map.mapUrl);
+    return mapStylesWithoutTerrain.map((baseMap) => {
       return (
-        <option key={key} value={mapStyles[key]}>
-          {key}
+        <option key={baseMap.id} value={baseMap.mapUrl}>
+          {baseMap.name}
         </option>
       );
     });
@@ -186,9 +187,9 @@ export const ControlPanel = ({
         <DropDown
           id="base-map"
           value={selectedMapStyle}
-          onChange={(evt) =>
-            onMapStyleChange({ selectedMapStyle: evt.target.value })
-          }
+          onChange={(evt) => {
+            onMapStyleChange(evt.target.value);
+          }}
         >
           {renderMapStyleOptions()}
         </DropDown>
