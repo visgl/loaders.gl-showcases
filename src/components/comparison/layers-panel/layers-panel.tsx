@@ -87,7 +87,7 @@ const Content = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 16px 8px 16px;
+  padding: 0 16px;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
