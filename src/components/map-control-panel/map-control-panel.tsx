@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState, MapControlMode } from "../../types";
+import { CollapseDirection, ExpandState, DragMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg?svgr";
@@ -50,20 +50,22 @@ const Button = styled.button<{ active?: boolean }>`
 `;
 
 type MapControlPanelProps = {
+  dragMode: DragMode;
   onZoomIn: () => void;
   onZoomOut: () => void;
+  onDragModeToggle: () => void;
 };
 
 export const MapControllPanel = ({
+  dragMode,
   onZoomIn,
   onZoomOut,
+  onDragModeToggle,
 }: MapControlPanelProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
-  const [mapControlMode, setMapControllMode] = useState<MapControlMode>(
-    MapControlMode.pan
-  );
+
   const theme = useTheme();
 
   const onExpandClickHandler = () => {
@@ -72,15 +74,6 @@ export const MapControllPanel = ({
         return ExpandState.collapsed;
       }
       return ExpandState.expanded;
-    });
-  };
-
-  const toggleMapControlMode = () => {
-    setMapControllMode((prev) => {
-      if (prev === MapControlMode.pan) {
-        return MapControlMode.rotate;
-      }
-      return MapControlMode.pan;
     });
   };
 
@@ -101,15 +94,12 @@ export const MapControllPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          <Button
-            active={mapControlMode === MapControlMode.pan}
-            onClick={toggleMapControlMode}
-          >
+          <Button active={dragMode === DragMode.pan} onClick={onDragModeToggle}>
             <PanIcon />
           </Button>
           <Button
-            active={mapControlMode === MapControlMode.rotate}
-            onClick={toggleMapControlMode}
+            active={dragMode === DragMode.rotate}
+            onClick={onDragModeToggle}
           >
             <OrbitIcon />
           </Button>

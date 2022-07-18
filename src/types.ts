@@ -50,9 +50,9 @@ export enum CollapseDirection {
   right,
 }
 
-export enum MapControlMode {
-  pan,
-  rotate,
+export enum DragMode {
+  pan = "pan",
+  rotate = "rotate",
 }
 
 export type TileWarning = {
