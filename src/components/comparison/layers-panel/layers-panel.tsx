@@ -9,6 +9,7 @@ import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
 import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
+import { WarningPanel } from "./warning/warning-panel";
 
 enum Tabs {
   Layers,
@@ -93,7 +94,7 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const InsertPanelWrapper = styled.div`
+const PanelWrapper = styled.div`
   position: absolute;
   top: 24px;
   // Make insert panel centered related to layers panel.
@@ -109,6 +110,9 @@ const CloseButtonWrapper = styled.div`
   height: 44px;
   display: flex;
 `;
+
+const EXISTING_AREA_WARNING =
+  "You are trying to add an existing area to the map";
 
 export const LayersPanel = ({
   id,
@@ -133,6 +137,7 @@ export const LayersPanel = ({
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
+  const [showExistedLayerWarning, setShowExistedLayerWarning] = useState(false);
   const layout = useAppLayout();
 
   const handleInsertLayer = (layer: {
@@ -140,6 +145,16 @@ export const LayersPanel = ({
     url: string;
     token?: string;
   }) => {
+    const existedLayer = layers.some(
+      (exisLayer) => exisLayer.url.trim() === layer.url.trim()
+    );
+
+    if (existedLayer) {
+      setShowInsertPanel(false);
+      setShowExistedLayerWarning(true);
+      return;
+    }
+
     const id = layer.url.replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
@@ -214,14 +229,23 @@ export const LayersPanel = ({
             )}
           </Content>
 
+          {showExistedLayerWarning && (
+            <PanelWrapper>
+              <WarningPanel
+                title={EXISTING_AREA_WARNING}
+                onConfirm={() => setShowExistedLayerWarning(false)}
+              />
+            </PanelWrapper>
+          )}
+
           {showInsertPanel && (
-            <InsertPanelWrapper>
+            <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
                 onInsert={(layer) => handleInsertLayer(layer)}
                 onCancel={() => setShowInsertPanel(false)}
               />
-            </InsertPanelWrapper>
+            </PanelWrapper>
           )}
         </>
       )}
@@ -235,13 +259,13 @@ export const LayersPanel = ({
       )}
 
       {showInsertMapPanel && (
-        <InsertPanelWrapper>
+        <PanelWrapper>
           <InsertPanel
             title={"Insert Base Map"}
             onInsert={(map) => handleInsertMap(map)}
             onCancel={() => setShowInsertMapPanel(false)}
           />
-        </InsertPanelWrapper>
+        </PanelWrapper>
       )}
     </Container>
   );

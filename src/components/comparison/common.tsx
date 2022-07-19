@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty } from "../../utils/layout";
 
-type LayoutProps = {
+export type LayoutProps = {
   layout: string;
 };
 
