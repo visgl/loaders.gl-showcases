@@ -46,7 +46,7 @@ const INITIAL_VIEW_STATE = {
     maxPitch: 90,
     bearing: 0,
     minZoom: 2,
-    maxZoom: 30,
+    maxZoom: 24,
     zoom: 2,
     transitionDuration: 0,
     transitionInterpolator: null,
@@ -345,6 +345,36 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setNeedTransitionToTileset(false);
   };
 
+  const onZoomIn = () => {
+    const { zoom, maxZoom } = viewState.main;
+
+    if (zoom >= maxZoom) {
+      return;
+    }
+
+    setViewState({
+      main: {
+        ...viewState.main,
+        zoom: zoom + 1,
+      },
+    });
+  };
+
+  const onZoomOut = () => {
+    const { zoom, minZoom } = viewState.main;
+
+    if (zoom <= minZoom) {
+      return;
+    }
+
+    setViewState({
+      main: {
+        ...viewState.main,
+        zoom: zoom - 1,
+      },
+    });
+  };
+
   const onTilesetLoad = (tileset: Tileset3D, side: "left" | "right") => {
     if (needTransitionToTileset) {
       if (side === "left") {
@@ -637,7 +667,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           </RightPanelWrapper>
         )}
       </DeckWrapper>
-      <MapControllPanel />
+      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
     </Container>
   );
 };

@@ -1,8 +1,8 @@
 import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
 import styled, { css } from "styled-components";
-import { ExpandState } from "../../../types";
-import { color_brand_quaternary } from "../../../constants/colors";
-import { ExpandIcon } from "../../expand-icon/expand-icon";
+import { ExpandState } from "../../../../types";
+import { color_brand_quaternary } from "../../../../constants/colors";
+import { ExpandIcon } from "../../../expand-icon/expand-icon";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;

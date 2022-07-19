@@ -48,7 +48,15 @@ const Button = styled.button<{ active?: boolean }>`
   }
 `;
 
-export const MapControllPanel = () => {
+type MapControlPanelProps = {
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+};
+
+export const MapControllPanel = ({
+  onZoomIn,
+  onZoomOut,
+}: MapControlPanelProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
@@ -86,10 +94,10 @@ export const MapControllPanel = () => {
       />
       {expandState === ExpandState.expanded && (
         <>
-          <Button>
+          <Button onClick={onZoomIn}>
             <PlusIcon />
           </Button>
-          <Button>
+          <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
           <Button

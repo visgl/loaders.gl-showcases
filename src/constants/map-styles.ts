@@ -1,13 +1,28 @@
 import { BaseMap } from "../types";
 import { COLORED_BY } from "../utils";
+import DarkMap from "../../public/icons/dark-map.png";
+import LightMap from "../../public/icons/light-map.png";
+import TerrainMap from "../../public/icons/terrain-map.png";
 
-export const MAP_STYLES = {
-  Light:
-    "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-  Dark: "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-};
+export const BASE_MAPS: BaseMap[] = [
+  {
+    id: "Dark",
+    name: "Dark",
+    iconUrl: DarkMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+  },
+  {
+    id: "Light",
+    name: "Light",
+    iconUrl: LightMap,
+    mapUrl:
+      "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+  },
+  { id: "Terrain", name: "Terrain", iconUrl: TerrainMap },
+];
 
-export const INITIAL_MAP_STYLE = MAP_STYLES["Dark"];
+export const INITIAL_MAP_STYLE = BASE_MAPS[0].mapUrl;
 
 export const CONTRAST_MAP_STYLES = {
   "https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json":

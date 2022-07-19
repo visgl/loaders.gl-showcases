@@ -1,7 +1,7 @@
 import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
-import { ListItemWrapper } from "../list-item-wrapper";
+import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 
 type BaseMapsItemProps = {
   id: string;

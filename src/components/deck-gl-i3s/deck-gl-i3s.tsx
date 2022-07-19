@@ -106,7 +106,7 @@ type DeckGlI3sProps = {
   /** Terrain visibility */
   showTerrain?: boolean;
   /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
-  mapStyle: string;
+  mapStyle?: string;
   /** Color mode for tiles */
   tileColorMode?: number;
   /** User selected tiles colors */
@@ -712,13 +712,15 @@ export const DeckGlI3s = ({
       {!showTerrain && (
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
       )}
-      <View id="minimap">
-        <StaticMap
-          reuseMaps
-          mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
-          preventStyleDiffing={true}
-        />
-      </View>
+      {mapStyle && (
+        <View id="minimap">
+          <StaticMap
+            reuseMaps
+            mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
+            preventStyleDiffing={true}
+          />
+        </View>
+      )}
     </DeckGL>
   );
 };
