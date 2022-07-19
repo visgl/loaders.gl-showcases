@@ -6,8 +6,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { ToggleSwitch } from "../../components";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const Font = `
@@ -39,12 +38,12 @@ const TilesetDropDown = styled.select`
   cursor: pointer;
   border-radius: 4px;
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   width: 245px;
   margin-bottom: 8px;
 
   option {
-    color: ${color_canvas_inverted};
+    color: ${color_canvas_primary_inverted};
     background: ${color_brand_primary};
     display: flex;
     white-space: pre;
@@ -75,7 +74,7 @@ const TerrainContainer = styled(BaseMapContainer)`
 
 const MapName = styled.h3`
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-weight: normal;
   font-size: 16px;
   width: 70px;
@@ -84,7 +83,7 @@ const MapName = styled.h3`
 
 const TerrainName = styled.h3`
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   margin: 0;
   font-weight: normal;
   font-size: 16px;
@@ -97,10 +96,10 @@ const DropDown = styled.select`
   cursor: pointer;
   border-radius: 4px;
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
 
   option {
-    color: ${color_canvas_inverted};
+    color: ${color_canvas_primary_inverted};
     background: ${color_brand_primary};
     padding: 0px 2px 1px;
   }

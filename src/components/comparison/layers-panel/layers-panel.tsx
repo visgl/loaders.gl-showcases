@@ -7,7 +7,6 @@ import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import CustomMap from "../../../../public/icons/custom-map.svg";
 import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 
@@ -159,7 +158,6 @@ export const LayersPanel = ({
       mapUrl: map.url,
       name: map.name,
       token: map.token,
-      iconUrl: CustomMap,
       custom: true,
     };
 

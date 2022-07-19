@@ -1,5 +1,6 @@
 import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
+import { BaseMapIcon } from "../base-map-icon/base-map-icon";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 
 type BaseMapsItemProps = {
@@ -7,7 +8,6 @@ type BaseMapsItemProps = {
   title: string;
   selected: boolean;
   hasOptions: boolean;
-  iconUrl: string;
   onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
 };
@@ -21,24 +21,10 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-const MapIcon = styled.div<{ url: string }>`
-  background: url(${(props) => props.url}) no-repeat center #232430;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-`;
-
 export const BaseMapListItem = forwardRef(
   (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const {
-      id,
-      title,
-      hasOptions,
-      iconUrl,
-      selected,
-      onOptionsClick,
-      onMapsSelect,
-    } = props;
+    const { id, title, hasOptions, selected, onOptionsClick, onMapsSelect } =
+      props;
     const handleClick = () => {
       onMapsSelect(id);
     };
@@ -51,7 +37,7 @@ export const BaseMapListItem = forwardRef(
         onClick={handleClick}
         onOptionsClick={onOptionsClick}
       >
-        <MapIcon url={iconUrl} />
+        <BaseMapIcon baseMapId={id} />
         <Title>{title}</Title>
       </ListItemWrapper>
     );

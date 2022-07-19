@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import {
   color_brand_tertiary,
-  color_canvas_inverted,
+  color_canvas_primary_inverted,
   dim_brand_tertinary,
 } from "../../constants/colors";
 
@@ -63,7 +63,7 @@ const Checkmark = styled.span<CheckmarkProps>`
       background-color: ${color_brand_tertiary};
       &::after {
         display: block;
-        background-color: ${color_canvas_inverted};
+        background-color: ${color_canvas_primary_inverted};
       }
       &:hover {
         background-color: ${dim_brand_tertinary};

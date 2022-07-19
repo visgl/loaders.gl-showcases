@@ -2,7 +2,7 @@ import React, { MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import {
   color_brand_tertiary,
-  color_canvas_inverted,
+  color_canvas_primary_inverted,
   dim_brand_tertinary,
 } from "../../constants/colors";
 import { ActionButtonVariant } from "../../types";
@@ -31,7 +31,7 @@ const Button = styled.button<ButtonProps>`
 const PrimaryButton = styled(Button)`
   background-color: ${color_brand_tertiary};
   border-color: ${color_brand_tertiary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
 
   &:hover {
     background-color: ${dim_brand_tertinary};
