@@ -18,6 +18,7 @@ describe("List Item Wrapper", () => {
         onOptionsClick={onOptionsClick}
         onExpandClick={onExpandClick}
         onClick={onChange}
+        optionsContent={<div>{'Hello world'}</div>}
       >
         San Francisco v1.6
       </ListItemWrapper>

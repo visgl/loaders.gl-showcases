@@ -1,4 +1,5 @@
-import { ForwardedRef, forwardRef, SyntheticEvent } from "react";
+import { SyntheticEvent } from "react";
+import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
 import { ExpandState } from "../../../../types";
 import { color_brand_quaternary } from "../../../../constants/colors";
@@ -6,14 +7,16 @@ import { ExpandIcon } from "../../../expand-icon/expand-icon";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
-  ref: ForwardedRef<HTMLDivElement>;
   id: string;
+  optionsContent?: JSX.Element;
   selected: boolean;
   hasOptions?: boolean;
+  isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onClick: () => void;
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
+  onClickOutside?: () => void;
 };
 
 type ContainerProps = {
@@ -82,38 +85,53 @@ const OptionsIcon = styled.div`
   }
 `;
 
-export const ListItemWrapper = forwardRef(
-  (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const {
-      children,
-      id,
-      selected,
-      hasOptions,
-      expandState,
-      onOptionsClick,
-      onClick,
-      onExpandClick,
-    } = props;
-    const onExpandClickHandler = (e: SyntheticEvent) => {
-      e.stopPropagation();
-      onExpandClick && onExpandClick();
-    };
-    return (
-      <Container ref={ref} checked={selected} onClick={onClick}>
-        <ItemContentWrapper>{children}</ItemContentWrapper>
-        {hasOptions && onOptionsClick && (
+export const ListItemWrapper = ({
+  children,
+  id,
+  selected,
+  hasOptions,
+  isOptionsPanelOpen = false,
+  optionsContent,
+  expandState,
+  onOptionsClick,
+  onClickOutside,
+  onClick,
+  onExpandClick,
+}: BaseMapsItemProps) => {
+  const onExpandClickHandler = (e: SyntheticEvent) => {
+    e.stopPropagation();
+    onExpandClick && onExpandClick();
+  };
+
+  return (
+    <Container checked={selected} onClick={onClick}>
+      <ItemContentWrapper>{children}</ItemContentWrapper>
+      {hasOptions && onOptionsClick && optionsContent && (
+        <Popover
+          key={id}
+          isOpen={isOptionsPanelOpen}
+          reposition={false}
+          positions={["left", "top", "bottom"]}
+          align="start"
+          content={optionsContent}
+          containerStyle={{ zIndex: "2" }}
+          onClickOutside={onClickOutside}
+        >
           <OptionsButton
             id={id}
             className="settings"
-            onClick={() => onOptionsClick(id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onOptionsClick(id);
+            }}
           >
             <OptionsIcon />
           </OptionsButton>
-        )}
-        {expandState && (
-          <ExpandIcon expandState={expandState} onClick={onExpandClickHandler}/>
-        )}
-      </Container>
-    );
-  }
-);
+        </Popover>
+      )}
+      {expandState && (
+        <ExpandIcon expandState={expandState} onClick={onExpandClickHandler} />
+      )}
+    </Container>
+  );
+};

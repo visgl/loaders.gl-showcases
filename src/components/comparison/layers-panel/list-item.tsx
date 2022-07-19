@@ -1,4 +1,3 @@
-import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { ExpandState, ListItemType } from "../../../types";
 import { Checkbox } from "../../checkbox/checkbox";
@@ -8,13 +7,16 @@ import { RadioButton } from "../../radio-button/radio-button";
 type ListItemProps = {
   id: string;
   title: string;
+  optionsContent?: JSX.Element;
   type: ListItemType;
   selected: boolean;
   hasOptions?: boolean;
+  isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onChange: (id: string) => void;
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
+  onClickOutside?: () => void;
 };
 
 const Title = styled.div`
@@ -28,45 +30,42 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-export const ListItem = forwardRef(
-  (props: ListItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const {
-      id,
-      title,
-      type,
-      selected,
-      hasOptions,
-      expandState,
-      onChange,
-      onOptionsClick,
-      onExpandClick,
-    } = props;
-
-    const handleClick = () => {
-      onChange(id);
-    };
-    return (
-      <ListItemWrapper
-        ref={ref}
-        id={id}
-        hasOptions={hasOptions}
-        onOptionsClick={onOptionsClick}
-        selected={selected}
-        onClick={handleClick}
-        expandState={expandState}
-        onExpandClick={onExpandClick}
-      >
-        {type === ListItemType.Checkbox ? (
-          <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
-        ) : (
-          <RadioButton
-            id={id}
-            checked={selected}
-            onChange={() => onChange(id)}
-          />
-        )}
-        <Title>{title}</Title>
-      </ListItemWrapper>
-    );
-  }
-);
+export const ListItem = ({
+  id,
+  title,
+  optionsContent,
+  type,
+  selected,
+  hasOptions,
+  isOptionsPanelOpen,
+  expandState,
+  onChange,
+  onOptionsClick,
+  onClickOutside,
+  onExpandClick,
+}: ListItemProps) => {
+  const handleClick = () => {
+    onChange(id);
+  };
+  return (
+    <ListItemWrapper
+      id={id}
+      hasOptions={hasOptions}
+      onOptionsClick={onOptionsClick}
+      selected={selected}
+      onClick={handleClick}
+      expandState={expandState}
+      onExpandClick={onExpandClick}
+      isOptionsPanelOpen={isOptionsPanelOpen}
+      optionsContent={optionsContent}
+      onClickOutside={onClickOutside}
+    >
+      {type === ListItemType.Checkbox ? (
+        <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
+      ) : (
+        <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
+      )}
+      <Title>{title}</Title>
+    </ListItemWrapper>
+  );
+};
