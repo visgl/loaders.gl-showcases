@@ -8,10 +8,16 @@ describe("MapControllPanel", () => {
   let buttons;
   const onZoomIn = jest.fn();
   const onZoomOut = jest.fn();
+  const onRotate = jest.fn();
 
   beforeEach(() => {
     const { rerender, container, getAllByRole } = renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
+      <MapControllPanel
+        rotateDeg={90}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onRotate={onRotate}
+      />
     );
     rerenderFunc = rerender;
     componentElement = container.firstChild;
@@ -31,14 +37,24 @@ describe("MapControllPanel", () => {
     expect(expander).toBeInTheDocument();
     userEvent.click(expander);
     renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      <MapControllPanel
+        rotateDeg={90}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onRotate={onRotate}
+      />,
       rerenderFunc
     );
     expect(componentElement?.childNodes.length).toBe(2);
 
     userEvent.click(expander);
     renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      <MapControllPanel
+        rotateDeg={90}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onRotate={onRotate}
+      />,
       rerenderFunc
     );
     expect(componentElement?.childNodes.length).toBe(6);
@@ -50,5 +66,13 @@ describe("MapControllPanel", () => {
     expect(onZoomIn).toBeCalledTimes(1);
     userEvent.click(zoomOut);
     expect(onZoomOut).toBeCalledTimes(1);
+  });
+
+  it("Should click on rotate", () => {
+    const rotateButton = buttons[buttons.length - 1];
+    const compassIcon = rotateButton.firstChild;
+    expect(compassIcon).toHaveStyle("transform: rotate(-90deg)");
+    userEvent.click(rotateButton);
+    expect(onRotate).toBeCalledTimes(1);
   });
 });

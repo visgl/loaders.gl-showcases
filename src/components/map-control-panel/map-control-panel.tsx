@@ -50,13 +50,31 @@ const Button = styled.button<{ active?: boolean }>`
 `;
 
 type MapControlPanelProps = {
+  rotateDeg: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
+  onRotate: () => void;
 };
 
+type CompassProps = {
+  degrees: number;
+};
+
+const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
+  style: {
+    transform: `rotate(${-degrees || 0}deg)`,
+  },
+}))<CompassProps>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const MapControllPanel = ({
+  rotateDeg,
   onZoomIn,
   onZoomOut,
+  onRotate,
 }: MapControlPanelProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
@@ -115,8 +133,10 @@ export const MapControllPanel = ({
           </Button>
         </>
       )}
-      <Button>
-        <CompassIcon />
+      <Button onClick={onRotate}>
+        <CompassWrapper degrees={rotateDeg}>
+          <CompassIcon />
+        </CompassWrapper>
       </Button>
     </Container>
   );

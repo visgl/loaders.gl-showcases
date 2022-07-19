@@ -31,7 +31,7 @@ import { EXAMPLES } from "../../constants/i3s-examples";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-
+import { LinearInterpolator } from "@deck.gl/core";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -213,6 +213,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
     useState<boolean>(true);
 
+  const transitionInterpolator = new LinearInterpolator(["bearing"]);
+
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
       setActiveRightPanel(ActiveButton.options);
@@ -374,6 +376,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       main: {
         ...viewState.main,
         zoom: zoom - 1,
+      },
+    });
+  };
+
+  const onRotate = () => {
+    const { bearing } = viewState.main;
+
+    setViewState({
+      main: {
+        ...viewState.main,
+        bearing: bearing + -bearing,
+        transitionDuration: 1000,
+        transitionInterpolator,
       },
     });
   };
@@ -670,7 +685,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           </RightPanelWrapper>
         )}
       </DeckWrapper>
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
+      <MapControllPanel
+        rotateDeg={viewState.main.bearing}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onRotate={onRotate}
+      />
     </Container>
   );
 };
