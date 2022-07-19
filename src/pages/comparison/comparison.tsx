@@ -5,7 +5,6 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
-import { BASE_MAPS } from "../../constants/map-styles";
 import {
   buildSublayersTree,
   parseTilesetUrlParams,
@@ -26,12 +25,11 @@ import {
 import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../../components/comparison/comparison-params-panel/comparison-params-panel";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-
 import { EXAMPLES } from "../../constants/i3s-examples";
-
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { LinearInterpolator } from "@deck.gl/core";
+import { BASE_MAPS } from "../../constants/map-styles";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;

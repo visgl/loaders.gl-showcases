@@ -14,7 +14,6 @@ describe("Base Map List Item", () => {
         title="san-francisco"
         selected={false}
         hasOptions={true}
-        iconUrl={"Dark"}
         onMapsSelect={onChange}
         onOptionsClick={onOptionsClick}
       />

@@ -131,17 +131,15 @@ module.exports = (env) => {
           },
         },
         {
-          test: /\.(png|jpe?g|svg|gif|jp2|webp)$/,
+          test: /\.(png|jpe?g|gif|jp2|webp)$/,
           loader: "file-loader",
           options: {
             name: "[name].[ext]",
           },
-          resourceQuery: { not: [/svgr/] },
         },
         {
           test: /\.svg$/i,
           issuer: /\.[jt]sx?$/,
-          resourceQuery: /svgr/,
           use: ["@svgr/webpack"],
         },
         {

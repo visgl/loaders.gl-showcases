@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { CollapseDirection, ExpandState } from "../../types";
 import { SyntheticEvent } from "react";
-import ChevronIcon from "../../../public/icons/chevron.svg?svgr";
+import ChevronIcon from "../../../public/icons/chevron.svg";
 
 const IconButton = styled.div<{
   expandState: ExpandState;

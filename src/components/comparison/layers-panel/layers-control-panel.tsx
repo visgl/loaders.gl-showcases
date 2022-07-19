@@ -12,9 +12,9 @@ import { ListItem } from "./list-item";
 import { SettingsMenu } from "./settings-menu";
 import { PlusButton } from "../../plus-button/plus-button";
 
-import LocationIcon from "../../../../public/icons/location.svg?svgr";
-import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
-import SettingsIcon from "../../../../public/icons/settings.svg?svgr";
+import LocationIcon from "../../../../public/icons/location.svg";
+import DeleteIcon from "../../../../public/icons/delete.svg";
+import SettingsIcon from "../../../../public/icons/settings.svg";
 import { color_accent_primary } from "../../../constants/colors";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
@@ -35,7 +35,6 @@ const LayersContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow: auto;
   position: relative;
 `;
 

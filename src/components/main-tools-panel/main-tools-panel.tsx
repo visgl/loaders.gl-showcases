@@ -1,27 +1,14 @@
-import styled, { css } from "styled-components";
-
+import styled from "styled-components";
 import {
   color_brand_tertiary,
+  color_canvas_primary_inverted,
   dim_brand_tertinary,
 } from "../../constants/colors";
-
-import GearIconWhite from "../../../public/icons/gear-white.svg";
-import SettingsIconWhite from "../../../public/icons/settings-white.svg";
-import MemoryIconWhite from "../../../public/icons/memory-white.svg";
-
-import GearIconGrey from "../../../public/icons/gear-grey.svg";
-import SettingsIconGrey from "../../../public/icons/settings-grey.svg";
-import MemoryIconGrey from "../../../public/icons/memory-grey.svg";
-
-import { ActiveButton, Layout, Theme } from "../../types";
+import GearIcon from "../../../public/icons/gear.svg";
+import SettingsIcon from "../../../public/icons/settings.svg";
+import MemoryIcon from "../../../public/icons/memory.svg";
+import { ActiveButton, Layout } from "../../types";
 import { useAppLayout } from "../../utils/layout";
-
-type ButtonProps = {
-  active: boolean;
-  lightImage: string;
-  darkImage: string;
-  layout: Layout;
-};
 
 type MainToolsPanelProps = {
   id: string;
@@ -43,6 +30,10 @@ const Container = styled.div<ContainerProps>`
   padding: 2px;
 `;
 
+type ButtonProps = {
+  active: boolean;
+  layout: Layout;
+};
 const Button = styled.button<ButtonProps>`
   display: flex;
   justify-content: center;
@@ -51,28 +42,23 @@ const Button = styled.button<ButtonProps>`
   width: 56px;
   height: 60px;
   cursor: pointer;
-  background: url(${(props) =>
-      props.active
-        ? props.lightImage
-        : props.theme.name === Theme.Light
-        ? props.darkImage
-        : props.lightImage})
-    no-repeat;
-  background-color: ${(props) =>
-    props.active ? color_brand_tertiary : "transparent"};
-  background-position: center;
+  fill: ${({ theme, active }) =>
+    active
+      ? color_canvas_primary_inverted
+      : theme.colors.mainToolsPanelIconColor};
+  background-color: ${({ active }) =>
+    active ? color_brand_tertiary : "transparent"};
   outline: 0;
   border: none;
 
-  ${({ layout, lightImage }) =>
-    layout === Layout.Desktop &&
-    css`
-      &:hover {
-        background: url(${lightImage}) no-repeat;
-        background-position: center;
-        background-color: ${dim_brand_tertinary};
-      }
-    `}
+  &:hover {
+    fill: ${({ theme, active }) =>
+      active
+        ? color_canvas_primary_inverted
+        : theme.colors.mainToolsPanelDimIconColor};
+    background-color: ${({ active }) =>
+      active ? dim_brand_tertinary : "transparent"};
+  }
 `;
 
 export const MainToolsPanel = ({
@@ -90,27 +76,27 @@ export const MainToolsPanel = ({
         <Button
           layout={layout}
           active={activeButton === ActiveButton.options}
-          darkImage={GearIconGrey}
-          lightImage={GearIconWhite}
           onClick={() => onChange(ActiveButton.options)}
-        />
+        >
+          <GearIcon />
+        </Button>
       )}
       {showComparisonSettings && (
         <Button
           layout={layout}
           active={activeButton === ActiveButton.settings}
-          darkImage={SettingsIconGrey}
-          lightImage={SettingsIconWhite}
           onClick={() => onChange(ActiveButton.settings)}
-        />
+        >
+          <SettingsIcon />
+        </Button>
       )}
       <Button
         layout={layout}
         active={activeButton === ActiveButton.memory}
-        darkImage={MemoryIconGrey}
-        lightImage={MemoryIconWhite}
         onClick={() => onChange(ActiveButton.memory)}
-      />
+      >
+        <MemoryIcon />
+      </Button>
     </Container>
   );
 };

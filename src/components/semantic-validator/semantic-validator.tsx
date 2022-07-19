@@ -1,8 +1,7 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const SemanticValidatorContainer = styled.div`
@@ -39,7 +38,7 @@ const TableHeader = styled.th`
 
 const NoIssuesItem = styled.h4`
   margin: auto;
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-weight: normal;
 `;
 

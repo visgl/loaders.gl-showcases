@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
+import { color_brand_primary, color_canvas_primary_inverted } from "../../constants/colors";
 
 const OptionGroup = styled.div`
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
