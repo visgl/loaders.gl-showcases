@@ -7,7 +7,6 @@ type BaseMapsItemProps = {
   title: string;
   optionsContent?: JSX.Element;
   selected: boolean;
-  hasOptions: boolean;
   isOptionsPanelOpen: boolean;
   onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
@@ -27,7 +26,6 @@ export const BaseMapListItem = ({
   id,
   title,
   optionsContent,
-  hasOptions,
   isOptionsPanelOpen,
   selected,
   onOptionsClick,
@@ -41,7 +39,6 @@ export const BaseMapListItem = ({
     <ListItemWrapper
       id={id}
       selected={selected}
-      hasOptions={hasOptions}
       onClick={handleClick}
       onOptionsClick={onOptionsClick}
       isOptionsPanelOpen={isOptionsPanelOpen}

@@ -70,7 +70,6 @@ export const MapOptionPanel = ({
       <MapList>
         {baseMaps.map((baseMap) => {
           const isMapSelected = selectedBaseMapId === baseMap.id;
-          const isCustomMap = baseMap.custom || false;
 
           return (
             <Fragment key={baseMap.id}>
@@ -78,7 +77,6 @@ export const MapOptionPanel = ({
                 id={baseMap.id}
                 title={baseMap.name}
                 selected={isMapSelected}
-                hasOptions={isCustomMap}
                 onOptionsClick={() => {
                   setShowMapSettings(true);
                   setSettingsMapId(baseMap.id);

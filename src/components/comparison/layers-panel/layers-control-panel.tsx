@@ -75,7 +75,6 @@ export const LayersControlPanel = ({
                 title={layer.name}
                 type={type}
                 selected={isLayerSelected}
-                hasOptions={true}
                 onChange={onLayerSelect}
                 onOptionsClick={() => {
                   setShowLayerSettings(true);

@@ -10,7 +10,6 @@ type ListItemProps = {
   optionsContent?: JSX.Element;
   type: ListItemType;
   selected: boolean;
-  hasOptions?: boolean;
   isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onChange: (id: string) => void;
@@ -36,7 +35,6 @@ export const ListItem = ({
   optionsContent,
   type,
   selected,
-  hasOptions,
   isOptionsPanelOpen,
   expandState,
   onChange,
@@ -50,7 +48,6 @@ export const ListItem = ({
   return (
     <ListItemWrapper
       id={id}
-      hasOptions={hasOptions}
       onOptionsClick={onOptionsClick}
       selected={selected}
       onClick={handleClick}

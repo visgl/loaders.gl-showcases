@@ -10,7 +10,6 @@ type BaseMapsItemProps = {
   id: string;
   optionsContent?: JSX.Element;
   selected: boolean;
-  hasOptions?: boolean;
   isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onClick: () => void;
@@ -89,7 +88,6 @@ export const ListItemWrapper = ({
   children,
   id,
   selected,
-  hasOptions,
   isOptionsPanelOpen = false,
   optionsContent,
   expandState,
@@ -106,9 +104,8 @@ export const ListItemWrapper = ({
   return (
     <Container checked={selected} onClick={onClick}>
       <ItemContentWrapper>{children}</ItemContentWrapper>
-      {hasOptions && onOptionsClick && optionsContent && (
+      {optionsContent && onOptionsClick && (
         <Popover
-          key={id}
           isOpen={isOptionsPanelOpen}
           reposition={false}
           positions={["left", "top", "bottom"]}

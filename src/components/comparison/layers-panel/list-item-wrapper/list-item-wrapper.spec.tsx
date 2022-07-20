@@ -13,7 +13,6 @@ describe("List Item Wrapper", () => {
       <ListItemWrapper
         id="test-id"
         selected={true}
-        hasOptions={true}
         expandState={ExpandState.expanded}
         onOptionsClick={onOptionsClick}
         onExpandClick={onExpandClick}
