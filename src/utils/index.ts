@@ -12,12 +12,7 @@ export {
 } from "./colors-map";
 export { getFrustumBounds } from "./frustum-utils";
 export { default as ColorMap } from "./colors-map";
-export {
-  getShortTileDebugInfo,
-  getTileDebugInfo,
-  validateTile,
-  isTileGeometryInsideBoundingVolume,
-} from "./tile-debug";
+export { validateTile, isTileGeometryInsideBoundingVolume } from "./tile-debug";
 export {
   generateBinaryNormalsDebugData,
   getNormalSourcePosition,
@@ -30,10 +25,6 @@ export {
   selectOriginalTextureForTileset,
 } from "./texture-selector-utils";
 
-export {
-  getGeometryVsTextureMetrics
-} from './validation-utils/attributes-validation/geometry-vs-texture-metrics';
+export { getGeometryVsTextureMetrics } from "./validation-utils/attributes-validation/geometry-vs-texture-metrics";
 
-export {
-  isGeometryBoundingVolumeMoreSuitable
-} from './validation-utils/tile-validation/bounding-volume-validation';
+export { isGeometryBoundingVolumeMoreSuitable } from "./validation-utils/tile-validation/bounding-volume-validation";
