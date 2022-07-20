@@ -378,13 +378,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onRotate = () => {
-    const { bearing } = viewState.main;
-
+  const onCompassClick = () => {
     setViewState({
       main: {
         ...viewState.main,
-        bearing: bearing + -bearing,
+        bearing: 0,
         transitionDuration: 1000,
         transitionInterpolator,
       },
@@ -684,10 +682,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         )}
       </DeckWrapper>
       <MapControllPanel
-        rotateDeg={viewState.main.bearing}
+        bearing={viewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
-        onRotate={onRotate}
+        onCompassClick={onCompassClick}
       />
     </Container>
   );

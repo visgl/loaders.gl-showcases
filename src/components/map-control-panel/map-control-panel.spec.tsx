@@ -13,10 +13,10 @@ describe("MapControllPanel", () => {
   beforeEach(() => {
     const { rerender, container, getAllByRole } = renderWithTheme(
       <MapControllPanel
-        rotateDeg={90}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
-        onRotate={onRotate}
+        onCompassClick={onRotate}
       />
     );
     rerenderFunc = rerender;
@@ -38,10 +38,10 @@ describe("MapControllPanel", () => {
     userEvent.click(expander);
     renderWithTheme(
       <MapControllPanel
-        rotateDeg={90}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
-        onRotate={onRotate}
+        onCompassClick={onRotate}
       />,
       rerenderFunc
     );
@@ -50,10 +50,10 @@ describe("MapControllPanel", () => {
     userEvent.click(expander);
     renderWithTheme(
       <MapControllPanel
-        rotateDeg={90}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
-        onRotate={onRotate}
+        onCompassClick={onRotate}
       />,
       rerenderFunc
     );
