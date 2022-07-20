@@ -8,7 +8,7 @@ import { PlusButton } from "../../plus-button/plus-button";
 
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
-import { LayerOptionsMenu } from "./layer-options-menu";
+import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
