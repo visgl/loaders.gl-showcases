@@ -5,7 +5,7 @@ import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMap } from "../../../types";
-import { BaseMapOptionsMenu } from "./basemap-options-menu";
+import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 
 type MapOptionPanelProps = {
   baseMaps: BaseMap[];

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { color_accent_primary } from "../../../constants/colors";
-import DeleteIcon from "../../../../public/icons/delete.svg";
+import { color_accent_primary } from "../../../../constants/colors";
+import DeleteIcon from "../../../../../public/icons/delete.svg";
 
 type BaseMapOptionsMenuProps = {
   onDeleteBasemap: () => void;
