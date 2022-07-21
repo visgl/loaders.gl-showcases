@@ -28,7 +28,6 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-import { LinearInterpolator } from "@deck.gl/core";
 import { BASE_MAPS } from "../../constants/map-styles";
 
 type ComparisonPageProps = {
@@ -211,8 +210,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
     useState<boolean>(true);
 
-  const transitionInterpolator = new LinearInterpolator(["bearing"]);
-
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
       setActiveRightPanel(ActiveButton.options);
@@ -384,7 +381,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ...viewState.main,
         bearing: 0,
         transitionDuration: 1000,
-        transitionInterpolator,
       },
     });
   };
