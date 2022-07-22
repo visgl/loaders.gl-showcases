@@ -46,6 +46,7 @@ import {
 } from "../../utils";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
+import { DragMode } from "../../types";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -68,6 +69,7 @@ const controllerExpected = {
   inertia: true,
   scrollZoom: { speed: 0.01, smooth: true },
   touchRotate: true,
+  dragMode: "pan",
 };
 
 const callRender = (renderFunc, props = {}) => {
@@ -129,6 +131,21 @@ describe("Deck.gl I3S map component", () => {
     expect(onAfterRender).toBe(simpleCallbackMock);
     expect(onClick).toBe(simpleCallbackMock);
     expect(TerrainLayer).not.toHaveBeenCalled();
+  });
+
+  it("Controller", () => {
+    const { rerender } = callRender(render, { loadedTilesets: undefined });
+    expect(DeckGL).toHaveBeenCalled();
+    const {
+      controller: { dragMode },
+    } = DeckGL.mock.lastCall[0];
+    expect(dragMode).toBe("pan");
+
+    callRender(rerender, { dragMode: DragMode.rotate });
+    const {
+      controller: { dragMode: dragMode2 },
+    } = DeckGL.mock.lastCall[0];
+    expect(dragMode2).toBe("rotate");
   });
 
   it("Should load UV debug texture", () => {

@@ -1,4 +1,5 @@
 import userEvent from "@testing-library/user-event";
+import { DragMode } from "../../types";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { MapControllPanel } from "./map-control-panel";
 
@@ -8,10 +9,16 @@ describe("MapControllPanel", () => {
   let buttons;
   const onZoomIn = jest.fn();
   const onZoomOut = jest.fn();
+  const onDragModeToggle = jest.fn();
 
   beforeEach(() => {
     const { rerender, container, getAllByRole } = renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
+      <MapControllPanel
+        dragMode={DragMode.pan}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onDragModeToggle={onDragModeToggle}
+      />
     );
     rerenderFunc = rerender;
     componentElement = container.firstChild;
@@ -31,14 +38,24 @@ describe("MapControllPanel", () => {
     expect(expander).toBeInTheDocument();
     userEvent.click(expander);
     renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      <MapControllPanel
+        dragMode={DragMode.pan}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onDragModeToggle={onDragModeToggle}
+      />,
       rerenderFunc
     );
     expect(componentElement?.childNodes.length).toBe(2);
 
     userEvent.click(expander);
     renderWithTheme(
-      <MapControllPanel onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+      <MapControllPanel
+        dragMode={DragMode.pan}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onDragModeToggle={onDragModeToggle}
+      />,
       rerenderFunc
     );
     expect(componentElement?.childNodes.length).toBe(6);
@@ -50,5 +67,35 @@ describe("MapControllPanel", () => {
     expect(onZoomIn).toBeCalledTimes(1);
     userEvent.click(zoomOut);
     expect(onZoomOut).toBeCalledTimes(1);
+  });
+
+  it("Should highlight dragMode buttons", () => {
+    const [, , panModeButton, rotateModeButton] = buttons;
+    let fill = getComputedStyle(panModeButton).getPropertyValue("fill");
+    expect(fill).toBe("#FFFFFF");
+    fill = getComputedStyle(rotateModeButton).getPropertyValue("fill");
+    expect(fill).toBe("#000010");
+
+    renderWithTheme(
+      <MapControllPanel
+        dragMode={DragMode.rotate}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onDragModeToggle={onDragModeToggle}
+      />,
+      rerenderFunc
+    );
+    fill = getComputedStyle(panModeButton).getPropertyValue("fill");
+    expect(fill).toBe("#000010");
+    fill = getComputedStyle(rotateModeButton).getPropertyValue("fill");
+    expect(fill).toBe("#FFFFFF");
+  });
+
+  it("Should click on dragMode buttons", () => {
+    const [, , panMode, rotateMode] = buttons;
+    userEvent.click(panMode);
+    expect(onDragModeToggle).toBeCalledTimes(1);
+    userEvent.click(rotateMode);
+    expect(onDragModeToggle).toBeCalledTimes(2);
   });
 });
