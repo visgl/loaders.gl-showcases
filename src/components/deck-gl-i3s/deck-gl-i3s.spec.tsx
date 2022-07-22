@@ -109,7 +109,6 @@ describe("Deck.gl I3S map component", () => {
     const {
       children,
       controller,
-      touchAction,
       layerFilter,
       layers,
       views,
@@ -121,7 +120,6 @@ describe("Deck.gl I3S map component", () => {
     } = DeckGL.mock.lastCall[0];
     expect(children).toBeTruthy();
     expect(controller).toEqual(controllerExpected);
-    expect(touchAction).toBe("pan-x");
     expect(layerFilter).toBeTruthy();
     expect(layers).toBeTruthy();
     expect(views).toBeTruthy();

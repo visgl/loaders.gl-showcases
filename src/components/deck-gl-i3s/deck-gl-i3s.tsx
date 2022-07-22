@@ -707,7 +707,6 @@ export const DeckGlI3s = ({
         touchRotate: true,
         dragMode,
       }}
-      touchAction="pan-x"
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}
