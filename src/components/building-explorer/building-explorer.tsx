@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useForceUpdate } from "../../utils";
-import { color_brand_primary, color_canvas_inverted } from "../../constants/colors";
+import { color_brand_primary, color_canvas_primary_inverted } from "../../constants/colors";
 
 const BuildingExplorerContainer = styled.div<{
   debugMode: boolean;
@@ -60,7 +60,7 @@ const CollapseContainer = styled.div`
 
 const CheckboxContainer = styled.div`
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -74,7 +74,7 @@ const Label = styled.h3<{ htmlFor: string }>`
   margin: 0;
   padding: 0;
   cursor: pointer;
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-weight: normal;
 `;
 

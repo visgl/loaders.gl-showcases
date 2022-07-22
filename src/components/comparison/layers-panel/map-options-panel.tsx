@@ -5,7 +5,7 @@ import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { SettingsMenu } from "./settings-menu";
 import { color_accent_primary } from "../../../constants/colors";
-import DeleteIcon from "../../../../public/icons/delete.svg?svgr";
+import DeleteIcon from "../../../../public/icons/delete.svg";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMap } from "../../../types";
 
@@ -139,7 +139,6 @@ export const MapOptionPanel = ({
                 ref={(node) => addRefNode(node, baseMap.id)}
                 id={baseMap.id}
                 title={baseMap.name}
-                iconUrl={baseMap.iconUrl}
                 selected={isMapSelected}
                 hasOptions={isCustomMap}
                 onOptionsClick={() => {

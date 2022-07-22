@@ -7,9 +7,9 @@ import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import CustomMap from "../../../../public/icons/custom-map.svg";
 import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
+import { WarningPanel } from "./warning/warning-panel";
 
 enum Tabs {
   Layers,
@@ -87,14 +87,14 @@ const Content = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 16px 8px 16px;
+  padding: 0 16px;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
 `;
 
-const InsertPanelWrapper = styled.div`
+const PanelWrapper = styled.div`
   position: absolute;
   top: 24px;
   // Make insert panel centered related to layers panel.
@@ -110,6 +110,9 @@ const CloseButtonWrapper = styled.div`
   height: 44px;
   display: flex;
 `;
+
+const EXISTING_AREA_WARNING =
+  "You are trying to add an existing area to the map";
 
 export const LayersPanel = ({
   id,
@@ -134,6 +137,7 @@ export const LayersPanel = ({
   const [showInsertPanel, setShowInsertPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
+  const [showExistedLayerWarning, setShowExistedLayerWarning] = useState(false);
   const layout = useAppLayout();
 
   const handleInsertLayer = (layer: {
@@ -141,6 +145,16 @@ export const LayersPanel = ({
     url: string;
     token?: string;
   }) => {
+    const existedLayer = layers.some(
+      (exisLayer) => exisLayer.url.trim() === layer.url.trim()
+    );
+
+    if (existedLayer) {
+      setShowInsertPanel(false);
+      setShowExistedLayerWarning(true);
+      return;
+    }
+
     const id = layer.url.replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
@@ -159,7 +173,6 @@ export const LayersPanel = ({
       mapUrl: map.url,
       name: map.name,
       token: map.token,
-      iconUrl: CustomMap,
       custom: true,
     };
 
@@ -216,14 +229,23 @@ export const LayersPanel = ({
             )}
           </Content>
 
+          {showExistedLayerWarning && (
+            <PanelWrapper>
+              <WarningPanel
+                title={EXISTING_AREA_WARNING}
+                onConfirm={() => setShowExistedLayerWarning(false)}
+              />
+            </PanelWrapper>
+          )}
+
           {showInsertPanel && (
-            <InsertPanelWrapper>
+            <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
                 onInsert={(layer) => handleInsertLayer(layer)}
                 onCancel={() => setShowInsertPanel(false)}
               />
-            </InsertPanelWrapper>
+            </PanelWrapper>
           )}
         </>
       )}
@@ -237,13 +259,13 @@ export const LayersPanel = ({
       )}
 
       {showInsertMapPanel && (
-        <InsertPanelWrapper>
+        <PanelWrapper>
           <InsertPanel
             title={"Insert Base Map"}
             onInsert={(map) => handleInsertMap(map)}
             onCancel={() => setShowInsertMapPanel(false)}
           />
-        </InsertPanelWrapper>
+        </PanelWrapper>
       )}
     </Container>
   );

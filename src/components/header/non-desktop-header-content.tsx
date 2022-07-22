@@ -1,17 +1,11 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import styled, { css } from "styled-components";
-
+import styled, { css, useTheme } from "styled-components";
 import { Theme } from "../../utils/enums";
-
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
 import GitHubIconLight from "../../../public/icons/github-icon-light.png";
-
-import DarkModeBurger from "../../../public/icons/dark-mode-burger.svg";
-import LightModeBurger from "../../../public/icons/light-mode-burger.svg";
-
-import DarkModeClose from "../../../public/icons/dark-mode-close.svg";
-import LightModeClose from "../../../public/icons/light-mode-close.svg";
+import BurgerIcon from "../../../public/icons/burger.svg";
+import CloseIcon from "../../../public/icons/close.svg";
 import {
   ActiveProps,
   CompareButtonProps,
@@ -22,20 +16,12 @@ import { GITHUB_LINK } from "../../constants/common";
 import { color_brand_secondary } from "../../constants/colors";
 import { ThemeToggler } from "./theme-toggler";
 
-const MenuIcon = styled.img`
-  display: block;
-  margin-right: 19px;
-  cursor: pointer;
-`;
-
-const BurgerIcon = styled(MenuIcon)`
-  width: 18px
-  height: 12px;
-`;
-
-const CloseIcon = styled(MenuIcon)`
-  width: 16px
-  height: 16px;
+const Button = styled.div`
+  width: 44px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const MenuContainer = styled.div`
@@ -169,25 +155,19 @@ const ToggleItem = styled(ListButton)`
   margin-top: 12px;
 `;
 
-const Header = ({ theme, isOpen, setIsOpen }) => {
-  const burgerIcon = theme === Theme.Light ? LightModeBurger : DarkModeBurger;
-  const closeIcon = theme === Theme.Light ? LightModeClose : DarkModeClose;
-
+const Header = ({ isOpen, setIsOpen }) => {
+  const theme = useTheme();
   return (
     <>
       {!isOpen && (
-        <BurgerIcon
-          id="burger-menu"
-          src={burgerIcon}
-          onClick={() => setIsOpen(true)}
-        />
+        <Button id="burger-menu" onClick={() => setIsOpen(true)}>
+          <BurgerIcon fill={theme.colors.fontColor} />
+        </Button>
       )}
       {isOpen && (
-        <CloseIcon
-          id="close-header-menu"
-          src={closeIcon}
-          onClick={() => setIsOpen(false)}
-        />
+        <Button id="close-header-menu" onClick={() => setIsOpen(false)}>
+          <CloseIcon fill={theme.colors.fontColor} />
+        </Button>
       )}
     </>
   );
@@ -278,7 +258,7 @@ export const NonDesktopHeaderContent = ({
 
   return (
     <Fragment>
-      <Header theme={theme} isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+      <Header isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
       {isMenuOpen && (
         <Menu

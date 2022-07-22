@@ -3,14 +3,13 @@ import styled, { useTheme } from "styled-components";
 import { CollapseDirection, ExpandState, DragMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
-import PlusIcon from "../../../public/icons/plus.svg?svgr";
-import MinusIcon from "../../../public/icons/minus.svg?svgr";
-import PanIcon from "../../../public/icons/pan.svg?svgr";
-import OrbitIcon from "../../../public/icons/orbit.svg?svgr";
-import CompassIcon from "../../../public/icons/compass.svg?svgr";
+import PlusIcon from "../../../public/icons/plus.svg";
+import MinusIcon from "../../../public/icons/minus.svg";
+import PanIcon from "../../../public/icons/pan.svg";
+import OrbitIcon from "../../../public/icons/orbit.svg";
+import CompassIcon from "../../../public/icons/compass.svg";
 import {
-  color_brand_tertiary,
-  color_canvas_inverted,
+  color_brand_tertiary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const Container = styled.div`
@@ -39,11 +38,11 @@ const Button = styled.button<{ active?: boolean }>`
   background-position: center;
   border: none;
   fill: ${({ theme, active }) =>
-    active ? color_canvas_inverted : theme.colors.buttonIconColor};
+    active ? color_canvas_primary_inverted : theme.colors.buttonIconColor};
 
   &:hover {
     fill: ${({ theme, active }) =>
-      active ? color_canvas_inverted : theme.colors.buttonDimIconColor};
+      active ? color_canvas_primary_inverted : theme.colors.buttonDimIconColor};
     background-color: ${({ theme, active = false }) =>
       active ? color_brand_tertiary : theme.colors.buttonDimColor};
   }

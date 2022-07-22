@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty } from "../../utils/layout";
 
-type LayoutProps = {
+export type LayoutProps = {
   layout: string;
 };
 
@@ -21,9 +21,15 @@ export const Container = styled.div<LayoutProps>`
   padding-bottom: 26px;
   position: relative;
 
+  height: ${getCurrentLayoutProperty({
+    desktop: "382px",
+    tablet: "382px",
+    mobile: "calc(50vh - 110px)",
+  })};
+
   max-height: ${getCurrentLayoutProperty({
-    desktop: "408px",
-    tablet: "408px",
+    desktop: "calc(100vh - 82px)",
+    tablet: "382px",
     mobile: "calc(50vh - 110px)",
   })};
 `;

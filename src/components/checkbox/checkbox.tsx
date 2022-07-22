@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {
   color_brand_tertiary,
-  color_canvas_inverted,
+  color_canvas_primary_inverted,
   dim_brand_tertinary,
 } from "../../constants/colors";
 
@@ -20,7 +20,7 @@ const CheckboxContainer = styled.div`
 
 const Icon = styled.svg`
   fill: none;
-  stroke: ${color_canvas_inverted};
+  stroke: ${color_canvas_primary_inverted};
   stroke-width: 2px;
 `;
 

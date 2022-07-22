@@ -27,8 +27,7 @@ import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
-  color_brand_primary,
-  color_canvas_inverted,
+  color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
@@ -51,7 +50,7 @@ const StatsWidgetContainer = styled.div<{
   position: absolute;
   top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
   background: ${color_brand_primary};
-  color: ${color_canvas_inverted};
+  color: ${color_canvas_primary_inverted};
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
