@@ -701,7 +701,9 @@ export const DeckGlI3s = ({
         maxPitch: 60,
         inertia: true,
         scrollZoom: { speed: 0.01, smooth: true },
+        touchRotate: true,
       }}
+      touchAction="pan-x"
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}
