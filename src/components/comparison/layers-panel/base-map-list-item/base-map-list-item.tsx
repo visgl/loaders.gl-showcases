@@ -1,4 +1,3 @@
-import { ForwardedRef, forwardRef } from "react";
 import styled from "styled-components";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
@@ -6,10 +5,12 @@ import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 type BaseMapsItemProps = {
   id: string;
   title: string;
+  optionsContent?: JSX.Element;
   selected: boolean;
-  hasOptions: boolean;
+  isOptionsPanelOpen: boolean;
   onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
+  onClickOutside?: () => void;
 };
 
 const Title = styled.div`
@@ -21,25 +22,31 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-export const BaseMapListItem = forwardRef(
-  (props: BaseMapsItemProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const { id, title, hasOptions, selected, onOptionsClick, onMapsSelect } =
-      props;
-    const handleClick = () => {
-      onMapsSelect(id);
-    };
-    return (
-      <ListItemWrapper
-        ref={ref}
-        id={id}
-        selected={selected}
-        hasOptions={hasOptions}
-        onClick={handleClick}
-        onOptionsClick={onOptionsClick}
-      >
-        <BaseMapIcon baseMapId={id} />
-        <Title>{title}</Title>
-      </ListItemWrapper>
-    );
-  }
-);
+export const BaseMapListItem = ({
+  id,
+  title,
+  optionsContent,
+  isOptionsPanelOpen,
+  selected,
+  onOptionsClick,
+  onClickOutside,
+  onMapsSelect,
+}: BaseMapsItemProps) => {
+  const handleClick = () => {
+    onMapsSelect(id);
+  };
+  return (
+    <ListItemWrapper
+      id={id}
+      selected={selected}
+      onClick={handleClick}
+      onOptionsClick={onOptionsClick}
+      isOptionsPanelOpen={isOptionsPanelOpen}
+      optionsContent={optionsContent}
+      onClickOutside={onClickOutside}
+    >
+      <BaseMapIcon baseMapId={id} />
+      <Title>{title}</Title>
+    </ListItemWrapper>
+  );
+};

@@ -13,11 +13,11 @@ describe("List Item Wrapper", () => {
       <ListItemWrapper
         id="test-id"
         selected={true}
-        hasOptions={true}
         expandState={ExpandState.expanded}
         onOptionsClick={onOptionsClick}
         onExpandClick={onExpandClick}
         onClick={onChange}
+        optionsContent={<div>{'Hello world'}</div>}
       >
         San Francisco v1.6
       </ListItemWrapper>
