@@ -704,6 +704,7 @@ export const DeckGlI3s = ({
         maxPitch: 60,
         inertia: true,
         scrollZoom: { speed: 0.01, smooth: true },
+        touchRotate: true,
         dragMode,
       }}
       onAfterRender={onAfterRender}

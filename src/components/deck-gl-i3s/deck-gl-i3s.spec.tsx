@@ -26,6 +26,7 @@ jest.mock("../../layers/bounding-volume-layer/bounding-volume-layer");
 import { act, render } from "@testing-library/react";
 import { DeckGlI3s } from "./deck-gl-i3s";
 import DeckGL from "@deck.gl/react";
+import { MapController } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
@@ -62,6 +63,14 @@ const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
   .spyOn(ColorMap.prototype, "getColor")
   .mockImplementation(() => [100, 150, 200]);
+const controllerExpected = {
+  type: MapController,
+  maxPitch: 60,
+  inertia: true,
+  scrollZoom: { speed: 0.01, smooth: true },
+  touchRotate: true,
+  dragMode: "pan",
+};
 
 const callRender = (renderFunc, props = {}) => {
   let renderResult;
@@ -110,7 +119,7 @@ describe("Deck.gl I3S map component", () => {
       onClick,
     } = DeckGL.mock.lastCall[0];
     expect(children).toBeTruthy();
-    expect(controller).toBeTruthy();
+    expect(controller).toEqual(controllerExpected);
     expect(layerFilter).toBeTruthy();
     expect(layers).toBeTruthy();
     expect(views).toBeTruthy();
