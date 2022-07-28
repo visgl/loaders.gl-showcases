@@ -29,7 +29,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { NormalsDebugData, ViewStateSet } from "../../types";
+import { DragMode, NormalsDebugData, ViewStateSet } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -99,6 +99,8 @@ type DeckGlI3sProps = {
    * if is not set `viewState` state variable will be used
    */
   parentViewState?: ViewStateSet;
+  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
+  dragMode?: DragMode;
   /** Minimap visibility */
   showMinimap?: boolean;
   /** If should create independent viewport for minimap */
@@ -174,6 +176,7 @@ type DeckGlI3sProps = {
 export const DeckGlI3s = ({
   id,
   parentViewState,
+  dragMode = DragMode.pan,
   showMinimap,
   createIndependentMinimapViewport = false,
   showTerrain = false,
@@ -701,6 +704,8 @@ export const DeckGlI3s = ({
         maxPitch: 60,
         inertia: true,
         scrollZoom: { speed: 0.01, smooth: true },
+        touchRotate: true,
+        dragMode,
       }}
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}

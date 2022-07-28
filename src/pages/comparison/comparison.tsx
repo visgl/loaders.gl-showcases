@@ -20,6 +20,7 @@ import {
   Sublayer,
   BaseMap,
   ViewStateSet,
+  DragMode,
 } from "../../types";
 
 import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
@@ -168,6 +169,7 @@ const RightPanelWrapper = styled(LeftPanelWrapper)`
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   const forceUpdate = useForceUpdate();
 
+  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [examplesLeftSide, setExamplesLeftSide] =
     useState<LayerExample[]>(EXAMPLES);
   const [examplesRightSide, setExamplesRightSide] =
@@ -385,6 +387,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const toggleDragMode = () => {
+    setDragMode((prev) => {
+      if (prev === DragMode.pan) {
+        return DragMode.rotate;
+      }
+      return DragMode.pan;
+    });
+  };
+
   const onTilesetLoad = (tileset: Tileset3D, side: "left" | "right") => {
     if (needTransitionToTileset) {
       if (side === "left") {
@@ -538,6 +549,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <DeckGlI3s
           id="first-deck-container"
           parentViewState={viewState}
+          dragMode={dragMode}
           showTerrain={selectedBaseMap.id === "Terrain"}
           mapStyle={selectedBaseMap.mapUrl}
           i3sLayers={getI3sLayers("left")}
@@ -614,6 +626,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               transitionInterpolator: undefined,
             },
           }}
+          dragMode={dragMode}
           showTerrain={selectedBaseMap.id === "Terrain"}
           mapStyle={selectedBaseMap.mapUrl}
           i3sLayers={getI3sLayers("right")}
@@ -679,9 +692,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       </DeckWrapper>
       <MapControllPanel
         bearing={viewState.main.bearing}
+        dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
+        onDragModeToggle={toggleDragMode}
       />
     </Container>
   );

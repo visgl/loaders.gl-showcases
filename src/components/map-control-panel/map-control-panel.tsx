@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState, MapControlMode } from "../../types";
+import { CollapseDirection, ExpandState, DragMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -9,7 +9,8 @@ import PanIcon from "../../../public/icons/pan.svg";
 import OrbitIcon from "../../../public/icons/orbit.svg";
 import CompassIcon from "../../../public/icons/compass.svg";
 import {
-  color_brand_tertiary, color_canvas_primary_inverted,
+  color_brand_tertiary,
+  color_canvas_primary_inverted,
 } from "../../constants/colors";
 
 const Container = styled.div`
@@ -50,9 +51,11 @@ const Button = styled.button<{ active?: boolean }>`
 
 type MapControlPanelProps = {
   bearing: number;
+  dragMode: DragMode;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
+  onDragModeToggle: () => void;
 };
 
 type CompassProps = {
@@ -71,16 +74,16 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
 
 export const MapControllPanel = ({
   bearing,
+  dragMode,
   onZoomIn,
   onZoomOut,
   onCompassClick,
+  onDragModeToggle,
 }: MapControlPanelProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
-  const [mapControlMode, setMapControllMode] = useState<MapControlMode>(
-    MapControlMode.pan
-  );
+
   const theme = useTheme();
 
   const onExpandClickHandler = () => {
@@ -89,15 +92,6 @@ export const MapControllPanel = ({
         return ExpandState.collapsed;
       }
       return ExpandState.expanded;
-    });
-  };
-
-  const toggleMapControlMode = () => {
-    setMapControllMode((prev) => {
-      if (prev === MapControlMode.pan) {
-        return MapControlMode.rotate;
-      }
-      return MapControlMode.pan;
     });
   };
 
@@ -118,15 +112,12 @@ export const MapControllPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          <Button
-            active={mapControlMode === MapControlMode.pan}
-            onClick={toggleMapControlMode}
-          >
+          <Button active={dragMode === DragMode.pan} onClick={onDragModeToggle}>
             <PanIcon />
           </Button>
           <Button
-            active={mapControlMode === MapControlMode.rotate}
-            onClick={toggleMapControlMode}
+            active={dragMode === DragMode.rotate}
+            onClick={onDragModeToggle}
           >
             <OrbitIcon />
           </Button>

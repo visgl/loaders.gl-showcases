@@ -1,23 +1,14 @@
-import {
-  ReactEventHandler,
-  Fragment,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
-import styled, { useTheme } from "styled-components";
+import { ReactEventHandler, Fragment, useState } from "react";
+import styled from "styled-components";
+
 import { LayerExample, ListItemType } from "../../../types";
 
 import { ListItem } from "./list-item";
-import { SettingsMenu } from "./settings-menu";
 import { PlusButton } from "../../plus-button/plus-button";
 
-import LocationIcon from "../../../../public/icons/location.svg";
-import DeleteIcon from "../../../../public/icons/delete.svg";
-import SettingsIcon from "../../../../public/icons/settings.svg";
-import { color_accent_primary } from "../../../constants/colors";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
+import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -57,36 +48,6 @@ const InsertButtons = styled.div`
   }
 `;
 
-const LayerSettingsItem = styled.div<{
-  customColor?: string;
-  opacity?: number;
-}>`
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  padding: 10px 0px;
-  color: ${({ theme, customColor }) =>
-    customColor ? customColor : theme.colors.fontColor};
-  opacity: ${({ opacity = 1 }) => opacity};
-  display: flex;
-  gap: 10px;
-  cursor: pointer;
-`;
-
-const LayerSettingsIcon = styled.div`
-  width: 20px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-`;
-
-const Devider = styled.div`
-  height: 1px;
-  width: 100%;
-  border-top: 1px solid #393a45;
-`;
-
 export const LayersControlPanel = ({
   layers,
   type,
@@ -98,74 +59,9 @@ export const LayersControlPanel = ({
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
-  const settingsForItemRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
-  const theme = useTheme();
-
-  const addRefNode = useCallback(
-    (node: HTMLDivElement | null, layerId: string) => {
-      if (node !== null) {
-        settingsForItemRef.current.set(layerId, node);
-      }
-    },
-    []
-  );
-
-  const renderSettingsMenu = () => {
-    if (!showLayerSettings || !settingsLayerId) {
-      return null;
-    }
-    const layer = layers.find(({ id }) => id === settingsLayerId);
-    return (
-      <SettingsMenu
-        onCloseHandler={() => setShowLayerSettings(false)}
-        forElementNode={settingsForItemRef.current.get(settingsLayerId)}
-      >
-        {selectedLayerIds.includes(settingsLayerId) && (
-          <LayerSettingsItem
-            onClick={() => {
-              setShowLayerSettings(false);
-              onPointToLayer();
-            }}
-          >
-            <LayerSettingsIcon>
-              <LocationIcon fill={theme.colors.fontColor} />
-            </LayerSettingsIcon>
-            Point to layer
-          </LayerSettingsItem>
-        )}
-        {hasSettings && (
-          <LayerSettingsItem onClick={onLayerSettingsClick}>
-            <LayerSettingsIcon>
-              <SettingsIcon fill={theme.colors.fontColor} />
-            </LayerSettingsIcon>
-            Layer settings
-          </LayerSettingsItem>
-        )}
-
-        {layer?.custom && (
-          <>
-            <Devider />
-            <LayerSettingsItem
-              customColor={color_accent_primary}
-              opacity={0.8}
-              onClick={() => {
-                setLayerToDeleteId(settingsLayerId);
-                setShowLayerSettings(false);
-              }}
-            >
-              <LayerSettingsIcon>
-                <DeleteIcon fill={color_accent_primary} />
-              </LayerSettingsIcon>
-              Delete layer
-            </LayerSettingsItem>
-          </>
-        )}
-      </SettingsMenu>
-    );
-  };
 
   return (
     <LayersContainer>
@@ -175,17 +71,38 @@ export const LayersControlPanel = ({
           return (
             <Fragment key={layer.id}>
               <ListItem
-                ref={(node) => addRefNode(node, layer.id)}
                 id={layer.id}
                 title={layer.name}
                 type={type}
                 selected={isLayerSelected}
-                hasOptions={true}
                 onChange={onLayerSelect}
                 onOptionsClick={() => {
                   setShowLayerSettings(true);
                   setSettingsLayerId(layer.id);
                 }}
+                onClickOutside={() => {
+                  setShowLayerSettings(false);
+                  setSettingsLayerId("");
+                }}
+                isOptionsPanelOpen={
+                  showLayerSettings && settingsLayerId === layer.id
+                }
+                optionsContent={
+                  <LayerOptionsMenu
+                    layerId={settingsLayerId}
+                    showDeleteLayer={Boolean(layer?.custom)}
+                    showLayerSettings={hasSettings && isLayerSelected}
+                    onPointToLayerClick={() => {
+                      setShowLayerSettings(false);
+                      onPointToLayer();
+                    }}
+                    onLayerSettingsClick={onLayerSettingsClick}
+                    onDeleteLayerClick={() => {
+                      setLayerToDeleteId(settingsLayerId);
+                      setShowLayerSettings(false);
+                    }}
+                  />
+                }
               />
               {layerToDeleteId === layer.id && (
                 <DeleteConfirmation
@@ -208,7 +125,6 @@ export const LayersControlPanel = ({
         </PlusButton>
         <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
       </InsertButtons>
-      {renderSettingsMenu()}
     </LayersContainer>
   );
 };
