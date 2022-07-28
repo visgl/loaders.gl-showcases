@@ -323,7 +323,7 @@ export const ComparisonSide = ({
       {activeButton === ActiveButton.options && (
         <OptionsPanelWrapper layout={layout}>
           <LayersPanel
-            id="right-layers-panel"
+            id={`${side}-layers-panel`}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}
@@ -345,7 +345,7 @@ export const ComparisonSide = ({
       {activeButton === ActiveButton.settings && (
         <OptionsPanelWrapper layout={layout}>
           <ComparisonParamsPanel
-            id="right-comparison-params-panel"
+            id={`${side}-comparison-params-panel`}
             isCompressedGeometry={isCompressedGeometry}
             isCompressedTextures={isCompressedTextures}
             onGeometryChange={() =>
