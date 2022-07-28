@@ -24,6 +24,7 @@ import {
 
 import { LayersPanel } from "../../components/comparison/layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../../components/comparison/comparison-params-panel/comparison-params-panel";
+import { MemoryUsagePanel } from "../../components/comparison/memory-usage-panel/memory-usage-panel";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -590,6 +591,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             />
           </LeftPanelWrapper>
         )}
+        {activeLeftPanel === ActiveButton.memory && (
+          <LeftPanelWrapper layout={layout}>
+            <MemoryUsagePanel
+              id="left-memory-usage-panel"
+              onClose={() =>
+                handleChangeLeftPanelVisibility(ActiveButton.memory)
+              }
+            />
+          </LeftPanelWrapper>
+        )}
       </DeckWrapper>
 
       <Devider layout={layout} />
@@ -662,6 +673,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
               onTexturesChange={handleTexturesChangeRight}
               onClose={() =>
                 handleChangeRightPanelVisibility(ActiveButton.settings)
+              }
+            />
+          </RightPanelWrapper>
+        )}
+        {activeRightPanel === ActiveButton.memory && (
+          <RightPanelWrapper layout={layout}>
+            <MemoryUsagePanel
+              id="right-memory-usage-panel"
+              onClose={() =>
+                handleChangeLeftPanelVisibility(ActiveButton.memory)
               }
             />
           </RightPanelWrapper>
