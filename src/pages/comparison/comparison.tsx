@@ -393,7 +393,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       } else {
         setTilesetRightSide(tileset);
       }
-      pointToTileset(tileset);
     }
   };
 
