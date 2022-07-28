@@ -129,7 +129,7 @@ type ComparisonSideProps = {
   staticLayer?: LayerExample | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
-  onChangeLayer: (layer: LayerExample) => void;
+  onChangeLayer?: (layer: LayerExample) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
@@ -251,7 +251,7 @@ export const ComparisonSide = ({
 
     if (selectedExample) {
       setLayer(selectedExample);
-      onChangeLayer(selectedExample);
+      onChangeLayer && onChangeLayer(selectedExample);
     }
   };
 

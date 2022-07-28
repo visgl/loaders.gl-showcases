@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
@@ -77,6 +77,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const layout = useAppLayout();
 
+  useEffect(() => {
+    setLayerLeftSide(null);
+  }, [mode]);
+
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
   };
@@ -140,7 +144,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onChangeLayerHandler = (layer: LayerExample) => {
-    setLayerLeftSide(layer);
+    if (mode === ComparisonMode.withinLayer) {
+      setLayerLeftSide(layer);
+    }
   };
 
   const onInsertBaseMapHandler = (baseMap: BaseMap) => {
@@ -199,7 +205,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayer={onChangeLayerHandler}
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
