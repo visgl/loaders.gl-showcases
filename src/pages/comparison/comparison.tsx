@@ -134,6 +134,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const onCompassClick = () => {
+    setViewState({
+      main: {
+        ...viewState.main,
+        bearing: 0,
+        transitionDuration: 1000,
+      },
+    });
+  };
+
   const toggleDragMode = () => {
     setDragMode((prev) => {
       if (prev === DragMode.pan) {
@@ -211,9 +221,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onRequestTransitionToTileset={() => setNeedTransitionToTileset(true)}
       />
       <MapControllPanel
+        bearing={viewState.main.bearing}
         dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        onCompassClick={onCompassClick}
         onDragModeToggle={toggleDragMode}
       />
     </Container>
