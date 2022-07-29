@@ -37,6 +37,6 @@ describe("BaseMapIcon", () => {
 
     const svgElement = component?.firstChild;
     expect(svgElement).not.toBeNull();
-    expect(svgElement?.nodeName).toBe("SVG");
+    expect(svgElement?.nodeName).toBe("svg");
   });
 });
