@@ -97,7 +97,7 @@ describe("MapControllPanel", () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onRotate}
-        dragMode={DragMode.pan}
+        dragMode={DragMode.rotate}
         onDragModeToggle={onDragModeToggle}
       />,
       rerenderFunc
