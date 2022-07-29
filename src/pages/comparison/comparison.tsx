@@ -203,6 +203,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [tilesetRightSide, setTilesetRightSide] = useState<Tileset3D | null>(
     null
   );
+  const [statsLeftSide, setStatsLeftSide] = useState<any>([]);
+  const [statsRightSide, setStatsRightSide] = useState<any>([]);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
   const [isCompressedGeometryLeft, setIsCompressedGeometryLeft] =
     useState<boolean>(true);
@@ -388,11 +390,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onTilesetLoad = (tileset: Tileset3D, side: "left" | "right") => {
+    const { stats } = tileset;
+    console.log("tut");
     if (needTransitionToTileset) {
       if (side === "left") {
+        setStatsLeftSide(Object.values(stats.stats));
+        console.log(Object.values(stats.stats))
         setTilesetLeftSide(tileset);
       } else {
         setTilesetRightSide(tileset);
+        setStatsRightSide(Object.values(stats.stats))
       }
     }
   };
@@ -533,6 +540,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       }));
   };
 
+  //console.log(tilesetLeftSide);
+
   return (
     <Container layout={layout}>
       <DeckWrapper layout={layout}>
@@ -606,6 +615,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <LeftPanelWrapper layout={layout}>
             <MemoryUsagePanel
               id="left-memory-usage-panel"
+              stats={statsLeftSide}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.memory)
               }
@@ -693,6 +703,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           <RightPanelWrapper layout={layout}>
             <MemoryUsagePanel
               id="right-memory-usage-panel"
+              stats={statsRightSide}
               onClose={() =>
                 handleChangeLeftPanelVisibility(ActiveButton.memory)
               }

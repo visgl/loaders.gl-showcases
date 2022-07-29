@@ -34,10 +34,15 @@ const StatContainer = styled(ItemContainer)<{ bottom?: number }>`
 
 type ComparisonParamsProps = {
   id: string;
+  stats: any;
   onClose: () => void;
 };
 
-export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
+export const MemoryUsagePanel = ({
+  id,
+  stats,
+  onClose,
+}: ComparisonParamsProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
@@ -55,14 +60,13 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
     });
   };
 
+  console.log(stats);
+
   return (
     <Container id={id} layout={layout}>
       <PanelHeader panel={Panels.MemoryUsage}>
         <Title left={16}>Memory</Title>
-        <CloseButton
-          id="memory-usage-panel-close-button"
-          onClick={onClose}
-        />
+        <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
       <HorizontalLine top={10} />
       <Content>
@@ -105,7 +109,13 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
                   }}
                 />
               </StatContainer>
-              <StatContainer>
+              {stats.map((stat) => (
+                <StatContainer key={stat.name}>
+                  <StatTitle>{stat.name}</StatTitle>
+                  <Title>{stat.count}</Title>
+                </StatContainer>
+              ))}
+              {/* <StatContainer>
                 <StatTitle>Tiles In Tileset(s)</StatTitle>
                 <Title>0</Title>
               </StatContainer>
@@ -144,7 +154,7 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
               <StatContainer>
                 <StatTitle>Tile Memory Use</StatTitle>
                 <Title>0 bytes</Title>
-              </StatContainer>
+              </StatContainer> */}
             </>
           )}
         </StatSection>
