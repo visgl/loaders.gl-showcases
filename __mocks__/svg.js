@@ -1,1 +1,1 @@
-export default "SVG";
+export default "svg";

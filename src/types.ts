@@ -55,6 +55,11 @@ export enum DragMode {
   rotate = "rotate",
 }
 
+export enum ComparisonSideMode {
+  left = "left",
+  right = "right",
+}
+
 export type TileWarning = {
   type: string;
   title: string;
