@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Header } from "./components";
+import { HelpPanel } from "./components/help-panel/help-panel";
 import {
   color_brand_primary,
   color_brand_quaternary,
@@ -96,13 +97,18 @@ const THEMES: AppThemes = {
  */
 export const App = () => {
   const [theme, setTheme] = useState<Theme>(Theme.Dark);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+
+  const handleHelpClick = () => {
+    setShowHelp(prevValue => !prevValue);
+  }
 
   return (
     <>
       <GlobalStyle />
       <ThemeProvider theme={THEMES[theme]}>
         <BrowserRouter>
-          <Header setTheme={setTheme} theme={theme} />
+          <Header setTheme={setTheme} theme={theme} onHelpClick={handleHelpClick} showHelp={showHelp} />
           <ContentWrapper>
             <Routes>
               <Route
@@ -124,6 +130,7 @@ export const App = () => {
               />
             </Routes>
           </ContentWrapper>
+          {showHelp && <HelpPanel />}
         </BrowserRouter>
       </ThemeProvider>
     </>

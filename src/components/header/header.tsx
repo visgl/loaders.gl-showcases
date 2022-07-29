@@ -12,7 +12,9 @@ import { NonDesktopHeaderContent } from "./non-desktop-header-content";
 
 type HeaderProps = {
   theme: Theme;
+  showHelp: boolean;
   setTheme: (theme: Theme) => void;
+  onHelpClick: () => void;
 };
 
 type PropsWithLayout = {
@@ -54,7 +56,7 @@ const HeaderLogo = styled.h2<PropsWithLayout>`
   })};
 `;
 
-export const Header = ({ theme, setTheme }: HeaderProps) => {
+export const Header = ({ theme, setTheme, showHelp, onHelpClick }: HeaderProps) => {
   const layout = useAppLayout();
   const location = useLocation();
   const { pathname } = location;
@@ -73,6 +75,8 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
           theme={theme}
           setTheme={setTheme}
           githubIcon={githubIcon}
+          showHelp={showHelp}
+          onHelpClick={onHelpClick}
         />
       ) : (
         <NonDesktopHeaderContent
@@ -80,6 +84,8 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
           setTheme={setTheme}
           pathname={pathname}
           githubIcon={githubIcon}
+          showHelp={showHelp}
+          onHelpClick={onHelpClick}
         />
       )}
     </HeaderContainer>

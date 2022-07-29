@@ -6,6 +6,8 @@ export type MenuProps = {
   setTheme: (theme: Theme) => void;
   pathname: string;
   githubIcon: string;
+  showHelp?: boolean;
+  onHelpClick: () => void;
 };
 
 export type CompareButtonProps = {
