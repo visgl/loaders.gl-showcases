@@ -26,6 +26,7 @@ jest.mock("../../layers/bounding-volume-layer/bounding-volume-layer");
 import { act, render } from "@testing-library/react";
 import { DeckGlI3s } from "./deck-gl-i3s";
 import DeckGL from "@deck.gl/react";
+import { MapController } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
@@ -45,6 +46,7 @@ import {
 } from "../../utils";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
+import { DragMode } from "../../types";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -61,6 +63,14 @@ const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
   .spyOn(ColorMap.prototype, "getColor")
   .mockImplementation(() => [100, 150, 200]);
+const controllerExpected = {
+  type: MapController,
+  maxPitch: 60,
+  inertia: true,
+  scrollZoom: { speed: 0.01, smooth: true },
+  touchRotate: true,
+  dragMode: "pan",
+};
 
 const callRender = (renderFunc, props = {}) => {
   let renderResult;
@@ -109,7 +119,7 @@ describe("Deck.gl I3S map component", () => {
       onClick,
     } = DeckGL.mock.lastCall[0];
     expect(children).toBeTruthy();
-    expect(controller).toBeTruthy();
+    expect(controller).toEqual(controllerExpected);
     expect(layerFilter).toBeTruthy();
     expect(layers).toBeTruthy();
     expect(views).toBeTruthy();
@@ -119,6 +129,21 @@ describe("Deck.gl I3S map component", () => {
     expect(onAfterRender).toBe(simpleCallbackMock);
     expect(onClick).toBe(simpleCallbackMock);
     expect(TerrainLayer).not.toHaveBeenCalled();
+  });
+
+  it("Controller", () => {
+    const { rerender } = callRender(render, { loadedTilesets: undefined });
+    expect(DeckGL).toHaveBeenCalled();
+    const {
+      controller: { dragMode },
+    } = DeckGL.mock.lastCall[0];
+    expect(dragMode).toBe("pan");
+
+    callRender(rerender, { dragMode: DragMode.rotate });
+    const {
+      controller: { dragMode: dragMode2 },
+    } = DeckGL.mock.lastCall[0];
+    expect(dragMode2).toBe("rotate");
   });
 
   it("Should load UV debug texture", () => {

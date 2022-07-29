@@ -13,9 +13,9 @@ describe("Base Map List Item", () => {
         id="test-id"
         title="san-francisco"
         selected={false}
-        hasOptions={true}
         onMapsSelect={onChange}
         onOptionsClick={onOptionsClick}
+        isOptionsPanelOpen={false}
       />
     );
     const component = screen.getByText("san-francisco");
