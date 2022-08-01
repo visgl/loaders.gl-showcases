@@ -68,7 +68,7 @@ export const DesktopHelpPanel = ({
   const video = currentShortcut?.video;
   return (
     <>
-      <Overlay onClick={onClose} />
+      <Overlay />
       <Container>
         <DesktopShourtcutTabs
           selectedTab={selectedTab}
