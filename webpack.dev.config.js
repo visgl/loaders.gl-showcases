@@ -146,6 +146,10 @@ module.exports = (env) => {
           test: /\.css$/,
           use: [{ loader: "style-loader" }, { loader: "css-loader" }],
         },
+        {
+          test: /\.mp4$/,
+          use: "file-loader?name=videos/[name].[ext]",
+        },
       ],
     },
     resolve: {

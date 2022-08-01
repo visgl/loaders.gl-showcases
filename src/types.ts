@@ -55,6 +55,12 @@ export enum DragMode {
   rotate = "rotate",
 }
 
+export enum HelpPanelSelectedTab {
+  Touch,
+  Trackpad,
+  Mouse,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -130,4 +136,17 @@ export type NormalsDebugData = {
 export type ViewStateSet = {
   main?: ViewState;
   minimap?: ViewState;
+};
+
+export type HelpShortcutItem = {
+  id: string,
+  icon: JSX.Element | null;
+  text: string;
+  video: string;
+};
+
+export type HelpShortcutsData = {
+  [HelpPanelSelectedTab.Mouse]: HelpShortcutItem[];
+  [HelpPanelSelectedTab.Trackpad]: HelpShortcutItem[];
+  [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
 };
