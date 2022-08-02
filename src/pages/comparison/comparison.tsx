@@ -31,6 +31,7 @@ import { EXAMPLES } from "../../constants/i3s-examples";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { BASE_MAPS } from "../../constants/map-styles";
+import StatsWidget from "@probe.gl/stats-widget";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -178,6 +179,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const [glContext, setGlContext] = useState<any>(null);
   const [activeLeftPanel, setActiveLeftPanel] = useState<ActiveButton>(
     ActiveButton.none
   );
@@ -214,6 +216,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(true);
   const [isCompressedTexturesRight, setIsCompressedTexturesRight] =
     useState<boolean>(true);
+  const [memWidget, setMemWidget] = useState<any>(null);
 
   useEffect(() => {
     if (mode === ComparisonMode.acrossLayers) {
@@ -226,10 +229,35 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayerRightSide(null);
   }, [mode]);
 
+  useEffect(() => {
+    const memoryUsage = glContext?.stats.get("Memory Usage");
+    const memWidget = new StatsWidget(memoryUsage, {
+      framesPerUpdate: 1,
+      formatters: {
+        "GPU Memory": "memory",
+        "Buffer Memory": "memory",
+        "Renderbuffer Memory": "memory",
+        "Texture Memory": "memory",
+      },
+    });
+
+    console.log(memWidget)
+
+    setMemWidget(memWidget);
+  }, [glContext]);
+
   const layout = useAppLayout();
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
+  };
+
+  const onWebGLInitialized = (gl) => {
+    setGlContext(gl);
+  };
+
+  const updateStatWidgets = () => {
+    memWidget && memWidget.update();
   };
 
   const onPointToLayer = (side: "left" | "right") => {
@@ -391,15 +419,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const onTilesetLoad = (tileset: Tileset3D, side: "left" | "right") => {
     const { stats } = tileset;
-    console.log("tut");
+    console.log("here", Object.values(glContext.stats.get("Memory Usage")));
+    console.log("tut", tileset);
     if (needTransitionToTileset) {
       if (side === "left") {
         setStatsLeftSide(Object.values(stats.stats));
-        console.log(Object.values(stats.stats))
+        console.log(Object.values(stats.stats));
         setTilesetLeftSide(tileset);
       } else {
         setTilesetRightSide(tileset);
-        setStatsRightSide(Object.values(stats.stats))
+        setStatsRightSide(Object.values(stats.stats));
       }
     }
   };
@@ -541,6 +570,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   //console.log(tilesetLeftSide);
+  // console.log(glContext?.stats.get("Memory Usage"));
 
   return (
     <Container layout={layout}>
@@ -556,7 +586,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           useDracoGeometry={isCompressedGeometryLeft}
           useCompressedTextures={isCompressedTexturesLeft}
           onViewStateChange={onViewStateChange}
+          onWebGLInitialized={onWebGLInitialized}
           onTilesetLoad={(tileset: Tileset3D) => onTilesetLoad(tileset, "left")}
+          onAfterRender={() => updateStatWidgets()}
+          onTileLoad={() => updateStatWidgets()}
+          onTileUnload={() => updateStatWidgets()}
         />
         <LeftSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -644,9 +678,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           useDracoGeometry={isCompressedGeometryRight}
           useCompressedTextures={isCompressedTexturesRight}
           onViewStateChange={onViewStateChange}
+          onWebGLInitialized={onWebGLInitialized}
           onTilesetLoad={(tileset: Tileset3D) =>
             onTilesetLoad(tileset, "right")
           }
+          onAfterRender={() => updateStatWidgets()}
+          onTileLoad={() => updateStatWidgets()}
+          onTileUnload={() => updateStatWidgets()}
         />
         <RightSideToolsPanelWrapper layout={layout}>
           <MainToolsPanel

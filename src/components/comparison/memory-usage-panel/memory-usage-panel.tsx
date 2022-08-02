@@ -89,75 +89,77 @@ export const MemoryUsagePanel = ({
             <Title>92.18MB</Title>
           </StatContainer>
         </StatSection>
-        <StatSection>
-          <StatContainer>
-            <Title>Layer Used</Title>
-            <ExpandIcon
-              expandState={expandState}
-              collapseDirection={CollapseDirection.bottom}
-              onClick={onExpandClickHandler}
-            />
-          </StatContainer>
-          {expandState === ExpandState.expanded && (
-            <>
-              <StatContainer bottom={12}>
-                <StatTitle>{`${LINK.substring(0, 37)}...`}</StatTitle>
-                <CopyIcon
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    navigator.clipboard.writeText(LINK);
-                  }}
-                />
-              </StatContainer>
-              {stats.map((stat) => (
-                <StatContainer key={stat.name}>
-                  <StatTitle>{stat.name}</StatTitle>
-                  <Title>{stat.count}</Title>
+        {stats.length > 0 && (
+          <StatSection>
+            <StatContainer>
+              <Title>Layer Used</Title>
+              <ExpandIcon
+                expandState={expandState}
+                collapseDirection={CollapseDirection.bottom}
+                onClick={onExpandClickHandler}
+              />
+            </StatContainer>
+            {expandState === ExpandState.expanded && (
+              <>
+                <StatContainer bottom={12}>
+                  <StatTitle>{`${LINK.substring(0, 37)}...`}</StatTitle>
+                  <CopyIcon
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(LINK);
+                    }}
+                  />
                 </StatContainer>
-              ))}
-              {/* <StatContainer>
-                <StatTitle>Tiles In Tileset(s)</StatTitle>
-                <Title>0</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles Loading</StatTitle>
-                <Title>0</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles In Memory</StatTitle>
-                <Title>55</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles In View</StatTitle>
-                <Title>55</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles To Render</StatTitle>
-                <Title>55</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles Loaded</StatTitle>
-                <Title>55</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tiles Unloaded</StatTitle>
-                <Title>0</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Failed Tile Loads</StatTitle>
-                <Title>0</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Points/Verticles</StatTitle>
-                <Title>0</Title>
-              </StatContainer>
-              <StatContainer>
-                <StatTitle>Tile Memory Use</StatTitle>
-                <Title>0 bytes</Title>
-              </StatContainer> */}
-            </>
-          )}
-        </StatSection>
+                {stats.map((stat) => (
+                  <StatContainer key={stat.name}>
+                    <StatTitle>{stat.name}</StatTitle>
+                    <Title>{stat.count}</Title>
+                  </StatContainer>
+                ))}
+                {/* <StatContainer>
+              <StatTitle>Tiles In Tileset(s)</StatTitle>
+              <Title>0</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles Loading</StatTitle>
+              <Title>0</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles In Memory</StatTitle>
+              <Title>55</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles In View</StatTitle>
+              <Title>55</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles To Render</StatTitle>
+              <Title>55</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles Loaded</StatTitle>
+              <Title>55</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tiles Unloaded</StatTitle>
+              <Title>0</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Failed Tile Loads</StatTitle>
+              <Title>0</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Points/Verticles</StatTitle>
+              <Title>0</Title>
+            </StatContainer>
+            <StatContainer>
+              <StatTitle>Tile Memory Use</StatTitle>
+              <Title>0 bytes</Title>
+            </StatContainer> */}
+              </>
+            )}
+          </StatSection>
+        )}
       </Content>
     </Container>
   );
