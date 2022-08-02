@@ -14,6 +14,7 @@ import DesktopTouchTrakpadTilt from "../../../public/icons/gestures/touch/deskto
 // Mouse videos
 import mouseOrbitVideo from "../../../public/videos/mouse-orbit.mp4";
 import mousePanVideo from "../../../public/videos/mouse-pan.mp4";
+// TODO: Replace wideo with new one with better quality.
 import mouseZoomVideo from "../../../public/videos/mouse-zoom.mp4";
 
 // Touch and trackpad videos
@@ -30,19 +31,25 @@ export const getShortcuts = (
   [HelpPanelSelectedTab.Mouse]: [
     {
       id: "mouse-orbit",
-      icon: isDesktop ? <DesktopMouseOrbit /> : null,
+      icon: isDesktop ? (
+        <DesktopMouseOrbit fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Pan but with Ctrl/Cmd button hold",
       video: mouseOrbitVideo,
     },
     {
       id: "mouse-pan",
-      icon: isDesktop ? <DesktopMousePan /> : null,
+      icon: isDesktop ? (
+        <DesktopMousePan fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Holding the LMB and moving the Mouse",
       video: mousePanVideo,
     },
     {
       id: "mouse-zoom",
-      icon: isDesktop ? <DesktopMouseZoom /> : null,
+      icon: isDesktop ? (
+        <DesktopMouseZoom fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Mouse wheel: wheel upwards = get closer, wheel downwards = get further",
       video: mouseZoomVideo,
     },
@@ -50,19 +57,25 @@ export const getShortcuts = (
   [HelpPanelSelectedTab.Trackpad]: [
     {
       id: "trackpad-orbit-tilt",
-      icon: isDesktop ? <DesktopTrackpadOrbit /> : null,
+      icon: isDesktop ? (
+        <DesktopTrackpadOrbit fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Hold left button and move finger around trackpad with Ctrl/Cmd button hold",
       video: touchOrbitTiltVideo,
     },
     {
       id: "trackpad-pan",
-      icon: isDesktop ? <DesktopTrackpadPan /> : null,
+      icon: isDesktop ? (
+        <DesktopTrackpadPan fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Hold left button and move finger around trackpad",
       video: touchPanVideo,
     },
     {
       id: "trackpad-zoom",
-      icon: isDesktop ? <DesktopTrackpadZoom /> : null,
+      icon: isDesktop ? (
+        <DesktopTrackpadZoom fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Touching the trackpad with two fingers, moving them in or out at the same time. Moving out  - get closer,  Moving in  - get further",
       video: touchZoomVideo,
     },
@@ -70,25 +83,33 @@ export const getShortcuts = (
   [HelpPanelSelectedTab.Touch]: [
     {
       id: "touch-orbit",
-      icon: isDesktop ? <DesktopTouchTrakpadOrbit /> : null,
+      icon: isDesktop ? (
+        <DesktopTouchTrakpadOrbit fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Moving two fingers clockwise or counterclockwise to rotate the map respectively.",
       video: touchOrbitVideo,
     },
     {
       id: "touch-tilt",
-      icon: isDesktop ? <DesktopTouchTrakpadTilt /> : null,
+      icon: isDesktop ? (
+        <DesktopTouchTrakpadTilt fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Changing the view angle: Moving two fingers to the desired direction. ",
       video: touchTiltVideo,
     },
     {
       id: "touch-orbit-tilt",
-      icon: isDesktop ? <DesktopTrackpadOrbit /> : null,
+      icon: isDesktop ? (
+        <DesktopTrackpadOrbit fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Holding one finger on the screen and moving it.",
       video: touchOrbitTiltVideo,
     },
     {
       id: "touch-zoom",
-      icon: isDesktop ? <DesktopTrackpadZoom /> : null,
+      icon: isDesktop ? (
+        <DesktopTrackpadZoom fill={contentColor} stroke={contentColor} />
+      ) : null,
       text: "Touching the trackpad with two fingers, moving them in or out at the same time. Moving out  - get closer,  Moving in  - get further",
       video: touchZoomVideo,
     },

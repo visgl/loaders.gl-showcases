@@ -17,7 +17,7 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
   const isDesktop = layout === Layout.Desktop;
 
   const shortcutsList = useMemo(() => {
-    return getShortcuts(isDesktop, theme.colors.fontColor);
+    return getShortcuts(isDesktop, theme.colors.buttonIconColor);
   }, [isDesktop, theme]);
 
   const [selectedTab, setSelectedTab] = useState<HelpPanelSelectedTab>(

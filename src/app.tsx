@@ -98,7 +98,7 @@ const THEMES: AppThemes = {
  */
 export const App = () => {
   const [theme, setTheme] = useState<Theme>(Theme.Dark);
-  const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [showHelp, setShowHelp] = useState<boolean>(true);
 
   const handleHelpClick = () => {
     setShowHelp((prevValue) => !prevValue);
