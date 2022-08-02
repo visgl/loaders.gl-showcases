@@ -324,11 +324,11 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.hover("a[href='/compare-across-layers']");
     await page.click("a[href='/compare-across-layers']");
 
-    await page.waitForSelector("#first-deck-container");
-    await page.waitForSelector("#second-deck-container");
+    await page.waitForSelector("#left-deck-container");
+    await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#first-deck-container")).toBeDefined();
-    expect(await page.$$("#second-deck-container")).toBeDefined();
+    expect(await page.$$("#left-deck-container")).toBeDefined();
+    expect(await page.$$("#right-deck-container")).toBeDefined();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
@@ -344,11 +344,11 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.hover("a[href='/compare-within-layer']");
     await page.click("a[href='/compare-within-layer']");
 
-    await page.waitForSelector("#first-deck-container");
-    await page.waitForSelector("#second-deck-container");
+    await page.waitForSelector("#left-deck-container");
+    await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#first-deck-container")).toBeDefined();
-    expect(await page.$$("#second-deck-container")).toBeDefined();
+    expect(await page.$$("#left-deck-container")).toBeDefined();
+    expect(await page.$$("#right-deck-container")).toBeDefined();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
