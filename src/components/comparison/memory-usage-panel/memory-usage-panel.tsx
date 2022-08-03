@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { useAppLayout } from "../../../utils/layout";
 import {
   Container,
@@ -13,7 +13,7 @@ import {
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { ExpandState, CollapseDirection } from "../../../types";
-import CopyIcon from "../../../../public/icons/copy.svg";
+import LinkIcon from "../../../../public/icons/link.svg";
 
 const StatSection = styled.div`
   display: flex;
@@ -41,6 +41,7 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
+  const theme = useTheme();
   const layout = useAppLayout();
 
   const LINK =
@@ -59,10 +60,7 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
     <Container id={id} layout={layout}>
       <PanelHeader panel={Panels.MemoryUsage}>
         <Title left={16}>Memory</Title>
-        <CloseButton
-          id="memory-usage-panel-close-button"
-          onClick={onClose}
-        />
+        <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
       <HorizontalLine top={10} />
       <Content>
@@ -98,7 +96,8 @@ export const MemoryUsagePanel = ({ id, onClose }: ComparisonParamsProps) => {
             <>
               <StatContainer bottom={12}>
                 <StatTitle>{`${LINK.substring(0, 37)}...`}</StatTitle>
-                <CopyIcon
+                <LinkIcon
+                  fill={theme.colors.fontColor}
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     navigator.clipboard.writeText(LINK);
