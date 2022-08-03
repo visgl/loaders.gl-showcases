@@ -43,7 +43,11 @@ export const DesktopShortcutItem = ({
   onHover,
 }: DesktopShortcutItemProps) => {
   return (
-    <Container active={active} onMouseOver={() => onHover(shortcut.id)}>
+    <Container
+      data-testid={shortcut.id}
+      active={active}
+      onMouseOver={() => onHover(shortcut.id)}
+    >
       <ImageBlock>{shortcut.icon}</ImageBlock>
       <TextBlock>{shortcut.text}</TextBlock>
     </Container>

@@ -1,4 +1,4 @@
-import { DesktopShourtcutTabs } from "./desktop-shortcuts-tabs";
+import { DesktopShortcutTabs } from "./desktop-shortcuts-tabs";
 
 import styled from "styled-components";
 import { HelpPanelSelectedTab, HelpShortcutItem } from "../../types";
@@ -70,7 +70,7 @@ export const DesktopHelpPanel = ({
     <>
       <Overlay />
       <Container>
-        <DesktopShourtcutTabs
+        <DesktopShortcutTabs
           selectedTab={selectedTab}
           onTabSelect={onTabSelect}
         />

@@ -35,7 +35,14 @@ const VideoPlayer = styled.video`
 export const DesktopVideoPanel = ({ video }: DesktopVideoPanelProps) => {
   return (
     <Container>
-      {video && <VideoPlayer autoPlay loop src={video} />}
+      {video && (
+        <VideoPlayer
+          data-testid="shortcut-video-player"
+          autoPlay
+          loop
+          src={video}
+        />
+      )}
       {!video && <Placeholder>{PLACEHOLDER_TEXT}</Placeholder>}
     </Container>
   );

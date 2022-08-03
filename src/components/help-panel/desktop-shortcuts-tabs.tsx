@@ -76,7 +76,7 @@ const Tab = styled.div<TabProps>`
   cursor: pointer;
 `;
 
-export const DesktopShourtcutTabs = ({
+export const DesktopShortcutTabs = ({
   selectedTab,
   onTabSelect,
 }: ShortcutTabsProps) => {
@@ -92,18 +92,21 @@ export const DesktopShourtcutTabs = ({
         <ShortcutsTitle>Shortcuts</ShortcutsTitle>
         <HorizontalLine />
         <Tab
+          data-testid="tab-mouse"
           active={selectedTab === HelpPanelSelectedTab.Mouse}
           onClick={() => onTabSelect(HelpPanelSelectedTab.Mouse)}
         >
           Mouse
         </Tab>
         <Tab
+          data-testid="tab-trackpad"
           active={selectedTab === HelpPanelSelectedTab.Trackpad}
           onClick={() => onTabSelect(HelpPanelSelectedTab.Trackpad)}
         >
           Trackpad
         </Tab>
         <Tab
+          data-testid="tab-touch"
           active={selectedTab === HelpPanelSelectedTab.Touch}
           onClick={() => onTabSelect(HelpPanelSelectedTab.Touch)}
         >
