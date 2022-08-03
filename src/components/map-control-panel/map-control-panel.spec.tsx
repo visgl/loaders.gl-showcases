@@ -9,14 +9,17 @@ describe("MapControllPanel", () => {
   let buttons;
   const onZoomIn = jest.fn();
   const onZoomOut = jest.fn();
+  const onRotate = jest.fn();
   const onDragModeToggle = jest.fn();
 
   beforeEach(() => {
     const { rerender, container, getAllByRole } = renderWithTheme(
       <MapControllPanel
-        dragMode={DragMode.pan}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        onCompassClick={onRotate}
+        dragMode={DragMode.pan}
         onDragModeToggle={onDragModeToggle}
       />
     );
@@ -39,9 +42,11 @@ describe("MapControllPanel", () => {
     userEvent.click(expander);
     renderWithTheme(
       <MapControllPanel
-        dragMode={DragMode.pan}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        onCompassClick={onRotate}
+        dragMode={DragMode.pan}
         onDragModeToggle={onDragModeToggle}
       />,
       rerenderFunc
@@ -51,9 +56,11 @@ describe("MapControllPanel", () => {
     userEvent.click(expander);
     renderWithTheme(
       <MapControllPanel
-        dragMode={DragMode.pan}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        onCompassClick={onRotate}
+        dragMode={DragMode.pan}
         onDragModeToggle={onDragModeToggle}
       />,
       rerenderFunc
@@ -69,6 +76,14 @@ describe("MapControllPanel", () => {
     expect(onZoomOut).toBeCalledTimes(1);
   });
 
+  it("Should click on rotate", () => {
+    const rotateButton = buttons[buttons.length - 1];
+    const compassIcon = rotateButton.firstChild;
+    expect(compassIcon).toHaveStyle("transform: rotate(-90deg)");
+    userEvent.click(rotateButton);
+    expect(onRotate).toBeCalledTimes(1);
+  });
+
   it("Should highlight dragMode buttons", () => {
     const [, , panModeButton, rotateModeButton] = buttons;
     let fill = getComputedStyle(panModeButton).getPropertyValue("fill");
@@ -78,9 +93,11 @@ describe("MapControllPanel", () => {
 
     renderWithTheme(
       <MapControllPanel
-        dragMode={DragMode.rotate}
+        bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
+        onCompassClick={onRotate}
+        dragMode={DragMode.rotate}
         onDragModeToggle={onDragModeToggle}
       />,
       rerenderFunc
