@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { useAppLayout } from "../../../utils/layout";
 import {
   Container,
@@ -13,7 +13,7 @@ import {
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { ExpandState, CollapseDirection } from "../../../types";
-import CopyIcon from "../../../../public/icons/copy.svg";
+import LinkIcon from "../../../../public/icons/link.svg";
 
 const StatSection = styled.div`
   display: flex;
@@ -46,6 +46,7 @@ export const MemoryUsagePanel = ({
   const [expandState, setExpandState] = useState<ExpandState>(
     ExpandState.expanded
   );
+  const theme = useTheme();
   const layout = useAppLayout();
 
   const LINK =
@@ -89,6 +90,7 @@ export const MemoryUsagePanel = ({
             <Title>92.18MB</Title>
           </StatContainer>
         </StatSection>
+<<<<<<< HEAD
         {stats.length > 0 && (
           <StatSection>
             <StatContainer>
@@ -160,6 +162,72 @@ export const MemoryUsagePanel = ({
             )}
           </StatSection>
         )}
+=======
+        <StatSection>
+          <StatContainer>
+            <Title>Layer Used</Title>
+            <ExpandIcon
+              expandState={expandState}
+              collapseDirection={CollapseDirection.bottom}
+              onClick={onExpandClickHandler}
+            />
+          </StatContainer>
+          {expandState === ExpandState.expanded && (
+            <>
+              <StatContainer bottom={12}>
+                <StatTitle>{`${LINK.substring(0, 37)}...`}</StatTitle>
+                <LinkIcon
+                  fill={theme.colors.fontColor}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(LINK);
+                  }}
+                />
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles In Tileset(s)</StatTitle>
+                <Title>0</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles Loading</StatTitle>
+                <Title>0</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles In Memory</StatTitle>
+                <Title>55</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles In View</StatTitle>
+                <Title>55</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles To Render</StatTitle>
+                <Title>55</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles Loaded</StatTitle>
+                <Title>55</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tiles Unloaded</StatTitle>
+                <Title>0</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Failed Tile Loads</StatTitle>
+                <Title>0</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Points/Verticles</StatTitle>
+                <Title>0</Title>
+              </StatContainer>
+              <StatContainer>
+                <StatTitle>Tile Memory Use</StatTitle>
+                <Title>0 bytes</Title>
+              </StatContainer>
+            </>
+          )}
+        </StatSection>
+>>>>>>> zk/feat-add-memory-usage-panel
       </Content>
     </Container>
   );
