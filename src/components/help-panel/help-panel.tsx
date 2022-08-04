@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { HelpPanelSelectedTab, HelpShortcutItem, Layout } from "../../types";
 import { useAppLayout } from "../../utils/layout";
 import { DesktopHelpPanel } from "./desktop-help-panel";
-// import { NonDesktopHelpPanel } from "./non-desktop-help-panel";
+import { NonDesktopHelpPanel } from "./non-desktop-help-panel";
 
 import { useTheme } from "styled-components";
 import { getShortcuts } from "./shotrcuts-config";
@@ -17,8 +17,8 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
   const isDesktop = layout === Layout.Desktop;
 
   const shortcutsList = useMemo(() => {
-    return getShortcuts(isDesktop, theme.colors.buttonIconColor);
-  }, [isDesktop, theme]);
+    return getShortcuts(layout, theme.colors.buttonIconColor);
+  }, [layout, theme]);
 
   const [selectedTab, setSelectedTab] = useState<HelpPanelSelectedTab>(
     HelpPanelSelectedTab.Mouse
@@ -34,7 +34,7 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
     setShortcuts(shortcutsList[selectedTab]);
   }, [selectedTab, theme]);
 
-  const onShortcutHover = (shortcutId) => {
+  const handleSetActiveShortcut = (shortcutId) => {
     setActiveShortcutId(shortcutId);
   };
 
@@ -46,15 +46,18 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
         onClose={onClose}
         shortcuts={shortcuts}
         activeShortcutId={activeShortcutId}
-        onShortcutHover={onShortcutHover}
+        onShortcutHover={handleSetActiveShortcut}
       />
     );
-  } else {
-    return null;
-    // <NonDesktopHelpPanel
-    //   selectedTab={selectedTab}
-    //   onTabSelect={setSelectedTab}
-    //   onClose={onClose}
-    // />
   }
+  return (
+    <NonDesktopHelpPanel
+      selectedTab={selectedTab}
+      onTabSelect={setSelectedTab}
+      onClose={onClose}
+      shortcuts={shortcuts}
+      activeShortcutId={activeShortcutId}
+      onShortcutClick={handleSetActiveShortcut}
+    />
+  );
 };

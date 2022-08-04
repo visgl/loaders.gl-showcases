@@ -259,6 +259,11 @@ export const NonDesktopHeaderContent = ({
     setIsMenuOpen(false);
   }, [pathname]);
 
+  const handleHelpClick = () => {
+    onHelpClick();
+    setIsMenuOpen(false);
+  }
+
   return (
     <Fragment>
       <Header isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
@@ -269,7 +274,7 @@ export const NonDesktopHeaderContent = ({
           githubIcon={githubIcon}
           theme={theme}
           setTheme={setTheme}
-          onHelpClick={onHelpClick}
+          onHelpClick={handleHelpClick}
         />
       )}
     </Fragment>

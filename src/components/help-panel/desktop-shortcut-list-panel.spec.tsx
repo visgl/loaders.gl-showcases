@@ -23,12 +23,14 @@ describe("Desktop Shortcut List Panel", () => {
           {
             id: "test",
             icon: <div>Hello one</div>,
+            title: 'First Item Title',
             text: "First Item Text",
             video: "/link-to-test-video-0",
           },
           {
             id: "test1",
             icon: <div>Hello two</div>,
+            title: 'Second Item Title',
             text: "Second Item Text",
             video: "/link-to-test-video-1",
           },

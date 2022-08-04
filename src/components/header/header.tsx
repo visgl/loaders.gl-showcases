@@ -30,7 +30,7 @@ const HeaderContainer = styled.div<PropsWithLayout>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  z-index: 103;
   background-color: ${(props) => props.theme.colors.mainColor};
 
   height: ${getCurrentLayoutProperty({

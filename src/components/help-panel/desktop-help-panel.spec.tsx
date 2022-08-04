@@ -51,7 +51,9 @@ describe("Desktop Help Panel", () => {
     const { container } = renderWithTheme(
       <DesktopHelpPanel
         onClose={onClose}
-        shortcuts={[{ id: "test", icon: <div></div>, text: "", video: "" }]}
+        shortcuts={[
+          { id: "test", icon: <div></div>, title: "", text: "", video: "" },
+        ]}
         activeShortcutId={"test"}
         selectedTab={HelpPanelSelectedTab.Touch}
         onTabSelect={jest.fn()}
