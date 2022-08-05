@@ -179,6 +179,7 @@ export const NonDesktopShortcutTabs = ({
     <MobileTabImagesWrapper>
       {tabOrder.map((tabData) => (
         <MobileImageWrapper
+          data-testid={`mobile-image-${tabData}`}
           onClick={() => handleSelectTab(tabData)}
           key={`image-${tabData}`}
         >
@@ -192,6 +193,7 @@ export const NonDesktopShortcutTabs = ({
     <TabletTabImagesWrapper>
       {tabOrder.map((tabData) => (
         <TabletImageWrapper
+          data-testid={`tablet-image-${tabData}`}
           onClick={() => handleSelectTab(tabData)}
           key={`image-${tabData}`}
         >

@@ -59,7 +59,7 @@ const Overlay = styled.div`
   height: 100%;
   width: 100%;
   z-index: 103;
-  background: ${({theme}) => theme.colors.mainColor};
+  background: ${({ theme }) => theme.colors.mainColor};
   opacity: 0.5;
 `;
 
@@ -98,7 +98,10 @@ export const NonDesktopHelpPanel = ({
             shortcut={activeShortcut}
             onCloseVideoPanel={() => onShortcutClick("")}
           />
-          <Overlay onClick={() => onShortcutClick("")} />
+          <Overlay
+            data-testid={"non-desktop-overlay"}
+            onClick={() => onShortcutClick("")}
+          />
         </>
       )}
     </>

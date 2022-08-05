@@ -2,7 +2,7 @@ import type { HelpShortcutItem } from "../../types";
 
 import styled from "styled-components";
 
-import PlayIcon from "../../../public/icons/play.svg";
+import PlayIcon from "../../../public/icons/play.svg?svgr";
 
 type NonDesktopShortcutItemProps = {
   shortcut: HelpShortcutItem;
@@ -53,7 +53,10 @@ export const NonDesktopShortcutItem = ({
         <Title>{shortcut.title}</Title>
         <Text>{shortcut.text}</Text>
       </TextBlock>
-      <PlayIcon onClick={() => onShortcutClick(shortcut.id)} />
+      <PlayIcon
+        data-testid={`play-icon-${shortcut.id}`}
+        onClick={() => onShortcutClick(shortcut.id)}
+      />
     </Container>
   );
 };

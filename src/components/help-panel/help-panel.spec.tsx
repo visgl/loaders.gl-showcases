@@ -1,8 +1,10 @@
 import { HelpPanel } from "./help-panel";
 import { DesktopHelpPanel } from "./desktop-help-panel";
+import { NonDesktopHelpPanel } from "./non-desktop-help-panel";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 
 jest.mock("./desktop-help-panel");
+jest.mock("./non-desktop-help-panel");
 jest.mock("./shotrcuts-config", () => ({
   getShortcuts: jest.fn().mockImplementation(() => ({
     0: [],
@@ -12,8 +14,11 @@ jest.mock("./shotrcuts-config", () => ({
 }));
 
 const DesktopHelpPanelMock = DesktopHelpPanel as unknown as jest.Mocked<any>;
+const NonDesktopHelpPanelMock =
+  NonDesktopHelpPanel as unknown as jest.Mocked<any>;
 
 jest.mock("../../utils/layout", () => ({
+  getCurrentLayoutProperty: jest.fn(),
   useAppLayout: jest
     .fn()
     .mockImplementationOnce(() => {
@@ -26,6 +31,7 @@ jest.mock("../../utils/layout", () => ({
 
 beforeAll(() => {
   DesktopHelpPanelMock.mockImplementation(() => <div></div>);
+  NonDesktopHelpPanelMock.mockImplementation(() => <div></div>);
 });
 
 describe("Help Panel", () => {
@@ -40,6 +46,6 @@ describe("Help Panel", () => {
   it("Should render Mobile Help Panel", () => {
     const onClose = jest.fn();
     renderWithTheme(<HelpPanel onClose={onClose} />);
-    expect(DesktopHelpPanelMock).not.toHaveBeenCalled();
+    expect(NonDesktopHelpPanelMock).toHaveBeenCalled();
   });
 });
