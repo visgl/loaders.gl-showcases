@@ -22,7 +22,8 @@ const Overlay = styled.div`
   height: calc(100% - 65px);
   width: 100%;
   z-index: 100;
-  background: #23243080;
+  background: ${({theme}) => theme.colors.mainColor};
+  opacity: 0.5;
 `;
 
 const Container = styled.div`
@@ -68,7 +69,7 @@ export const DesktopHelpPanel = ({
   const video = currentShortcut?.video;
   return (
     <>
-      <Overlay />
+      <Overlay onClick={onClose} />
       <Container>
         <DesktopShortcutTabs
           selectedTab={selectedTab}
