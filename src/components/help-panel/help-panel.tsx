@@ -34,10 +34,6 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
     setShortcuts(shortcutsList[selectedTab]);
   }, [selectedTab, theme]);
 
-  const handleSetActiveShortcut = (shortcutId) => {
-    setActiveShortcutId(shortcutId);
-  };
-
   if (isDesktop) {
     return (
       <DesktopHelpPanel
@@ -46,7 +42,7 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
         onClose={onClose}
         shortcuts={shortcuts}
         activeShortcutId={activeShortcutId}
-        onShortcutHover={handleSetActiveShortcut}
+        onShortcutHover={setActiveShortcutId}
       />
     );
   }
@@ -57,7 +53,7 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
       onClose={onClose}
       shortcuts={shortcuts}
       activeShortcutId={activeShortcutId}
-      onShortcutClick={handleSetActiveShortcut}
+      onShortcutClick={setActiveShortcutId}
     />
   );
 };
