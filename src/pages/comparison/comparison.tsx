@@ -15,7 +15,6 @@ import {
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { BASE_MAPS } from "../../constants/map-styles";
-import StatsWidget from "@probe.gl/stats-widget";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 
 type ComparisonPageProps = {
@@ -75,10 +74,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
-  const [glContext, setGlContext] = useState<any>(null);
-  const [memWidget, setMemWidget] = useState<any>(null);
-  const [statsLeftSide, setStatsLeftSide] = useState<any>([]);
-  const [statsRightSide, setStatsRightSide] = useState<any>([]);
 
   const layout = useAppLayout();
 
@@ -86,33 +81,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayerLeftSide(null);
   }, [mode]);
 
-  useEffect(() => {
-    const memoryUsage = glContext?.stats.get("Memory Usage");
-    const memWidget = new StatsWidget(memoryUsage, {
-      framesPerUpdate: 1,
-      formatters: {
-        "GPU Memory": "memory",
-        "Buffer Memory": "memory",
-        "Renderbuffer Memory": "memory",
-        "Texture Memory": "memory",
-      },
-    });
-
-    console.log(memWidget)
-
-    setMemWidget(memWidget);
-  }, [glContext]);
-
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
-  };
-
-  const onWebGLInitialized = (gl) => {
-    setGlContext(gl);
-  };
-
-  const updateStatWidgets = () => {
-    memWidget && memWidget.update();
   };
 
   const pointToTileset = (tileset: Tileset3D) => {
