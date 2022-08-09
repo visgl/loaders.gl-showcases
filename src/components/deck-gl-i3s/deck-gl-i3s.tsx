@@ -159,6 +159,7 @@ type DeckGlI3sProps = {
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
+  onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
   /** DeckGL callback. On layer hover behavior */
@@ -205,6 +206,7 @@ export const DeckGlI3s = ({
   useDracoGeometry = true,
   useCompressedTextures = true,
   onViewStateChange,
+  onWebGLInitialized,
   onAfterRender,
   getTooltip,
   onClick,
@@ -699,6 +701,7 @@ export const DeckGlI3s = ({
       views={getViews()}
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
+      onWebGLInitialized={onWebGLInitialized}
       controller={{
         type: MapController,
         maxPitch: 60,
