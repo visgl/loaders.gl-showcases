@@ -20,12 +20,15 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
     return getShortcuts(layout, theme.colors.buttonIconColor);
   }, [layout, theme]);
 
-  const [selectedTab, setSelectedTab] = useState<HelpPanelSelectedTab>(
-    HelpPanelSelectedTab.Mouse
-  );
+  const initialTab = useMemo(() => {
+    return isDesktop ? HelpPanelSelectedTab.Mouse : HelpPanelSelectedTab.Touch;
+  }, [layout]);
+
+  const [selectedTab, setSelectedTab] =
+    useState<HelpPanelSelectedTab>(initialTab);
 
   const [shortcuts, setShortcuts] = useState<HelpShortcutItem[]>(
-    shortcutsList[HelpPanelSelectedTab.Mouse]
+    shortcutsList[initialTab]
   );
 
   const [activeShortcutId, setActiveShortcutId] = useState<string>("");

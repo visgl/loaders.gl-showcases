@@ -27,4 +27,29 @@ describe("Desktop Shortcut Item", () => {
 
     expect(onHover).toHaveBeenCalled();
   });
+
+  it("Should render not active DesktopShortcutItem", () => {
+    const onHover = jest.fn();
+
+    const baseDom = renderWithTheme(
+      <DesktopShortcutItem
+        shortcut={{
+          id: "test",
+          icon: <div>Hello world</div>,
+          title: "Second Item Title",
+          text: "First Item Text",
+          video: "/link-to-test-video",
+        }}
+        active={false}
+        onHover={onHover}
+      />
+    );
+
+    expect(screen.getByText("Hello world")).toBeInTheDocument();
+    expect(screen.getByText("First Item Text")).toBeInTheDocument();
+
+    fireEvent.mouseOver(baseDom.getByTestId("test"));
+
+    expect(onHover).toHaveBeenCalled();
+  });
 });

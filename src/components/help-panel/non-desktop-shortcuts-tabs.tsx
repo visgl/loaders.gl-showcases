@@ -132,8 +132,8 @@ export const NonDesktopShortcutTabs = ({
   const layout = useAppLayout();
 
   const [tabOrder, setTabOrder] = useState([
-    HelpPanelSelectedTab.Touch,
     HelpPanelSelectedTab.Mouse,
+    HelpPanelSelectedTab.Touch,
     HelpPanelSelectedTab.Trackpad,
   ]);
 
