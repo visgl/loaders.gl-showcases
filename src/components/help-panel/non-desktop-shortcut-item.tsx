@@ -2,7 +2,7 @@ import type { HelpShortcutItem } from "../../types";
 
 import styled from "styled-components";
 
-import PlayIcon from "../../../public/icons/play.svg?svgr";
+import PlayIcon from "../../../public/icons/play.svg";
 
 type NonDesktopShortcutItemProps = {
   shortcut: HelpShortcutItem;

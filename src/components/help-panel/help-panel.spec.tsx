@@ -39,13 +39,15 @@ describe("Help Panel", () => {
     const onClose = jest.fn();
     const { container } = renderWithTheme(<HelpPanel onClose={onClose} />);
 
-    expect(DesktopHelpPanelMock).toHaveBeenCalled();
     expect(container).toBeInTheDocument();
+    expect(DesktopHelpPanelMock).toHaveBeenCalled();
+    expect(NonDesktopHelpPanelMock).not.toHaveBeenCalled();
   });
 
   it("Should render Mobile Help Panel", () => {
     const onClose = jest.fn();
     renderWithTheme(<HelpPanel onClose={onClose} />);
     expect(NonDesktopHelpPanelMock).toHaveBeenCalled();
+    expect(DesktopHelpPanelMock).not.toHaveBeenCalled();
   });
 });

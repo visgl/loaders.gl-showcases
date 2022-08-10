@@ -6,13 +6,6 @@ import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";
 
 import { useAppLayout } from "../../utils/layout";
 
-jest.mock("../../../public/images/trackpadTabMobile.svg");
-jest.mock("../../../public/images/mouseTabMobile.svg");
-jest.mock("../../../public/images/touchTabMobile.svg");
-
-jest.mock("../../../public/images/trackpadTabTablet.svg");
-jest.mock("../../../public/images/mouseTabTablet.svg");
-jest.mock("../../../public/images/touchTabTablet.svg");
 jest.mock("../../utils/layout");
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;

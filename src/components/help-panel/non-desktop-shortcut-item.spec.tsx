@@ -2,8 +2,6 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopShortcutItem } from "./non-desktop-shortcut-item";
 
-jest.mock("../../../public/icons/play.svg");
-
 describe("NonDesktop Shortcut Item", () => {
   it("Should render NonDesktopShortcutItem", () => {
     const onShortcutClick = jest.fn();
