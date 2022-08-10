@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { HelpPanelSelectedTab, HelpShortcutItem, Layout } from "../../types";
 import { useAppLayout } from "../../utils/layout";
 import { DesktopHelpPanel } from "./desktop-help-panel";
-// import { NonDesktopHelpPanel } from "./non-desktop-help-panel";
 
 import { useTheme } from "styled-components";
 import { getShortcuts } from "./shotrcuts-config";
@@ -20,12 +19,15 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
     return getShortcuts(isDesktop, theme.colors.buttonIconColor);
   }, [isDesktop, theme]);
 
-  const [selectedTab, setSelectedTab] = useState<HelpPanelSelectedTab>(
-    HelpPanelSelectedTab.Mouse
-  );
+  const initialTab = useMemo(() => {
+    return isDesktop ? HelpPanelSelectedTab.Mouse : HelpPanelSelectedTab.Touch;
+  }, [layout]);
+
+  const [selectedTab, setSelectedTab] =
+    useState<HelpPanelSelectedTab>(initialTab);
 
   const [shortcuts, setShortcuts] = useState<HelpShortcutItem[]>(
-    shortcutsList[HelpPanelSelectedTab.Mouse]
+    shortcutsList[initialTab]
   );
 
   const [activeShortcutId, setActiveShortcutId] = useState<string>("");
@@ -34,23 +36,14 @@ export const HelpPanel = ({ onClose }: HelpPanelProps) => {
     setShortcuts(shortcutsList[selectedTab]);
   }, [selectedTab, theme]);
 
-  if (isDesktop) {
-    return (
-      <DesktopHelpPanel
-        selectedTab={selectedTab}
-        onTabSelect={setSelectedTab}
-        onClose={onClose}
-        shortcuts={shortcuts}
-        activeShortcutId={activeShortcutId}
-        onShortcutHover={setActiveShortcutId}
-      />
-    );
-  } else {
-    return null;
-    // <NonDesktopHelpPanel
-    //   selectedTab={selectedTab}
-    //   onTabSelect={setSelectedTab}
-    //   onClose={onClose}
-    // />
-  }
+  return isDesktop ? (
+    <DesktopHelpPanel
+      selectedTab={selectedTab}
+      onTabSelect={setSelectedTab}
+      onClose={onClose}
+      shortcuts={shortcuts}
+      activeShortcutId={activeShortcutId}
+      onShortcutHover={setActiveShortcutId}
+    />
+  ) : null;
 };
