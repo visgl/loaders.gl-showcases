@@ -3,10 +3,6 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopHeaderContent } from "./non-desktop-header-content";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("../../../public/icons/github-icon-dark.png");
-jest.mock("../../../public/icons/github-icon-light.png");
-jest.mock("../../../public/icons/burger.svg");
-jest.mock("../../../public/icons/close.svg");
 jest.mock("../../constants/common", () => ({
   GITHUB_LINK: "https://git-hub-test",
 }));

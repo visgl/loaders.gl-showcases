@@ -3,9 +3,6 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { ThemeToggler } from "./theme-toggler";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("../../../public/icons/dark-mode.svg");
-jest.mock("../../../public/icons/light-mode.svg");
-
 const setThemeMock = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {

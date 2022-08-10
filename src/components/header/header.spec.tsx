@@ -3,8 +3,6 @@ import { Header } from "./header";
 import { useAppLayout } from "../../utils/layout";
 import { screen } from "@testing-library/react";
 
-jest.mock("../../../public/icons/github-icon-dark.png");
-jest.mock("../../../public/icons/github-icon-light.png");
 jest.mock("../../utils/layout");
 jest.mock("react-router-dom", () => ({
   useLocation: jest.fn().mockImplementation(() => ({
