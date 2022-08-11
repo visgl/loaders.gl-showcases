@@ -7,7 +7,13 @@ import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
+import {
+  Container,
+  PanelHeader,
+  Content,
+  HorizontalLine,
+  Panels,
+} from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 
@@ -81,17 +87,6 @@ const Tab = styled.div<TabProps>`
         width: 120%;
       }
     `}
-`;
-
-const Content = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
 `;
 
 const PanelWrapper = styled.div`
