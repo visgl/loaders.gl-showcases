@@ -57,7 +57,7 @@ export const LayerSettingsPanel = ({
   return (
     <Container>
       <Header>
-        <Button onClick={onBackClick}>
+        <Button data-testid="back-button-layers-panel" onClick={onBackClick}>
           <Icon>
             <ArrowLeftIcon fill={theme.colors.fontColor} />
           </Icon>
