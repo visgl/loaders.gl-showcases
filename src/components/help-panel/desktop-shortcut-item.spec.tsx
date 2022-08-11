@@ -11,6 +11,7 @@ describe("Desktop Shortcut Item", () => {
         shortcut={{
           id: "test",
           icon: <div>Hello world</div>,
+          title: "First Item Title",
           text: "First Item Text",
           video: "/link-to-test-video",
         }}
@@ -35,6 +36,7 @@ describe("Desktop Shortcut Item", () => {
         shortcut={{
           id: "test",
           icon: <div>Hello world</div>,
+          title: "Second Item Title",
           text: "First Item Text",
           video: "/link-to-test-video",
         }}

@@ -56,9 +56,9 @@ export enum DragMode {
 }
 
 export enum HelpPanelSelectedTab {
-  Touch,
-  Trackpad,
-  Mouse,
+  Touch = "Touch",
+  Trackpad = "Trackpad",
+  Mouse = "Mouse",
 }
 
 export enum ComparisonSideMode {
@@ -146,6 +146,7 @@ export type ViewStateSet = {
 export type HelpShortcutItem = {
   id: string,
   icon: JSX.Element | null;
+  title: string;
   text: string;
   video: string;
 };

@@ -1,24 +1,23 @@
 import { screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { DesktopShortcutsListPanel } from "./desktop-shortcut-list-panel";
-import { DesktopShortcutItem } from "./desktop-shortcut-item";
+import { NonDesktopShortcutsListPanel } from "./non-desktop-shortcuts-list-panel";
+import { NonDesktopShortcutItem } from "./non-desktop-shortcut-item";
 
-jest.mock("./desktop-shortcut-item");
+jest.mock("./non-desktop-shortcut-item");
 
-const DesktopShortcutItemMock =
-  DesktopShortcutItem as unknown as jest.Mocked<any>;
+const NonDesktopShortcutItemMock =
+  NonDesktopShortcutItem as unknown as jest.Mocked<any>;
 
-describe("Desktop Shortcut List Panel", () => {
-  beforeAll(() => {
-    DesktopShortcutItemMock.mockImplementation(({ shortcut }) => (
-      <div {...shortcut}>{shortcut.text}</div>
-    ));
-  });
+beforeAll(() => {
+  NonDesktopShortcutItemMock.mockImplementation(({ shortcut }) => (
+    <div {...shortcut}>{shortcut.text}</div>
+  ));
+});
 
-  it("Should render DesktopShortcutListPanel", () => {
+describe("NonDesktop Shortcut List Panel", () => {
+  it("Should render NonDesktopShortcutListPanel", () => {
     const { container } = renderWithTheme(
-      <DesktopShortcutsListPanel
-        activeShortcutId={"test"}
+      <NonDesktopShortcutsListPanel
         shortcuts={[
           {
             id: "test",
@@ -35,7 +34,7 @@ describe("Desktop Shortcut List Panel", () => {
             video: "/link-to-test-video-1",
           },
         ]}
-        onHover={jest.fn()}
+        onShortcutClick={jest.fn()}
       />
     );
 
