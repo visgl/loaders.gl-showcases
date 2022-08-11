@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
-import { Header } from "./components";
+import { Header, HelpPanel } from "./components";
 import {
   color_brand_primary,
   color_brand_quaternary,
@@ -63,6 +63,7 @@ const THEMES: AppThemes = {
       mapControlExpanderDimColor: color_canvas_primary_inverted,
       mainToolsPanelIconColor: color_canvas_primary_inverted,
       mainToolsPanelDimIconColor: hilite_canvas_secondary,
+      mainHelpPanelColor: color_brand_primary,
     },
     name: Theme.Dark,
   },
@@ -86,6 +87,7 @@ const THEMES: AppThemes = {
       mapControlExpanderDimColor: dim_canvas_primary,
       mainToolsPanelIconColor: color_canvas_secondary_inverted,
       mainToolsPanelDimIconColor: dim_canvas_secondary,
+      mainHelpPanelColor: color_canvas_secondary,
     },
     name: Theme.Light,
   },
@@ -96,13 +98,23 @@ const THEMES: AppThemes = {
  */
 export const App = () => {
   const [theme, setTheme] = useState<Theme>(Theme.Dark);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+
+  const handleHelpClick = () => {
+    setShowHelp((prevValue) => !prevValue);
+  };
 
   return (
     <>
       <GlobalStyle />
       <ThemeProvider theme={THEMES[theme]}>
         <BrowserRouter>
-          <Header setTheme={setTheme} theme={theme} />
+          <Header
+            setTheme={setTheme}
+            theme={theme}
+            onHelpClick={handleHelpClick}
+            showHelp={showHelp}
+          />
           <ContentWrapper>
             <Routes>
               <Route
@@ -124,6 +136,7 @@ export const App = () => {
               />
             </Routes>
           </ContentWrapper>
+          {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
         </BrowserRouter>
       </ThemeProvider>
     </>

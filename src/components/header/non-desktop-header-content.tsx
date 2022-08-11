@@ -178,11 +178,13 @@ const Menu = ({
   githubIcon,
   theme,
   setTheme,
+  onHelpClick
 }: {
   pathname: string;
   githubIcon: string;
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  onHelpClick: () => void;
 }) => {
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
@@ -234,7 +236,7 @@ const Menu = ({
           </GitHubLink>
         </LinksWrapper>
         <HorisontalLine />
-        <ListButton id="help-button-tablet-or-mobile">Help</ListButton>
+        <ListButton id="help-button-tablet-or-mobile" onClick={onHelpClick}>Help</ListButton>
         <ToggleItem id="theme-toggle-tablet-or-mobile">
           Theme
           <ThemeToggler theme={theme} setTheme={setTheme} />
@@ -248,6 +250,7 @@ export const NonDesktopHeaderContent = ({
   theme,
   setTheme,
   pathname,
+  onHelpClick
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const githubIcon = theme === Theme.Light ? GitHubIconDark : GitHubIconLight;
@@ -266,6 +269,7 @@ export const NonDesktopHeaderContent = ({
           githubIcon={githubIcon}
           theme={theme}
           setTheme={setTheme}
+          onHelpClick={onHelpClick}
         />
       )}
     </Fragment>
