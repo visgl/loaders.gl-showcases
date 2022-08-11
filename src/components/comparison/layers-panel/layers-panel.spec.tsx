@@ -114,6 +114,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
+     // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -135,6 +136,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
+     // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -157,6 +159,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
+     // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -234,6 +237,7 @@ describe("Layers Panel", () => {
 
   it("Should show layer settings panel", () => {
     callRender(renderWithTheme);
+    // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerSettingsClick } = LayersControlPanel.mock.lastCall[0];
     // Call show layer settings
     act(() => {
