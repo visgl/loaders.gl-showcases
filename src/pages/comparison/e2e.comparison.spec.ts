@@ -410,7 +410,7 @@ describe("Layers Panel Within Layer mode", () => {
     await checkLayersPanel(page, panelId);
   });
 
-  it("Should show right layers panel", async () => {
+  it("Shouldn't show right layers panel", async () => {
     const panelId = "#right-layers-panel";
     expect(await page.$(panelId)).toBeNull();
   });
