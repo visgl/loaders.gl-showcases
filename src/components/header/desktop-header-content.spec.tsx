@@ -35,10 +35,12 @@ jest.mock("./theme-toggler", () => ({
 }));
 
 const setThemeMock = jest.fn();
+const onHelpClickMock = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <DesktopHeaderContent
+      onHelpClick={onHelpClickMock}
       theme={0}
       setTheme={setThemeMock}
       pathname={"/dashboard"}
@@ -71,6 +73,9 @@ describe("Desktop header content", () => {
 
     userEvent.click(themeToggler);
     expect(setThemeMock).toBeCalled();
+
+    userEvent.click(helpButton);
+    expect(onHelpClickMock).toBeCalled();
   });
 
   it("Should show Compare Menu Items", () => {
