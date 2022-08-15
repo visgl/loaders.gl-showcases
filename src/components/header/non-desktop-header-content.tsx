@@ -160,12 +160,20 @@ const Header = ({ isOpen, setIsOpen }) => {
   return (
     <>
       {!isOpen && (
-        <Button id="burger-menu" onClick={() => setIsOpen(true)}>
+        <Button
+          id="burger-menu"
+          data-testid="burger-menu-non-desktop"
+          onClick={() => setIsOpen(true)}
+        >
           <BurgerIcon fill={theme.colors.fontColor} />
         </Button>
       )}
       {isOpen && (
-        <Button id="close-header-menu" onClick={() => setIsOpen(false)}>
+        <Button
+          id="close-header-menu"
+          data-testid="close-header-menu-non-desktop"
+          onClick={() => setIsOpen(false)}
+        >
           <CloseIcon fill={theme.colors.fontColor} />
         </Button>
       )}
@@ -178,11 +186,13 @@ const Menu = ({
   githubIcon,
   theme,
   setTheme,
+  onHelpClick,
 }: {
   pathname: string;
   githubIcon: string;
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  onHelpClick: () => void;
 }) => {
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
@@ -234,10 +244,16 @@ const Menu = ({
           </GitHubLink>
         </LinksWrapper>
         <HorisontalLine />
-        <ListButton id="help-button-tablet-or-mobile">Help</ListButton>
+        <ListButton id="help-button-tablet-or-mobile" onClick={onHelpClick}>
+          Help
+        </ListButton>
         <ToggleItem id="theme-toggle-tablet-or-mobile">
           Theme
-          <ThemeToggler theme={theme} setTheme={setTheme} />
+          <ThemeToggler
+            data-testid="theme-toggler-non-desktop"
+            theme={theme}
+            setTheme={setTheme}
+          />
         </ToggleItem>
       </MenuLinks>
     </MenuContainer>
@@ -248,6 +264,7 @@ export const NonDesktopHeaderContent = ({
   theme,
   setTheme,
   pathname,
+  onHelpClick,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const githubIcon = theme === Theme.Light ? GitHubIconDark : GitHubIconLight;
@@ -255,6 +272,11 @@ export const NonDesktopHeaderContent = ({
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
+
+  const handleHelpClick = () => {
+    onHelpClick();
+    setIsMenuOpen(false);
+  };
 
   return (
     <Fragment>
@@ -266,6 +288,7 @@ export const NonDesktopHeaderContent = ({
           githubIcon={githubIcon}
           theme={theme}
           setTheme={setTheme}
+          onHelpClick={handleHelpClick}
         />
       )}
     </Fragment>

@@ -20,6 +20,10 @@ type CompareMenuProps = {
   pathname: string;
 };
 
+type HelpButtonProps = {
+  showHelp?: boolean;
+}
+
 const MenuContainer = styled.div`
   display: flex;
   align-items: center;
@@ -139,9 +143,9 @@ const CompareButton = styled.div<CompareButtonProps>`
     `}
 `;
 
-const HelpButton = styled.button`
-  color: ${(props) => props.theme.colors.fontColor};
-  border: 1px solid ${color_brand_quaternary};
+const HelpButton = styled.button<HelpButtonProps>`
+  color: ${({theme, showHelp}) => showHelp ? color_brand_secondary : theme.colors.fontColor};
+  border: 1px solid ${({showHelp}) => showHelp ? color_brand_secondary : color_brand_quaternary};
   border-radius: 12px;
   padding: 6px 18px;
   line-height: 18px;
@@ -222,6 +226,8 @@ export const DesktopHeaderContent = ({
   theme,
   setTheme,
   githubIcon,
+  showHelp,
+  onHelpClick
 }: MenuProps) => {
   const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
@@ -261,7 +267,7 @@ export const DesktopHeaderContent = ({
         GitHub
         <GithubImage src={githubIcon} />
       </GitHubLink>
-      <HelpButton id="help-button-default">Help</HelpButton>
+      <HelpButton id="help-button-default" showHelp={showHelp} onClick={onHelpClick}>Help</HelpButton>
       <ThemeToggler theme={theme} setTheme={setTheme} />
     </MenuContainer>
   );

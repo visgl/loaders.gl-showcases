@@ -55,6 +55,12 @@ export enum DragMode {
   rotate = "rotate",
 }
 
+export enum HelpPanelSelectedTab {
+  Touch = "Touch",
+  Trackpad = "Trackpad",
+  Mouse = "Mouse",
+}
+
 export enum ComparisonSideMode {
   left = "left",
   right = "right",
@@ -135,4 +141,18 @@ export type NormalsDebugData = {
 export type ViewStateSet = {
   main?: ViewState;
   minimap?: ViewState;
+};
+
+export type HelpShortcutItem = {
+  id: string,
+  icon: JSX.Element | null;
+  title: string;
+  text: string;
+  video: string;
+};
+
+export type HelpShortcutsData = {
+  [HelpPanelSelectedTab.Mouse]: HelpShortcutItem[];
+  [HelpPanelSelectedTab.Trackpad]: HelpShortcutItem[];
+  [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
 };
