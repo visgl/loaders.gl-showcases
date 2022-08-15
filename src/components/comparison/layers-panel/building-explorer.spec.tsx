@@ -1,5 +1,4 @@
 import { act, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { BuildingExplorer } from "./building-explorer";
 
