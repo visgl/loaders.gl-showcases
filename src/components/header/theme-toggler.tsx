@@ -68,6 +68,7 @@ export const ThemeToggler = ({
   return (
     <ThemeToggleWrapper
       id="toggle-button-default"
+      data-testid="toggle-theme-button"
       onClick={() => toggleTheme()}
     >
       <Button active={theme === Theme.Dark} id="toggle-dark-default">

@@ -160,12 +160,20 @@ const Header = ({ isOpen, setIsOpen }) => {
   return (
     <>
       {!isOpen && (
-        <Button id="burger-menu" onClick={() => setIsOpen(true)}>
+        <Button
+          id="burger-menu"
+          data-testid="burger-menu-non-desktop"
+          onClick={() => setIsOpen(true)}
+        >
           <BurgerIcon fill={theme.colors.fontColor} />
         </Button>
       )}
       {isOpen && (
-        <Button id="close-header-menu" onClick={() => setIsOpen(false)}>
+        <Button
+          id="close-header-menu"
+          data-testid="close-header-menu-non-desktop"
+          onClick={() => setIsOpen(false)}
+        >
           <CloseIcon fill={theme.colors.fontColor} />
         </Button>
       )}
@@ -241,7 +249,11 @@ const Menu = ({
         </ListButton>
         <ToggleItem id="theme-toggle-tablet-or-mobile">
           Theme
-          <ThemeToggler theme={theme} setTheme={setTheme} />
+          <ThemeToggler
+            data-testid="theme-toggler-non-desktop"
+            theme={theme}
+            setTheme={setTheme}
+          />
         </ToggleItem>
       </MenuLinks>
     </MenuContainer>
