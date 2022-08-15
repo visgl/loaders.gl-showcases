@@ -28,15 +28,26 @@ jest.mock("./non-desktop-header-content", () => ({
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
+const setThemeMock = jest.fn();
+const onHelpClickMock = jest.fn();
+
+const callRender = (renderFunc, props = {}) => {
+  return renderFunc(
+    <Header
+      theme={0}
+      setTheme={setThemeMock}
+      showHelp={false}
+      onHelpClick={onHelpClickMock}
+      {...props}
+    />
+  );
+};
+
 describe("Header", () => {
   it("Should render Desktop Header", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    const setThemeMock = jest.fn();
-
-    const { container } = renderWithTheme(
-      <Header theme={0} setTheme={setThemeMock} />
-    );
+    const { container } = callRender(renderWithTheme);
 
     const logo = screen.getByText("I3S Explorer");
     const desktopHeader = screen.getByText("Desktop Header");
@@ -50,13 +61,7 @@ describe("Header", () => {
 
   it("Should render NonDesktop Header", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
-
-    const setThemeMock = jest.fn();
-
-    const { container } = renderWithTheme(
-      <Header theme={1} setTheme={setThemeMock} />
-    );
-
+    const { container } = callRender(renderWithTheme, { theme: 1 });
     const logo = screen.getByText("I3S Explorer");
     const desktopHeader = screen.queryByText("Desktop Header");
     const nonDesktopHeader = screen.getByText("Non Desktop Header");

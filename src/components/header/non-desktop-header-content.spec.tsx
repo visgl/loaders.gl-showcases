@@ -30,10 +30,12 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const setThemeMock = jest.fn();
+const onHelpClickMock = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <NonDesktopHeaderContent
+      onHelpClick={onHelpClickMock}
       theme={0}
       setTheme={setThemeMock}
       pathname={"/dashboard"}
@@ -68,9 +70,10 @@ describe("Non Desktop header content", () => {
     ];
 
     menuItems.map((item) => expect(item).toBeInTheDocument());
-    userEvent.click(screen.getByTestId("theme-toggler-non-desktop"));
 
+    userEvent.click(screen.getByTestId("theme-toggler-non-desktop"));
     expect(setThemeMock).toBeCalled();
+
     userEvent.click(screen.getByText("Compare"));
 
     const across = screen.getByText("Across Layers");
@@ -78,6 +81,9 @@ describe("Non Desktop header content", () => {
 
     expect(across).toBeInTheDocument();
     expect(within).toBeInTheDocument();
+
+    userEvent.click(screen.getByText("Help"));
+    expect(onHelpClickMock).toBeCalled();
 
     userEvent.click(closeIcon);
   });
