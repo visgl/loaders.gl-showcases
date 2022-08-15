@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useAppLayout } from "../../../utils/layout";
@@ -177,7 +177,7 @@ export const LayersPanel = ({
     insertBaseMap(newMap);
     setShowInsertMapPanel(false);
   };
-  
+
   return (
     <Container id={id} layout={layout}>
       {!showLayerSettings && (
