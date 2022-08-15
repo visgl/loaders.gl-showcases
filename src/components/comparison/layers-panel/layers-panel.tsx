@@ -16,6 +16,7 @@ import {
 } from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
+import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 
 enum Tabs {
   Layers,
@@ -134,6 +135,8 @@ export const LayersPanel = ({
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const [showExistedLayerWarning, setShowExistedLayerWarning] = useState(false);
   const layout = useAppLayout();
+  const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
+  useClickOutside([warningNode], () => setShowExistedLayerWarning(false));
 
   const handleInsertLayer = (layer: {
     name: string;
@@ -225,7 +228,7 @@ export const LayersPanel = ({
           </Content>
 
           {showExistedLayerWarning && (
-            <PanelWrapper>
+            <PanelWrapper ref={(element) => setWarningNode(element)}>
               <WarningPanel
                 title={EXISTING_AREA_WARNING}
                 onConfirm={() => setShowExistedLayerWarning(false)}

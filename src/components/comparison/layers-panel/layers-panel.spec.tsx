@@ -188,6 +188,29 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
+
+  it("Should close duplication warining on click outside", () => {
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://test.url" }],
+    });
+     // @ts-expect-error - Property 'mock' does not exist on type
+    const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
+    act(() => {
+      onLayerInsertClick();
+    });
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+    act(() => {
+      onInsert({ name: "test", url: "https://test.url", token: "" });
+    });
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+    expect(screen.getByText("Warning Panel")).toBeInTheDocument();
+
+    // Click outside
+    userEvent.click(screen.getByText("Map Options"));
+
+    expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
+  });
+
   it("Should be able to insert baseMap", () => {
     callRender(renderWithTheme);
     // Switch to the MapOptions Tab
