@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { CompareButtonMode } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 
-import PlayIcon from "../../../../public/icons/play.svg";
+import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
 import DownloadIcon from "../../../../public/icons/download.svg";
 
@@ -83,7 +83,7 @@ export const CompareButton = ({
       <Button disabled={disableButton} onClick={onCompareModeToggle}>
         {compareButtonMode === CompareButtonMode.Start && (
           <>
-            <PlayIcon />
+            <StartIcon />
             <Title>{CompareButtonMode.Start}</Title>
           </>
         )}
