@@ -2,6 +2,7 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Tileset3D } from "@loaders.gl/tiles";
+import { Stats } from "@probe.gl/stats";
 import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 
@@ -27,6 +28,7 @@ import {
   useForceUpdate,
 } from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
+import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
 type LayoutProps = {
   layout: string;
@@ -175,6 +177,8 @@ export const ComparisonSide = ({
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [layer, setLayer] = useState<LayerExample | null>(null);
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
+  const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
+  const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -251,7 +255,13 @@ export const ComparisonSide = ({
   };
 
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
+    setTilesetStats(tileset.stats);
     setTileset(tileset);
+  };
+
+  const onWebGLInitialized = (gl) => {
+    const stats = gl.stats.get("Memory Usage");
+    setMemoryStats(stats);
   };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
@@ -329,6 +339,7 @@ export const ComparisonSide = ({
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         onViewStateChange={onViewStateChange}
+        onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
       />
       {compareButtonMode === CompareButtonMode.Start && (
@@ -385,6 +396,16 @@ export const ComparisonSide = ({
             </OptionsPanelWrapper>
           )}
         </>
+      )}
+      {activeButton === ActiveButton.memory && (
+        <OptionsPanelWrapper layout={layout}>
+          <MemoryUsagePanel
+            id={`${side}-memory-usage-panel`}
+            memoryStats={memoryStats}
+            tilesetStats={tilesetStats}
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
+          />
+        </OptionsPanelWrapper>
       )}
     </Container>
   );

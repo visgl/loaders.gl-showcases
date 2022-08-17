@@ -45,6 +45,7 @@ export const ListItem = ({
   const handleClick = () => {
     onChange(id);
   };
+
   return (
     <ListItemWrapper
       id={id}
@@ -57,9 +58,10 @@ export const ListItem = ({
       optionsContent={optionsContent}
       onClickOutside={onClickOutside}
     >
-      {type === ListItemType.Checkbox ? (
+      {type === ListItemType.Checkbox && (
         <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
-      ) : (
+      )}
+      {type === ListItemType.Radio && (
         <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
       )}
       <Title>{title}</Title>

@@ -7,9 +7,16 @@ import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import { Container, PanelHeader, HorizontalLine, Panels } from "../common";
+import {
+  Container,
+  PanelHeader,
+  Content,
+  HorizontalLine,
+  Panels,
+} from "../common";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
+import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 
 enum Tabs {
   Layers,
@@ -83,17 +90,6 @@ const Tab = styled.div<TabProps>`
     `}
 `;
 
-const Content = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
-`;
-
 const PanelWrapper = styled.div`
   position: absolute;
   top: 24px;
@@ -139,6 +135,8 @@ export const LayersPanel = ({
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const [showExistedLayerWarning, setShowExistedLayerWarning] = useState(false);
   const layout = useAppLayout();
+  const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
+  useClickOutside([warningNode], () => setShowExistedLayerWarning(false));
 
   const handleInsertLayer = (layer: {
     name: string;
@@ -230,7 +228,7 @@ export const LayersPanel = ({
           </Content>
 
           {showExistedLayerWarning && (
-            <PanelWrapper>
+            <PanelWrapper ref={(element) => setWarningNode(element)}>
               <WarningPanel
                 title={EXISTING_AREA_WARNING}
                 onConfirm={() => setShowExistedLayerWarning(false)}

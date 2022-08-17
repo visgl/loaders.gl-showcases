@@ -158,6 +158,7 @@ type DeckGlI3sProps = {
   disableController?: any;
   compareButtonMode?: CompareButtonMode;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
+  onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
   /** DeckGL callback. On layer hover behavior */
@@ -205,6 +206,7 @@ export const DeckGlI3s = ({
   disableController,
   compareButtonMode,
   onViewStateChange,
+  onWebGLInitialized,
   onAfterRender,
   getTooltip,
   onClick,
@@ -700,6 +702,7 @@ export const DeckGlI3s = ({
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
       controller={disableController}
+      onWebGLInitialized={onWebGLInitialized}
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}
