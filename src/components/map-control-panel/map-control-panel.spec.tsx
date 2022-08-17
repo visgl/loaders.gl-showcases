@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { DragMode } from "../../types";
+import { DragMode, CompareButtonMode } from "../../types";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { MapControllPanel } from "./map-control-panel";
 
@@ -16,6 +16,7 @@ describe("MapControllPanel", () => {
     const { rerender, container, getAllByRole } = renderWithTheme(
       <MapControllPanel
         bearing={90}
+        compareButtonMode={CompareButtonMode.Start}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onRotate}
@@ -43,6 +44,7 @@ describe("MapControllPanel", () => {
     renderWithTheme(
       <MapControllPanel
         bearing={90}
+        compareButtonMode={CompareButtonMode.Start}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onRotate}
@@ -57,6 +59,7 @@ describe("MapControllPanel", () => {
     renderWithTheme(
       <MapControllPanel
         bearing={90}
+        compareButtonMode={CompareButtonMode.Start}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onRotate}
@@ -94,6 +97,7 @@ describe("MapControllPanel", () => {
     renderWithTheme(
       <MapControllPanel
         bearing={90}
+        compareButtonMode={CompareButtonMode.Start}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onRotate}

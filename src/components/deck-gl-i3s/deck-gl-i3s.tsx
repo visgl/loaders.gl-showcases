@@ -6,7 +6,6 @@ import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
 import {
-  MapController,
   FlyToInterpolator,
   COORDINATE_SYSTEM,
   MapView,
@@ -29,7 +28,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { DragMode, NormalsDebugData, ViewStateSet } from "../../types";
+import { CompareButtonMode, NormalsDebugData, ViewStateSet } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -99,8 +98,6 @@ type DeckGlI3sProps = {
    * if is not set `viewState` state variable will be used
    */
   parentViewState?: ViewStateSet;
-  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
-  dragMode?: DragMode;
   /** Minimap visibility */
   showMinimap?: boolean;
   /** If should create independent viewport for minimap */
@@ -158,6 +155,8 @@ type DeckGlI3sProps = {
   useDracoGeometry?: boolean;
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
+  disableController?: any;
+  compareButtonMode?: CompareButtonMode;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
@@ -176,7 +175,6 @@ type DeckGlI3sProps = {
 export const DeckGlI3s = ({
   id,
   parentViewState,
-  dragMode = DragMode.pan,
   showMinimap,
   createIndependentMinimapViewport = false,
   showTerrain = false,
@@ -204,6 +202,8 @@ export const DeckGlI3s = ({
   loadedTilesets = [],
   useDracoGeometry = true,
   useCompressedTextures = true,
+  disableController,
+  compareButtonMode,
   onViewStateChange,
   onAfterRender,
   getTooltip,
@@ -614,7 +614,7 @@ export const DeckGlI3s = ({
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}-mode-${compareButtonMode}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,
@@ -699,14 +699,7 @@ export const DeckGlI3s = ({
       views={getViews()}
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
-      controller={{
-        type: MapController,
-        maxPitch: 60,
-        inertia: true,
-        scrollZoom: { speed: 0.01, smooth: true },
-        touchRotate: true,
-        dragMode,
-      }}
+      controller={disableController}
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}

@@ -10,11 +10,11 @@ import {
   BaseMap,
   ComparisonMode,
   ComparisonSideMode,
-  DragMode,
   LayerExample,
   ListItemType,
   Sublayer,
   ViewStateSet,
+  CompareButtonMode,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -121,12 +121,13 @@ type ComparisonSideProps = {
   mode: ComparisonMode;
   side: ComparisonSideMode;
   viewState: ViewStateSet;
-  dragMode: DragMode;
   selectedBaseMap: BaseMap;
   baseMaps: BaseMap[];
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
   staticLayer?: LayerExample | null;
+  compareButtonMode: CompareButtonMode;
+  disableController: any;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -134,17 +135,20 @@ type ComparisonSideProps = {
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
   onRequestTransitionToTileset: () => void;
+  disableButtonHandler: (disable: boolean) => void;
+  onTilesetLoaded: (isLoaded: boolean) => void;
 };
 export const ComparisonSide = ({
   mode,
   side,
   viewState,
-  dragMode,
   selectedBaseMap,
   baseMaps,
   showLayerOptions,
   showComparisonSettings,
   staticLayer,
+  compareButtonMode,
+  disableController,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -152,6 +156,8 @@ export const ComparisonSide = ({
   onSelectBaseMap,
   onDeleteBaseMap,
   onRequestTransitionToTileset,
+  disableButtonHandler,
+  onTilesetLoaded,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
   const [token, setToken] = useState(null);
@@ -185,10 +191,23 @@ export const ComparisonSide = ({
     }
   }, [staticLayer]);
 
+  // useEffect(() => {
+  //   const isLoaded = tileset?.isLoaded();
+
+  //   if (isLoaded) {
+  //     onTilesetLoaded(true);
+  //   }
+  //   onTilesetLoaded(false);
+  // }, [tileset]);
+
   useEffect(() => {
     if (!layer) {
       setFlattenedSublayers([]);
       return;
+    }
+
+    if (layer) {
+      disableButtonHandler(true);
     }
 
     async function fetchFlattenedSublayers(tilesetUrl) {
@@ -301,62 +320,71 @@ export const ComparisonSide = ({
             ...viewState.main,
           },
         }}
-        dragMode={dragMode}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
+        disableController={disableController}
         i3sLayers={getI3sLayers()}
+        compareButtonMode={compareButtonMode}
         lastLayerSelectedId={tileset?.url || ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         onViewStateChange={onViewStateChange}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
       />
-      <ToolsPanelWrapper layout={layout}>
-        <MainToolsPanel
-          id={`${side}-tools-panel`}
-          activeButton={activeButton}
-          showLayerOptions={showLayerOptions}
-          showComparisonSettings={showComparisonSettings}
-          onChange={onChangeMainToolsPanelHandler}
-        />
-      </ToolsPanelWrapper>
-      {activeButton === ActiveButton.options && (
-        <OptionsPanelWrapper layout={layout}>
-          <LayersPanel
-            id={`${side}-layers-panel`}
-            layers={examples}
-            selectedLayerIds={selectedLayerIds}
-            onLayerInsert={onLayerInsertHandler}
-            onLayerSelect={onLayerSelectHandler}
-            onLayerDelete={(id) => onLayerDeleteHandler(id)}
-            onPointToLayer={onPointToLayerHandler}
-            type={ListItemType.Radio}
-            sublayers={sublayers}
-            onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
-            baseMaps={baseMaps}
-            selectedBaseMapId={selectedBaseMap.id}
-            insertBaseMap={onInsertBaseMap}
-            selectBaseMap={onSelectBaseMap}
-            deleteBaseMap={onDeleteBaseMap}
-          />
-        </OptionsPanelWrapper>
-      )}
-      {activeButton === ActiveButton.settings && (
-        <OptionsPanelWrapper layout={layout}>
-          <ComparisonParamsPanel
-            id={`${side}-comparison-params-panel`}
-            isCompressedGeometry={isCompressedGeometry}
-            isCompressedTextures={isCompressedTextures}
-            onGeometryChange={() =>
-              setIsCompressedGeometry((prevValue) => !prevValue)
-            }
-            onTexturesChange={() =>
-              setIsCompressedTextures((prevValue) => !prevValue)
-            }
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.settings)}
-          />
-        </OptionsPanelWrapper>
+      {compareButtonMode === CompareButtonMode.Start && (
+        <>
+          <ToolsPanelWrapper layout={layout}>
+            <MainToolsPanel
+              id={`${side}-tools-panel`}
+              activeButton={activeButton}
+              showLayerOptions={showLayerOptions}
+              showComparisonSettings={showComparisonSettings}
+              onChange={onChangeMainToolsPanelHandler}
+            />
+          </ToolsPanelWrapper>
+          {activeButton === ActiveButton.options && (
+            <OptionsPanelWrapper layout={layout}>
+              <LayersPanel
+                id={`${side}-layers-panel`}
+                layers={examples}
+                selectedLayerIds={selectedLayerIds}
+                onLayerInsert={onLayerInsertHandler}
+                onLayerSelect={onLayerSelectHandler}
+                onLayerDelete={(id) => onLayerDeleteHandler(id)}
+                onPointToLayer={onPointToLayerHandler}
+                type={ListItemType.Radio}
+                sublayers={sublayers}
+                onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
+                onClose={() =>
+                  onChangeMainToolsPanelHandler(ActiveButton.options)
+                }
+                baseMaps={baseMaps}
+                selectedBaseMapId={selectedBaseMap.id}
+                insertBaseMap={onInsertBaseMap}
+                selectBaseMap={onSelectBaseMap}
+                deleteBaseMap={onDeleteBaseMap}
+              />
+            </OptionsPanelWrapper>
+          )}
+          {activeButton === ActiveButton.settings && (
+            <OptionsPanelWrapper layout={layout}>
+              <ComparisonParamsPanel
+                id={`${side}-comparison-params-panel`}
+                isCompressedGeometry={isCompressedGeometry}
+                isCompressedTextures={isCompressedTextures}
+                onGeometryChange={() =>
+                  setIsCompressedGeometry((prevValue) => !prevValue)
+                }
+                onTexturesChange={() =>
+                  setIsCompressedTextures((prevValue) => !prevValue)
+                }
+                onClose={() =>
+                  onChangeMainToolsPanelHandler(ActiveButton.settings)
+                }
+              />
+            </OptionsPanelWrapper>
+          )}
+        </>
       )}
     </Container>
   );

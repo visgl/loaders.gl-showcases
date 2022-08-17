@@ -1,6 +1,11 @@
 import { useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState, DragMode } from "../../types";
+import {
+  CollapseDirection,
+  ExpandState,
+  DragMode,
+  CompareButtonMode,
+} from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -52,6 +57,7 @@ const Button = styled.button<{ active?: boolean }>`
 type MapControlPanelProps = {
   bearing: number;
   dragMode: DragMode;
+  compareButtonMode: CompareButtonMode;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
@@ -75,6 +81,7 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
 export const MapControllPanel = ({
   bearing,
   dragMode,
+  compareButtonMode,
   onZoomIn,
   onZoomOut,
   onCompassClick,
@@ -95,7 +102,7 @@ export const MapControllPanel = ({
     });
   };
 
-  return (
+  return compareButtonMode === CompareButtonMode.Start ? (
     <Container id="map-control-panel">
       <ExpandIcon
         expandState={expandState}
@@ -129,5 +136,5 @@ export const MapControllPanel = ({
         </CompassWrapper>
       </Button>
     </Container>
-  );
+  ) : null;
 };

@@ -46,7 +46,7 @@ import {
 } from "../../utils";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
-import { DragMode } from "../../types";
+import { DragMode, CompareButtonMode } from "../../types";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -84,6 +84,8 @@ const callRender = (renderFunc, props = {}) => {
             url: tilesetUrl,
           },
         ]}
+        compareButtonMode={CompareButtonMode.Start}
+        disableController={controllerExpected}
         lastLayerSelectedId={tilesetUrl}
         metadata={{ layers: [getTilesetJson()] }}
         loadedTilesets={[getTileset3d()]}
@@ -228,7 +230,7 @@ describe("Deck.gl I3S map component", () => {
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true"
+        "tile-layer-undefined-draco-true-compressed-textures-true-mode-Start comparing"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
