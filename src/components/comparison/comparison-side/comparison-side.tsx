@@ -135,7 +135,6 @@ type ComparisonSideProps = {
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
-  onRequestTransitionToTileset: () => void;
 };
 export const ComparisonSide = ({
   mode,
@@ -153,7 +152,6 @@ export const ComparisonSide = ({
   onInsertBaseMap,
   onSelectBaseMap,
   onDeleteBaseMap,
-  onRequestTransitionToTileset,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
   const [token, setToken] = useState(null);
@@ -207,7 +205,6 @@ export const ComparisonSide = ({
 
     setToken(token);
     setSublayers([]);
-    onRequestTransitionToTileset();
   }, [layer]);
 
   const getFlattenedSublayers = async (tilesetUrl) => {
