@@ -84,7 +84,6 @@ const callRender = (renderFunc, props = {}) => {
             url: tilesetUrl,
           },
         ]}
-        compareButtonMode={CompareButtonMode.Start}
         disableController={controllerExpected}
         lastLayerSelectedId={tilesetUrl}
         metadata={{ layers: [getTilesetJson()] }}

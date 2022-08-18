@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import { MapController } from "@deck.gl/core";
 import styled from "styled-components";
@@ -19,6 +19,7 @@ import { MapControllPanel } from "../../components/map-control-panel/map-control
 import { CompareButton } from "../../components/comparison/compare-button/compare-button";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
+import { LoadManager } from "./load-manager";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -71,6 +72,8 @@ const Devider = styled.div<LayoutProps>`
 `;
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
+  const loadManagerRef = useRef<LoadManager>(new LoadManager());
+
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
@@ -85,7 +88,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     false,
     false,
   ]);
-  const [isResolved, setIsResolved] = useState<boolean>(false);
 
   const layout = useAppLayout();
 
@@ -114,6 +116,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       });
     }
   }, [compareButtonMode]);
+
+  loadManagerRef.current.addEventListener("loaded", () => {
+    setCompareButtonMode(CompareButtonMode.Start);
+  });
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -190,6 +196,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const toggleCompareButtonMode = () => {
     setCompareButtonMode((prev) => {
       if (prev === CompareButtonMode.Start) {
+        loadManagerRef.current.startLoading();
         return CompareButtonMode.Comparing;
       }
       return CompareButtonMode.Start;
@@ -253,14 +260,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setNeedTransitionToTileset(true);
         }}
         disableButtonHandler={disableButtonHandlerLeft}
-        onTilesetLoaded={(pending) => setIsResolved(pending)}
+        onTilesetLoaded={() => loadManagerRef.current.resolveLeftSide()}
       />
       <Devider layout={layout} />
       <CompareButton
         compareButtonMode={compareButtonMode}
-        downloadStats={
-          isResolved && compareButtonMode === CompareButtonMode.Start
-        }
+        downloadStats={compareButtonMode === CompareButtonMode.Start}
         disableButton={disableButton.includes(false)}
         onCompareModeToggle={toggleCompareButtonMode}
       />
@@ -283,7 +288,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onDeleteBaseMap={onDeleteBaseMapHandler}
         onRequestTransitionToTileset={() => setNeedTransitionToTileset(true)}
         disableButtonHandler={disableButtonHandlerRight}
-        onTilesetLoaded={(isLoaded) => setIsResolved(isLoaded)}
+        onTilesetLoaded={() => loadManagerRef.current.resolveRightSide()}
       />
       <MapControllPanel
         bearing={viewState.main.bearing}

@@ -1,7 +1,7 @@
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Tileset3D } from "@loaders.gl/tiles";
+import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
 import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
@@ -138,7 +138,7 @@ type ComparisonSideProps = {
   onDeleteBaseMap: (baseMapId: string) => void;
   onRequestTransitionToTileset: () => void;
   disableButtonHandler: (disable: boolean) => void;
-  onTilesetLoaded: (isLoaded: boolean) => void;
+  onTilesetLoaded: () => void;
 };
 export const ComparisonSide = ({
   mode,
@@ -179,6 +179,7 @@ export const ComparisonSide = ({
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
+  const [loadNumber, setLoadNumber] = useState<number>(0);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -194,6 +195,12 @@ export const ComparisonSide = ({
       setLayer(staticLayer);
     }
   }, [staticLayer]);
+
+  useEffect(() => {
+    if (compareButtonMode === CompareButtonMode.Comparing) {
+      setLoadNumber((prev) => prev + 1);
+    }
+  }, [compareButtonMode]);
 
   // useEffect(() => {
   //   const isLoaded = tileset?.isLoaded();
@@ -257,6 +264,19 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
     setTilesetStats(tileset.stats);
     setTileset(tileset);
+    setTimeout(() => {
+      if (tileset.isLoaded()) {
+        onTilesetLoaded();
+      }
+    }, 500);
+  };
+
+  const onTileLoad = (tile: Tile3D) => {
+    setTimeout(() => {
+      if (tile.tileset.isLoaded()) {
+        onTilesetLoaded();
+      }
+    }, 500);
   };
 
   const onWebGLInitialized = (gl) => {
@@ -334,13 +354,15 @@ export const ComparisonSide = ({
         mapStyle={selectedBaseMap.mapUrl}
         disableController={disableController}
         i3sLayers={getI3sLayers()}
-        compareButtonMode={compareButtonMode}
+        loadNumber={loadNumber}
         lastLayerSelectedId={tileset?.url || ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
+        preventTransitions={compareButtonMode === CompareButtonMode.Comparing}
         onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
+        onTileLoad={onTileLoad}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
