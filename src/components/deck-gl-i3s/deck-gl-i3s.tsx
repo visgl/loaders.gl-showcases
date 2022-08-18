@@ -28,7 +28,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { CompareButtonMode, NormalsDebugData, ViewStateSet } from "../../types";
+import { NormalsDebugData, ViewStateSet } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -156,7 +156,8 @@ type DeckGlI3sProps = {
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
   disableController?: any;
-  compareButtonMode?: CompareButtonMode;
+  loadNumber?: number;
+  preventTransitions?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -204,7 +205,8 @@ export const DeckGlI3s = ({
   useDracoGeometry = true,
   useCompressedTextures = true,
   disableController,
-  compareButtonMode,
+  loadNumber = 0,
+  preventTransitions = false,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -387,7 +389,7 @@ export const DeckGlI3s = ({
   };
 
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
-    if (needTransitionToTileset) {
+    if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter || [];
       let pLongitue = longitude;
@@ -616,7 +618,7 @@ export const DeckGlI3s = ({
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}-mode-${compareButtonMode}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,
