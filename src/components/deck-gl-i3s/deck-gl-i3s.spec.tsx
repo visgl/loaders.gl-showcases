@@ -46,7 +46,6 @@ import {
 } from "../../utils";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
-import { DragMode, CompareButtonMode } from "../../types";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -63,7 +62,7 @@ const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
   .spyOn(ColorMap.prototype, "getColor")
   .mockImplementation(() => [100, 150, 200]);
-const controllerExpected = {
+const controller = {
   type: MapController,
   maxPitch: 60,
   inertia: true,
@@ -84,7 +83,7 @@ const callRender = (renderFunc, props = {}) => {
             url: tilesetUrl,
           },
         ]}
-        disableController={controllerExpected}
+        disableController={controller}
         lastLayerSelectedId={tilesetUrl}
         metadata={{ layers: [getTilesetJson()] }}
         loadedTilesets={[getTileset3d()]}
@@ -109,7 +108,6 @@ describe("Deck.gl I3S map component", () => {
     expect(DeckGL).toHaveBeenCalled();
     const {
       children,
-      controller,
       layerFilter,
       layers,
       views,
@@ -120,7 +118,6 @@ describe("Deck.gl I3S map component", () => {
       onClick,
     } = DeckGL.mock.lastCall[0];
     expect(children).toBeTruthy();
-    expect(controller).toEqual(controllerExpected);
     expect(layerFilter).toBeTruthy();
     expect(layers).toBeTruthy();
     expect(views).toBeTruthy();
@@ -133,18 +130,12 @@ describe("Deck.gl I3S map component", () => {
   });
 
   it("Controller", () => {
-    const { rerender } = callRender(render, { loadedTilesets: undefined });
+    callRender(render, { loadedTilesets: undefined });
     expect(DeckGL).toHaveBeenCalled();
     const {
       controller: { dragMode },
     } = DeckGL.mock.lastCall[0];
     expect(dragMode).toBe("pan");
-
-    callRender(rerender, { dragMode: DragMode.rotate });
-    const {
-      controller: { dragMode: dragMode2 },
-    } = DeckGL.mock.lastCall[0];
-    expect(dragMode2).toBe("rotate");
   });
 
   it("Should load UV debug texture", () => {
@@ -229,7 +220,7 @@ describe("Deck.gl I3S map component", () => {
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true-mode-Start comparing"
+        "tile-layer-undefined-draco-true-compressed-textures-true--0"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);

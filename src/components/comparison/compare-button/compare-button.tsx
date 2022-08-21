@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { CompareButtonMode } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
-
+import { Title } from "../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
 import DownloadIcon from "../../../../public/icons/download.svg";
@@ -19,8 +19,8 @@ const Container = styled.div<LayoutProps>`
   })};
   left: ${getCurrentLayoutProperty({
     desktop: "calc(50% - 95px)",
-    tablet: "calc(50% - 90px)",
-    mobile: "calc(50% - 90px)",
+    tablet: "calc(50% - 85px)",
+    mobile: "calc(50% - 85px)",
   })};
   background: ${({ theme }) => theme.colors.mapControlPanelColor};
   ${getCurrentLayoutProperty({
@@ -55,12 +55,10 @@ const Button = styled.button`
   }
 `;
 
-const Title = styled.div`
-  font-style: normal;
+const ButtonTitle = styled(Title)`
+  margin: 0 0 0 8px;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  margin-left: 8px;
+  color: inherit;
 `;
 
 type CompareButtonProps = {
@@ -84,13 +82,13 @@ export const CompareButton = ({
         {compareButtonMode === CompareButtonMode.Start && (
           <>
             <StartIcon />
-            <Title>{CompareButtonMode.Start}</Title>
+            <ButtonTitle>{CompareButtonMode.Start}</ButtonTitle>
           </>
         )}
         {compareButtonMode === CompareButtonMode.Comparing && (
           <>
             <StopIcon />
-            <Title>{CompareButtonMode.Comparing}</Title>
+            <ButtonTitle>{CompareButtonMode.Comparing}</ButtonTitle>
           </>
         )}
       </Button>

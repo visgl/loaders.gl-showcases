@@ -32,6 +32,7 @@ const onDeleteBaseMapMock = jest.fn();
 const onRequestTransitionToTilesetMock = jest.fn();
 const disableButtonHandler = jest.fn();
 const onTilesetLoaded = jest.fn();
+const onStopTimer = jest.fn()
 const loadMock = load as unknown as jest.Mocked<any>;
 const DeckGlI3sMock = DeckGlI3s as unknown as jest.Mocked<any>;
 const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
@@ -56,6 +57,8 @@ describe("ComparisonSide", () => {
         showLayerOptions
         showComparisonSettings
         disableController={{}}
+        loadingTime={1123}
+        onStopTimer={onStopTimer}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}

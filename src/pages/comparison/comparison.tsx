@@ -115,7 +115,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         keyboard: false,
       });
     }
-  }, [compareButtonMode]);
+  }, [compareButtonMode, dragMode]);
 
   loadManagerRef.current.addEventListener("loaded", () => {
     setCompareButtonMode(CompareButtonMode.Start);
@@ -248,6 +248,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         disableController={disableController}
+        loadingTime={loadManagerRef.current.loadingTime}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
@@ -261,11 +262,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }}
         disableButtonHandler={disableButtonHandlerLeft}
         onTilesetLoaded={() => loadManagerRef.current.resolveLeftSide()}
+        onStopTimer={() => loadManagerRef.current.stoptTimer()}
       />
       <Devider layout={layout} />
       <CompareButton
         compareButtonMode={compareButtonMode}
-        downloadStats={compareButtonMode === CompareButtonMode.Start}
+        downloadStats={
+          compareButtonMode === CompareButtonMode.Start &&
+          loadManagerRef.current.haveBeenCompared
+        }
         disableButton={disableButton.includes(false)}
         onCompareModeToggle={toggleCompareButtonMode}
       />
@@ -278,6 +283,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         disableController={disableController}
+        loadingTime={loadManagerRef.current.loadingTime}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
@@ -289,6 +295,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onRequestTransitionToTileset={() => setNeedTransitionToTileset(true)}
         disableButtonHandler={disableButtonHandlerRight}
         onTilesetLoaded={() => loadManagerRef.current.resolveRightSide()}
+        onStopTimer={() => loadManagerRef.current.stoptTimer()}
       />
       <MapControllPanel
         bearing={viewState.main.bearing}

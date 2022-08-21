@@ -130,6 +130,7 @@ type ComparisonSideProps = {
   staticLayer?: LayerExample | null;
   compareButtonMode: CompareButtonMode;
   disableController: any;
+  loadingTime: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -139,6 +140,7 @@ type ComparisonSideProps = {
   onRequestTransitionToTileset: () => void;
   disableButtonHandler: (disable: boolean) => void;
   onTilesetLoaded: () => void;
+  onStopTimer: () => void;
 };
 export const ComparisonSide = ({
   mode,
@@ -151,6 +153,7 @@ export const ComparisonSide = ({
   staticLayer,
   compareButtonMode,
   disableController,
+  loadingTime,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -160,6 +163,7 @@ export const ComparisonSide = ({
   onRequestTransitionToTileset,
   disableButtonHandler,
   onTilesetLoaded,
+  onStopTimer,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
   const [token, setToken] = useState(null);
@@ -201,15 +205,6 @@ export const ComparisonSide = ({
       setLoadNumber((prev) => prev + 1);
     }
   }, [compareButtonMode]);
-
-  // useEffect(() => {
-  //   const isLoaded = tileset?.isLoaded();
-
-  //   if (isLoaded) {
-  //     onTilesetLoaded(true);
-  //   }
-  //   onTilesetLoaded(false);
-  // }, [tileset]);
 
   useEffect(() => {
     if (!layer) {
@@ -275,6 +270,7 @@ export const ComparisonSide = ({
     setTimeout(() => {
       if (tile.tileset.isLoaded()) {
         onTilesetLoaded();
+        onStopTimer();
       }
     }, 500);
   };
@@ -417,17 +413,20 @@ export const ComparisonSide = ({
               />
             </OptionsPanelWrapper>
           )}
+          {activeButton === ActiveButton.memory && (
+            <OptionsPanelWrapper layout={layout}>
+              <MemoryUsagePanel
+                id={`${side}-memory-usage-panel`}
+                memoryStats={memoryStats}
+                tilesetStats={tilesetStats}
+                loadingTime={loadingTime}
+                onClose={() =>
+                  onChangeMainToolsPanelHandler(ActiveButton.memory)
+                }
+              />
+            </OptionsPanelWrapper>
+          )}
         </>
-      )}
-      {activeButton === ActiveButton.memory && (
-        <OptionsPanelWrapper layout={layout}>
-          <MemoryUsagePanel
-            id={`${side}-memory-usage-panel`}
-            memoryStats={memoryStats}
-            tilesetStats={tilesetStats}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
-          />
-        </OptionsPanelWrapper>
       )}
     </Container>
   );
