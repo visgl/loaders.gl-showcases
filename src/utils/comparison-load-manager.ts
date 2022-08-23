@@ -1,41 +1,38 @@
-export class LoadManager extends EventTarget {
+export class ComparisonLoadManager extends EventTarget {
   private leftResolved = true;
   private rightResolved = true;
-  private interval;
-  public haveBeenCompared = false;
-  public loadingTime = 0;
+  private startTime = 0;
+  public leftLoadingTime = 0;
+  public rightLoadingTime = 0;
 
   constructor() {
     super();
   }
 
   startLoading() {
-    this.getTime();
+    this.startTime = Date.now();
     this.leftResolved = false;
     this.rightResolved = false;
-    this.haveBeenCompared = true;
   }
 
   resolveLeftSide() {
     this.leftResolved = true;
+    this.leftLoadingTime = Date.now() - this.startTime;
     return this.isLoaded();
   }
 
   resolveRightSide() {
     this.rightResolved = true;
+    this.rightLoadingTime = Date.now() - this.startTime;
     return this.isLoaded();
   }
 
-  stoptTimer() {
-    clearInterval(this.interval);
+  stoptTimerLeftSide() {
+    this.leftLoadingTime = 0;
   }
 
-  private getTime() {
-    const startTime = Date.now();
-    this.interval = setInterval(() => {
-      const elapsedTime = Date.now() - startTime;
-      this.loadingTime = elapsedTime;
-    }, 100);
+  stoptTimerRightSide() {
+    this.rightLoadingTime = 0;
   }
 
   private isLoaded() {

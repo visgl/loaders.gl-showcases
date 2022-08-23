@@ -1,6 +1,7 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
+import { MapControllerSet, DragMode } from "../../types";
 
 // Mocks
 jest.mock("@loaders.gl/core");
@@ -62,13 +63,13 @@ const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
   .spyOn(ColorMap.prototype, "getColor")
   .mockImplementation(() => [100, 150, 200]);
-const controller = {
+const controller: MapControllerSet = {
   type: MapController,
   maxPitch: 60,
   inertia: true,
   scrollZoom: { speed: 0.01, smooth: true },
   touchRotate: true,
-  dragMode: "pan",
+  dragMode: DragMode.pan,
 };
 
 const callRender = (renderFunc, props = {}) => {
@@ -83,7 +84,7 @@ const callRender = (renderFunc, props = {}) => {
             url: tilesetUrl,
           },
         ]}
-        disableController={controller}
+        controller={controller}
         lastLayerSelectedId={tilesetUrl}
         metadata={{ layers: [getTilesetJson()] }}
         loadedTilesets={[getTileset3d()]}

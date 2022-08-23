@@ -16,6 +16,8 @@ import {
   Sublayer,
   ViewStateSet,
   CompareButtonMode,
+  MapControllerSet,
+  DragMode,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -129,7 +131,8 @@ type ComparisonSideProps = {
   showComparisonSettings: boolean;
   staticLayer?: LayerExample | null;
   compareButtonMode: CompareButtonMode;
-  disableController: any;
+  disableController: MapControllerSet | null;
+  dragMode: DragMode;
   loadingTime: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
@@ -140,7 +143,6 @@ type ComparisonSideProps = {
   onRequestTransitionToTileset: () => void;
   disableButtonHandler: (disable: boolean) => void;
   onTilesetLoaded: () => void;
-  onStopTimer: () => void;
 };
 export const ComparisonSide = ({
   mode,
@@ -153,6 +155,7 @@ export const ComparisonSide = ({
   staticLayer,
   compareButtonMode,
   disableController,
+  dragMode,
   loadingTime,
   onViewStateChange,
   pointToTileset,
@@ -163,7 +166,6 @@ export const ComparisonSide = ({
   onRequestTransitionToTileset,
   disableButtonHandler,
   onTilesetLoaded,
-  onStopTimer,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
   const [token, setToken] = useState(null);
@@ -185,6 +187,9 @@ export const ComparisonSide = ({
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
 
+  /** Delay to await asynchronous traversal of the tileset **/
+  const IS_LOADED_DELAY = 500;
+
   useEffect(() => {
     if (showLayerOptions) {
       setActiveButton(ActiveButton.options);
@@ -202,6 +207,7 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
+      setActiveButton(ActiveButton.memory);
       setLoadNumber((prev) => prev + 1);
     }
   }, [compareButtonMode]);
@@ -210,10 +216,6 @@ export const ComparisonSide = ({
     if (!layer) {
       setFlattenedSublayers([]);
       return;
-    }
-
-    if (layer) {
-      disableButtonHandler(true);
     }
 
     async function fetchFlattenedSublayers(tilesetUrl) {
@@ -229,6 +231,7 @@ export const ComparisonSide = ({
     setToken(token);
     setSublayers([]);
     onRequestTransitionToTileset();
+    disableButtonHandler(true);
   }, [layer]);
 
   const getFlattenedSublayers = async (tilesetUrl) => {
@@ -263,16 +266,15 @@ export const ComparisonSide = ({
       if (tileset.isLoaded()) {
         onTilesetLoaded();
       }
-    }, 500);
+    }, IS_LOADED_DELAY);
   };
 
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
       if (tile.tileset.isLoaded()) {
         onTilesetLoaded();
-        onStopTimer();
       }
-    }, 500);
+    }, IS_LOADED_DELAY);
   };
 
   const onWebGLInitialized = (gl) => {
@@ -348,7 +350,8 @@ export const ComparisonSide = ({
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
-        disableController={disableController}
+        dragMode={dragMode}
+        controller={disableController}
         i3sLayers={getI3sLayers()}
         loadNumber={loadNumber}
         lastLayerSelectedId={tileset?.url || ""}

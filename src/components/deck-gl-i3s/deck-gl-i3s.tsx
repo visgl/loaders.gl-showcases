@@ -1,6 +1,7 @@
 import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
+import { MapController } from "@deck.gl/core";
 import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
@@ -28,7 +29,12 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { NormalsDebugData, ViewStateSet } from "../../types";
+import {
+  NormalsDebugData,
+  ViewStateSet,
+  MapControllerSet,
+  DragMode,
+} from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -155,7 +161,9 @@ type DeckGlI3sProps = {
   useDracoGeometry?: boolean;
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
-  disableController?: any;
+  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
+  dragMode?: DragMode;
+  controller?: MapControllerSet | null;
   loadNumber?: number;
   preventTransitions?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
@@ -204,7 +212,8 @@ export const DeckGlI3s = ({
   loadedTilesets = [],
   useDracoGeometry = true,
   useCompressedTextures = true,
-  disableController,
+  controller,
+  dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
   onViewStateChange,
@@ -703,7 +712,16 @@ export const DeckGlI3s = ({
       views={getViews()}
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
-      controller={disableController}
+      controller={
+        controller || {
+          type: MapController,
+          maxPitch: 60,
+          inertia: true,
+          scrollZoom: { speed: 0.01, smooth: true },
+          touchRotate: true,
+          dragMode,
+        }
+      }
       onWebGLInitialized={onWebGLInitialized}
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}

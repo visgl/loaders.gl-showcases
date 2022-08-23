@@ -2,7 +2,7 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
-import { ViewState } from "@deck.gl/core";
+import { ViewState, MapController } from "@deck.gl/core";
 
 export enum Theme {
   Dark,
@@ -17,7 +17,7 @@ export enum Layout {
 
 export enum CompareButtonMode {
   Start = "Start comparing",
-  Comparing = "Stop comparing"
+  Comparing = "Stop comparing",
 }
 
 export enum ComparisonMode {
@@ -148,8 +148,22 @@ export type ViewStateSet = {
   minimap?: ViewState;
 };
 
+export type MapControllerSet = {
+  type?: MapController;
+  maxPitch?: number;
+  inertia?: boolean;
+  scrollZoom?: boolean | { speed: number; smooth: boolean };
+  touchRotate?: boolean;
+  dragMode?: DragMode;
+  doubleClickZoom?: boolean;
+  dragRotate?: boolean;
+  dragPan?: boolean;
+  touchZoom?: boolean;
+  keyboard?: boolean;
+};
+
 export type HelpShortcutItem = {
-  id: string,
+  id: string;
   icon: JSX.Element | null;
   title: string;
   text: string;

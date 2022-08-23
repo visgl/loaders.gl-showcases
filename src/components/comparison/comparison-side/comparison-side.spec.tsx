@@ -5,7 +5,8 @@ import {
   ActiveButton,
   ComparisonMode,
   ComparisonSideMode,
-  CompareButtonMode
+  CompareButtonMode,
+  DragMode
 } from "../../../types";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -32,7 +33,6 @@ const onDeleteBaseMapMock = jest.fn();
 const onRequestTransitionToTilesetMock = jest.fn();
 const disableButtonHandler = jest.fn();
 const onTilesetLoaded = jest.fn();
-const onStopTimer = jest.fn()
 const loadMock = load as unknown as jest.Mocked<any>;
 const DeckGlI3sMock = DeckGlI3s as unknown as jest.Mocked<any>;
 const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
@@ -57,8 +57,8 @@ describe("ComparisonSide", () => {
         showLayerOptions
         showComparisonSettings
         disableController={{}}
+        dragMode={DragMode.pan}
         loadingTime={1123}
-        onStopTimer={onStopTimer}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
-import { MapController } from "@deck.gl/core";
 import styled from "styled-components";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
@@ -13,13 +12,14 @@ import {
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
+  MapControllerSet,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { CompareButton } from "../../components/comparison/compare-button/compare-button";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
-import { LoadManager } from "./load-manager";
+import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -72,7 +72,9 @@ const Devider = styled.div<LayoutProps>`
 `;
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
-  const loadManagerRef = useRef<LoadManager>(new LoadManager());
+  const loadManagerRef = useRef<ComparisonLoadManager>(
+    new ComparisonLoadManager()
+  );
 
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
@@ -83,11 +85,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
-  const [disableController, setDisableController] = useState<any>(null);
+  const [disableController, setDisableController] =
+    useState<MapControllerSet | null>(null);
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
     false,
     false,
   ]);
+  const [compared, setComapred] = useState<boolean>(false);
 
   const layout = useAppLayout();
 
@@ -96,14 +100,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, [mode]);
 
   useEffect(() => {
-    setDisableController({
-      type: MapController,
-      maxPitch: 60,
-      inertia: true,
-      scrollZoom: { speed: 0.01, smooth: true },
-      touchRotate: true,
-      dragMode,
-    });
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setDisableController({
         scrollZoom: false,
@@ -114,12 +110,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         touchZoom: false,
         keyboard: false,
       });
+      setComapred(true);
     }
-  }, [compareButtonMode, dragMode]);
+  }, [compareButtonMode]);
 
-  loadManagerRef.current.addEventListener("loaded", () => {
-    setCompareButtonMode(CompareButtonMode.Start);
-  });
+  useEffect(() => {
+    const loadedHandler = () => {
+      setCompareButtonMode(CompareButtonMode.Start);
+    };
+    loadManagerRef.current.addEventListener("loaded", loadedHandler);
+    return () => {
+      loadManagerRef.current.removeEventListener("loaded", loadedHandler);
+    };
+  }, []);
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -248,7 +251,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         disableController={disableController}
-        loadingTime={loadManagerRef.current.loadingTime}
+        dragMode={dragMode}
+        loadingTime={loadManagerRef.current.leftLoadingTime}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
@@ -261,15 +265,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setNeedTransitionToTileset(true);
         }}
         disableButtonHandler={disableButtonHandlerLeft}
-        onTilesetLoaded={() => loadManagerRef.current.resolveLeftSide()}
-        onStopTimer={() => loadManagerRef.current.stoptTimer()}
+        onTilesetLoaded={() => {
+          loadManagerRef.current.resolveLeftSide();
+          loadManagerRef.current.stoptTimerLeftSide();
+        }}
       />
       <Devider layout={layout} />
       <CompareButton
         compareButtonMode={compareButtonMode}
         downloadStats={
-          compareButtonMode === CompareButtonMode.Start &&
-          loadManagerRef.current.haveBeenCompared
+          compareButtonMode === CompareButtonMode.Start && compared
         }
         disableButton={disableButton.includes(false)}
         onCompareModeToggle={toggleCompareButtonMode}
@@ -283,7 +288,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         disableController={disableController}
-        loadingTime={loadManagerRef.current.loadingTime}
+        dragMode={dragMode}
+        loadingTime={loadManagerRef.current.rightLoadingTime}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
@@ -294,18 +300,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onDeleteBaseMap={onDeleteBaseMapHandler}
         onRequestTransitionToTileset={() => setNeedTransitionToTileset(true)}
         disableButtonHandler={disableButtonHandlerRight}
-        onTilesetLoaded={() => loadManagerRef.current.resolveRightSide()}
-        onStopTimer={() => loadManagerRef.current.stoptTimer()}
+        onTilesetLoaded={() => {
+          loadManagerRef.current.resolveRightSide();
+          loadManagerRef.current.stoptTimerRightSide();
+        }}
       />
-      <MapControllPanel
-        bearing={viewState.main.bearing}
-        dragMode={dragMode}
-        compareButtonMode={compareButtonMode}
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
-        onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
-      />
+
+      {compareButtonMode === CompareButtonMode.Start && (
+        <MapControllPanel
+          bearing={viewState.main.bearing}
+          dragMode={dragMode}
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          onCompassClick={onCompassClick}
+          onDragModeToggle={toggleDragMode}
+        />
+      )}
     </Container>
   );
 };
