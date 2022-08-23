@@ -192,7 +192,7 @@ export const getShortcuts = (
       id: "touch-orbit-tilt",
       icon: {
         [Layout.Desktop]: (
-          <DesktopTrackpadOrbit fill={contentColor} stroke={contentColor} />
+          <DesktopTrackpadPan fill={contentColor} stroke={contentColor} />
         ),
         [Layout.Tablet]: (
           <TabletTrackpadOrbit fill={contentColor} stroke={contentColor} />
