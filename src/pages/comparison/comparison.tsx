@@ -73,8 +73,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(true);
-
+  
   const layout = useAppLayout();
 
   useEffect(() => {
@@ -86,22 +85,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const pointToTileset = (tileset: Tileset3D) => {
-    if (needTransitionToTileset) {
-      const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
+    const { zoom, cartographicCenter } = tileset;
+    const [longitude, latitude] = cartographicCenter || [];
 
-      const newViewState = {
-        ...viewState,
+    setViewState({
+      main: {
+        ...viewState.main,
         zoom: zoom + 2.5,
         longitude,
         latitude,
-      };
-
-      setViewState({
-        ...newViewState,
-      });
-    }
-    setNeedTransitionToTileset(false);
+        transitionDuration: 1000,
+      },
+    });
   };
 
   const onZoomIn = () => {
@@ -115,6 +110,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       main: {
         ...viewState.main,
         zoom: zoom + 1,
+        transitionDuration: 1000,
       },
     });
   };
@@ -130,6 +126,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       main: {
         ...viewState.main,
         zoom: zoom - 1,
+        transitionDuration: 1000,
       },
     });
   };
@@ -197,9 +194,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        onRequestTransitionToTileset={() => {
-          setNeedTransitionToTileset(true);
-        }}
       />
 
       <Devider layout={layout} />
@@ -218,7 +212,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        onRequestTransitionToTileset={() => setNeedTransitionToTileset(true)}
       />
       <MapControllPanel
         bearing={viewState.main.bearing}

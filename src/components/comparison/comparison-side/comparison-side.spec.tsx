@@ -29,7 +29,6 @@ const onChangeLayerMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
-const onRequestTransitionToTilesetMock = jest.fn();
 const loadMock = load as unknown as jest.Mocked<any>;
 const DeckGlI3sMock = DeckGlI3s as unknown as jest.Mocked<any>;
 const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
@@ -60,7 +59,6 @@ describe("ComparisonSide", () => {
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
-        onRequestTransitionToTileset={onRequestTransitionToTilesetMock}
         {...props}
       />
     );
@@ -183,7 +181,6 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
-      expect(onRequestTransitionToTilesetMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerSelect", () => {
