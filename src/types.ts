@@ -2,7 +2,7 @@ import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
-import { ViewState, MapController } from "@deck.gl/core";
+import { ViewState } from "@deck.gl/core";
 
 export enum Theme {
   Dark,
@@ -146,20 +146,6 @@ export type NormalsDebugData = {
 export type ViewStateSet = {
   main?: ViewState;
   minimap?: ViewState;
-};
-
-export type MapControllerSet = {
-  type?: MapController;
-  maxPitch?: number;
-  inertia?: boolean;
-  scrollZoom?: boolean | { speed: number; smooth: boolean };
-  touchRotate?: boolean;
-  dragMode?: DragMode;
-  doubleClickZoom?: boolean;
-  dragRotate?: boolean;
-  dragPan?: boolean;
-  touchZoom?: boolean;
-  keyboard?: boolean;
 };
 
 export type HelpShortcutItem = {

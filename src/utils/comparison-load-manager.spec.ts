@@ -29,28 +29,20 @@ describe("Load manager", () => {
     expect(comparisonLoadManager.rightResolved).toBe(true);
   });
 
-  it("Should stop timer left side", () => {
-    comparisonLoadManager.stoptTimerLeftSide();
-    expect(comparisonLoadManager.leftLoadingTime).toBe(0);
-  });
-
-  it("Should stop timer right side", () => {
-    comparisonLoadManager.stoptTimerRightSide();
-    expect(comparisonLoadManager.leftLoadingTime).toBe(0);
-  });
-
   it("Should perform dispach event", () => {
     comparisonLoadManager.leftResolved = true;
-    comparisonLoadManager.rightResolved= true;
-    const result = comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
+    comparisonLoadManager.rightResolved = true;
+    const result =
+      comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
     comparisonLoadManager.isLoaded();
     expect(result).toBe(true);
   });
 
   it("Should not perform dispach event", () => {
     comparisonLoadManager.leftResolved = false;
-    comparisonLoadManager.rightResolved= true;
-    const result = comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
+    comparisonLoadManager.rightResolved = true;
+    const result =
+      comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
     comparisonLoadManager.isLoaded();
     expect(result).toBe(false);
   });

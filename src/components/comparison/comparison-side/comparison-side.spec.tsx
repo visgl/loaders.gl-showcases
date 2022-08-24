@@ -56,7 +56,7 @@ describe("ComparisonSide", () => {
         baseMaps={BASE_MAPS}
         showLayerOptions
         showComparisonSettings
-        disableController={{}}
+        disableController={false}
         dragMode={DragMode.pan}
         loadingTime={1123}
         compareButtonMode={CompareButtonMode.Start}

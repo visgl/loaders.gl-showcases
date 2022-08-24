@@ -16,7 +16,6 @@ import {
   Sublayer,
   ViewStateSet,
   CompareButtonMode,
-  MapControllerSet,
   DragMode,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
@@ -131,7 +130,7 @@ type ComparisonSideProps = {
   showComparisonSettings: boolean;
   staticLayer?: LayerExample | null;
   compareButtonMode: CompareButtonMode;
-  disableController: MapControllerSet | null;
+  disableController: boolean;
   dragMode: DragMode;
   loadingTime: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
@@ -141,7 +140,7 @@ type ComparisonSideProps = {
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
   onRequestTransitionToTileset: () => void;
-  disableButtonHandler: (disable: boolean) => void;
+  disableButtonHandler: () => void;
   onTilesetLoaded: () => void;
 };
 export const ComparisonSide = ({
@@ -231,7 +230,7 @@ export const ComparisonSide = ({
     setToken(token);
     setSublayers([]);
     onRequestTransitionToTileset();
-    disableButtonHandler(true);
+    disableButtonHandler();
   }, [layer]);
 
   const getFlattenedSublayers = async (tilesetUrl) => {

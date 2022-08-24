@@ -13,6 +13,8 @@ export class ComparisonLoadManager extends EventTarget {
     this.startTime = Date.now();
     this.leftResolved = false;
     this.rightResolved = false;
+    this.leftLoadingTime = 0;
+    this.rightLoadingTime = 0;
   }
 
   resolveLeftSide() {
@@ -25,14 +27,6 @@ export class ComparisonLoadManager extends EventTarget {
     this.rightResolved = true;
     this.rightLoadingTime = Date.now() - this.startTime;
     return this.isLoaded();
-  }
-
-  stoptTimerLeftSide() {
-    this.leftLoadingTime = 0;
-  }
-
-  stoptTimerRightSide() {
-    this.rightLoadingTime = 0;
   }
 
   private isLoaded() {

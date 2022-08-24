@@ -32,7 +32,6 @@ import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
   ViewStateSet,
-  MapControllerSet,
   DragMode,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
@@ -50,32 +49,6 @@ const INITIAL_VIEW_STATE = {
   transitionDuration: 0,
   transitionInterpolator: null,
 };
-const VIEWS = [
-  new MapView({
-    id: "main",
-    controller: { inertia: true },
-    farZMultiplier: 2.02,
-  }),
-  new MapView({
-    id: "minimap",
-
-    // Position on top of main map
-    x: "79%",
-    y: "79%",
-    width: "20%",
-    height: "20%",
-
-    // Minimap is overlaid on top of an existing view, so need to clear the background
-    clear: true,
-
-    controller: {
-      maxZoom: 9,
-      minZoom: 9,
-      dragRotate: false,
-      keyboard: false,
-    },
-  }),
-];
 
 // https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
 const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
@@ -163,7 +136,7 @@ type DeckGlI3sProps = {
   useCompressedTextures?: boolean;
   /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
   dragMode?: DragMode;
-  controller?: MapControllerSet | null;
+  controller?: boolean;
   loadNumber?: number;
   preventTransitions?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
@@ -226,6 +199,32 @@ export const DeckGlI3s = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
+  const VIEWS = [
+    new MapView({
+      id: "main",
+      controller: controller ? false : { inertia: true },
+      farZMultiplier: 2.02,
+    }),
+    new MapView({
+      id: "minimap",
+
+      // Position on top of main map
+      x: "79%",
+      y: "79%",
+      width: "20%",
+      height: "20%",
+
+      // Minimap is overlaid on top of an existing view, so need to clear the background
+      clear: true,
+
+      controller: {
+        maxZoom: 9,
+        minZoom: 9,
+        dragRotate: false,
+        keyboard: false,
+      },
+    }),
+  ];
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
     minimap: {
@@ -713,14 +712,16 @@ export const DeckGlI3s = ({
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
       controller={
-        controller || {
-          type: MapController,
-          maxPitch: 60,
-          inertia: true,
-          scrollZoom: { speed: 0.01, smooth: true },
-          touchRotate: true,
-          dragMode,
-        }
+        controller
+          ? false
+          : {
+              type: MapController,
+              maxPitch: 60,
+              inertia: true,
+              scrollZoom: { speed: 0.01, smooth: true },
+              touchRotate: true,
+              dragMode,
+            }
       }
       onWebGLInitialized={onWebGLInitialized}
       onAfterRender={onAfterRender}

@@ -12,7 +12,6 @@ import {
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
-  MapControllerSet,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -85,8 +84,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
-  const [disableController, setDisableController] =
-    useState<MapControllerSet | null>(null);
+  const [disableController, setDisableController] = useState<boolean>(false);
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
     false,
     false,
@@ -100,16 +98,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, [mode]);
 
   useEffect(() => {
+    setDisableController(false);
     if (compareButtonMode === CompareButtonMode.Comparing) {
-      setDisableController({
-        scrollZoom: false,
-        doubleClickZoom: false,
-        dragRotate: false,
-        dragPan: false,
-        touchRotate: false,
-        touchZoom: false,
-        keyboard: false,
-      });
+      setDisableController(true);
       setComapred(true);
     }
   }, [compareButtonMode]);
@@ -206,12 +197,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const disableButtonHandlerLeft = (disable: boolean) => {
-    setDisableButton((prevValue) => [disable, prevValue[1]]);
+  const disableButtonHandlerLeft = () => {
+    setDisableButton((prevValue) => [true, prevValue[1]]);
   };
 
-  const disableButtonHandlerRight = (disable: boolean) => {
-    setDisableButton((prevValue) => [prevValue[0], disable]);
+  const disableButtonHandlerRight = () => {
+    setDisableButton((prevValue) => [prevValue[0], true]);
   };
 
   const onChangeLayerHandler = (layer: LayerExample) => {
@@ -267,7 +258,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         disableButtonHandler={disableButtonHandlerLeft}
         onTilesetLoaded={() => {
           loadManagerRef.current.resolveLeftSide();
-          loadManagerRef.current.stoptTimerLeftSide();
         }}
       />
       <Devider layout={layout} />
@@ -302,7 +292,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         disableButtonHandler={disableButtonHandlerRight}
         onTilesetLoaded={() => {
           loadManagerRef.current.resolveRightSide();
-          loadManagerRef.current.stoptTimerRightSide();
         }}
       />
 
