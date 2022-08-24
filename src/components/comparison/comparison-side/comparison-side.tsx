@@ -139,7 +139,6 @@ type ComparisonSideProps = {
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
-  onRequestTransitionToTileset: () => void;
   disableButtonHandler: () => void;
   onTilesetLoaded: () => void;
 };
@@ -162,7 +161,6 @@ export const ComparisonSide = ({
   onInsertBaseMap,
   onSelectBaseMap,
   onDeleteBaseMap,
-  onRequestTransitionToTileset,
   disableButtonHandler,
   onTilesetLoaded,
 }: ComparisonSideProps) => {
@@ -229,7 +227,6 @@ export const ComparisonSide = ({
 
     setToken(token);
     setSublayers([]);
-    onRequestTransitionToTileset();
     disableButtonHandler();
   }, [layer]);
 

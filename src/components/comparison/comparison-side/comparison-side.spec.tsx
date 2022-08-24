@@ -30,7 +30,6 @@ const onChangeLayerMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
-const onRequestTransitionToTilesetMock = jest.fn();
 const disableButtonHandler = jest.fn();
 const onTilesetLoaded = jest.fn();
 const loadMock = load as unknown as jest.Mocked<any>;
@@ -66,7 +65,6 @@ describe("ComparisonSide", () => {
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
-        onRequestTransitionToTileset={onRequestTransitionToTilesetMock}
         disableButtonHandler={disableButtonHandler}
         onTilesetLoaded={onTilesetLoaded}
         {...props}
@@ -191,7 +189,6 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
-      expect(onRequestTransitionToTilesetMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerSelect", () => {
