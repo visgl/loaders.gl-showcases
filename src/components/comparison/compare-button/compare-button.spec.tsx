@@ -1,8 +1,10 @@
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { CompareButton } from "./compare-button";
 import { CompareButtonMode } from "../../../types";
+import { fireEvent } from "@testing-library/react";
 
 const onCompareModeToggle = jest.fn();
+const onDownloadClick = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -11,6 +13,7 @@ const callRender = (renderFunc, props = {}) => {
       downloadStats={false}
       disableButton={true}
       onCompareModeToggle={onCompareModeToggle}
+      onDownloadClick={onDownloadClick}
       {...props}
     />
   );
@@ -41,5 +44,14 @@ describe("CompareButton", () => {
       downloadStats: true,
     });
     expect(container.firstChild.childNodes.length).toBe(2);
+  });
+
+  it("Should click download button", () => {
+    const { container } = callRender(renderWithTheme, {
+      downloadStats: true,
+    });
+    const downloadButton = container.firstChild.lastChild;
+    fireEvent.click(downloadButton);
+    expect(onDownloadClick).toHaveBeenCalled();
   });
 });

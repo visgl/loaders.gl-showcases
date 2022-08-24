@@ -3,6 +3,7 @@ import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
 import { ViewState } from "@deck.gl/core";
+import { Stats } from "@probe.gl/stats";
 
 export enum Theme {
   Dark,
@@ -160,4 +161,10 @@ export type HelpShortcutsData = {
   [HelpPanelSelectedTab.Mouse]: HelpShortcutItem[];
   [HelpPanelSelectedTab.Trackpad]: HelpShortcutItem[];
   [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
+};
+
+export type StatsMap = {
+  url: string;
+  tilesetStats: Stats;
+  memoryStats: Stats | null;
 };
