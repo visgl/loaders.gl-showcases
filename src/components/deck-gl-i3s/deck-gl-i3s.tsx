@@ -1,12 +1,12 @@
 import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
+import { MapController } from "@deck.gl/core";
 import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
 import {
-  MapController,
   FlyToInterpolator,
   COORDINATE_SYSTEM,
   MapView,
@@ -14,7 +14,7 @@ import {
   PickingInfo,
   View,
 } from "@deck.gl/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   buildMinimapData,
   ColorMap,
@@ -29,7 +29,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { DragMode, NormalsDebugData, ViewStateSet } from "../../types";
+import { NormalsDebugData, ViewStateSet, DragMode } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -45,32 +45,6 @@ const INITIAL_VIEW_STATE = {
   transitionDuration: 0,
   transitionInterpolator: null,
 };
-const VIEWS = [
-  new MapView({
-    id: "main",
-    controller: { inertia: true },
-    farZMultiplier: 2.02,
-  }),
-  new MapView({
-    id: "minimap",
-
-    // Position on top of main map
-    x: "79%",
-    y: "79%",
-    width: "20%",
-    height: "20%",
-
-    // Minimap is overlaid on top of an existing view, so need to clear the background
-    clear: true,
-
-    controller: {
-      maxZoom: 9,
-      minZoom: 9,
-      dragRotate: false,
-      keyboard: false,
-    },
-  }),
-];
 
 // https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
 const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
@@ -99,8 +73,6 @@ type DeckGlI3sProps = {
    * if is not set `viewState` state variable will be used
    */
   parentViewState?: ViewStateSet;
-  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
-  dragMode?: DragMode;
   /** Minimap visibility */
   showMinimap?: boolean;
   /** If should create independent viewport for minimap */
@@ -158,6 +130,14 @@ type DeckGlI3sProps = {
   useDracoGeometry?: boolean;
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
+  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
+  dragMode?: DragMode;
+  /** enables or disables viewport interactivity */
+  disableController?: boolean;
+  /** allows update a layer */
+  loadNumber?: number;
+  /** prevent transition to a layer */
+  preventTransitions?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -177,7 +157,6 @@ type DeckGlI3sProps = {
 export const DeckGlI3s = ({
   id,
   parentViewState,
-  dragMode = DragMode.pan,
   showMinimap,
   createIndependentMinimapViewport = false,
   showTerrain = false,
@@ -205,6 +184,10 @@ export const DeckGlI3s = ({
   loadedTilesets = [],
   useDracoGeometry = true,
   useCompressedTextures = true,
+  disableController = false,
+  dragMode = DragMode.pan,
+  loadNumber = 0,
+  preventTransitions = false,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -215,6 +198,37 @@ export const DeckGlI3s = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
+  const VIEWS = useMemo(
+    () => [
+      new MapView({
+        id: "main",
+        controller: disableController ? false : { inertia: true },
+        farZMultiplier: 2.02,
+      }),
+      new MapView({
+        id: "minimap",
+
+        // Position on top of main map
+        x: "79%",
+        y: "79%",
+        width: "20%",
+        height: "20%",
+
+        // Minimap is overlaid on top of an existing view, so need to clear the background
+        clear: true,
+
+        controller: disableController
+          ? false
+          : {
+              maxZoom: 9,
+              minZoom: 9,
+              dragRotate: false,
+              keyboard: false,
+            },
+      }),
+    ],
+    [disableController]
+  );
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
     minimap: {
@@ -387,7 +401,7 @@ export const DeckGlI3s = ({
   };
 
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
-    if (needTransitionToTileset) {
+    if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter || [];
       let pLongitue = longitude;
@@ -616,7 +630,7 @@ export const DeckGlI3s = ({
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,
@@ -701,15 +715,19 @@ export const DeckGlI3s = ({
       views={getViews()}
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
+      controller={
+        disableController
+          ? false
+          : {
+              type: MapController,
+              maxPitch: 60,
+              inertia: true,
+              scrollZoom: { speed: 0.01, smooth: true },
+              touchRotate: true,
+              dragMode,
+            }
+      }
       onWebGLInitialized={onWebGLInitialized}
-      controller={{
-        type: MapController,
-        maxPitch: 60,
-        inertia: true,
-        scrollZoom: { speed: 0.01, smooth: true },
-        touchRotate: true,
-        dragMode,
-      }}
       onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}

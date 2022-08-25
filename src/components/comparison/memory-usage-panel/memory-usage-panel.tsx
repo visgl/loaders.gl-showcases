@@ -34,10 +34,20 @@ const StatContainer = styled(ItemContainer)<{ bottom?: number }>`
   margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
 `;
 
+const StatTimeContainer = styled.div`
+  display: flex;
+  justify-content: row;
+  align-items: center;
+  padding: 0 0 8px 0;
+  margin-bottom: 16px;
+  margin-top: 14px;
+`;
+
 type MemoryUsageProps = {
   id: string;
   memoryStats: Stats | null;
   tilesetStats?: Stats | null;
+  loadingTime: number;
   onClose: () => void;
 };
 
@@ -45,6 +55,7 @@ export const MemoryUsagePanel = ({
   id,
   memoryStats,
   tilesetStats,
+  loadingTime,
   onClose,
 }: MemoryUsageProps) => {
   const [expandState, setExpandState] = useState<ExpandState>(
@@ -70,6 +81,10 @@ export const MemoryUsagePanel = ({
       </PanelHeader>
       <HorizontalLine top={10} />
       <Content>
+        <StatTimeContainer>
+          <StatTitle>Loading time: </StatTitle>
+          <Title left={6}>{`${loadingTime} ms`}</Title>
+        </StatTimeContainer>
         {memoryStats && (
           <StatSection>
             <Title bottom={12}>{memoryStats.id}</Title>

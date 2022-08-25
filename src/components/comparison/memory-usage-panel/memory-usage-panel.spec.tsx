@@ -53,6 +53,7 @@ describe("MemoryUsagePanel", () => {
         id="test-memory-usage-panel"
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
+        loadingTime={1123}
         onClose={onClose}
       />
     );
@@ -62,7 +63,7 @@ describe("MemoryUsagePanel", () => {
   });
 
   it("Should render with tileset stats section", () => {
-    expect(componentElement.lastChild.childNodes.length).toBe(2);
+    expect(componentElement.lastChild.childNodes.length).toBe(3);
   });
 
   it("Should render without tileset stats section", () => {
@@ -71,11 +72,12 @@ describe("MemoryUsagePanel", () => {
         id="test-memory-usage-panel"
         memoryStats={memoryStats}
         tilesetStats={null}
+        loadingTime={1123}
         onClose={onClose}
       />,
       rerenderFunc
     );
-    expect(componentElement.lastChild.childNodes.length).toBe(1);
+    expect(componentElement.lastChild.childNodes.length).toBe(2);
   });
 
   it("Should collapse/expand", () => {
@@ -89,6 +91,7 @@ describe("MemoryUsagePanel", () => {
         id="test-memory-usage-panel"
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
+        loadingTime={1123}
         onClose={onClose}
       />,
       rerenderFunc
@@ -101,6 +104,7 @@ describe("MemoryUsagePanel", () => {
         id="test-memory-usage-panel"
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
+        loadingTime={1123}
         onClose={onClose}
       />,
       rerenderFunc

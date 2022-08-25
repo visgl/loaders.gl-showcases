@@ -15,6 +15,11 @@ export enum Layout {
   Mobile = "mobile",
 }
 
+export enum CompareButtonMode {
+  Start = "Start comparing",
+  Comparing = "Stop comparing",
+}
+
 export enum ComparisonMode {
   acrossLayers,
   withinLayer,
@@ -144,7 +149,7 @@ export type ViewStateSet = {
 };
 
 export type HelpShortcutItem = {
-  id: string,
+  id: string;
   icon: JSX.Element | null;
   title: string;
   text: string;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
@@ -11,11 +11,14 @@ import {
   ViewStateSet,
   DragMode,
   ComparisonSideMode,
+  CompareButtonMode,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { CompareButton } from "../../components/comparison/compare-button/compare-button";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
+import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -68,17 +71,45 @@ const Devider = styled.div<LayoutProps>`
 `;
 
 export const Comparison = ({ mode }: ComparisonPageProps) => {
+  const loadManagerRef = useRef<ComparisonLoadManager>(
+    new ComparisonLoadManager()
+  );
+
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
-  
+  const [compareButtonMode, setCompareButtonMode] = useState(
+    CompareButtonMode.Start
+  );
+  const [disableButton, setDisableButton] = useState<Array<boolean>>([
+    false,
+    false,
+  ]);
+  const [compared, setComapred] = useState<boolean>(false);
+
   const layout = useAppLayout();
 
   useEffect(() => {
     setLayerLeftSide(null);
   }, [mode]);
+
+  useEffect(() => {
+    if (compareButtonMode === CompareButtonMode.Comparing) {
+      setComapred(true);
+    }
+  }, [compareButtonMode]);
+
+  useEffect(() => {
+    const loadedHandler = () => {
+      setCompareButtonMode(CompareButtonMode.Start);
+    };
+    loadManagerRef.current.addEventListener("loaded", loadedHandler);
+    return () => {
+      loadManagerRef.current.removeEventListener("loaded", loadedHandler);
+    };
+  }, []);
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -150,6 +181,24 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const toggleCompareButtonMode = () => {
+    setCompareButtonMode((prev) => {
+      if (prev === CompareButtonMode.Start) {
+        loadManagerRef.current.startLoading();
+        return CompareButtonMode.Comparing;
+      }
+      return CompareButtonMode.Start;
+    });
+  };
+
+  const disableButtonHandlerLeft = () => {
+    setDisableButton((prevValue) => [true, prevValue[1]]);
+  };
+
+  const disableButtonHandlerRight = () => {
+    setDisableButton((prevValue) => [prevValue[0], true]);
+  };
+
   const onChangeLayerHandler = (layer: LayerExample) => {
     if (mode === ComparisonMode.withinLayer) {
       setLayerLeftSide(layer);
@@ -183,9 +232,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         mode={mode}
         side={ComparisonSideMode.left}
         viewState={viewState}
-        dragMode={dragMode}
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
+        compareButtonMode={compareButtonMode}
+        dragMode={dragMode}
+        loadingTime={loadManagerRef.current.leftLoadingTime}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
@@ -194,16 +245,30 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
+        disableButtonHandler={disableButtonHandlerLeft}
+        onTilesetLoaded={() => {
+          loadManagerRef.current.resolveLeftSide();
+        }}
+      />
+      <Devider layout={layout} />
+      <CompareButton
+        compareButtonMode={compareButtonMode}
+        downloadStats={
+          compareButtonMode === CompareButtonMode.Start && compared
+        }
+        disableButton={disableButton.includes(false)}
+        onCompareModeToggle={toggleCompareButtonMode}
       />
 
-      <Devider layout={layout} />
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.right}
         viewState={viewState}
-        dragMode={dragMode}
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
+        compareButtonMode={compareButtonMode}
+        dragMode={dragMode}
+        loadingTime={loadManagerRef.current.rightLoadingTime}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
@@ -212,15 +277,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
+        disableButtonHandler={disableButtonHandlerRight}
+        onTilesetLoaded={() => {
+          loadManagerRef.current.resolveRightSide();
+        }}
       />
-      <MapControllPanel
-        bearing={viewState.main.bearing}
-        dragMode={dragMode}
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
-        onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
-      />
+
+      {compareButtonMode === CompareButtonMode.Start && (
+        <MapControllPanel
+          bearing={viewState.main.bearing}
+          dragMode={dragMode}
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          onCompassClick={onCompassClick}
+          onDragModeToggle={toggleDragMode}
+        />
+      )}
     </Container>
   );
 };
