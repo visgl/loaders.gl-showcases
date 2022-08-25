@@ -6,7 +6,7 @@ import {
   ComparisonMode,
   ComparisonSideMode,
   CompareButtonMode,
-  DragMode
+  DragMode,
 } from "../../../types";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -15,12 +15,14 @@ import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-par
 import { LayersPanel } from "../layers-panel/layers-panel";
 import { ComparisonSide } from "./comparison-side";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
+import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
 
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-i3s/deck-gl-i3s");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../layers-panel/layers-panel");
 jest.mock("../comparison-params-panel/comparison-params-panel");
+jest.mock("../memory-usage-panel/memory-usage-panel");
 jest.mock("../../../utils/url-utils");
 jest.mock("../../../utils/sublayers");
 
@@ -38,6 +40,7 @@ const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
 const LayersPanelMock = LayersPanel as unknown as jest.Mocked<any>;
 const ComparisonParamsPanelMock =
   ComparisonParamsPanel as unknown as jest.Mocked<any>;
+const MemoryUsagePanelMock = MemoryUsagePanel as unknown as jest.Mocked<any>;
 const parseTilesetUrlParamsMock =
   parseTilesetUrlParams as unknown as jest.Mocked<any>;
 
@@ -55,7 +58,6 @@ describe("ComparisonSide", () => {
         baseMaps={BASE_MAPS}
         showLayerOptions
         showComparisonSettings
-        disableController={false}
         dragMode={DragMode.pan}
         loadingTime={1123}
         compareButtonMode={CompareButtonMode.Start}
@@ -77,6 +79,7 @@ describe("ComparisonSide", () => {
     MainToolsPanelMock.mockImplementation(() => <div></div>);
     LayersPanelMock.mockImplementation(() => <div></div>);
     ComparisonParamsPanelMock.mockImplementation(() => <div></div>);
+    MemoryUsagePanelMock.mockImplementation(() => <div></div>);
     parseTilesetUrlParamsMock.mockReturnValue({
       tilesetUrl: "https://new.layer.url/layers/0",
       token: null,
@@ -274,6 +277,32 @@ describe("ComparisonSide", () => {
       const { onClose } = ComparisonParamsPanelMock.mock.lastCall[0];
       act(() => onClose());
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
+    });
+  });
+  describe("MemoryUsagePanel", () => {
+    beforeEach(() => {
+      callRender(renderWithTheme);
+      expect(MemoryUsagePanelMock.mock.calls.length).toBe(0);
+      const { onChange } = MainToolsPanelMock.mock.lastCall[0];
+      act(() => onChange(ActiveButton.memory));
+    });
+
+    it("Should render", () => {
+      expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
+    });
+
+    it("Should be active after comparing", () => {
+      callRender(renderWithTheme, {
+        compareButtonMode: CompareButtonMode.Comparing,
+      });
+      expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
+    });
+
+    it("Should close", () => {
+      expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
+      const { onClose } = MemoryUsagePanelMock.mock.lastCall[0];
+      act(() => onClose());
+      expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
     });
   });
 });

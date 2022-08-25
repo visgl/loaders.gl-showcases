@@ -84,6 +84,7 @@ const callRender = (renderFunc, props = {}) => {
             url: tilesetUrl,
           },
         ]}
+        disableController={false}
         lastLayerSelectedId={tilesetUrl}
         metadata={{ layers: [getTilesetJson()] }}
         loadedTilesets={[getTileset3d()]}
@@ -144,6 +145,10 @@ describe("Deck.gl I3S map component", () => {
       controller: { dragMode: dragMode2 },
     } = DeckGL.mock.lastCall[0];
     expect(dragMode2).toBe("rotate");
+
+    callRender(rerender, { disableController: true });
+    const { controller } = DeckGL.mock.lastCall[0];
+    expect(controller).toBeFalsy();
   });
 
   it("Should load UV debug texture", () => {
@@ -242,6 +247,14 @@ describe("Deck.gl I3S map component", () => {
       expect(pickable).toBe(false);
       expect(autoHighlight).toBe(false);
       expect(highlightedObjectIndex).toBe(undefined);
+    });
+
+    it("Should update layer", () => {
+      callRender(render, { loadNumber: 1 });
+      const { id } = Tile3DLayer.mock.lastCall[0];
+      expect(id).toBe(
+        "tile-layer-undefined-draco-true-compressed-textures-true--1"
+      );
     });
 
     it("Should render pickable with auto highlighting", () => {

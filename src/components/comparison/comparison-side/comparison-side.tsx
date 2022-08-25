@@ -131,7 +131,6 @@ type ComparisonSideProps = {
   showComparisonSettings: boolean;
   staticLayer?: LayerExample | null;
   compareButtonMode: CompareButtonMode;
-  disableController: boolean;
   dragMode: DragMode;
   loadingTime: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
@@ -153,7 +152,6 @@ export const ComparisonSide = ({
   showComparisonSettings,
   staticLayer,
   compareButtonMode,
-  disableController,
   dragMode,
   loadingTime,
   onViewStateChange,
@@ -356,7 +354,7 @@ export const ComparisonSide = ({
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
         dragMode={dragMode}
-        controller={disableController}
+        disableController={compareButtonMode === CompareButtonMode.Comparing}
         i3sLayers={getI3sLayers()}
         loadNumber={loadNumber}
         lastLayerSelectedId={tileset?.url || ""}

@@ -84,7 +84,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
-  const [disableController, setDisableController] = useState<boolean>(false);
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
     false,
     false,
@@ -98,9 +97,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, [mode]);
 
   useEffect(() => {
-    setDisableController(false);
     if (compareButtonMode === CompareButtonMode.Comparing) {
-      setDisableController(true);
       setComapred(true);
     }
   }, [compareButtonMode]);
@@ -263,7 +260,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
-        disableController={disableController}
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
         showLayerOptions
@@ -297,7 +293,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
-        disableController={disableController}
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}

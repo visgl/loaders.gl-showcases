@@ -14,7 +14,7 @@ import {
   PickingInfo,
   View,
 } from "@deck.gl/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   buildMinimapData,
   ColorMap,
@@ -29,11 +29,7 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import {
-  NormalsDebugData,
-  ViewStateSet,
-  DragMode,
-} from "../../types";
+import { NormalsDebugData, ViewStateSet, DragMode } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -136,8 +132,11 @@ type DeckGlI3sProps = {
   useCompressedTextures?: boolean;
   /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
   dragMode?: DragMode;
-  controller?: boolean;
+  /** enables or disables viewport interactivity */
+  disableController?: boolean;
+  /** allows update a layer */
   loadNumber?: number;
+  /** prevent transition to a layer */
   preventTransitions?: boolean;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
@@ -185,7 +184,7 @@ export const DeckGlI3s = ({
   loadedTilesets = [],
   useDracoGeometry = true,
   useCompressedTextures = true,
-  controller,
+  disableController = false,
   dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
@@ -199,32 +198,37 @@ export const DeckGlI3s = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
-  const VIEWS = [
-    new MapView({
-      id: "main",
-      controller: controller ? false : { inertia: true },
-      farZMultiplier: 2.02,
-    }),
-    new MapView({
-      id: "minimap",
+  const VIEWS = useMemo(
+    () => [
+      new MapView({
+        id: "main",
+        controller: disableController ? false : { inertia: true },
+        farZMultiplier: 2.02,
+      }),
+      new MapView({
+        id: "minimap",
 
-      // Position on top of main map
-      x: "79%",
-      y: "79%",
-      width: "20%",
-      height: "20%",
+        // Position on top of main map
+        x: "79%",
+        y: "79%",
+        width: "20%",
+        height: "20%",
 
-      // Minimap is overlaid on top of an existing view, so need to clear the background
-      clear: true,
+        // Minimap is overlaid on top of an existing view, so need to clear the background
+        clear: true,
 
-      controller: {
-        maxZoom: 9,
-        minZoom: 9,
-        dragRotate: false,
-        keyboard: false,
-      },
-    }),
-  ];
+        controller: disableController
+          ? false
+          : {
+              maxZoom: 9,
+              minZoom: 9,
+              dragRotate: false,
+              keyboard: false,
+            },
+      }),
+    ],
+    [disableController]
+  );
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
     minimap: {
@@ -712,7 +716,7 @@ export const DeckGlI3s = ({
       layerFilter={layerFilter}
       onViewStateChange={onViewStateChangeHandler}
       controller={
-        controller
+        disableController
           ? false
           : {
               type: MapController,
