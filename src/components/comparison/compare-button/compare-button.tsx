@@ -95,8 +95,8 @@ export const CompareButton = ({
         )}
       </Button>
       {downloadStats && (
-        <Button>
-          <DownloadIcon onClick={onDownloadClick}/>
+        <Button onClick={onDownloadClick}>
+          <DownloadIcon />
         </Button>
       )}
     </Container>
