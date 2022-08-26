@@ -1,3 +1,4 @@
+import { Stats } from "@probe.gl/stats";
 import { ComparisonLoadManager } from "./comparison-load-manager";
 
 let comparisonLoadManager;
@@ -20,12 +21,20 @@ describe("Load manager", () => {
   });
 
   it("Should resolve left side", () => {
-    comparisonLoadManager.resolveLeftSide();
+    const newStats = {
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
+    comparisonLoadManager.resolveLeftSide(newStats);
     expect(comparisonLoadManager.leftResolved).toBe(true);
   });
 
   it("Should resolve right side", () => {
-    comparisonLoadManager.resolveRightSide();
+    const newStats = {
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
+    comparisonLoadManager.resolveRightSide(newStats);
     expect(comparisonLoadManager.rightResolved).toBe(true);
   });
 
