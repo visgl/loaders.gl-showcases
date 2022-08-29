@@ -66,6 +66,7 @@ type CompareButtonProps = {
   downloadStats: boolean;
   disableButton: boolean;
   onCompareModeToggle: () => void;
+  onDownloadClick: () => void;
 };
 
 export const CompareButton = ({
@@ -73,6 +74,7 @@ export const CompareButton = ({
   downloadStats,
   disableButton,
   onCompareModeToggle,
+  onDownloadClick,
 }: CompareButtonProps) => {
   const layout = useAppLayout();
 
@@ -93,7 +95,7 @@ export const CompareButton = ({
         )}
       </Button>
       {downloadStats && (
-        <Button>
+        <Button onClick={onDownloadClick}>
           <DownloadIcon />
         </Button>
       )}

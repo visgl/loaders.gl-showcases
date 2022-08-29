@@ -12,6 +12,7 @@ import {
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
+  StatsMap,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -193,6 +194,30 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const downloadClickHandler = () => {
+    const data = {
+      viewState: viewState.main,
+      datasets: [
+        {
+          ...loadManagerRef.current.leftStats,
+          ellapsedTime: loadManagerRef.current.leftLoadingTime,
+        },
+        {
+          ...loadManagerRef.current.rightStats,
+          ellapsedTime: loadManagerRef.current.rightLoadingTime,
+        },
+      ],
+    };
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = "comparison-stats.json";
+
+    link.click();
+  };
+
   const disableButtonHandlerLeft = () => {
     setDisableButton((prevValue) => [true, prevValue[1]]);
   };
@@ -248,8 +273,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
         disableButtonHandler={disableButtonHandlerLeft}
-        onTilesetLoaded={() => {
-          loadManagerRef.current.resolveLeftSide();
+        onTilesetLoaded={(stats: StatsMap) => {
+          loadManagerRef.current.resolveLeftSide(stats)
           setLeftSideLoaded(true)
         }}
       />
@@ -261,6 +286,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }
         disableButton={disableButton.includes(false)}
         onCompareModeToggle={toggleCompareButtonMode}
+        onDownloadClick={downloadClickHandler}
       />
 
       <ComparisonSide
@@ -282,8 +308,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
         disableButtonHandler={disableButtonHandlerRight}
-        onTilesetLoaded={() => {
-          loadManagerRef.current.resolveRightSide();
+        onTilesetLoaded={(stats: StatsMap) => {
+          loadManagerRef.current.resolveRightSide(stats);
         }}
       />
 

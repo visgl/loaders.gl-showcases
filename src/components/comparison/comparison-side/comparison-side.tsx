@@ -17,6 +17,7 @@ import {
   ViewStateSet,
   CompareButtonMode,
   DragMode,
+  StatsMap,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -140,7 +141,7 @@ type ComparisonSideProps = {
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
   disableButtonHandler: () => void;
-  onTilesetLoaded: () => void;
+  onTilesetLoaded: (stats: StatsMap) => void;
 };
 export const ComparisonSide = ({
   mode,
@@ -266,7 +267,11 @@ export const ComparisonSide = ({
     setTileset(tileset);
     setTimeout(() => {
       if (tileset.isLoaded()) {
-        onTilesetLoaded();
+        onTilesetLoaded({
+          url: tileset.url,
+          tilesetStats: tileset.stats,
+          memoryStats,
+        });
       }
     }, IS_LOADED_DELAY);
   };
@@ -274,7 +279,11 @@ export const ComparisonSide = ({
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
       if (tile.tileset.isLoaded()) {
-        onTilesetLoaded();
+        onTilesetLoaded({
+          url: tile.tileset.url,
+          tilesetStats: tile.tileset.stats,
+          memoryStats,
+        });
       }
     }, IS_LOADED_DELAY);
   };
