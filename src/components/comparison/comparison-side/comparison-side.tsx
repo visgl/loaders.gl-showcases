@@ -132,6 +132,7 @@ type ComparisonSideProps = {
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
+  leftSideLoaded?: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -153,6 +154,7 @@ export const ComparisonSide = ({
   compareButtonMode,
   dragMode,
   loadingTime,
+  leftSideLoaded,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -181,6 +183,7 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
+  const [rightSideLayer, setRightSideLayer] = useState<any>(null);
 
   /** Delay to await asynchronous traversal of the tileset **/
   const IS_LOADED_DELAY = 500;
@@ -204,8 +207,13 @@ export const ComparisonSide = ({
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setActiveButton(ActiveButton.memory);
       setLoadNumber((prev) => prev + 1);
+      if (side === ComparisonSideMode.right && !leftSideLoaded) {
+        setLayer(null);
+      } else {
+        setLayer(rightSideLayer);
+      }
     }
-  }, [compareButtonMode]);
+  }, [compareButtonMode, leftSideLoaded]);
 
   useEffect(() => {
     if (!layer) {
@@ -292,6 +300,7 @@ export const ComparisonSide = ({
 
     if (selectedExample) {
       setLayer(selectedExample);
+      setRightSideLayer(selectedExample);
       onChangeLayer && onChangeLayer(selectedExample);
     }
   };
