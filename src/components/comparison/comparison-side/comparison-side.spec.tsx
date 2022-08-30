@@ -279,6 +279,7 @@ describe("ComparisonSide", () => {
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
     });
   });
+
   describe("MemoryUsagePanel", () => {
     beforeEach(() => {
       callRender(renderWithTheme);
@@ -291,7 +292,7 @@ describe("ComparisonSide", () => {
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
     });
 
-    it("Should be active after comparing", () => {
+    it("Should disappear in comparing mode", () => {
       callRender(renderWithTheme, {
         compareButtonMode: CompareButtonMode.Comparing,
       });
