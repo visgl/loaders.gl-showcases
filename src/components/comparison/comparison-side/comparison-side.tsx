@@ -184,7 +184,7 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
-  const [rightSideLayer, setRightSideLayer] = useState<any>(null);
+  const [rightSideLayer, setRightSideLayer] = useState<LayerExample | null>(null);
 
   /** Delay to await asynchronous traversal of the tileset **/
   const IS_LOADED_DELAY = 500;
