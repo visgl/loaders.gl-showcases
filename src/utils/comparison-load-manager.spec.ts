@@ -15,44 +15,61 @@ describe("Load manager", () => {
   });
 
   it("Should start loading", () => {
+    const newStats = {
+      url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
+
     comparisonLoadManager.startLoading();
+
+    const resolvedLeft = comparisonLoadManager.resolveLeftSide(newStats);
+    const resolvedRight = comparisonLoadManager.resolveRightSide(newStats);
+
     expect(comparisonLoadManager.leftLoadingTime).toBe(0);
     expect(comparisonLoadManager.rightLoadingTime).toBe(0);
+    expect(resolvedLeft).toBe(false);
+    expect(resolvedRight).toBe(true);
   });
 
-  //   it("Should resolve left side", () => {
-  //     const newStats = {
-  //       tilesetStats: new Stats({ id: "Tileset" }),
-  //       memoryStats: new Stats({ id: "Memory" }),
-  //     };
-  //     comparisonLoadManager.resolveLeftSide(newStats);
-  //     expect(comparisonLoadManager.leftResolved).toBe(true);
-  //   });
+  it("Should get left stats", () => {
+    const newStats = {
+      url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
 
-  //   it("Should resolve right side", () => {
-  //     const newStats = {
-  //       tilesetStats: new Stats({ id: "Tileset" }),
-  //       memoryStats: new Stats({ id: "Memory" }),
-  //     };
-  //     comparisonLoadManager.resolveRightSide(newStats);
-  //     expect(comparisonLoadManager.rightResolved).toBe(true);
-  //   });
+    comparisonLoadManager.resolveLeftSide(newStats);
+    expect(comparisonLoadManager.leftStats).toBe(newStats);
+  });
 
-  //   it("Should perform dispach event", () => {
-  //     comparisonLoadManager.leftResolved = true;
-  //     comparisonLoadManager.rightResolved = true;
-  //     const result =
-  //       comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
-  //     comparisonLoadManager.isLoaded();
-  //     expect(result).toBe(true);
-  //   });
+  it("Should get right stats", () => {
+    const newStats = {
+      url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
 
-  //   it("Should not perform dispach event", () => {
-  //     comparisonLoadManager.leftResolved = false;
-  //     comparisonLoadManager.rightResolved = true;
-  //     const result =
-  //       comparisonLoadManager.leftResolved && comparisonLoadManager.rightResolved;
-  //     comparisonLoadManager.isLoaded();
-  //     expect(result).toBe(false);
-  //   });
+    comparisonLoadManager.resolveRightSide(newStats);
+    expect(comparisonLoadManager.rightStats).toBe(newStats);
+  });
+
+  it("Should dispatch event", () => {
+    const newStats = {
+      url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+    };
+    const dispatchEventSpy = jest.spyOn(comparisonLoadManager, "dispatchEvent");
+    const newEvent = new Event("loaded");
+
+    comparisonLoadManager.startLoading()
+
+    comparisonLoadManager.resolveLeftSide(newStats);
+    comparisonLoadManager.resolveRightSide(newStats);
+    expect(dispatchEventSpy).toHaveBeenCalledWith(newEvent);
+    console.log(dispatchEventSpy.mock.calls[0][0]);
+
+    expect(dispatchEventSpy.mock.calls[0][0]).toEqual(newEvent);
+  });
 });

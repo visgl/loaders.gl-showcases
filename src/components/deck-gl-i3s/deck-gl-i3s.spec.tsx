@@ -149,6 +149,10 @@ describe("Deck.gl I3S map component", () => {
     callRender(rerender, { disableController: true });
     const { controller } = DeckGL.mock.lastCall[0];
     expect(controller).toBeFalsy();
+
+    callRender(rerender);
+    const { controller: controller2 } = DeckGL.mock.lastCall[0];
+    expect(controller2).toEqual(controllerExpected);
   });
 
   it("Should load UV debug texture", () => {

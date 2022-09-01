@@ -168,6 +168,36 @@ describe("ComparisonSide", () => {
     // expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
   });
 
+  it("It should handle tileset load", () => {
+    jest.useFakeTimers();
+    callRender(renderWithTheme);
+
+    const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    act(() =>
+      onTilesetLoad({ url: "http://tileset.url", isLoaded: () => true })
+    );
+
+    jest.advanceTimersByTime(500);
+
+    expect(onTilesetLoaded).toHaveBeenCalled();
+  });
+
+  it("It should handle tile load", () => {
+    jest.useFakeTimers();
+    callRender(renderWithTheme);
+
+    const { onTileLoad } = DeckGlI3sMock.mock.lastCall[0];
+    act(() =>
+      onTileLoad({
+        tileset: { url: "http://tileset.url", isLoaded: () => true },
+      })
+    );
+
+    jest.advanceTimersByTime(500);
+
+    expect(onTilesetLoaded).toHaveBeenCalled();
+  });
+
   describe("LayersPanel", () => {
     it("Should render", () => {
       callRender(renderWithTheme);
