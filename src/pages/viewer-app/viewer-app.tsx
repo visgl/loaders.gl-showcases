@@ -27,14 +27,18 @@ import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
-  color_brand_primary, color_canvas_primary_inverted,
+  color_brand_primary,
+  color_canvas_primary_inverted,
 } from "../../constants/colors";
-import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
 import { Sublayer } from "../../types";
 import { LayerExample } from "../../types";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
+
+type FeatureAttributes = {
+  [key: string]: string;
+};
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -81,7 +85,7 @@ export const ViewerApp = () => {
   const [token, setToken] = useState(null);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
-    useState(null);
+    useState<FeatureAttributes | null>(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
   const [isAttributesLoading, setAttributesLoading] = useState(false);
@@ -267,7 +271,6 @@ export const ViewerApp = () => {
     setAttributesLoading(false);
 
     const selectedTilesetBasePath = info.object.tileset.basePath;
-    // @ts-expect-error - Argument of type '{} | null' is not assignable to parameter of type 'SetStateAction<null>'.
     setSelectedFeatureAttributes(selectedFeatureAttributes);
     setSelectedFeatureIndex(info.index);
     setSelectedTilesetBasePath(selectedTilesetBasePath);
@@ -346,17 +349,16 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => {
-    const title = selectedFeatureAttributes
-      ? // @ts-expect-error - Property 'NAME' does not exist on type 'never'.
-        selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID
-      : "";
-
     return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <FeatureAttributes
-          attributesObject={selectedFeatureAttributes}
-        ></FeatureAttributes>
-      </TileDetailsPanel>
+      <AttributesPanel
+        title={
+          selectedFeatureAttributes?.NAME ||
+          selectedFeatureAttributes?.OBJECTID ||
+          ""
+        }
+        handleClosePanel={handleClosePanel}
+        attributes={selectedFeatureAttributes}
+      />
     );
   };
 

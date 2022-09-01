@@ -64,6 +64,8 @@ const THEMES: AppThemes = {
       mainToolsPanelIconColor: color_canvas_primary_inverted,
       mainToolsPanelDimIconColor: hilite_canvas_secondary,
       mainHelpPanelColor: color_brand_primary,
+      mainAttibuteItemColor: color_brand_primary,
+      mainAttributeHighlightColor: hilite_canvas_primary
     },
     name: Theme.Dark,
   },
@@ -88,6 +90,8 @@ const THEMES: AppThemes = {
       mainToolsPanelIconColor: color_canvas_secondary_inverted,
       mainToolsPanelDimIconColor: dim_canvas_secondary,
       mainHelpPanelColor: color_canvas_secondary,
+      mainAttibuteItemColor: hilite_canvas_secondary,
+      mainAttributeHighlightColor: dim_canvas_secondary
     },
     name: Theme.Light,
   },
