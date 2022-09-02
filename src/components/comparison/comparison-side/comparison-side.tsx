@@ -133,6 +133,7 @@ type ComparisonSideProps = {
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
+  loadTileset?: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -154,6 +155,7 @@ export const ComparisonSide = ({
   compareButtonMode,
   dragMode,
   loadingTime,
+  loadTileset = true,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -209,7 +211,7 @@ export const ComparisonSide = ({
   }, [compareButtonMode]);
 
   useEffect(() => {
-    if (!layer) {
+    if (!layer || !loadTileset) {
       setFlattenedSublayers([]);
       return;
     }
@@ -227,7 +229,7 @@ export const ComparisonSide = ({
     setToken(token);
     setSublayers([]);
     disableButtonHandler();
-  }, [layer]);
+  }, [layer, loadTileset]);
 
   const getFlattenedSublayers = async (tilesetUrl) => {
     try {
