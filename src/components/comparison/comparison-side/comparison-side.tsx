@@ -209,7 +209,7 @@ export const ComparisonSide = ({
       setLoadNumber((prev) => prev + 1);
     }
   }, [compareButtonMode]);
-  
+
   useEffect(() => {
     if (!layer || (typeof loadTileset === "boolean" && !loadTileset)) {
       setFlattenedSublayers([]);
