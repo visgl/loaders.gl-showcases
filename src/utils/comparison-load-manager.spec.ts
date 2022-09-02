@@ -68,7 +68,6 @@ describe("Load manager", () => {
     comparisonLoadManager.resolveLeftSide(newStats);
     comparisonLoadManager.resolveRightSide(newStats);
     expect(dispatchEventSpy).toHaveBeenCalledWith(newEvent);
-    console.log(dispatchEventSpy.mock.calls[0][0]);
 
     expect(dispatchEventSpy.mock.calls[0][0]).toEqual(newEvent);
   });
