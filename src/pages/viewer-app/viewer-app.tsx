@@ -1,3 +1,9 @@
+import type {
+  BuildingSceneSublayer,
+  StatsInfo,
+  StatisticsInfo,
+} from "@loaders.gl/i3s";
+
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
 import styled from "styled-components";
@@ -33,11 +39,15 @@ import {
 import { Sublayer } from "../../types";
 import { LayerExample } from "../../types";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 
-type FeatureAttributes = {
+export type FeatureAttributes = {
   [key: string]: string;
+};
+
+export type StatisticsMap = {
+  [key: string]: StatsInfo;
 };
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
@@ -86,8 +96,12 @@ export const ViewerApp = () => {
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState<FeatureAttributes | null>(null);
+
+  const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
+    StatisticsInfo[] | null
+  >(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
-  const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
+  const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState("");
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
@@ -268,9 +282,15 @@ export const ViewerApp = () => {
       info.index,
       options
     );
-    setAttributesLoading(false);
 
     const selectedTilesetBasePath = info.object.tileset.basePath;
+    const statisticsInfo = info.object.tileset?.tileset?.statisticsInfo;
+
+    if (statisticsInfo) {
+      setTilesetStatisticsInfo(statisticsInfo);
+    }
+
+    setAttributesLoading(false);
     setSelectedFeatureAttributes(selectedFeatureAttributes);
     setSelectedFeatureIndex(info.index);
     setSelectedTilesetBasePath(selectedTilesetBasePath);
@@ -348,19 +368,20 @@ export const ViewerApp = () => {
     return null;
   };
 
-  const renderAttributesPanel = () => {
-    return (
-      <AttributesPanel
-        title={
-          selectedFeatureAttributes?.NAME ||
-          selectedFeatureAttributes?.OBJECTID ||
-          ""
-        }
-        handleClosePanel={handleClosePanel}
-        attributes={selectedFeatureAttributes}
-      />
-    );
-  };
+  const renderAttributesPanel = () => (
+    <AttributesPanel
+      title={
+        selectedFeatureAttributes?.NAME ||
+        selectedFeatureAttributes?.OBJECTID ||
+        ""
+      }
+      handleClosePanel={handleClosePanel}
+      tilesetName={mainTileset.name}
+      attributes={selectedFeatureAttributes}
+      statisticsInfo={tilesetStatisticsInfo}
+      tilesetBasePath={selectedTilesetBasePath}
+    />
+  );
 
   const renderMemory = () => {
     return (

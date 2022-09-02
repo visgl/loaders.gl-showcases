@@ -1,16 +1,32 @@
-import styled from "styled-components";
-import { CloseButton } from "../close-button/close-button";
-import StatisticsIcon from "../../../public/icons/statistics.svg";
-import { color_brand_tertiary } from "../../constants/colors";
+import type { StatisticsInfo } from "@loaders.gl/i3s";
+import type { FeatureAttributes } from "../../pages/viewer-app/viewer-app";
 
-type TileDetailsPanelProps = {
+import { useEffect, useState } from "react";
+import styled, { useTheme } from "styled-components";
+
+import { CloseButton } from "../close-button/close-button";
+import { color_brand_tertiary } from "../../constants/colors";
+import { AttributeStats } from "./attribute-stats";
+
+import StatisticsIcon from "../../../public/icons/statistics.svg";
+import ArrowLeft from "../../../public/icons/arrow-left.svg";
+
+type AttributesPanelProps = {
   title: string;
+  tilesetName: string;
+  attributes: FeatureAttributes | null;
+  tilesetBasePath: string;
+  statisticsInfo: StatisticsInfo[] | null;
   handleClosePanel: () => void;
-  attributes: any;
 };
 
 type RowProps = {
   selectable: boolean;
+};
+
+type HeaderWrapperProps = {
+  title: string;
+  selectedAttributeStatsInfo: StatisticsInfo;
 };
 
 const Container = styled.div`
@@ -25,6 +41,7 @@ const Container = styled.div`
   flex-flow: column;
   width: 360px;
   height: auto;
+  min-height: 120px;
   max-height: 75%;
   z-index: 16;
   word-break: break-word;
@@ -32,10 +49,11 @@ const Container = styled.div`
   box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
 `;
 
-const HeaderWrapper = styled.div`
+const HeaderWrapper = styled.div<HeaderWrapperProps>`
   display: flex;
   flex-flow: row nowrap;
-  justify-content: ${(props) => (props.title ? "space-between" : "flex-end")};
+  justify-content: ${({ title, selectedAttributeStatsInfo }) =>
+    title || selectedAttributeStatsInfo ? "space-between" : "flex-end"};
   align-items: center;
   width: 100%;
 `;
@@ -51,15 +69,8 @@ const Title = styled.div`
 const ContentWrapper = styled.div`
   overflow-y: auto;
   padding: 0 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   width: calc(100% - 32px);
-
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  scrollbar-width: none; /* Firefox */
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const Row = styled.div<RowProps>`
@@ -105,37 +116,82 @@ const RowItem = styled.div`
 `;
 
 const SplitLine = styled.div`
-  margin: 0px 15px 21px 15px;
+  margin: 0px 15px 16px 15px;
   width: calc(100% - 30px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.mainHiglightColor};
 `;
 
+const BackButton = styled(ArrowLeft)`
+  margin-left: 16px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
 const NO_DATA = "No Data";
+const STATISTICS_TITLE = "Statistics";
 
 export const AttributesPanel = ({
   title,
-  handleClosePanel,
+  tilesetName,
   attributes,
-}: TileDetailsPanelProps) => {
+  statisticsInfo,
+  tilesetBasePath,
+  handleClosePanel,
+}: AttributesPanelProps) => {
+  const theme = useTheme();
+
+  const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
+    useState<StatisticsInfo | null>(null);
+  const [selectedAttributeName, setSelectedAttributeName] = useState("");
+
+  useEffect(() => {
+    setSelectedAttributeStatsInfo(null);
+  }, [attributes]);
+
+  const handleRowClick = (
+    attributeName: string,
+    statisticsInfo: StatisticsInfo
+  ): void => {
+    setSelectedAttributeName(attributeName);
+    setSelectedAttributeStatsInfo(statisticsInfo);
+  };
+
   const prepareRows = () => {
     const rows: JSX.Element[] = [];
 
     for (const attributeName in attributes) {
       const attributeValue = formatValue(attributes[attributeName]);
-      const row = createItemRow(attributeName, attributeValue);
+      const attributeStatisticInfo = statisticsInfo?.find(
+        (stat) => stat.name === attributeName
+      );
+      const row = createItemRow(
+        attributeName,
+        attributeValue,
+        attributeStatisticInfo
+      );
       rows.push(row);
     }
 
     return rows;
   };
 
-  // TODO handle real statistics
-  const createItemRow = (key, value, hasStatistics = true) => {
+  const createItemRow = (
+    key: string,
+    value: string,
+    attributeStatisticInfo: StatisticsInfo
+  ): JSX.Element => {
     return (
-      <Row key={key} selectable={hasStatistics}>
+      <Row
+        key={key}
+        selectable={Boolean(attributeStatisticInfo)}
+        onClick={() => handleRowClick(key, attributeStatisticInfo)}
+      >
         <RowItem>{key}</RowItem>
         <RowItem>{value}</RowItem>
-        {hasStatistics && <StatisticsIcon />}
+        {attributeStatisticInfo && <StatisticsIcon />}
       </Row>
     );
   };
@@ -150,15 +206,35 @@ export const AttributesPanel = ({
 
   return (
     <Container>
-      <HeaderWrapper title={title}>
-        {title && <Title>{title}</Title>}
+      <HeaderWrapper
+        title={title}
+        selectedAttributeStatsInfo={selectedAttributeStatsInfo}
+      >
+        {selectedAttributeStatsInfo && (
+          <BackButton
+            fill={theme.colors.fontColor}
+            onClick={() => setSelectedAttributeStatsInfo(null)}
+          />
+        )}
+        {title && !selectedAttributeStatsInfo && <Title>{title}</Title>}
+        {selectedAttributeStatsInfo && <Title>{STATISTICS_TITLE}</Title>}
         <CloseButton
           id="comparison-parms-panel-close-button"
           onClick={handleClosePanel}
         />
       </HeaderWrapper>
       <SplitLine />
-      <ContentWrapper>{prepareRows()}</ContentWrapper>
+      {!selectedAttributeStatsInfo && (
+        <ContentWrapper>{prepareRows()}</ContentWrapper>
+      )}
+      {selectedAttributeStatsInfo && (
+        <AttributeStats
+          attributeName={selectedAttributeName}
+          statisticsInfo={selectedAttributeStatsInfo}
+          tilesetName={tilesetName}
+          tilesetBasePath={tilesetBasePath}
+        />
+      )}
     </Container>
   );
 };
