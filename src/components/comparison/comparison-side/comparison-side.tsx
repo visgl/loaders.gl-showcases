@@ -133,7 +133,7 @@ type ComparisonSideProps = {
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
-  leftSideLoaded?: boolean;
+  loadTileset?: boolean | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -155,7 +155,7 @@ export const ComparisonSide = ({
   compareButtonMode,
   dragMode,
   loadingTime,
-  leftSideLoaded,
+  loadTileset,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -184,7 +184,6 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
-  const [rightSideLayer, setRightSideLayer] = useState<LayerExample | null>(null);
 
   /** Delay to await asynchronous traversal of the tileset **/
   const IS_LOADED_DELAY = 500;
@@ -208,16 +207,11 @@ export const ComparisonSide = ({
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setActiveButton(ActiveButton.memory);
       setLoadNumber((prev) => prev + 1);
-      if (side === ComparisonSideMode.right && !leftSideLoaded) {
-        setLayer(null);
-      } else {
-        setLayer(rightSideLayer);
-      }
     }
-  }, [compareButtonMode, leftSideLoaded]);
-
+  }, [compareButtonMode]);
+  
   useEffect(() => {
-    if (!layer) {
+    if (!layer || (typeof loadTileset === "boolean" && !loadTileset)) {
       setFlattenedSublayers([]);
       return;
     }
@@ -235,7 +229,7 @@ export const ComparisonSide = ({
     setToken(token);
     setSublayers([]);
     disableButtonHandler();
-  }, [layer]);
+  }, [layer, loadTileset]);
 
   const getFlattenedSublayers = async (tilesetUrl) => {
     try {
@@ -309,7 +303,6 @@ export const ComparisonSide = ({
 
     if (selectedExample) {
       setLayer(selectedExample);
-      setRightSideLayer(selectedExample);
       onChangeLayer && onChangeLayer(selectedExample);
     }
   };
