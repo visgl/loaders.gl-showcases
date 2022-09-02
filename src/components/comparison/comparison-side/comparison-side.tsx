@@ -133,7 +133,7 @@ type ComparisonSideProps = {
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
-  loadTileset?: boolean | null;
+  loadTileset?: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -155,7 +155,7 @@ export const ComparisonSide = ({
   compareButtonMode,
   dragMode,
   loadingTime,
-  loadTileset,
+  loadTileset = true,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -211,7 +211,7 @@ export const ComparisonSide = ({
   }, [compareButtonMode]);
 
   useEffect(() => {
-    if (!layer || (typeof loadTileset === "boolean" && !loadTileset)) {
+    if (!layer || !loadTileset) {
       setFlattenedSublayers([]);
       return;
     }

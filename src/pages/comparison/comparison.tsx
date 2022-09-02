@@ -89,7 +89,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     false,
   ]);
   const [compared, setComapred] = useState<boolean>(false);
-  const [leftSideLoaded, setLeftSideLoaded] = useState<boolean | null>(null);
+  const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
 
   const layout = useAppLayout();
 
@@ -100,7 +100,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setComapred(true);
-      setLeftSideLoaded(false)
+      setLeftSideLoaded(false);
     }
   }, [compareButtonMode]);
 
@@ -274,8 +274,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onDeleteBaseMap={onDeleteBaseMapHandler}
         disableButtonHandler={disableButtonHandlerLeft}
         onTilesetLoaded={(stats: StatsMap) => {
-          loadManagerRef.current.resolveLeftSide(stats)
-          setLeftSideLoaded(true)
+          loadManagerRef.current.resolveLeftSide(stats);
+          setLeftSideLoaded(true);
         }}
       />
       <Devider layout={layout} />
