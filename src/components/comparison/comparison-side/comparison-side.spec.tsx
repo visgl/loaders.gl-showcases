@@ -182,7 +182,7 @@ describe("ComparisonSide", () => {
     expect(onTilesetLoaded).toHaveBeenCalled();
   });
 
-  it("It should handle tile load", () => {
+  it("Should handle tile load", () => {
     jest.useFakeTimers();
     callRender(renderWithTheme);
 
