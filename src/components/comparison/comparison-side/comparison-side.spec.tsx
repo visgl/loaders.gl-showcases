@@ -168,7 +168,7 @@ describe("ComparisonSide", () => {
     // expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
   });
 
-  it("It should handle tileset load", () => {
+  it("Should handle tileset load", () => {
     jest.useFakeTimers();
     callRender(renderWithTheme);
 
