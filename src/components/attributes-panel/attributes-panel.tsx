@@ -26,7 +26,7 @@ type RowProps = {
 
 type HeaderWrapperProps = {
   title: string;
-  selectedAttributeStatsInfo: StatisticsInfo;
+  selectedAttributeStatsInfo: boolean;
 };
 
 const Container = styled.div`
@@ -153,7 +153,7 @@ export const AttributesPanel = ({
 
   const handleRowClick = (
     attributeName: string,
-    statisticsInfo: StatisticsInfo
+    statisticsInfo: StatisticsInfo | null
   ): void => {
     setSelectedAttributeName(attributeName);
     setSelectedAttributeStatsInfo(statisticsInfo);
@@ -164,9 +164,8 @@ export const AttributesPanel = ({
 
     for (const attributeName in attributes) {
       const attributeValue = formatValue(attributes[attributeName]);
-      const attributeStatisticInfo = statisticsInfo?.find(
-        (stat) => stat.name === attributeName
-      );
+      const attributeStatisticInfo =
+        statisticsInfo?.find((stat) => stat.name === attributeName) || null;
       const row = createItemRow(
         attributeName,
         attributeValue,
@@ -181,7 +180,7 @@ export const AttributesPanel = ({
   const createItemRow = (
     key: string,
     value: string,
-    attributeStatisticInfo: StatisticsInfo
+    attributeStatisticInfo: StatisticsInfo | null
   ): JSX.Element => {
     return (
       <Row
@@ -208,7 +207,7 @@ export const AttributesPanel = ({
     <Container>
       <HeaderWrapper
         title={title}
-        selectedAttributeStatsInfo={selectedAttributeStatsInfo}
+        selectedAttributeStatsInfo={Boolean(selectedAttributeStatsInfo)}
       >
         {selectedAttributeStatsInfo && (
           <BackButton

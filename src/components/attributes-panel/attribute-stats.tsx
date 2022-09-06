@@ -1,4 +1,6 @@
-import type { StatisticsInfo, StatsInfo, ValueCount } from "@loaders.gl/i3s";
+// TODO Add export type to index file in loaders.gl
+import type { ValueCount } from "@loaders.gl/i3s/dist/types";
+import type { StatisticsInfo, StatsInfo } from "@loaders.gl/i3s";
 
 import { useEffect, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";

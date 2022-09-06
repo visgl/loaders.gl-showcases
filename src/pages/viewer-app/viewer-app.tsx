@@ -1,8 +1,5 @@
-import type {
-  BuildingSceneSublayer,
-  StatsInfo,
-  StatisticsInfo,
-} from "@loaders.gl/i3s";
+// TODO Add export type to index file in loaders.gl
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
@@ -14,6 +11,8 @@ import {
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
   SceneLayer3D,
+  StatsInfo,
+  StatisticsInfo,
 } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
@@ -41,6 +40,7 @@ import { LayerExample } from "../../types";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
+
 
 export type FeatureAttributes = {
   [key: string]: string;
