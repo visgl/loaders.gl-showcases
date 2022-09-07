@@ -143,6 +143,10 @@ type ComparisonSideProps = {
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
 };
+
+/** Delay to await asynchronous traversal of the tileset **/
+const IS_LOADED_DELAY = 500;
+
 export const ComparisonSide = ({
   mode,
   side,
@@ -184,9 +188,6 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
-
-  /** Delay to await asynchronous traversal of the tileset **/
-  const IS_LOADED_DELAY = 500;
 
   useEffect(() => {
     if (showLayerOptions) {

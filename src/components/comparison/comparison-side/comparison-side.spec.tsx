@@ -168,6 +168,36 @@ describe("ComparisonSide", () => {
     // expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
   });
 
+  it("Should handle tileset load", () => {
+    jest.useFakeTimers();
+    callRender(renderWithTheme);
+
+    const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    act(() =>
+      onTilesetLoad({ url: "http://tileset.url", isLoaded: () => true })
+    );
+
+    jest.advanceTimersByTime(500);
+
+    expect(onTilesetLoaded).toHaveBeenCalled();
+  });
+
+  it("Should handle tile load", () => {
+    jest.useFakeTimers();
+    callRender(renderWithTheme);
+
+    const { onTileLoad } = DeckGlI3sMock.mock.lastCall[0];
+    act(() =>
+      onTileLoad({
+        tileset: { url: "http://tileset.url", isLoaded: () => true },
+      })
+    );
+
+    jest.advanceTimersByTime(500);
+
+    expect(onTilesetLoaded).toHaveBeenCalled();
+  });
+
   describe("LayersPanel", () => {
     it("Should render", () => {
       callRender(renderWithTheme);
@@ -279,6 +309,7 @@ describe("ComparisonSide", () => {
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
     });
   });
+
   describe("MemoryUsagePanel", () => {
     beforeEach(() => {
       callRender(renderWithTheme);
@@ -291,7 +322,7 @@ describe("ComparisonSide", () => {
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
     });
 
-    it("Should be active after comparing", () => {
+    it("Should disappear in comparing mode", () => {
       callRender(renderWithTheme, {
         compareButtonMode: CompareButtonMode.Comparing,
       });
