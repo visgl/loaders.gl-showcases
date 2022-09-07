@@ -195,6 +195,8 @@ export const ComparisonSide = ({
     } else {
       setActiveButton(ActiveButton.none);
     }
+    setIsCompressedGeometry(true);
+    setIsCompressedTextures(true);
     setLayer(null);
   }, [mode]);
 
@@ -266,6 +268,8 @@ export const ComparisonSide = ({
           url: tileset.url,
           tilesetStats: tileset.stats,
           memoryStats,
+          isCompressedGeometry,
+          isCompressedTextures,
         });
       }
     }, IS_LOADED_DELAY);
@@ -278,6 +282,8 @@ export const ComparisonSide = ({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          isCompressedGeometry,
+          isCompressedTextures,
         });
       }
     }, IS_LOADED_DELAY);
