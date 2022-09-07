@@ -4,15 +4,16 @@ import type { StatisticsInfo, StatsInfo } from "@loaders.gl/i3s";
 
 import { useEffect, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";
+
 import { load } from "@loaders.gl/core";
 import { JSONLoader } from "@loaders.gl/loader-utils";
 import { ToggleSwitch } from "../toogle-switch/toggle-switch";
+import { LoadingSpinner } from "../loading-spinner/loading-spinner";
 
 import LayersIcon from "../../../public/icons/layers.svg";
 import DropdownUp from "../../../public/icons/dropdown-up.svg";
 // TODO Replace with real histogram
 import Histogram from "../../../public/icons/histogram.svg";
-import { LoadingSpinner } from "../loading-spinner/loading-spinner";
 
 type VisibilityProps = {
   visible: boolean;
@@ -23,6 +24,7 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
+  onColorizeByAttributeClick: () => void;
 };
 
 const Container = styled.div`
@@ -77,11 +79,11 @@ const HistograpPanel = styled.div`
 const HistogramTitle = styled.div`
   display: flex;
   justify-content: space-between;
-  cursor: pointer;
   margin-bottom: 16px;
 `;
 
 const HistogamArrow = styled(DropdownUp)`
+  cursor: pointer;
   fill: ${({ theme }) => theme.colors.fontColor};
   transform: ${({ open }) => (open ? "none" : "rotate(180deg)")};
 
@@ -136,6 +138,7 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
+  onColorizeByAttributeClick,
 }: AttributeStatsProps) => {
   const theme = useTheme();
 
@@ -259,23 +262,35 @@ export const AttributeStats = ({
         <Container>
           <AttributeTitle>{attributeName}</AttributeTitle>
           <TilesetData>
-            <LayersIcon fill={theme.colors.fontColor} />
+            <LayersIcon
+              data-testid="statistics-layers-icon"
+              fill={theme.colors.fontColor}
+            />
             <TilesetName>{tilesetName}</TilesetName>
           </TilesetData>
-          <Statistics>{...statisticRows}</Statistics>
+          <Statistics>{statisticRows}</Statistics>
           {histogramData && (
             <>
-              <HistograpPanel
-                onClick={() => setShowHistogram((prevValue) => !prevValue)}
-              >
+              <HistograpPanel>
                 <HistogramTitle>
                   Histogram
-                  <HistogamArrow open={showHistogram} />
+                  <HistogamArrow
+                    data-testid="histogram-arrow"
+                    open={showHistogram}
+                    onClick={() => setShowHistogram((prevValue) => !prevValue)}
+                  />
                 </HistogramTitle>
                 {/* TODO: Add real Histogram */}
-                {showHistogram && <Histogram fill={theme.colors.mainColor} />}
+                {showHistogram && (
+                  <Histogram
+                    data-testid="histogram-svg"
+                    fill={theme.colors.mainColor}
+                  />
+                )}
               </HistograpPanel>
-              {showHistogram && <SplitLine />}
+              {showHistogram && (
+                <SplitLine data-testid="histogram-split-line" />
+              )}
             </>
           )}
 
@@ -284,9 +299,7 @@ export const AttributeStats = ({
             <ToggleSwitch
               id={"colorize-by-attribute"}
               checked={true}
-              onChange={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onChange={onColorizeByAttributeClick}
             />
           </AttributeColorize>
         </Container>

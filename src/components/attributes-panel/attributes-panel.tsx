@@ -234,6 +234,9 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
+          onColorizeByAttributeClick={function (): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       )}
     </Container>
