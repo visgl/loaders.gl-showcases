@@ -1,5 +1,5 @@
 // TODO Add export type to index file in loaders.gl
-import type { ValueCount } from "@loaders.gl/i3s/dist/types";
+import type { ValueCount, Histogram } from "@loaders.gl/i3s/dist/types";
 import type { StatisticsInfo, StatsInfo } from "@loaders.gl/i3s";
 
 import { useEffect, useMemo, useState } from "react";
@@ -10,9 +10,9 @@ import { ToggleSwitch } from "../toogle-switch/toggle-switch";
 
 import LayersIcon from "../../../public/icons/layers.svg";
 import DropdownUp from "../../../public/icons/dropdown-up.svg";
-// TODO Replace with real histogram
-import Histogram from "../../../public/icons/histogram.svg";
+
 import { LoadingSpinner } from "../loading-spinner/loading-spinner";
+import { HistogramChart } from "./histogram";
 
 type VisibilityProps = {
   visible: boolean;
@@ -142,7 +142,7 @@ export const AttributeStats = ({
   const [isLoading, setIsLoading] = useState(false);
   const [statistics, setStatistics] = useState<StatsInfo | null>(null);
   const [showHistogram, setShowHistogram] = useState(true);
-  const [histogramData, setHistogramData] = useState(null);
+  const [histogramData, setHistogramData] = useState<Histogram | null>(null);
 
   /**
    * Handle base uri and statistic uri
@@ -272,8 +272,12 @@ export const AttributeStats = ({
                   Histogram
                   <HistogamArrow open={showHistogram} />
                 </HistogramTitle>
-                {/* TODO: Add real Histogram */}
-                {showHistogram && <Histogram fill={theme.colors.mainColor} />}
+                {showHistogram && (
+                  <HistogramChart
+                    attributeName={attributeName}
+                    histogramData={histogramData}
+                  />
+                )}
               </HistograpPanel>
               {showHistogram && <SplitLine />}
             </>
