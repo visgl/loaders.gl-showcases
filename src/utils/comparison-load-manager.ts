@@ -5,7 +5,8 @@ export class ComparisonLoadManager extends EventTarget {
   private rightResolved = true;
   private _leftStats: StatsMap | null = null;
   private _rightStats: StatsMap | null = null;
-  private startTime = 0;
+  private leftStartTime = 0;
+  private rightStartTime = 0;
   public leftLoadingTime = 0;
   public rightLoadingTime = 0;
 
@@ -22,7 +23,7 @@ export class ComparisonLoadManager extends EventTarget {
   }
 
   startLoading() {
-    this.startTime = Date.now();
+    this.leftStartTime = Date.now();
     this.leftResolved = false;
     this.rightResolved = false;
     this.leftLoadingTime = 0;
@@ -31,14 +32,15 @@ export class ComparisonLoadManager extends EventTarget {
 
   resolveLeftSide(stats: StatsMap) {
     this.leftResolved = true;
-    this.leftLoadingTime = Date.now() - this.startTime;
+    this.leftLoadingTime = Date.now() - this.leftStartTime;
+    this.rightStartTime = Date.now();
     this._leftStats = stats;
     return this.isLoaded();
   }
 
   resolveRightSide(stats: StatsMap) {
     this.rightResolved = true;
-    this.rightLoadingTime = Date.now() - this.startTime;
+    this.rightLoadingTime = Date.now() - this.rightStartTime;
     this._rightStats = stats;
     return this.isLoaded();
   }
