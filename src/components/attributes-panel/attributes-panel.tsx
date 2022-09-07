@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
 
 import { CloseButton } from "../close-button/close-button";
-import { color_brand_tertiary } from "../../constants/colors";
 import { AttributeStats } from "./attribute-stats";
+
+import { color_brand_tertiary } from "../../constants/colors";
 
 import StatisticsIcon from "../../../public/icons/statistics.svg";
 import ArrowLeft from "../../../public/icons/arrow-left.svg";
@@ -211,6 +212,7 @@ export const AttributesPanel = ({
       >
         {selectedAttributeStatsInfo && (
           <BackButton
+            data-testid="attributes-panel-back-button"
             fill={theme.colors.fontColor}
             onClick={() => setSelectedAttributeStatsInfo(null)}
           />
@@ -232,6 +234,9 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
+          onColorizeByAttributeClick={function (): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       )}
     </Container>
