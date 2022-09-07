@@ -22,12 +22,13 @@ describe("Load manager", () => {
     };
 
     comparisonLoadManager.startLoading();
+    
+    expect(comparisonLoadManager.leftLoadingTime).toBe(0);
+    expect(comparisonLoadManager.rightLoadingTime).toBe(0);
 
     const resolvedLeft = comparisonLoadManager.resolveLeftSide(newStats);
     const resolvedRight = comparisonLoadManager.resolveRightSide(newStats);
 
-    expect(comparisonLoadManager.leftLoadingTime).toBe(0);
-    expect(comparisonLoadManager.rightLoadingTime).toBe(0);
     expect(resolvedLeft).toBe(false);
     expect(resolvedRight).toBe(true);
   });
