@@ -24,11 +24,7 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import {
-  buildSublayersTree,
-  parseTilesetUrlParams,
-  useForceUpdate,
-} from "../../../utils";
+import { buildSublayersTree, parseTilesetUrlParams, useForceUpdate } from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
@@ -188,6 +184,7 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
+  const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -260,6 +257,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
     setTilesetStats(tileset.stats);
     setTileset(tileset);
+    setUpdateStatsNumber(prev => prev + 1);
     setTimeout(() => {
       if (tileset.isLoaded()) {
         onTilesetLoaded({
@@ -273,6 +271,7 @@ export const ComparisonSide = ({
 
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
+      setUpdateStatsNumber(prev => prev + 1);
       if (tile.tileset.isLoaded()) {
         onTilesetLoaded({
           url: tile.tileset.url,
@@ -429,6 +428,7 @@ export const ComparisonSide = ({
                 memoryStats={memoryStats}
                 tilesetStats={tilesetStats}
                 loadingTime={loadingTime}
+                updateNumber={updateStatsNumber}
                 onClose={() =>
                   onChangeMainToolsPanelHandler(ActiveButton.memory)
                 }

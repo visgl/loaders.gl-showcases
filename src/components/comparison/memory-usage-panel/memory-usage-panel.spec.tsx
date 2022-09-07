@@ -54,6 +54,7 @@ describe("MemoryUsagePanel", () => {
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
         loadingTime={1123}
+        updateNumber={1}
         onClose={onClose}
       />
     );
@@ -73,6 +74,7 @@ describe("MemoryUsagePanel", () => {
         memoryStats={memoryStats}
         tilesetStats={null}
         loadingTime={1123}
+        updateNumber={1}
         onClose={onClose}
       />,
       rerenderFunc
@@ -92,6 +94,7 @@ describe("MemoryUsagePanel", () => {
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
         loadingTime={1123}
+        updateNumber={1}
         onClose={onClose}
       />,
       rerenderFunc
@@ -105,6 +108,7 @@ describe("MemoryUsagePanel", () => {
         memoryStats={memoryStats}
         tilesetStats={tilesetStats}
         loadingTime={1123}
+        updateNumber={1}
         onClose={onClose}
       />,
       rerenderFunc
