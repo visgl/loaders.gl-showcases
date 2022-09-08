@@ -48,6 +48,7 @@ type MemoryUsageProps = {
   memoryStats: Stats | null;
   tilesetStats?: Stats | null;
   loadingTime: number;
+  updateNumber: number;
   onClose: () => void;
 };
 
