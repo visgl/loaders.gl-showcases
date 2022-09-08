@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
@@ -118,73 +118,72 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset: Tileset3D) => {
-    const { zoom, cartographicCenter } = tileset;
-    const [longitude, latitude] = cartographicCenter || [];
-
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-        transitionDuration: 1000,
-      },
+  const pointToTileset = useCallback((tileset: Tileset3D) => {
+    setViewState((viewStatePrev) => {
+      const { zoom, cartographicCenter } = tileset;
+      const [longitude, latitude] = cartographicCenter || [];
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      };
     });
-  };
+  }, []);
 
-  const onZoomIn = () => {
-    const { zoom, maxZoom } = viewState.main;
+  const onZoomIn = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, maxZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === maxZoom;
 
-    if (zoom >= maxZoom) {
-      return;
-    }
-
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 1,
-        transitionDuration: 1000,
-      },
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
     });
-  };
+  }, []);
 
-  const onZoomOut = () => {
-    const { zoom, minZoom } = viewState.main;
+  const onZoomOut = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, minZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === minZoom;
 
-    if (zoom <= minZoom) {
-      return;
-    }
-
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom - 1,
-        transitionDuration: 1000,
-      },
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
     });
-  };
+  }, []);
 
-  const onCompassClick = () => {
-    setViewState({
+  const onCompassClick = useCallback(() => {
+    setViewState((viewStatePrev) => ({
       main: {
-        ...viewState.main,
+        ...viewStatePrev.main,
         bearing: 0,
         transitionDuration: 1000,
       },
-    });
-  };
+    }));
+  }, []);
 
-  const toggleDragMode = () => {
+  const toggleDragMode = useCallback(() => {
     setDragMode((prev) => {
       if (prev === DragMode.pan) {
         return DragMode.rotate;
       }
       return DragMode.pan;
     });
-  };
+  }, []);
 
-  const toggleCompareButtonMode = () => {
+  const toggleCompareButtonMode = useCallback(() => {
     setCompareButtonMode((prev) => {
       if (prev === CompareButtonMode.Start) {
         loadManagerRef.current.startLoading();
@@ -192,9 +191,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       }
       return CompareButtonMode.Start;
     });
-  };
+  }, []);
 
-  const downloadClickHandler = () => {
+  const downloadClickHandler = useCallback(() => {
     const data = {
       viewState: viewState.main,
       datasets: [
@@ -216,42 +215,45 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     link.download = "comparison-stats.json";
 
     link.click();
-  };
+  }, []);
 
-  const disableButtonHandlerLeft = () => {
+  const disableButtonHandlerLeft = useCallback(() => {
     setDisableButton((prevValue) => [true, prevValue[1]]);
-  };
+  }, []);
 
-  const disableButtonHandlerRight = () => {
+  const disableButtonHandlerRight = useCallback(() => {
     setDisableButton((prevValue) => [prevValue[0], true]);
-  };
+  }, []);
 
-  const onChangeLayerHandler = (layer: LayerExample) => {
-    if (mode === ComparisonMode.withinLayer) {
-      setLayerLeftSide(layer);
-    }
-  };
+  const onChangeLayerHandler = useCallback(
+    (layer: LayerExample) => {
+      if (mode === ComparisonMode.withinLayer) {
+        setLayerLeftSide(layer);
+      }
+    },
+    [mode]
+  );
 
-  const onInsertBaseMapHandler = (baseMap: BaseMap) => {
+  const onInsertBaseMapHandler = useCallback((baseMap: BaseMap) => {
     setBaseMaps((prevValues) => [...prevValues, baseMap]);
     setSelectedBaseMap(baseMap);
-  };
+  }, []);
 
-  const onSelectBaseMapHandler = (baseMapId: string) => {
+  const onSelectBaseMapHandler = useCallback((baseMapId: string) => {
     const baseMap = baseMaps.find((map) => map.id === baseMapId);
 
     if (baseMap) {
       setSelectedBaseMap(baseMap);
     }
-  };
+  }, []);
 
-  const onDeleteBaseMapHandler = (baseMapId: string) => {
+  const onDeleteBaseMapHandler = useCallback((baseMapId: string) => {
     setBaseMaps((prevValues) =>
       prevValues.filter((baseMap) => baseMap.id !== baseMapId)
     );
 
     setSelectedBaseMap(BASE_MAPS[0]);
-  };
+  }, []);
 
   return (
     <Container layout={layout}>

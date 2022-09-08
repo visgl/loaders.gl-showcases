@@ -1,5 +1,5 @@
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
@@ -288,57 +288,65 @@ export const ComparisonSide = ({
     setMemoryStats(stats);
   };
 
-  const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+  const onChangeMainToolsPanelHandler = useCallback((active: ActiveButton) => {
     setActiveButton((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );
-  };
+  }, []);
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
+  const onLayerInsertHandler = useCallback((newLayer: LayerExample) => {
     setExamples((prevValues) => [...prevValues, newLayer]);
     setLayer(newLayer);
-  };
+  }, []);
 
-  const onLayerSelectHandler = (id: string) => {
+  const onLayerSelectHandler = useCallback((id: string) => {
     const selectedExample = examples.find((example) => example.id === id);
 
     if (selectedExample) {
       setLayer(selectedExample);
       onChangeLayer && onChangeLayer(selectedExample);
     }
-  };
+  }, []);
 
-  const onLayerDeleteHandler = (id: string) => {
+  const onLayerDeleteHandler = useCallback((id: string) => {
     setExamples((prevValues) =>
       prevValues.filter((example) => example.id !== id)
     );
     setLayer(null);
-  };
+  }, []);
 
-  const onPointToLayerHandler = () => {
+  const onPointToLayerHandler = useCallback(() => {
     if (tileset) {
       pointToTileset(tileset);
     }
-  };
+  }, [tileset]);
 
-  const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
-    if (sublayer.layerType === "3DObject") {
-      const flattenedSublayer = flattenedSublayers.find(
-        (fSublayer) => fSublayer.id === sublayer.id
-      );
-      if (flattenedSublayer) {
-        flattenedSublayer.visibility = sublayer.visibility;
-        useForceUpdate();
+  const onUpdateSublayerVisibilityHandler = useCallback(
+    (sublayer: Sublayer) => {
+      if (sublayer.layerType === "3DObject") {
+        const flattenedSublayer = flattenedSublayers.find(
+          (fSublayer) => fSublayer.id === sublayer.id
+        );
+        if (flattenedSublayer) {
+          flattenedSublayer.visibility = sublayer.visibility;
+          useForceUpdate();
+        }
       }
-    }
-  };
+    },
+    []
+  );
 
-  const selectedLayerIds = layer ? [layer.id] : [];
+  const onClose = useCallback(() => {
+    onChangeMainToolsPanelHandler(ActiveButton.options);
+  }, []);
+
+  const selectedLayerIds = useMemo(() => (layer ? [layer.id] : []), [layer]);
 
   const ToolsPanelWrapper =
     side === ComparisonSideMode.left
       ? LeftSideToolsPanelWrapper
       : RightSideToolsPanelWrapper;
+
   const OptionsPanelWrapper =
     side === ComparisonSideMode.left
       ? LeftSidePanelWrapper
@@ -388,14 +396,12 @@ export const ComparisonSide = ({
                 selectedLayerIds={selectedLayerIds}
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
-                onLayerDelete={(id) => onLayerDeleteHandler(id)}
+                onLayerDelete={onLayerDeleteHandler}
                 onPointToLayer={onPointToLayerHandler}
                 type={ListItemType.Radio}
                 sublayers={sublayers}
                 onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-                onClose={() =>
-                  onChangeMainToolsPanelHandler(ActiveButton.options)
-                }
+                onClose={onClose}
                 baseMaps={baseMaps}
                 selectedBaseMapId={selectedBaseMap.id}
                 insertBaseMap={onInsertBaseMap}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useAppLayout } from "../../../utils/layout";
@@ -110,7 +110,7 @@ const CloseButtonWrapper = styled.div`
 const EXISTING_AREA_WARNING =
   "You are trying to add an existing area to the map";
 
-export const LayersPanel = ({
+export const LayersPanel = memo(({
   id,
   type,
   layers,
@@ -267,4 +267,4 @@ export const LayersPanel = ({
       )}
     </Container>
   );
-};
+});

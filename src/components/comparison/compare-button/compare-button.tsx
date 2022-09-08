@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styled from "styled-components";
 import { CompareButtonMode } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
@@ -69,7 +70,7 @@ type CompareButtonProps = {
   onDownloadClick: () => void;
 };
 
-export const CompareButton = ({
+export const CompareButton = memo(({
   compareButtonMode,
   downloadStats,
   disableButton,
@@ -101,4 +102,4 @@ export const CompareButton = ({
       )}
     </Container>
   );
-};
+});

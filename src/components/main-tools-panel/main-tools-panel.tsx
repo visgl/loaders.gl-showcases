@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styled from "styled-components";
 import {
   color_brand_tertiary,
@@ -61,42 +62,44 @@ const Button = styled.button<ButtonProps>`
   }
 `;
 
-export const MainToolsPanel = ({
-  id,
-  activeButton,
-  showLayerOptions = true,
-  showComparisonSettings = true,
-  onChange = () => ({}),
-}: MainToolsPanelProps) => {
-  const layout = useAppLayout();
+export const MainToolsPanel = memo(
+  ({
+    id,
+    activeButton,
+    showLayerOptions = true,
+    showComparisonSettings = true,
+    onChange = () => ({}),
+  }: MainToolsPanelProps) => {
+    const layout = useAppLayout();
 
-  return (
-    <Container id={id}>
-      {showLayerOptions && (
+    return (
+      <Container id={id}>
+        {showLayerOptions && (
+          <Button
+            layout={layout}
+            active={activeButton === ActiveButton.options}
+            onClick={() => onChange(ActiveButton.options)}
+          >
+            <GearIcon />
+          </Button>
+        )}
+        {showComparisonSettings && (
+          <Button
+            layout={layout}
+            active={activeButton === ActiveButton.settings}
+            onClick={() => onChange(ActiveButton.settings)}
+          >
+            <SettingsIcon />
+          </Button>
+        )}
         <Button
           layout={layout}
-          active={activeButton === ActiveButton.options}
-          onClick={() => onChange(ActiveButton.options)}
+          active={activeButton === ActiveButton.memory}
+          onClick={() => onChange(ActiveButton.memory)}
         >
-          <GearIcon />
+          <MemoryIcon />
         </Button>
-      )}
-      {showComparisonSettings && (
-        <Button
-          layout={layout}
-          active={activeButton === ActiveButton.settings}
-          onClick={() => onChange(ActiveButton.settings)}
-        >
-          <SettingsIcon />
-        </Button>
-      )}
-      <Button
-        layout={layout}
-        active={activeButton === ActiveButton.memory}
-        onClick={() => onChange(ActiveButton.memory)}
-      >
-        <MemoryIcon />
-      </Button>
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);

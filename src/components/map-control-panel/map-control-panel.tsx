@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { CollapseDirection, ExpandState, DragMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
@@ -72,7 +72,7 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
   align-items: center;
 `;
 
-export const MapControllPanel = ({
+export const MapControllPanel = memo(({
   bearing,
   dragMode,
   onZoomIn,
@@ -130,4 +130,4 @@ export const MapControllPanel = ({
       </Button>
     </Container>
   );
-};
+});
