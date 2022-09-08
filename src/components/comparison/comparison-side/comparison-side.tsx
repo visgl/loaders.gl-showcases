@@ -1,5 +1,5 @@
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
@@ -24,11 +24,7 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import {
-  buildSublayersTree,
-  parseTilesetUrlParams,
-  useForceUpdate,
-} from "../../../utils";
+import { buildSublayersTree, parseTilesetUrlParams, useForceUpdate } from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
@@ -169,12 +165,12 @@ export const ComparisonSide = ({
   disableButtonHandler,
   onTilesetLoaded,
 }: ComparisonSideProps) => {
+  const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
   const [token, setToken] = useState(null);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
     BuildingSceneSublayer[]
   >([]);
-  const [tileset, setTileset] = useState<Tileset3D | null>(null);
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =
@@ -188,6 +184,7 @@ export const ComparisonSide = ({
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
+  const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -195,6 +192,8 @@ export const ComparisonSide = ({
     } else {
       setActiveButton(ActiveButton.none);
     }
+    setIsCompressedGeometry(true);
+    setIsCompressedTextures(true);
     setLayer(null);
   }, [mode]);
 
@@ -257,15 +256,18 @@ export const ComparisonSide = ({
       }));
   };
 
-  const onTilesetLoadHandler = (tileset: Tileset3D) => {
-    setTilesetStats(tileset.stats);
-    setTileset(tileset);
+  const onTilesetLoadHandler = (newTileset: Tileset3D) => {
+    setTilesetStats(newTileset.stats);
+    tilesetRef.current = newTileset;
+    setUpdateStatsNumber(prev => prev + 1);
     setTimeout(() => {
-      if (tileset.isLoaded()) {
+      if (newTileset.isLoaded()) {
         onTilesetLoaded({
-          url: tileset.url,
-          tilesetStats: tileset.stats,
+          url: newTileset.url,
+          tilesetStats: newTileset.stats,
           memoryStats,
+          isCompressedGeometry,
+          isCompressedTextures,
         });
       }
     }, IS_LOADED_DELAY);
@@ -273,11 +275,14 @@ export const ComparisonSide = ({
 
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
-      if (tile.tileset.isLoaded()) {
+      setUpdateStatsNumber(prev => prev + 1);
+      if (tile.tileset === tilesetRef.current && tile.tileset.isLoaded()) {
         onTilesetLoaded({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          isCompressedGeometry,
+          isCompressedTextures,
         });
       }
     }, IS_LOADED_DELAY);
@@ -316,10 +321,10 @@ export const ComparisonSide = ({
   }, []);
 
   const onPointToLayerHandler = useCallback(() => {
-    if (tileset) {
-      pointToTileset(tileset);
+    if (tilesetRef.current) {
+      pointToTileset(tilesetRef.current);
     }
-  }, [tileset]);
+  }, [tilesetRef.current]);
 
   const onUpdateSublayerVisibilityHandler = useCallback(
     (sublayer: Sublayer) => {
@@ -368,7 +373,7 @@ export const ComparisonSide = ({
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         i3sLayers={getI3sLayers()}
         loadNumber={loadNumber}
-        lastLayerSelectedId={tileset?.url || ""}
+        lastLayerSelectedId={tilesetRef.current?.url || ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={compareButtonMode === CompareButtonMode.Comparing}
@@ -435,6 +440,7 @@ export const ComparisonSide = ({
                 memoryStats={memoryStats}
                 tilesetStats={tilesetStats}
                 loadingTime={loadingTime}
+                updateNumber={updateStatsNumber}
                 onClose={() =>
                   onChangeMainToolsPanelHandler(ActiveButton.memory)
                 }

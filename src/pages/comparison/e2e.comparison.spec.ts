@@ -620,3 +620,58 @@ describe("Statistics", () => {
     await checkStatsticsPanel("#right-memory-usage-panel");
   });
 });
+
+describe("Compare button", () => {
+  let browser;
+  let page;
+
+  beforeAll(async () => {
+    browser = await puppeteer.launch();
+    page = await browser.newPage();
+    await page.setViewport({ width: 1366, height: 768 });
+  });
+
+  beforeEach(async () => {
+    await page.goto("http://localhost:3000/compare-within-layer");
+  });
+
+  afterAll(() => browser.close());
+
+  it("Compare button should be present", async () => {
+    await page.waitForSelector("#compare-button");
+    expect(await page.$$("#compare-button")).toBeDefined();
+
+    const compareButtonText = await page.$eval(
+      "#compare-button > :first-child",
+      (node) => node.innerText
+    );
+    const comapreButtonDisabled = await page.$eval(
+      "#compare-button > button",
+      (node) => node.disabled
+    );
+    const elemsArray = await page.$$("#compare-button > button");
+    expect(comapreButtonDisabled).toBe(true);
+    expect(elemsArray.length).toEqual(1);
+    expect(compareButtonText).toEqual("Start comparing");
+  });
+
+  it("Compare button should change mode", async () => {
+    await page.waitForSelector("#compare-button");
+    const sfLayer = await page.$(
+      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
+    );
+    const comapreButton = await page.$("#compare-button > button");
+    await sfLayer.click();
+    await comapreButton.click();
+
+    const compareButtonText = await page.$eval(
+      "#compare-button > :first-child",
+      (node) => node.innerText
+    );
+    expect(compareButtonText).toEqual("Stop comparing");
+
+    await comapreButton.click();
+    const elemsArray = await page.$$("#compare-button > button");
+    expect(elemsArray.length).toEqual(2);
+  });
+});

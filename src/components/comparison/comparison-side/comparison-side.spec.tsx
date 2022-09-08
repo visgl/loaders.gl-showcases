@@ -186,10 +186,12 @@ describe("ComparisonSide", () => {
     jest.useFakeTimers();
     callRender(renderWithTheme);
 
-    const { onTileLoad } = DeckGlI3sMock.mock.lastCall[0];
+    const tilesetStub = { url: "http://tileset.url", isLoaded: () => true };
+    const { onTileLoad, onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    act(() => onTilesetLoad(tilesetStub));
     act(() =>
       onTileLoad({
-        tileset: { url: "http://tileset.url", isLoaded: () => true },
+        tileset: tilesetStub,
       })
     );
 
