@@ -167,4 +167,6 @@ export type StatsMap = {
   url: string;
   tilesetStats: Stats;
   memoryStats: Stats | null;
+  isCompressedGeometry: boolean;
+  isCompressedTextures: boolean;
 };
