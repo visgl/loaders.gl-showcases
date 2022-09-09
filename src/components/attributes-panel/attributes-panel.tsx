@@ -1,5 +1,5 @@
 import type { StatisticsInfo } from "@loaders.gl/i3s";
-import type { FeatureAttributes } from "../../pages/viewer-app/viewer-app";
+import type { FeatureAttributes } from "../../types";
 
 import { useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
@@ -12,22 +12,8 @@ import { color_brand_tertiary } from "../../constants/colors";
 import StatisticsIcon from "../../../public/icons/statistics.svg";
 import ArrowLeft from "../../../public/icons/arrow-left.svg";
 
-type AttributesPanelProps = {
-  title: string;
-  tilesetName: string;
-  attributes: FeatureAttributes | null;
-  tilesetBasePath: string;
-  statisticsInfo: StatisticsInfo[] | null;
-  handleClosePanel: () => void;
-};
-
 type RowProps = {
   selectable: boolean;
-};
-
-type HeaderWrapperProps = {
-  title: string;
-  selectedAttributeStatsInfo: boolean;
 };
 
 const Container = styled.div`
@@ -50,11 +36,10 @@ const Container = styled.div`
   box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
 `;
 
-const HeaderWrapper = styled.div<HeaderWrapperProps>`
+const HeaderWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  justify-content: ${({ title, selectedAttributeStatsInfo }) =>
-    title || selectedAttributeStatsInfo ? "space-between" : "flex-end"};
+  justify-content: space-between;
   align-items: center;
   width: 100%;
 `;
@@ -134,13 +119,22 @@ const BackButton = styled(ArrowLeft)`
 const NO_DATA = "No Data";
 const STATISTICS_TITLE = "Statistics";
 
+type AttributesPanelProps = {
+  title: string;
+  tilesetName: string;
+  attributes: FeatureAttributes | null;
+  tilesetBasePath: string;
+  statisticsInfo: StatisticsInfo[] | null;
+  onClose: () => void;
+};
+
 export const AttributesPanel = ({
   title,
   tilesetName,
   attributes,
   statisticsInfo,
   tilesetBasePath,
-  handleClosePanel,
+  onClose,
 }: AttributesPanelProps) => {
   const theme = useTheme();
 
@@ -160,14 +154,14 @@ export const AttributesPanel = ({
     setSelectedAttributeStatsInfo(statisticsInfo);
   };
 
-  const prepareRows = () => {
+  const renderRows = () => {
     const rows: JSX.Element[] = [];
 
     for (const attributeName in attributes) {
       const attributeValue = formatValue(attributes[attributeName]);
       const attributeStatisticInfo =
         statisticsInfo?.find((stat) => stat.name === attributeName) || null;
-      const row = createItemRow(
+      const row = renderItemRow(
         attributeName,
         attributeValue,
         attributeStatisticInfo
@@ -178,7 +172,7 @@ export const AttributesPanel = ({
     return rows;
   };
 
-  const createItemRow = (
+  const renderItemRow = (
     key: string,
     value: string,
     attributeStatisticInfo: StatisticsInfo | null
@@ -206,10 +200,7 @@ export const AttributesPanel = ({
 
   return (
     <Container>
-      <HeaderWrapper
-        title={title}
-        selectedAttributeStatsInfo={Boolean(selectedAttributeStatsInfo)}
-      >
+      <HeaderWrapper>
         {selectedAttributeStatsInfo && (
           <BackButton
             data-testid="attributes-panel-back-button"
@@ -217,16 +208,14 @@ export const AttributesPanel = ({
             onClick={() => setSelectedAttributeStatsInfo(null)}
           />
         )}
-        {title && !selectedAttributeStatsInfo && <Title>{title}</Title>}
-        {selectedAttributeStatsInfo && <Title>{STATISTICS_TITLE}</Title>}
-        <CloseButton
-          id="comparison-parms-panel-close-button"
-          onClick={handleClosePanel}
-        />
+        <Title>
+          {(selectedAttributeStatsInfo && STATISTICS_TITLE) || title}
+        </Title>
+        <CloseButton id="attributes-panel-close-button" onClick={onClose} />
       </HeaderWrapper>
       <SplitLine />
       {!selectedAttributeStatsInfo && (
-        <ContentWrapper>{prepareRows()}</ContentWrapper>
+        <ContentWrapper>{renderRows()}</ContentWrapper>
       )}
       {selectedAttributeStatsInfo && (
         <AttributeStats
@@ -234,7 +223,7 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
-          onColorizeByAttributeClick={function (): void {
+          onColorizeByAttributeClick={() => {
             throw new Error("Function not implemented.");
           }}
         />

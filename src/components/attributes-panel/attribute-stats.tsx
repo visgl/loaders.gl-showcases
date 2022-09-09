@@ -1,6 +1,10 @@
 // TODO Add export type to index file in loaders.gl
-import type { ValueCount, Histogram } from "@loaders.gl/i3s/dist/types";
-import type { StatisticsInfo, StatsInfo } from "@loaders.gl/i3s";
+import type {
+  StatisticsInfo,
+  StatsInfo,
+  Histogram,
+  ValueCount
+} from "@loaders.gl/i3s/dist/types";
 
 import { useEffect, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";
@@ -16,14 +20,6 @@ import DropdownUp from "../../../public/icons/dropdown-up.svg";
 
 type VisibilityProps = {
   visible: boolean;
-};
-
-type AttributeStatsProps = {
-  attributeName: string;
-  statisticsInfo: StatisticsInfo;
-  tilesetName: string;
-  tilesetBasePath: string;
-  onColorizeByAttributeClick: () => void;
 };
 
 const Container = styled.div`
@@ -132,6 +128,14 @@ const COUNT_TITLE = "Count";
 
 const statisitcsMap = new Map();
 
+type AttributeStatsProps = {
+  attributeName: string;
+  statisticsInfo: StatisticsInfo;
+  tilesetName: string;
+  tilesetBasePath: string;
+  onColorizeByAttributeClick: () => void;
+};
+
 export const AttributeStats = ({
   attributeName,
   statisticsInfo,
@@ -196,7 +200,7 @@ export const AttributeStats = ({
     getAttributeStatsInfo(tilesetBasePath, statisticsInfo.href);
   }, [attributeName]);
 
-  const generateStatisticRows = () => {
+  const renderStatisticRows = () => {
     const statisticsRows: JSX.Element[] = [];
 
     for (const statName in statistics) {
@@ -209,7 +213,7 @@ export const AttributeStats = ({
 
         case MOST_FREQUENT_VALUES: {
           statisticsRows.push(<Statistic key={statName}>{statName}</Statistic>);
-          const frequentValues = generateMostFrequentValuesStats(statValue);
+          const frequentValues = renderMostFrequentValuesStats(statValue);
           statisticsRows.push(
             <Statistic key={`${statName}-${statValue}`}>
               {frequentValues}
@@ -230,7 +234,7 @@ export const AttributeStats = ({
     return statisticsRows;
   };
 
-  const generateMostFrequentValuesStats = (frequentValues: ValueCount[]) => {
+  const renderMostFrequentValuesStats = (frequentValues: ValueCount[]) => {
     const valueCountRows: JSX.Element[] = [
       <ValueCountContainer key={"most-frequetn-values-title"}>
         <ValueCountItem>{VALUE_TITLE}</ValueCountItem>
@@ -250,7 +254,7 @@ export const AttributeStats = ({
     return valueCountRows;
   };
 
-  const statisticRows = useMemo(() => generateStatisticRows(), [statistics]);
+  const statisticRows = useMemo(() => renderStatisticRows(), [statistics]);
 
   return (
     <>

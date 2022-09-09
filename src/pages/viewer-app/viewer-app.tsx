@@ -1,3 +1,4 @@
+import type { FeatureAttributes, Sublayer, LayerExample } from "../../types";
 // TODO Add export type to index file in loaders.gl
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
@@ -11,7 +12,6 @@ import {
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
   SceneLayer3D,
-  StatsInfo,
   StatisticsInfo,
 } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
@@ -35,20 +35,9 @@ import {
   color_brand_primary,
   color_canvas_primary_inverted,
 } from "../../constants/colors";
-import { Sublayer } from "../../types";
-import { LayerExample } from "../../types";
+
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
-
-
-export type FeatureAttributes = {
-  [key: string]: string;
-};
-
-export type StatisticsMap = {
-  [key: string]: StatsInfo;
-};
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -101,7 +90,8 @@ export const ViewerApp = () => {
     StatisticsInfo[] | null
   >(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
-  const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState("");
+  const [selectedTilesetBasePath, setSelectedTilesetBasePath] =
+    useState<string>("");
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
@@ -375,7 +365,7 @@ export const ViewerApp = () => {
         selectedFeatureAttributes?.OBJECTID ||
         ""
       }
-      handleClosePanel={handleClosePanel}
+      onClose={handleClosePanel}
       tilesetName={mainTileset.name}
       attributes={selectedFeatureAttributes}
       statisticsInfo={tilesetStatisticsInfo}
