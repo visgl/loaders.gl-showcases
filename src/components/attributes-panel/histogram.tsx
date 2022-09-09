@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import styled, { useTheme } from "styled-components";
 import type { Histogram } from "@loaders.gl/i3s/dist/types";
 
+import { useMemo } from "react";
+import styled, { useTheme } from "styled-components";
 import {
   AreaChart,
   Area,
@@ -14,11 +14,6 @@ import {
 import { color_brand_quaternary } from "../../constants/colors";
 import { HistogramTooltip } from "./histogram-tooltip";
 
-type HistrogramProps = {
-  attributeName: string;
-  histogramData: Histogram;
-};
-
 const ChartContainer = styled.div`
   height: 176px;
 
@@ -26,6 +21,11 @@ const ChartContainer = styled.div`
     border-radius: 20px;
   }
 `;
+
+type HistrogramProps = {
+  attributeName: string;
+  histogramData: Histogram;
+};
 
 export const HistogramChart = ({
   histogramData,
