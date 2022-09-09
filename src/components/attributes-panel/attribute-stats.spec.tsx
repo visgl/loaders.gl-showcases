@@ -77,8 +77,6 @@ beforeAll(() => {
 
 describe("AttributeStats", () => {
   it("Should render Attribute Stats", async () => {
-    let debugFunc;
-
     const onColorizeByAttributeClick = jest.fn();
 
     act(() => {

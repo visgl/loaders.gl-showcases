@@ -29,7 +29,7 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={null}
-        handleClosePanel={handleClosePanel}
+        onClose={handleClosePanel}
       />
     );
 
@@ -61,7 +61,7 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={statisticsInfo}
-        handleClosePanel={handleClosePanel}
+        onClose={handleClosePanel}
       />
     );
 
