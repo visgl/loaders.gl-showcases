@@ -1,3 +1,7 @@
+import type { FeatureAttributes, Sublayer, LayerExample } from "../../types";
+// TODO Add export type to index file in loaders.gl
+import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+
 import { useEffect, useRef, useState } from "react";
 import { render } from "react-dom";
 import styled from "styled-components";
@@ -8,6 +12,7 @@ import {
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
   SceneLayer3D,
+  StatisticsInfo,
 } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
@@ -27,14 +32,12 @@ import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
 import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
-  color_brand_primary, color_canvas_primary_inverted,
+  color_brand_primary,
+  color_canvas_primary_inverted,
 } from "../../constants/colors";
-import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { FeatureAttributes } from "../../components/feature-attributes/feature-attributes";
-import { Sublayer } from "../../types";
-import { LayerExample } from "../../types";
+
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
-import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -81,9 +84,14 @@ export const ViewerApp = () => {
   const [token, setToken] = useState(null);
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
-    useState(null);
+    useState<FeatureAttributes | null>(null);
+
+  const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
+    StatisticsInfo[] | null
+  >(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
-  const [selectedTilesetBasePath, setSelectedTilesetBasePath] = useState(null);
+  const [selectedTilesetBasePath, setSelectedTilesetBasePath] =
+    useState<string>("");
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
@@ -264,10 +272,15 @@ export const ViewerApp = () => {
       info.index,
       options
     );
-    setAttributesLoading(false);
 
     const selectedTilesetBasePath = info.object.tileset.basePath;
-    // @ts-expect-error - Argument of type '{} | null' is not assignable to parameter of type 'SetStateAction<null>'.
+    const statisticsInfo = info.object.tileset?.tileset?.statisticsInfo;
+
+    if (statisticsInfo) {
+      setTilesetStatisticsInfo(statisticsInfo);
+    }
+
+    setAttributesLoading(false);
     setSelectedFeatureAttributes(selectedFeatureAttributes);
     setSelectedFeatureIndex(info.index);
     setSelectedTilesetBasePath(selectedTilesetBasePath);
@@ -345,20 +358,20 @@ export const ViewerApp = () => {
     return null;
   };
 
-  const renderAttributesPanel = () => {
-    const title = selectedFeatureAttributes
-      ? // @ts-expect-error - Property 'NAME' does not exist on type 'never'.
-        selectedFeatureAttributes.NAME || selectedFeatureAttributes.OBJECTID
-      : "";
-
-    return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <FeatureAttributes
-          attributesObject={selectedFeatureAttributes}
-        ></FeatureAttributes>
-      </TileDetailsPanel>
-    );
-  };
+  const renderAttributesPanel = () => (
+    <AttributesPanel
+      title={
+        selectedFeatureAttributes?.NAME ||
+        selectedFeatureAttributes?.OBJECTID ||
+        ""
+      }
+      onClose={handleClosePanel}
+      tilesetName={mainTileset.name}
+      attributes={selectedFeatureAttributes}
+      statisticsInfo={tilesetStatisticsInfo}
+      tilesetBasePath={selectedTilesetBasePath}
+    />
+  );
 
   const renderMemory = () => {
     return (
