@@ -7,6 +7,10 @@ import { load } from "@loaders.gl/core";
 
 jest.mock("@loaders.gl/core");
 
+jest.mock("./histogram", () => ({
+  HistogramChart: jest.fn().mockImplementation(() => <div>HistogramChart</div>),
+}));
+
 const loadMock = load as unknown as jest.Mocked<any>;
 
 const stats = {
@@ -112,10 +116,10 @@ describe("AttributeStats", () => {
     }
 
     expect(screen.getByText("Histogram")).toBeInTheDocument();
+    expect(screen.getByText("HistogramChart")).toBeInTheDocument();
     expect(screen.getByText("Colorize by Attribute")).toBeInTheDocument();
     expect(screen.getByText("ToggleSwitch")).toBeInTheDocument();
 
-    expect(screen.getByTestId("histogram-svg")).toBeInTheDocument();
     expect(screen.getByTestId("histogram-split-line")).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("histogram-arrow"));
@@ -180,6 +184,6 @@ describe("AttributeStats", () => {
       }
     }
 
-    expect(screen.queryByText("Histogram")).not.toBeInTheDocument();
+    expect(screen.queryByText("HistogramChart")).not.toBeInTheDocument();
   });
 });

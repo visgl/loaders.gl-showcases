@@ -15,6 +15,7 @@ import {
   color_canvas_primary_inverted,
   color_canvas_secondary_inverted,
   color_accent_secondary,
+  color_brand_quinary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -65,7 +66,8 @@ const THEMES: AppThemes = {
       mainToolsPanelDimIconColor: hilite_canvas_secondary,
       mainHelpPanelColor: color_brand_primary,
       mainAttibuteItemColor: color_brand_primary,
-      mainAttributeHighlightColor: hilite_canvas_primary
+      mainAttributeHighlightColor: hilite_canvas_primary,
+      mainHistogramColor: color_brand_secondary,
     },
     name: Theme.Dark,
   },
@@ -91,7 +93,8 @@ const THEMES: AppThemes = {
       mainToolsPanelDimIconColor: dim_canvas_secondary,
       mainHelpPanelColor: color_canvas_secondary,
       mainAttibuteItemColor: hilite_canvas_secondary,
-      mainAttributeHighlightColor: dim_canvas_secondary
+      mainAttributeHighlightColor: dim_canvas_secondary,
+      mainHistogramColor: color_brand_quinary,
     },
     name: Theme.Light,
   },

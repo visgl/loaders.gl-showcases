@@ -1,9 +1,9 @@
 // TODO Add export type to index file in loaders.gl
-import type { ValueCount } from "@loaders.gl/i3s/dist/types";
 import type {
   StatisticsInfo,
   StatsInfo,
   Histogram,
+  ValueCount
 } from "@loaders.gl/i3s/dist/types";
 
 import { useEffect, useMemo, useState } from "react";
@@ -13,11 +13,10 @@ import { load } from "@loaders.gl/core";
 import { JSONLoader } from "@loaders.gl/loader-utils";
 import { ToggleSwitch } from "../toogle-switch/toggle-switch";
 import { LoadingSpinner } from "../loading-spinner/loading-spinner";
+import { HistogramChart } from "./histogram";
 
 import LayersIcon from "../../../public/icons/layers.svg";
 import DropdownUp from "../../../public/icons/dropdown-up.svg";
-// TODO Replace with real histogram
-import HistogramChart from "../../../public/icons/histogram.svg";
 
 type VisibilityProps = {
   visible: boolean;
@@ -284,11 +283,10 @@ export const AttributeStats = ({
                     onClick={() => setShowHistogram((prevValue) => !prevValue)}
                   />
                 </HistogramTitle>
-                {/* TODO: Add real Histogram */}
                 {showHistogram && (
                   <HistogramChart
-                    data-testid="histogram-svg"
-                    fill={theme.colors.mainColor}
+                    attributeName={attributeName}
+                    histogramData={histogramData}
                   />
                 )}
               </HistograpPanel>
