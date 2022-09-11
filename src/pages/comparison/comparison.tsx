@@ -264,6 +264,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         compareButtonMode={compareButtonMode}
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
+        loadingStopped={loadManagerRef.current.loadingStopped}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
@@ -285,6 +286,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           compareButtonMode === CompareButtonMode.Start && compared
         }
         disableButton={disableButton.includes(false)}
+        disableStatsButton={loadManagerRef.current.loadingStopped}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
       />
@@ -299,6 +301,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
+        loadingStopped={loadManagerRef.current.loadingStopped}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}

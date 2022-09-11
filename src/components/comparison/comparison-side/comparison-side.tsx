@@ -24,7 +24,11 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import { buildSublayersTree, parseTilesetUrlParams, useForceUpdate } from "../../../utils";
+import {
+  buildSublayersTree,
+  parseTilesetUrlParams,
+  useForceUpdate,
+} from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
@@ -130,6 +134,7 @@ type ComparisonSideProps = {
   dragMode: DragMode;
   loadingTime: number;
   loadTileset?: boolean;
+  loadingStopped: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -156,6 +161,7 @@ export const ComparisonSide = ({
   dragMode,
   loadingTime,
   loadTileset = true,
+  loadingStopped,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -208,7 +214,11 @@ export const ComparisonSide = ({
       setActiveButton(ActiveButton.memory);
       setLoadNumber((prev) => prev + 1);
     }
-  }, [compareButtonMode]);
+
+    if (compareButtonMode === CompareButtonMode.Start && loadingStopped) {
+      setActiveButton(ActiveButton.options);
+    }
+  }, [compareButtonMode, loadingStopped]);
 
   useEffect(() => {
     if (!layer || !loadTileset) {

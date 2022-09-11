@@ -60,6 +60,7 @@ describe("ComparisonSide", () => {
         showComparisonSettings
         dragMode={DragMode.pan}
         loadingTime={1123}
+        loadingStopped={false}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}

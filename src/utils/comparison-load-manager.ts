@@ -22,6 +22,10 @@ export class ComparisonLoadManager extends EventTarget {
     return this._rightStats;
   }
 
+  get loadingStopped(): boolean {
+    return !this.leftResolved || !this.rightResolved;
+  }
+
   startLoading() {
     this.leftStartTime = Date.now();
     this.leftResolved = false;
