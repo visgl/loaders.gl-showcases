@@ -12,7 +12,7 @@ const callRender = (renderFunc, props = {}) => {
       compareButtonMode={CompareButtonMode.Start}
       downloadStats={false}
       disableButton={true}
-      disableStatsButton={false}
+      disableDownloadButton={false}
       onCompareModeToggle={onCompareModeToggle}
       onDownloadClick={onDownloadClick}
       {...props}
@@ -59,7 +59,7 @@ describe("CompareButton", () => {
   it("Should disable download button when comparing is stopped", () => {
     const { container } = callRender(renderWithTheme, {
       downloadStats: true,
-      disableStatsButton: true,
+      disableDownloadButton: true,
     });
     const downloadButton = container.firstChild.lastChild;
     expect(downloadButton).toBeDisabled();

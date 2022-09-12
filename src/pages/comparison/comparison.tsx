@@ -286,7 +286,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           compareButtonMode === CompareButtonMode.Start && compared
         }
         disableButton={disableButton.includes(false)}
-        disableStatsButton={loadManagerRef.current.loadingStopped}
+        disableDownloadButton={loadManagerRef.current.loadingStopped}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
       />
