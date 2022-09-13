@@ -3,7 +3,7 @@ import type {
   StatisticsInfo,
   StatsInfo,
   Histogram,
-  ValueCount
+  ValueCount,
 } from "@loaders.gl/i3s/dist/types";
 
 import { useEffect, useMemo, useState } from "react";
@@ -120,6 +120,19 @@ const SpinnerContainer = styled.div<VisibilityProps>`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
 `;
 
+const FadeContainer = styled.div`
+  display: flex; 
+  justify-content: center;
+  margin-bottom: 36px;
+`;
+
+const Fade = styled.div`
+  width: 295px;
+  height: 25px;
+  background: linear-gradient(90deg, #9292fc 0%, #0e73f2 100%, #2c2caf 100%);
+  border-radius: 2px;
+`;
+
 const HISTOGRAM = "histogram";
 const MOST_FREQUENT_VALUES = "mostFrequentValues";
 const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
@@ -133,6 +146,7 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
+  showColorizeByAttribute: boolean;
   onColorizeByAttributeClick: () => void;
 };
 
@@ -141,6 +155,7 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
+  showColorizeByAttribute,
   onColorizeByAttributeClick,
 }: AttributeStatsProps) => {
   const theme = useTheme();
@@ -300,10 +315,15 @@ export const AttributeStats = ({
             <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
             <ToggleSwitch
               id={"colorize-by-attribute"}
-              checked={true}
+              checked={showColorizeByAttribute}
               onChange={onColorizeByAttributeClick}
             />
           </AttributeColorize>
+          {showColorizeByAttribute && (
+            <FadeContainer>
+              <Fade />
+            </FadeContainer>
+          )}
         </Container>
       )}
     </>
