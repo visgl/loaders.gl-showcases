@@ -5,6 +5,7 @@ import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
 import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { lumaStats } from "@luma.gl/core";
 
 import {
   ActiveButton,
@@ -289,7 +290,7 @@ export const ComparisonSide = ({
   };
 
   const onWebGLInitialized = (gl) => {
-    const stats = gl.stats.get("Memory Usage");
+    const stats = lumaStats.get(`Memory Usage${gl.canvas.id}`);
     setMemoryStats(stats);
   };
 
