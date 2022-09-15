@@ -24,6 +24,6 @@ export const EXAMPLES: LayerExample[] = [
   {
     id: "building",
     name: "Building",
-    url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Admin_Building_v17/SceneServer/layers/0",
+    url: "https://tiles.arcgis.com/tiles/cFEFS0EWrhfDeVw9/arcgis/rest/services/Turanga_Library/SceneServer/layers/0",
   },
 ];
