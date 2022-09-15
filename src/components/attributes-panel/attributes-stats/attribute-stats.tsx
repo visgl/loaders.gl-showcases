@@ -11,12 +11,13 @@ import styled, { useTheme } from "styled-components";
 
 import { load } from "@loaders.gl/core";
 import { JSONLoader } from "@loaders.gl/loader-utils";
-import { ToggleSwitch } from "../toogle-switch/toggle-switch";
-import { LoadingSpinner } from "../loading-spinner/loading-spinner";
-import { HistogramChart } from "./histogram";
+import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
+import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
+import { HistogramChart } from "../histogram";
+import { ColorValueItem } from "./color-value-item";
 
-import LayersIcon from "../../../public/icons/layers.svg";
-import DropdownUp from "../../../public/icons/dropdown-up.svg";
+import LayersIcon from "../../../../public/icons/layers.svg";
+import DropdownUp from "../../../../public/icons/dropdown-up.svg";
 
 type VisibilityProps = {
   visible: boolean;
@@ -79,6 +80,8 @@ const HistogramTitle = styled.div`
 
 const HistogamArrow = styled(DropdownUp)`
   cursor: pointer;
+  width: 24px;
+  height: 24px;
   fill: ${({ theme }) => theme.colors.fontColor};
   transform: ${({ open }) => (open ? "none" : "rotate(180deg)")};
 
@@ -120,10 +123,11 @@ const SpinnerContainer = styled.div<VisibilityProps>`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
 `;
 
-const FadeContainer = styled.div`
-  display: flex; 
+const FadeContainer = styled.section`
+  display: flex;
+  width: 100%;
   justify-content: center;
-  margin-bottom: 36px;
+  margin-bottom: 18px;
 `;
 
 const Fade = styled.div`
@@ -133,11 +137,20 @@ const Fade = styled.div`
   border-radius: 2px;
 `;
 
+const ColorizeValuesList = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-bottom: 36px;
+`;
+
 const HISTOGRAM = "histogram";
 const MOST_FREQUENT_VALUES = "mostFrequentValues";
 const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
 const VALUE_TITLE = "Value";
 const COUNT_TITLE = "Count";
+const VISIBLE = true;
+const NOT_VISIBLE = false;
 
 const statisitcsMap = new Map();
 
@@ -310,19 +323,40 @@ export const AttributeStats = ({
               )}
             </>
           )}
-
-          <AttributeColorize>
-            <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
-            <ToggleSwitch
-              id={"colorize-by-attribute"}
-              checked={showColorizeByAttribute}
-              onChange={onColorizeByAttributeClick}
-            />
-          </AttributeColorize>
-          {showColorizeByAttribute && (
-            <FadeContainer>
-              <Fade />
-            </FadeContainer>
+          {statistics?.max && statistics?.avg && (
+            <>
+              <AttributeColorize>
+                <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
+                <ToggleSwitch
+                  id={"colorize-by-attribute"}
+                  checked={showColorizeByAttribute}
+                  onChange={onColorizeByAttributeClick}
+                />
+              </AttributeColorize>
+              {showColorizeByAttribute && (
+                <>
+                  <FadeContainer>
+                    <Fade />
+                  </FadeContainer>
+                  <ColorizeValuesList>
+                    <ColorValueItem
+                      arrowVisibility={VISIBLE}
+                      deg={-90}
+                      yearCount={statistics.min}
+                    />
+                    <ColorValueItem
+                      arrowVisibility={NOT_VISIBLE}
+                      yearCount={Math.floor(statistics.avg)}
+                    />
+                    <ColorValueItem
+                      arrowVisibility={VISIBLE}
+                      deg={90}
+                      yearCount={statistics.max}
+                    />
+                  </ColorizeValuesList>
+                </>
+              )}
+            </>
           )}
         </Container>
       )}

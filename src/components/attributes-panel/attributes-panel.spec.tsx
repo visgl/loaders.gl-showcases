@@ -9,7 +9,7 @@ jest.mock("../close-button/close-button", () => ({
     .mockImplementation((props) => <div {...props}>CloseButton</div>),
 }));
 
-jest.mock("./attribute-stats", () => ({
+jest.mock("./attributes-stats/attribute-stats", () => ({
   AttributeStats: jest.fn().mockImplementation(() => <div>AttributeStats</div>),
 }));
 
