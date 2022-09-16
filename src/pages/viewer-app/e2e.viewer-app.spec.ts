@@ -40,12 +40,12 @@ describe("ViewerApp", () => {
   });
 
   it("Contains building explorer", async () => {
-    await page.select("#tilesets", "building");
+    await page.select("#tilesets", "turanga-library");
     await page.waitForSelector("#building-explorer");
     await page.click("#BuildingExplorerToggle~span");
     await page.click("#CheckBox220-icon");
     await page.click("#CheckBox230-icon");
-    await page.click("#CheckBox240-icon");
+    await page.click("#CheckBox210-icon");
   }, 20000);
 
   it("Contains statistic panel", async () => {

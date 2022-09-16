@@ -22,8 +22,8 @@ export const EXAMPLES: LayerExample[] = [
     url: "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
   },
   {
-    id: "building",
-    name: "Building",
+    id: "turanga-library",
+    name: "Turanga Library",
     url: "https://tiles.arcgis.com/tiles/cFEFS0EWrhfDeVw9/arcgis/rest/services/Turanga_Library/SceneServer/layers/0",
   },
 ];
