@@ -186,6 +186,7 @@ export const ComparisonSide = ({
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
+  const sideId = `${side}-deck-container`;
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -289,8 +290,8 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const onWebGLInitialized = (gl) => {
-    const stats = lumaStats.get(`Memory Usage${gl.canvas.id}`);
+  const onWebGLInitialized = () => {
+    const stats = lumaStats.get(`Memory Usage${sideId}`);
     setMemoryStats(stats);
   };
 
@@ -353,7 +354,7 @@ export const ComparisonSide = ({
   return (
     <Container layout={layout}>
       <DeckGlI3s
-        id={`${side}-deck-container`}
+        id={sideId}
         parentViewState={{
           ...viewState,
           main: {
