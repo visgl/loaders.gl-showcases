@@ -23,7 +23,7 @@ describe("DebugApp", () => {
         "san-francisco-v1.7",
         "new-york",
         "san-francisco-v1.6",
-        "building"
+        "turanga-library"
       ];
 
     await page.waitForSelector("#control-panel");
@@ -32,12 +32,12 @@ describe("DebugApp", () => {
     for await (const item of controlOptions) {
       const tileset = await page.select("#tilesets", item);    
         expect(tileset).toEqual([item])
-        if (tileset.includes("building")) {
+        if (tileset.includes("turanga-library")) {
         await page.waitForSelector("#building-explorer");
         await page.click("#BuildingExplorerToggle~span");
         await page.click("#CheckBox220-icon");
         await page.click("#CheckBox230-icon");
-        await page.click("#CheckBox240-icon");
+        await page.click("#CheckBox210-icon");
       }
     }
     

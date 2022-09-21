@@ -1,9 +1,10 @@
-import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+import { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
 import { ViewState } from "@deck.gl/core";
 import { Stats } from "@probe.gl/stats";
+
 
 export enum Theme {
   Dark,
@@ -169,4 +170,12 @@ export type StatsMap = {
   memoryStats: Stats | null;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
+};
+
+export type FeatureAttributes = {
+  [key: string]: string;
+};
+
+export type StatisticsMap = {
+  [key: string]: StatsInfo;
 };
