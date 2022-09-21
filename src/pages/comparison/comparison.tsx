@@ -90,6 +90,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   ]);
   const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
+  const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
 
   const layout = useAppLayout();
 
@@ -107,6 +108,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   useEffect(() => {
     const loadedHandler = () => {
       setCompareButtonMode(CompareButtonMode.Start);
+      setHasBeenCompared(true);
     };
     loadManagerRef.current.addEventListener("loaded", loadedHandler);
     return () => {
@@ -188,8 +190,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setCompareButtonMode((prev) => {
       if (prev === CompareButtonMode.Start) {
         loadManagerRef.current.startLoading();
+        setHasBeenCompared(false);
         return CompareButtonMode.Comparing;
       }
+      loadManagerRef.current.stopLoading();
       return CompareButtonMode.Start;
     });
   };
@@ -264,7 +268,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         compareButtonMode={compareButtonMode}
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
-        loadingStopped={loadManagerRef.current.loadingStopped}
+        hasBeenCompared={hasBeenCompared}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
@@ -286,7 +290,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           compareButtonMode === CompareButtonMode.Start && compared
         }
         disableButton={disableButton.includes(false)}
-        disableDownloadButton={loadManagerRef.current.loadingStopped}
+        disableDownloadButton={!hasBeenCompared}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
       />
@@ -301,7 +305,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         dragMode={dragMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
-        loadingStopped={loadManagerRef.current.loadingStopped}
+        hasBeenCompared={hasBeenCompared}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
