@@ -141,8 +141,7 @@ export const AttributesPanel = ({
   const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
     useState<StatisticsInfo | null>(null);
   const [selectedAttributeName, setSelectedAttributeName] = useState("");
-  const [showColorizeByAttribute, setShowColorizeByAttribute] =
-    useState<boolean>(false);
+  
 
   useEffect(() => {
     setSelectedAttributeStatsInfo(null);
@@ -200,10 +199,6 @@ export const AttributesPanel = ({
     );
   };
 
-  const onColorizeByAttributeClick = () => {
-    setShowColorizeByAttribute((prev) => !prev)
-  };
-
   return (
     <Container>
       <HeaderWrapper>
@@ -229,8 +224,6 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
-          showColorizeByAttribute={showColorizeByAttribute}
-          onColorizeByAttributeClick={onColorizeByAttributeClick}
         />
       )}
     </Container>

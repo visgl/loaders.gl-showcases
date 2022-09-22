@@ -1,11 +1,12 @@
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { ColorValueItem } from "./color-value-item";
+import { ArrowDirection } from "../../../types";
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <ColorValueItem
-      deg={90}
-      yearCount={2000}
+      arrowDirection={ArrowDirection.left}
+      colorValue={2000}
       arrowVisibility={true}
       {...props}
     />
@@ -20,9 +21,22 @@ describe("ColorValueItem", () => {
     const colorValueContainer = container.firstChild.lastChild;
 
     expect(colorValueContainer.childNodes.length).toEqual(2);
-    expect(colorValueContainer.firstChild).toHaveStyle(
-      "transform: rotate(90deg)"
-    );
+  });
+
+  it("Should render with left arrow", () => {
+    const { container } = callRender(renderWithTheme);
+    const colorValueContainer = container.firstChild.lastChild;
+
+    expect(colorValueContainer.firstChild).toHaveStyle("transform: none");
+  });
+
+  it("Should render with right arrow", () => {
+    const { container } = callRender(renderWithTheme, {
+      arrowDirection: ArrowDirection.right,
+    });
+    const colorValueContainer = container.firstChild.lastChild;
+
+    expect(colorValueContainer.firstChild).toHaveStyle("transform: rotate(-180deg)");
   });
 
   it("Should render without arrow", () => {

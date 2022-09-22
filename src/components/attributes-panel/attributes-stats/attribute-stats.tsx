@@ -17,7 +17,10 @@ import { HistogramChart } from "../histogram";
 import { ColorValueItem } from "./color-value-item";
 
 import LayersIcon from "../../../../public/icons/layers.svg";
-import DropdownUp from "../../../../public/icons/dropdown-up.svg";
+import { ExpandIcon } from "../../expand-icon/expand-icon";
+import { CollapseDirection, ExpandState, ArrowDirection } from "../../../types";
+import { useExpand } from "../../../utils/hooks/use-expand";
+import { calculateAverageValue } from "../../../utils/calculate-average-value";
 
 type VisibilityProps = {
   visible: boolean;
@@ -76,18 +79,6 @@ const HistogramTitle = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
-`;
-
-const HistogamArrow = styled(DropdownUp)`
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-  fill: ${({ theme }) => theme.colors.fontColor};
-  transform: ${({ open }) => (open ? "none" : "rotate(180deg)")};
-
-  &:hover {
-    opacity: 0.8;
-  }
 `;
 
 const SplitLine = styled.div`
@@ -149,8 +140,6 @@ const MOST_FREQUENT_VALUES = "mostFrequentValues";
 const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
 const VALUE_TITLE = "Value";
 const COUNT_TITLE = "Count";
-const VISIBLE = true;
-const NOT_VISIBLE = false;
 
 const statisitcsMap = new Map();
 
@@ -159,8 +148,6 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
-  showColorizeByAttribute: boolean;
-  onColorizeByAttributeClick: () => void;
 };
 
 export const AttributeStats = ({
@@ -168,15 +155,15 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
-  showColorizeByAttribute,
-  onColorizeByAttributeClick,
 }: AttributeStatsProps) => {
   const theme = useTheme();
 
   const [isLoading, setIsLoading] = useState(false);
   const [statistics, setStatistics] = useState<StatsInfo | null>(null);
-  const [showHistogram, setShowHistogram] = useState(true);
   const [histogramData, setHistogramData] = useState<Histogram | null>(null);
+  const [expandState, expand] = useExpand(ExpandState.expanded);
+  const [showColorizeByAttribute, setShowColorizeByAttribute] =
+    useState<boolean>(false);
 
   /**
    * Handle base uri and statistic uri
@@ -282,6 +269,10 @@ export const AttributeStats = ({
     return valueCountRows;
   };
 
+  const onColorizeByAttributeClick = () => {
+    setShowColorizeByAttribute((prev) => !prev);
+  };
+
   const statisticRows = useMemo(() => renderStatisticRows(), [statistics]);
 
   return (
@@ -305,25 +296,26 @@ export const AttributeStats = ({
               <HistograpPanel>
                 <HistogramTitle>
                   Histogram
-                  <HistogamArrow
-                    data-testid="histogram-arrow"
-                    open={showHistogram}
-                    onClick={() => setShowHistogram((prevValue) => !prevValue)}
+                  <ExpandIcon
+                    data-testid={"histogram-arrow"}
+                    expandState={expandState}
+                    collapseDirection={CollapseDirection.bottom}
+                    onClick={expand}
                   />
                 </HistogramTitle>
-                {showHistogram && (
+                {expandState === ExpandState.expanded && (
                   <HistogramChart
                     attributeName={attributeName}
                     histogramData={histogramData}
                   />
                 )}
               </HistograpPanel>
-              {showHistogram && (
+              {expandState === ExpandState.expanded && (
                 <SplitLine data-testid="histogram-split-line" />
               )}
             </>
           )}
-          {statistics?.max && statistics?.avg && (
+          {statistics?.min && statistics?.max && (
             <>
               <AttributeColorize>
                 <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
@@ -340,18 +332,21 @@ export const AttributeStats = ({
                   </FadeContainer>
                   <ColorizeValuesList>
                     <ColorValueItem
-                      arrowVisibility={VISIBLE}
-                      deg={-90}
-                      yearCount={statistics.min}
+                      arrowVisibility={true}
+                      arrowDirection={ArrowDirection.left}
+                      colorValue={statistics.min}
                     />
                     <ColorValueItem
-                      arrowVisibility={NOT_VISIBLE}
-                      yearCount={Math.floor(statistics.avg)}
+                      arrowVisibility={false}
+                      colorValue={calculateAverageValue(
+                        statistics.min,
+                        statistics.max
+                      )}
                     />
                     <ColorValueItem
-                      arrowVisibility={VISIBLE}
-                      deg={90}
-                      yearCount={statistics.max}
+                      arrowVisibility={true}
+                      arrowDirection={ArrowDirection.right}
+                      colorValue={statistics.max}
                     />
                   </ColorizeValuesList>
                 </>

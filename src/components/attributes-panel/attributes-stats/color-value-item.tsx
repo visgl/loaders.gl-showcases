@@ -1,7 +1,8 @@
 import styled, { useTheme } from "styled-components";
+import { ArrowDirection } from "../../../types";
 
-import DropdownUp from "../../../../public/icons/dropdown-up.svg";
-import FilledArrowUp from "../../../../public/icons/filled-arrow-up.svg";
+import ChevronIcon from "../../../../public/icons/chevron.svg";
+import FilledArrowUp from "../../../../public/icons/filled-arrow.svg";
 
 const FilledUpIconContainer = styled.div`
   display: flex;
@@ -25,22 +26,27 @@ const ValueItemText = styled.div`
   line-height: 17px;
 `;
 
-const ValueItemArrow = styled(DropdownUp)<{ deg: number; visible: boolean }>`
-  width: 15px;
-  height: 17px;
+const ValueItemArrow = styled.div<{ arrowDirection: string }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 4px;
+  width: 5px;
+  height: 16px;
   fill: ${({ theme }) => theme.colors.fontColor};
-  transform: ${({ deg }) => `rotate(${deg}deg)`};
+  transform: ${({ arrowDirection }) =>
+    arrowDirection === ArrowDirection.left ? "none" : "rotate(-180deg)"};
 `;
 
 type ColorValueItemProps = {
-  deg?: number;
-  yearCount?: number;
+  arrowDirection?: ArrowDirection;
+  colorValue?: number;
   arrowVisibility: boolean;
 };
 
 export const ColorValueItem = ({
-  deg,
-  yearCount,
+  arrowDirection,
+  colorValue,
   arrowVisibility,
 }: ColorValueItemProps) => {
   const theme = useTheme();
@@ -51,8 +57,12 @@ export const ColorValueItem = ({
         <FilledArrowUp fill={theme.colors.fontColor} />
       </FilledUpIconContainer>
       <ValueItemText>
-        {arrowVisibility && <ValueItemArrow deg={deg} />}
-        {yearCount}
+        {arrowVisibility && arrowDirection && (
+          <ValueItemArrow arrowDirection={arrowDirection}>
+            <ChevronIcon />
+          </ValueItemArrow>
+        )}
+        {colorValue}
       </ValueItemText>
     </ValueItemContainer>
   );
