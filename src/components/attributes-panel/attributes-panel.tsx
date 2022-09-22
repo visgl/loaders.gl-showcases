@@ -141,7 +141,6 @@ export const AttributesPanel = ({
   const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
     useState<StatisticsInfo | null>(null);
   const [selectedAttributeName, setSelectedAttributeName] = useState("");
-  
 
   useEffect(() => {
     setSelectedAttributeStatsInfo(null);
