@@ -80,7 +80,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
+  const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
@@ -95,7 +95,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const layout = useAppLayout();
 
   useEffect(() => {
-    setLayerLeftSide(null);
+    setLayersLeftSide([]);
   }, [mode]);
 
   useEffect(() => {
@@ -230,9 +230,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setDisableButton((prevValue) => [prevValue[0], true]);
   };
 
-  const onChangeLayerHandler = (layer: LayerExample) => {
+  const onChangeLayersHandler = (layers: LayerExample[]) => {
     if (mode === ComparisonMode.withinLayer) {
-      setLayerLeftSide(layer);
+      setLayersLeftSide(layers);
     }
   };
 
@@ -273,7 +273,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayer={onChangeLayerHandler}
+        onChangeLayers={onChangeLayersHandler}
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
@@ -308,7 +308,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
-        staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
+        staticLayers={mode === ComparisonMode.withinLayer ? layersLeftSide : []}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onInsertBaseMap={onInsertBaseMapHandler}

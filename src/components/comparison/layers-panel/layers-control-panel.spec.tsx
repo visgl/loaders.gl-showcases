@@ -3,12 +3,12 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { LayersControlPanel } from "./layers-control-panel";
 
 // Mocked components
-import { ListItem } from "./list-item";
 import { PlusButton } from "../../plus-button/plus-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
+import { ListItem } from "./list-item/list-item";
 
-jest.mock("./list-item");
+jest.mock("./list-item/list-item");
 jest.mock("../../plus-button/plus-button");
 jest.mock("./delete-confirmation");
 jest.mock("./layer-options-menu/layer-options-menu");
@@ -89,11 +89,11 @@ describe("Layers Control Panel", () => {
 
     expect(screen.getByText("ListItem-first")).toBeInTheDocument();
 
-    const { onChange, onOptionsClick, onClickOutside } =
+    const { onClick, onOptionsClick, onClickOutside } =
       ListItemMock.mock.lastCall[0];
 
     act(() => {
-      onChange();
+      onClick();
     });
     expect(onSelectLayerMock);
 

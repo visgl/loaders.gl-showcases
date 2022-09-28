@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { ExpandState, ListItemType, Sublayer } from "../../../types";
 import { useForceUpdate } from "../../../utils";
-import { ListItem } from "./list-item";
+import { ListItem } from "./list-item/list-item";
 
 const BuildingExplorerSublayers = styled.div`
   display: flex;
@@ -67,10 +67,10 @@ export const BuildingExplorer = ({
           <ListItem
             id={sublayer.id.toString()}
             title={sublayer.name}
-            type={ListItemType.Checkbox}
+            listItemType={ListItemType.Checkbox}
             selected={Boolean(sublayer.visibility)}
             expandState={expandState}
-            onChange={() => toggleSublayer(sublayer)}
+            onClick={() => toggleSublayer(sublayer)}
             onExpandClick={() => toggleExpandState(sublayer)}
           />
           {sublayer.expanded ? renderSublayers(childLayers, true) : null}

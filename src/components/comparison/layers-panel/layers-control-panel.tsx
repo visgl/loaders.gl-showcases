@@ -1,21 +1,23 @@
 import { ReactEventHandler, Fragment, useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 
 import { LayerExample, ListItemType } from "../../../types";
 
-import { ListItem } from "./list-item";
 import { PlusButton } from "../../plus-button/plus-button";
 
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
+import { ListItem } from "./list-item/list-item";
+
+import LocationIcon from "../../../../public/icons/location.svg";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
   hasSettings: boolean;
-  onLayerSelect: (id: string) => void;
+  onLayerSelect: (id: string, parentId?: string) => void;
   onLayerInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: () => void;
@@ -48,6 +50,16 @@ const InsertButtons = styled.div`
   }
 `;
 
+const ChildrenContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid ${({ theme }) => theme.colors.mainDimColor};
+  margin-left: 12px;
+  margin-top: 10px;
+  padding-left: 12px;
+  width: 100%;
+`;
+
 export const LayersControlPanel = ({
   layers,
   type,
@@ -59,9 +71,15 @@ export const LayersControlPanel = ({
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
+  const theme = useTheme();
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
+
+  const handlePointToLayer = (event) => {
+    event.stopPropagation();
+    onPointToLayer();
+  };
 
   return (
     <LayersContainer>
@@ -73,9 +91,9 @@ export const LayersControlPanel = ({
               <ListItem
                 id={layer.id}
                 title={layer.name}
-                type={type}
+                listItemType={type}
                 selected={isLayerSelected}
-                onChange={onLayerSelect}
+                onClick={onLayerSelect}
                 onOptionsClick={() => {
                   setShowLayerSettings(true);
                   setSettingsLayerId(layer.id);
@@ -103,7 +121,33 @@ export const LayersControlPanel = ({
                     }}
                   />
                 }
-              />
+              >
+                {layer.children?.length && (
+                  <ChildrenContainer>
+                    {layer.children.map((childLayer) => (
+                      <ListItem
+                        key={childLayer.id}
+                        id={childLayer.id}
+                        parentId={layer.id}
+                        title={childLayer.name}
+                        listItemType={ListItemType.Checkbox}
+                        selected={selectedLayerIds.includes(childLayer.id)}
+                        onClick={onLayerSelect}
+                        usePopoverForOptions={false}
+                        optionsContent={
+                          <LocationIcon
+                            opacity="0.6"
+                            width={24}
+                            height={24}
+                            fill={theme.colors.fontColor}
+                            onClick={handlePointToLayer}
+                          />
+                        }
+                      />
+                    ))}
+                  </ChildrenContainer>
+                )}
+              </ListItem>
               {layerToDeleteId === layer.id && (
                 <DeleteConfirmation
                   onKeepHandler={() => setLayerToDeleteId("")}

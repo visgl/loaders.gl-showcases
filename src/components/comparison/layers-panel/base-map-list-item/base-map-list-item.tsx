@@ -1,6 +1,7 @@
 import styled from "styled-components";
+import { ListItemType } from "../../../../types";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
-import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
+import { ListItem } from "../list-item/list-item";
 
 type BaseMapsItemProps = {
   id: string;
@@ -12,15 +13,6 @@ type BaseMapsItemProps = {
   onOptionsClick: (id: string) => void;
   onClickOutside?: () => void;
 };
-
-const Title = styled.div`
-  margin-left: 16px;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  color: ${({ theme }) => theme.colors.fontColor};
-`;
 
 export const BaseMapListItem = ({
   id,
@@ -36,17 +28,17 @@ export const BaseMapListItem = ({
     onMapsSelect(id);
   };
   return (
-    <ListItemWrapper
+    <ListItem
       id={id}
+      title={title}
+      icon={<BaseMapIcon baseMapId={id} />}
       selected={selected}
       onClick={handleClick}
       onOptionsClick={onOptionsClick}
       isOptionsPanelOpen={isOptionsPanelOpen}
       optionsContent={optionsContent}
       onClickOutside={onClickOutside}
-    >
-      <BaseMapIcon baseMapId={id} />
-      <Title>{title}</Title>
-    </ListItemWrapper>
+      listItemType={ListItemType.Icon}
+    />
   );
 };

@@ -48,6 +48,8 @@ const IconButton = styled.div<{
 `;
 
 type ExpandIconProps = {
+  /**id of icon*/
+  id: string;
   /** expanded/collapsed */
   expandState: ExpandState;
   /** direction expander collapse to */
@@ -60,6 +62,7 @@ type ExpandIconProps = {
   onClick: (e: SyntheticEvent) => void;
 };
 export const ExpandIcon = ({
+  id,
   expandState,
   onClick,
   fillExpanded,
@@ -68,6 +71,7 @@ export const ExpandIcon = ({
 }: ExpandIconProps) => {
   return (
     <IconButton
+      id={id}
       expandState={expandState}
       collapseDirection={collapseDirection}
       fillExpanded={fillExpanded}

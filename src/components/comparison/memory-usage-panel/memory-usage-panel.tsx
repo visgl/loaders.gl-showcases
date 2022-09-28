@@ -92,6 +92,7 @@ export const MemoryUsagePanel = ({
             <StatContainer>
               <Title>Layer Used</Title>
               <ExpandIcon
+                id={"memory-usage-expand-icon"}
                 expandState={expandState}
                 collapseDirection={CollapseDirection.bottom}
                 onClick={expand}

@@ -89,6 +89,7 @@ export const MapControllPanel = ({
   return (
     <Container id="map-control-panel">
       <ExpandIcon
+        id="map-contol-expand-icon"
         expandState={expandState}
         collapseDirection={CollapseDirection.bottom}
         fillExpanded={theme.colors.mapControlExpanderDimColor}
