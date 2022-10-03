@@ -95,6 +95,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   useEffect(() => {
     setLayerLeftSide(null);
+    setDisableButton([false, false]);
   }, [mode]);
 
   useEffect(() => {
