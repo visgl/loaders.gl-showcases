@@ -24,7 +24,11 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import { buildSublayersTree, parseTilesetUrlParams, useForceUpdate } from "../../../utils";
+import {
+  buildSublayersTree,
+  parseTilesetUrlParams,
+  useForceUpdate,
+} from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
@@ -130,6 +134,7 @@ type ComparisonSideProps = {
   dragMode: DragMode;
   loadingTime: number;
   loadTileset?: boolean;
+  hasBeenCompared: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -156,6 +161,7 @@ export const ComparisonSide = ({
   dragMode,
   loadingTime,
   loadTileset = true,
+  hasBeenCompared,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -205,10 +211,15 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
-      setActiveButton(ActiveButton.memory);
       setLoadNumber((prev) => prev + 1);
     }
   }, [compareButtonMode]);
+
+  useEffect(() => {
+    if (hasBeenCompared) {
+      setActiveButton(ActiveButton.memory);
+    }
+  }, [hasBeenCompared]);
 
   useEffect(() => {
     if (!layer || !loadTileset) {
@@ -259,7 +270,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     setTilesetStats(newTileset.stats);
     tilesetRef.current = newTileset;
-    setUpdateStatsNumber(prev => prev + 1);
+    setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
       if (newTileset.isLoaded()) {
         onTilesetLoaded({
@@ -275,7 +286,7 @@ export const ComparisonSide = ({
 
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
-      setUpdateStatsNumber(prev => prev + 1);
+      setUpdateStatsNumber((prev) => prev + 1);
       if (tile.tileset === tilesetRef.current && tile.tileset.isLoaded()) {
         onTilesetLoaded({
           url: tile.tileset.url,

@@ -19,10 +19,12 @@ describe("Load manager", () => {
       url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
       tilesetStats: new Stats({ id: "Tileset" }),
       memoryStats: new Stats({ id: "Memory" }),
+      isCompressedGeometry: true,
+      isCompressedTextures: true,
     };
 
     comparisonLoadManager.startLoading();
-    
+
     expect(comparisonLoadManager.leftLoadingTime).toBe(0);
     expect(comparisonLoadManager.rightLoadingTime).toBe(0);
 
@@ -33,12 +35,34 @@ describe("Load manager", () => {
     expect(resolvedRight).toBe(true);
   });
 
+  it("Should stop loading", () => {
+    const newStats = {
+      url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
+      tilesetStats: new Stats({ id: "Tileset" }),
+      memoryStats: new Stats({ id: "Memory" }),
+      isCompressedGeometry: true,
+      isCompressedTextures: true,
+    };
+
+    comparisonLoadManager.stopLoading();
+
+    const resolvedLeft = comparisonLoadManager.resolveLeftSide(newStats);
+    const resolvedRight = comparisonLoadManager.resolveRightSide(newStats);
+
+    expect(resolvedLeft).toBe(false);
+    expect(resolvedRight).toBe(false);
+  });
+
   it("Should get left stats", () => {
     const newStats = {
       url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
       tilesetStats: new Stats({ id: "Tileset" }),
       memoryStats: new Stats({ id: "Memory" }),
+      isCompressedGeometry: true,
+      isCompressedTextures: true,
     };
+
+    comparisonLoadManager.startLoading();
 
     comparisonLoadManager.resolveLeftSide(newStats);
     expect(comparisonLoadManager.leftStats).toBe(newStats);
@@ -49,7 +73,11 @@ describe("Load manager", () => {
       url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
       tilesetStats: new Stats({ id: "Tileset" }),
       memoryStats: new Stats({ id: "Memory" }),
+      isCompressedGeometry: true,
+      isCompressedTextures: true,
     };
+
+    comparisonLoadManager.startLoading();
 
     comparisonLoadManager.resolveRightSide(newStats);
     expect(comparisonLoadManager.rightStats).toBe(newStats);
@@ -60,11 +88,13 @@ describe("Load manager", () => {
       url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
       tilesetStats: new Stats({ id: "Tileset" }),
       memoryStats: new Stats({ id: "Memory" }),
+      isCompressedGeometry: true,
+      isCompressedTextures: true,
     };
     const dispatchEventSpy = jest.spyOn(comparisonLoadManager, "dispatchEvent");
     const newEvent = new Event("loaded");
 
-    comparisonLoadManager.startLoading()
+    comparisonLoadManager.startLoading();
 
     comparisonLoadManager.resolveLeftSide(newStats);
     comparisonLoadManager.resolveRightSide(newStats);
