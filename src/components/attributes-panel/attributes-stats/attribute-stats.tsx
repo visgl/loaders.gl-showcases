@@ -297,7 +297,6 @@ export const AttributeStats = ({
                 <HistogramTitle>
                   Histogram
                   <ExpandIcon
-                    data-testid={"histogram-arrow"}
                     expandState={expandState}
                     collapseDirection={CollapseDirection.bottom}
                     onClick={expand}
@@ -315,7 +314,7 @@ export const AttributeStats = ({
               )}
             </>
           )}
-          {statistics?.min && statistics?.max && (
+          {typeof statistics?.min === "number" && statistics.max && (
             <>
               <AttributeColorize>
                 <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>

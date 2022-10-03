@@ -137,7 +137,6 @@ export const AttributesPanel = ({
   onClose,
 }: AttributesPanelProps) => {
   const theme = useTheme();
-
   const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
     useState<StatisticsInfo | null>(null);
   const [selectedAttributeName, setSelectedAttributeName] = useState("");

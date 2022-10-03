@@ -81,7 +81,6 @@ beforeAll(() => {
 
 describe("AttributeStats", () => {
   it("Should render Attribute Stats", async () => {
-  
     act(() => {
       renderWithTheme(
         <AttributeStats
@@ -113,18 +112,16 @@ describe("AttributeStats", () => {
       }
     }
 
-    const histogramIcon = screen.getByText("Histogram").firstElementChild
-
     expect(screen.getByText("Histogram")).toBeInTheDocument();
     expect(screen.getByText("HistogramChart")).toBeInTheDocument();
     expect(screen.getByText("Colorize by Attribute")).toBeInTheDocument();
     expect(screen.getByText("ToggleSwitch")).toBeInTheDocument();
-
     expect(screen.getByTestId("histogram-split-line")).toBeInTheDocument();
+
+    const histogramIcon = screen.getByText("Histogram").firstElementChild;
 
     histogramIcon && userEvent.click(histogramIcon);
 
-    expect(screen.queryByTestId("histogram-svg")).not.toBeInTheDocument();
     expect(
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
