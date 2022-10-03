@@ -6,4 +6,3 @@ export const calculateAverageValue = (
 
     return Math.floor(valueSum / 2);
   };
-  
