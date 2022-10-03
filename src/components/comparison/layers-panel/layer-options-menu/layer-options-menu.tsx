@@ -27,7 +27,7 @@ const Item = styled.div<{
   color: ${({ theme, customColor }) =>
     customColor ? customColor : theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
-  display: flex;s
+  display: flex;
   gap: 10px;
   cursor: pointer;
 `;

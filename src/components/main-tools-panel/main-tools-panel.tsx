@@ -7,6 +7,7 @@ import {
 import GearIcon from "../../../public/icons/gear.svg";
 import SettingsIcon from "../../../public/icons/settings.svg";
 import MemoryIcon from "../../../public/icons/memory.svg";
+import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { ActiveButton, Layout } from "../../types";
 import { useAppLayout } from "../../utils/layout";
 
@@ -97,6 +98,15 @@ export const MainToolsPanel = ({
       >
         <MemoryIcon />
       </Button>
+      {showLayerOptions && (
+        <Button
+          layout={layout}
+          active={activeButton === ActiveButton.bookmarks}
+          onClick={() => onChange(ActiveButton.bookmarks)}
+        >
+          <BookmarksIcon />
+        </Button>
+      )}
     </Container>
   );
 };

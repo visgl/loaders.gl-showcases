@@ -24,9 +24,14 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import { buildSublayersTree, parseTilesetUrlParams, useForceUpdate } from "../../../utils";
+import {
+  buildSublayersTree,
+  parseTilesetUrlParams,
+  useForceUpdate,
+} from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
+import { BookmarksPanel } from "../bookmarks-panel/bookmarks-panel";
 
 type LayoutProps = {
   layout: string;
@@ -92,6 +97,48 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+const LeftBookmarksPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+  z-index: 2;
+
+  left: ${getCurrentLayoutProperty({
+    desktop: "30%",
+    tablet: "30%",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "calc(50% - 180px)",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "bottom: 100px;",
+    tablet: "bottom: 100px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+const RightBookmarksPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+  z-index: 2;
+
+  right: ${getCurrentLayoutProperty({
+    desktop: "50%",
+    tablet: "50%",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "calc(50% - 180px)",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "bottom: 100px;",
+    tablet: "bottom: 100px;",
     mobile: "bottom: 8px;",
   })};
 `;
@@ -259,7 +306,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     setTilesetStats(newTileset.stats);
     tilesetRef.current = newTileset;
-    setUpdateStatsNumber(prev => prev + 1);
+    setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
       if (newTileset.isLoaded()) {
         onTilesetLoaded({
@@ -275,7 +322,7 @@ export const ComparisonSide = ({
 
   const onTileLoad = (tile: Tile3D) => {
     setTimeout(() => {
-      setUpdateStatsNumber(prev => prev + 1);
+      setUpdateStatsNumber((prev) => prev + 1);
       if (tile.tileset === tilesetRef.current && tile.tileset.isLoaded()) {
         onTilesetLoaded({
           url: tile.tileset.url,
@@ -348,6 +395,10 @@ export const ComparisonSide = ({
     side === ComparisonSideMode.left
       ? LeftSidePanelWrapper
       : RightSidePanelWrapper;
+  const BookmarsPanelWrapper =
+    side === ComparisonSideMode.left
+      ? LeftBookmarksPanelWrapper
+      : RightBookmarksPanelWrapper;
 
   return (
     <Container layout={layout}>
@@ -440,6 +491,17 @@ export const ComparisonSide = ({
                 }
               />
             </OptionsPanelWrapper>
+          )}
+          {activeButton === ActiveButton.bookmarks && (
+            <BookmarsPanelWrapper layout={layout}>
+              <BookmarksPanel
+                id={`${side}-comparison-bookmarks-panel`}
+                hasBookmarks={true}
+                onClose={() =>
+                  onChangeMainToolsPanelHandler(ActiveButton.bookmarks)
+                }
+              />
+            </BookmarsPanelWrapper>
           )}
         </>
       )}
