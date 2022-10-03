@@ -3,7 +3,7 @@ import type {
   StatisticsInfo,
   StatsInfo,
   Histogram,
-  ValueCount
+  ValueCount,
 } from "@loaders.gl/i3s/dist/types";
 
 import { useEffect, useMemo, useState } from "react";
@@ -11,12 +11,16 @@ import styled, { useTheme } from "styled-components";
 
 import { load } from "@loaders.gl/core";
 import { JSONLoader } from "@loaders.gl/loader-utils";
-import { ToggleSwitch } from "../toogle-switch/toggle-switch";
-import { LoadingSpinner } from "../loading-spinner/loading-spinner";
-import { HistogramChart } from "./histogram";
+import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
+import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
+import { HistogramChart } from "../histogram";
+import { ColorValueItem } from "./color-value-item";
 
-import LayersIcon from "../../../public/icons/layers.svg";
-import DropdownUp from "../../../public/icons/dropdown-up.svg";
+import LayersIcon from "../../../../public/icons/layers.svg";
+import { ExpandIcon } from "../../expand-icon/expand-icon";
+import { CollapseDirection, ExpandState, ArrowDirection } from "../../../types";
+import { useExpand } from "../../../utils/hooks/use-expand";
+import { calculateAverageValue } from "../../../utils/calculate-average-value";
 
 type VisibilityProps = {
   visible: boolean;
@@ -77,16 +81,6 @@ const HistogramTitle = styled.div`
   margin-bottom: 16px;
 `;
 
-const HistogamArrow = styled(DropdownUp)`
-  cursor: pointer;
-  fill: ${({ theme }) => theme.colors.fontColor};
-  transform: ${({ open }) => (open ? "none" : "rotate(180deg)")};
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
 const SplitLine = styled.div`
   margin: 24px 0 28px 0;
   width: 100%;
@@ -120,6 +114,27 @@ const SpinnerContainer = styled.div<VisibilityProps>`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
 `;
 
+const FadeContainer = styled.section`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 18px;
+`;
+
+const Fade = styled.div`
+  width: 295px;
+  height: 25px;
+  background: linear-gradient(90deg, #9292fc 0%, #0e73f2 100%, #2c2caf 100%);
+  border-radius: 2px;
+`;
+
+const ColorizeValuesList = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-bottom: 36px;
+`;
+
 const HISTOGRAM = "histogram";
 const MOST_FREQUENT_VALUES = "mostFrequentValues";
 const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
@@ -133,7 +148,6 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
-  onColorizeByAttributeClick: () => void;
 };
 
 export const AttributeStats = ({
@@ -141,14 +155,15 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
-  onColorizeByAttributeClick,
 }: AttributeStatsProps) => {
   const theme = useTheme();
 
   const [isLoading, setIsLoading] = useState(false);
   const [statistics, setStatistics] = useState<StatsInfo | null>(null);
-  const [showHistogram, setShowHistogram] = useState(true);
   const [histogramData, setHistogramData] = useState<Histogram | null>(null);
+  const [expandState, expand] = useExpand(ExpandState.expanded);
+  const [showColorizeByAttribute, setShowColorizeByAttribute] =
+    useState<boolean>(false);
 
   /**
    * Handle base uri and statistic uri
@@ -254,6 +269,10 @@ export const AttributeStats = ({
     return valueCountRows;
   };
 
+  const onColorizeByAttributeClick = () => {
+    setShowColorizeByAttribute((prev) => !prev);
+  };
+
   const statisticRows = useMemo(() => renderStatisticRows(), [statistics]);
 
   return (
@@ -277,33 +296,62 @@ export const AttributeStats = ({
               <HistograpPanel>
                 <HistogramTitle>
                   Histogram
-                  <HistogamArrow
-                    data-testid="histogram-arrow"
-                    open={showHistogram}
-                    onClick={() => setShowHistogram((prevValue) => !prevValue)}
+                  <ExpandIcon
+                    expandState={expandState}
+                    collapseDirection={CollapseDirection.bottom}
+                    onClick={expand}
                   />
                 </HistogramTitle>
-                {showHistogram && (
+                {expandState === ExpandState.expanded && (
                   <HistogramChart
                     attributeName={attributeName}
                     histogramData={histogramData}
                   />
                 )}
               </HistograpPanel>
-              {showHistogram && (
+              {expandState === ExpandState.expanded && (
                 <SplitLine data-testid="histogram-split-line" />
               )}
             </>
           )}
-
-          <AttributeColorize>
-            <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
-            <ToggleSwitch
-              id={"colorize-by-attribute"}
-              checked={true}
-              onChange={onColorizeByAttributeClick}
-            />
-          </AttributeColorize>
+          {typeof statistics?.min === "number" && statistics.max && (
+            <>
+              <AttributeColorize>
+                <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
+                <ToggleSwitch
+                  id={"colorize-by-attribute"}
+                  checked={showColorizeByAttribute}
+                  onChange={onColorizeByAttributeClick}
+                />
+              </AttributeColorize>
+              {showColorizeByAttribute && (
+                <>
+                  <FadeContainer>
+                    <Fade />
+                  </FadeContainer>
+                  <ColorizeValuesList>
+                    <ColorValueItem
+                      arrowVisibility={true}
+                      arrowDirection={ArrowDirection.left}
+                      colorValue={statistics.min}
+                    />
+                    <ColorValueItem
+                      arrowVisibility={false}
+                      colorValue={calculateAverageValue(
+                        statistics.min,
+                        statistics.max
+                      )}
+                    />
+                    <ColorValueItem
+                      arrowVisibility={true}
+                      arrowDirection={ArrowDirection.right}
+                      colorValue={statistics.max}
+                    />
+                  </ColorizeValuesList>
+                </>
+              )}
+            </>
+          )}
         </Container>
       )}
     </>

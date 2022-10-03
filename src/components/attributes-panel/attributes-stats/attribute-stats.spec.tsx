@@ -1,13 +1,13 @@
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { AttributeStats } from "./attribute-stats";
 
 import { load } from "@loaders.gl/core";
 
 jest.mock("@loaders.gl/core");
 
-jest.mock("./histogram", () => ({
+jest.mock("../histogram", () => ({
   HistogramChart: jest.fn().mockImplementation(() => <div>HistogramChart</div>),
 }));
 
@@ -47,7 +47,7 @@ jest.mock("@loaders.gl/loader-utils", () => ({
   JSONLoader: jest.fn(),
 }));
 
-jest.mock("../toogle-switch/toggle-switch", () => ({
+jest.mock("../../toogle-switch/toggle-switch", () => ({
   ToggleSwitch: jest
     .fn()
     .mockImplementation(({ onChange }) => (
@@ -55,7 +55,7 @@ jest.mock("../toogle-switch/toggle-switch", () => ({
     )),
 }));
 
-jest.mock("../loading-spinner/loading-spinner", () => ({
+jest.mock("../../loading-spinner/loading-spinner", () => ({
   LoadingSpinner: jest.fn().mockImplementation(() => <div>LoadingSpinner</div>),
 }));
 
@@ -81,8 +81,6 @@ beforeAll(() => {
 
 describe("AttributeStats", () => {
   it("Should render Attribute Stats", async () => {
-    const onColorizeByAttributeClick = jest.fn();
-
     act(() => {
       renderWithTheme(
         <AttributeStats
@@ -94,7 +92,6 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          onColorizeByAttributeClick={onColorizeByAttributeClick}
         />
       );
     });
@@ -119,18 +116,17 @@ describe("AttributeStats", () => {
     expect(screen.getByText("HistogramChart")).toBeInTheDocument();
     expect(screen.getByText("Colorize by Attribute")).toBeInTheDocument();
     expect(screen.getByText("ToggleSwitch")).toBeInTheDocument();
-
     expect(screen.getByTestId("histogram-split-line")).toBeInTheDocument();
 
-    userEvent.click(screen.getByTestId("histogram-arrow"));
+    const histogramIcon = screen.getByText("Histogram").firstElementChild;
 
-    expect(screen.queryByTestId("histogram-svg")).not.toBeInTheDocument();
+    histogramIcon && userEvent.click(histogramIcon);
+
     expect(
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
     userEvent.click(screen.getByText("ToggleSwitch"));
-    expect(onColorizeByAttributeClick).toHaveBeenCalled();
 
     // Try to get already cached data
     act(() => {
@@ -144,7 +140,6 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          onColorizeByAttributeClick={onColorizeByAttributeClick}
         />
       );
     });
@@ -153,8 +148,6 @@ describe("AttributeStats", () => {
   });
 
   it("Should no render Attribute Stats if loading statistics error", async () => {
-    const onColorizeByAttributeClick = jest.fn();
-
     act(() => {
       renderWithTheme(
         <AttributeStats
@@ -166,7 +159,6 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-error-path"}
-          onColorizeByAttributeClick={onColorizeByAttributeClick}
         />
       );
     });

@@ -73,6 +73,11 @@ export enum ComparisonSideMode {
   right = "right",
 }
 
+export enum ArrowDirection {
+  left = "left",
+  right = "right",
+}
+
 export type TileWarning = {
   type: string;
   title: string;

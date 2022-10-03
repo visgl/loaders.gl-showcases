@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
 
 import { CloseButton } from "../close-button/close-button";
-import { AttributeStats } from "./attribute-stats";
+import { AttributeStats } from "./attributes-stats/attribute-stats";
 
 import { color_brand_tertiary } from "../../constants/colors";
 
@@ -137,7 +137,6 @@ export const AttributesPanel = ({
   onClose,
 }: AttributesPanelProps) => {
   const theme = useTheme();
-
   const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
     useState<StatisticsInfo | null>(null);
   const [selectedAttributeName, setSelectedAttributeName] = useState("");
@@ -223,9 +222,6 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
-          onColorizeByAttributeClick={() => {
-            throw new Error("Function not implemented.");
-          }}
         />
       )}
     </Container>
