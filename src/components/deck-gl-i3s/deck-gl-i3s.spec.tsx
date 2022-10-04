@@ -237,7 +237,7 @@ describe("Deck.gl I3S map component", () => {
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--0"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
@@ -257,7 +257,7 @@ describe("Deck.gl I3S map component", () => {
       callRender(render, { loadNumber: 1 });
       const { id } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--1"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--1"
       );
     });
 

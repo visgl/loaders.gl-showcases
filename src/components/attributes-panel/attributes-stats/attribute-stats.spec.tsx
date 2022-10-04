@@ -80,6 +80,8 @@ beforeAll(() => {
 });
 
 describe("AttributeStats", () => {
+  const handleColorsByAttributeChange = jest.fn();
+
   it("Should render Attribute Stats", async () => {
     act(() => {
       renderWithTheme(
@@ -92,6 +94,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
+          colorsByAttribute={null}
+          onColorsByAttributeChange={handleColorsByAttributeChange}
         />
       );
     });
@@ -140,6 +144,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
+          colorsByAttribute={null}
+          onColorsByAttributeChange={handleColorsByAttributeChange}
         />
       );
     });
@@ -159,6 +165,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-error-path"}
+          colorsByAttribute={null}
+          onColorsByAttributeChange={handleColorsByAttributeChange}
         />
       );
     });
