@@ -358,7 +358,7 @@ export const AttributeStats = ({
               </AttributeColorize>
               {colorsByAttribute?.attributeName === attributeName && (
                 <>
-                  <FadeContainer>
+                  <FadeContainer data-testid="colorsByAttributeFadeContainer">
                     <Fade />
                   </FadeContainer>
                   <ColorizeValuesList>
