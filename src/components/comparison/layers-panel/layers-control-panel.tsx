@@ -17,6 +17,7 @@ type LayersControlPanelProps = {
   hasSettings: boolean;
   onLayerSelect: (id: string, parentId?: string) => void;
   onLayerInsertClick: () => void;
+  onSceneInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: () => void;
   deleteLayer: (id: string) => void;
@@ -62,6 +63,7 @@ export const LayersControlPanel = ({
   onLayerSelect,
   hasSettings = false,
   onLayerInsertClick,
+  onSceneInsertClick,
   onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
@@ -143,7 +145,9 @@ export const LayersControlPanel = ({
         <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
           Insert layer
         </PlusButton>
-        <PlusButton buttonSize={ButtonSize.Small}>Insert scene</PlusButton>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
+          Insert scene
+        </PlusButton>
       </InsertButtons>
     </LayersContainer>
   );

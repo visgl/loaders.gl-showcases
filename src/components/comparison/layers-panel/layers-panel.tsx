@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 
+import { load } from "@loaders.gl/core";
 import { useAppLayout } from "../../../utils/layout";
 import { LayerExample, ListItemType, Sublayer, BaseMap } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
@@ -17,6 +18,7 @@ import {
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
+import { ArcGisWebSceneLoader } from "@loaders.gl/i3s";
 
 enum Tabs {
   Layers,
@@ -110,6 +112,9 @@ const CloseButtonWrapper = styled.div`
 const EXISTING_AREA_WARNING =
   "You are trying to add an existing area to the map";
 
+const NOT_SUPPORTED_LAYERS_WARNING = "No available supported layers in scene";
+// TODO handle not supported CRS.
+
 export const LayersPanel = ({
   id,
   type,
@@ -130,10 +135,17 @@ export const LayersPanel = ({
 }: LayersPanelProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
 
-  const [showInsertPanel, setShowInsertPanel] = useState(false);
+  const [showLayerInsertPanel, setShowLayerInsertPanel] = useState(false);
+  const [showSceneInsertPanel, setShowSceneInsertPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const [showExistedLayerWarning, setShowExistedLayerWarning] = useState(false);
+  const [showExistedSceneWarning, setShowExistedSceneWarning] = useState(false);
+  const [
+    showNoSupportedLayersInSceneWarning,
+    setShowNoSupportedLayersInSceneWarning,
+  ] = useState(false);
+
   const layout = useAppLayout();
   const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
   useClickOutside([warningNode], () => setShowExistedLayerWarning(false));
@@ -148,7 +160,7 @@ export const LayersPanel = ({
     );
 
     if (existedLayer) {
-      setShowInsertPanel(false);
+      setShowLayerInsertPanel(false);
       setShowExistedLayerWarning(true);
       return;
     }
@@ -161,7 +173,48 @@ export const LayersPanel = ({
     };
 
     onLayerInsert(newLayer);
-    setShowInsertPanel(false);
+    setShowLayerInsertPanel(false);
+  };
+
+  const handleInsertScene = async (scene: {
+    name: string;
+    url: string;
+    token?: string;
+  }) => {
+    const existedScene = layers.some(
+      (exisLayer) => exisLayer.url.trim() === scene.url.trim()
+    );
+
+    if (existedScene) {
+      setShowSceneInsertPanel(false);
+      setShowExistedSceneWarning(true);
+      return;
+    }
+
+    const webScene = await load(scene.url, ArcGisWebSceneLoader);
+
+    const children = webScene.layers.map((child) => ({
+      id: child.id,
+      name: child.title,
+      url: child.url,
+    }));
+
+    if (!children.length) {
+      setShowSceneInsertPanel(false);
+      setShowNoSupportedLayersInSceneWarning(true);
+      return;
+    }
+
+    // TODO Do we need to allow user to add the same urls even thay are in different scenes?
+    const newLayer: LayerExample = {
+      ...scene,
+      id: scene.url,
+      custom: true,
+      children,
+    };
+
+    onLayerInsert(newLayer);
+    setShowSceneInsertPanel(false);
   };
 
   const handleInsertMap = (map: CustomItem) => {
@@ -210,7 +263,8 @@ export const LayersPanel = ({
                 selectedLayerIds={selectedLayerIds}
                 hasSettings={Boolean(sublayers.length)}
                 onLayerSelect={onLayerSelect}
-                onLayerInsertClick={() => setShowInsertPanel(true)}
+                onLayerInsertClick={() => setShowLayerInsertPanel(true)}
+                onSceneInsertClick={() => setShowSceneInsertPanel(true)}
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
                 onPointToLayer={onPointToLayer}
                 deleteLayer={onLayerDelete}
@@ -226,7 +280,6 @@ export const LayersPanel = ({
               />
             )}
           </Content>
-
           {showExistedLayerWarning && (
             <PanelWrapper ref={(element) => setWarningNode(element)}>
               <WarningPanel
@@ -235,13 +288,37 @@ export const LayersPanel = ({
               />
             </PanelWrapper>
           )}
-
-          {showInsertPanel && (
+          {showExistedSceneWarning && (
+            <PanelWrapper ref={(element) => setWarningNode(element)}>
+              <WarningPanel
+                title={EXISTING_AREA_WARNING}
+                onConfirm={() => setShowExistedSceneWarning(false)}
+              />
+            </PanelWrapper>
+          )}
+          {showNoSupportedLayersInSceneWarning && (
+            <PanelWrapper ref={(element) => setWarningNode(element)}>
+              <WarningPanel
+                title={NOT_SUPPORTED_LAYERS_WARNING}
+                onConfirm={() => setShowNoSupportedLayersInSceneWarning(false)}
+              />
+            </PanelWrapper>
+          )}
+          {showLayerInsertPanel && (
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
                 onInsert={(layer) => handleInsertLayer(layer)}
-                onCancel={() => setShowInsertPanel(false)}
+                onCancel={() => setShowLayerInsertPanel(false)}
+              />
+            </PanelWrapper>
+          )}
+          {showSceneInsertPanel && (
+            <PanelWrapper>
+              <InsertPanel
+                title={"Insert Scene"}
+                onInsert={(scene) => handleInsertScene(scene)}
+                onCancel={() => setShowSceneInsertPanel(false)}
               />
             </PanelWrapper>
           )}

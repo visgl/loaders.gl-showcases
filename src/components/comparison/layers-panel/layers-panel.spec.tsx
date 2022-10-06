@@ -1,4 +1,4 @@
-import { act, screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { LayersPanel } from "./layers-panel";
@@ -9,6 +9,16 @@ import { MapOptionPanel } from "./map-options-panel";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
+
+import { load } from "@loaders.gl/core";
+
+jest.mock("@loaders.gl/core", () => ({
+  load: jest.fn(),
+}));
+
+jest.mock("@loaders.gl/i3s", () => ({
+  ArcGisWebSceneLoader: jest.fn(),
+}));
 
 jest.mock("./layers-control-panel");
 jest.mock("./map-options-panel");
@@ -34,6 +44,7 @@ const InsertPanelMock = InsertPanel as unknown as jest.Mocked<any>;
 const WarningPanelMock = WarningPanel as unknown as jest.Mocked<any>;
 const LayerSettingsPanelMock =
   LayerSettingsPanel as unknown as jest.Mocked<any>;
+const loadMock = load as unknown as jest.Mocked<any>;
 
 beforeAll(() => {
   LayersControlPanelMock.mockImplementation(() => (
@@ -114,7 +125,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-     // @ts-expect-error - Property 'mock' does not exist on type
+    // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -136,7 +147,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-     // @ts-expect-error - Property 'mock' does not exist on type
+    // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -159,7 +170,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-     // @ts-expect-error - Property 'mock' does not exist on type
+    // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
 
     act(() => {
@@ -188,12 +199,11 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
-
   it("Should close duplication warining on click outside", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-     // @ts-expect-error - Property 'mock' does not exist on type
+    // @ts-expect-error - Property 'mock' does not exist on type
     const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
     act(() => {
       onLayerInsertClick();
@@ -283,5 +293,200 @@ describe("Layers Panel", () => {
       onBackClick();
     });
     expect(screen.queryByText("Layer Settings Panel")).not.toBeInTheDocument();
+  });
+
+  it("Should be able to insert new Scene", async () => {
+    loadMock.mockImplementation(() =>
+      Promise.resolve({
+        header: {},
+        layers: [
+          {
+            id: "child-layer-id",
+            title: "child-test",
+            url: "https://child-test.url",
+          },
+        ],
+      })
+    );
+
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+    });
+    // @ts-expect-error - Property 'mock' does not exist on type
+    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+
+    screen.debug();
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+
+    // Click insert scene
+    act(() => {
+      onInsert({
+        id: "ttps://test.url",
+        name: "Scene",
+        url: "https://test.url",
+        token: "",
+        children: [
+          {
+            id: "child-layer-id",
+            name: "child-test",
+            url: "https://child-test.url",
+            token: "",
+          },
+        ],
+      });
+    });
+
+    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
+  });
+
+  it("Should be able to cancel insert new Scene", () => {
+    loadMock.mockImplementation(() =>
+      Promise.resolve({
+        header: {},
+        layers: [
+          {
+            id: "child-layer-id",
+            title: "child-test",
+            url: "https://child-test.url",
+          },
+        ],
+      })
+    );
+
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+    });
+    // @ts-expect-error - Property 'mock' does not exist on type
+    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onCancel } = InsertPanelMock.mock.lastCall[0];
+
+    // Click cancel insert layer
+    act(() => {
+      onCancel();
+    });
+
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+  });
+
+  it("Should show duplication scene error in Insert Panel", async () => {
+    loadMock.mockImplementation(() =>
+      Promise.resolve({
+        header: {},
+        layers: [
+          {
+            id: "child-layer-id",
+            title: "child-test",
+            url: "https://test.url",
+          },
+        ],
+      })
+    );
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://test.url" }],
+    });
+    // @ts-expect-error - Property 'mock' does not exist on type
+    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+
+    // Click insert scene
+    act(() => {
+      onInsert({
+        id: "https://test.url",
+        name: "Scene",
+        url: "https://test.url",
+        token: "",
+        children: [
+          {
+            id: "child-layer-id",
+            name: "child-test",
+            url: "https://child-test.url",
+            token: "",
+          },
+        ],
+      });
+    });
+
+    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+
+    // Should close Insert Lyaer Panel
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+    expect(screen.getByText("Warning Panel")).toBeInTheDocument();
+
+    // Shold be able to close warning panel
+    const { onConfirm } = WarningPanelMock.mock.lastCall[0];
+    act(() => {
+      onConfirm();
+    });
+
+    expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
+  });
+
+  it("Should show not supported layers error in Insert Panel", async () => {
+    loadMock.mockImplementation(() =>
+      Promise.resolve({
+        header: {},
+        layers: [],
+      })
+    );
+
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://test.url" }],
+    });
+    // @ts-expect-error - Property 'mock' does not exist on type
+    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+
+    // Click insert scene
+    act(() => {
+      onInsert({
+        id: "https://test.url",
+        name: "Scene",
+        url: "https://test-another.url",
+        token: "",
+        children: [],
+      });
+    });
+
+    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+
+    // Should close Insert Lyaer Panel
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+    expect(screen.getByText("Warning Panel")).toBeInTheDocument();
+
+    // Shold be able to close warning panel
+    const { onConfirm } = WarningPanelMock.mock.lastCall[0];
+    act(() => {
+      onConfirm();
+    });
+
+    expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 });

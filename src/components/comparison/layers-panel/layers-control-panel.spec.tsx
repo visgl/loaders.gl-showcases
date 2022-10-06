@@ -33,6 +33,7 @@ beforeAll(() => {
 });
 
 const onInsertLayerMock = jest.fn();
+const onInsertSceneMock = jest.fn();
 const onDeleteLayerMock = jest.fn();
 const onSelectLayerMock = jest.fn();
 const onLayerSettingsClickMock = jest.fn();
@@ -41,6 +42,7 @@ const onPointToLayerMock = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <LayersControlPanel
+      onSceneInsertClick={onInsertSceneMock}
       layers={[]}
       selectedLayerIds={[]}
       type={0} // Radio Button type
