@@ -5,7 +5,6 @@ import { Vector3, Matrix4 } from "@math.gl/core";
 import { ViewState } from "@deck.gl/core";
 import { Stats } from "@probe.gl/stats";
 
-
 export enum Theme {
   Dark,
   Light,
@@ -183,4 +182,24 @@ export type FeatureAttributes = {
 
 export type StatisticsMap = {
   [key: string]: StatsInfo;
+};
+
+export type COLOR = [number, number, number, number];
+
+export type ColorsByAttribute = {
+  attributeName: string;
+  minValue: number;
+  maxValue: number;
+  minColor: COLOR;
+  maxColor: COLOR;
+};
+
+export type LoadOptions = {
+  i3s: {
+    coordinateSystem: number;
+    useDracoGeometry: boolean;
+    useCompressedTextures: boolean;
+    token?: string;
+    colorsByAttribute?: ColorsByAttribute | null;
+  };
 };

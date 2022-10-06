@@ -29,7 +29,13 @@ import {
 } from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
-import { NormalsDebugData, ViewStateSet, DragMode } from "../../types";
+import {
+  NormalsDebugData,
+  ViewStateSet,
+  DragMode,
+  ColorsByAttribute,
+  LoadOptions,
+} from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 
 const TRANSITION_DURAITON = 4000;
@@ -85,6 +91,8 @@ type DeckGlI3sProps = {
   tileColorMode?: number;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
+  /** Property for I3SLoaderOptions. Properties for attribute driven visualization */
+  colorsByAttribute?: ColorsByAttribute | null;
   /** Bounding volume type: OBB of MBS. Set to "" to hide bounding volumes visualisation */
   boundingVolumeType?: string;
   /** Bounding volume color mode */
@@ -163,6 +171,7 @@ export const DeckGlI3s = ({
   mapStyle,
   tileColorMode,
   coloredTilesMap,
+  colorsByAttribute,
   boundingVolumeType = "",
   boundingVolumeColorMode,
   pickable = false,
@@ -612,25 +621,19 @@ export const DeckGlI3s = ({
 
   const renderLayers = () => {
     const tile3dLayers = i3sLayers.map((layer) => {
-      const loadOptions: {
-        i3s: {
-          coordinateSystem: number;
-          useDracoGeometry: boolean;
-          useCompressedTextures: boolean;
-          token?: string;
-        };
-      } = {
+      const loadOptions: LoadOptions = {
         i3s: {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
           useDracoGeometry,
           useCompressedTextures,
+          colorsByAttribute,
         },
       };
       if (layer.token) {
         loadOptions.i3s.token = layer.token;
       }
       return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
+        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
         data: layer.url,
         loader: I3SLoader,
         onTilesetLoad: onTilesetLoadHandler,

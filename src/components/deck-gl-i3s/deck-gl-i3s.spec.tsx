@@ -237,7 +237,7 @@ describe("Deck.gl I3S map component", () => {
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--0"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
@@ -257,7 +257,7 @@ describe("Deck.gl I3S map component", () => {
       callRender(render, { loadNumber: 1 });
       const { id } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--1"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--1"
       );
     });
 
@@ -390,6 +390,30 @@ describe("Deck.gl I3S map component", () => {
       expect(Tile3DLayer).toHaveBeenCalled();
       const { pickable } = Tile3DLayer.mock.lastCall[0];
       expect(pickable).toBe(false);
+    });
+
+    it("Should colorize by attribute", () => {
+      callRender(render, {
+        colorsByAttribute: {
+          attributeName: "HEIGHTROOF",
+          minValue: 0,
+          maxValue: 1400,
+          minColor: [146, 146, 252, 255],
+          maxColor: [44, 44, 175, 255],
+        },
+      });
+      expect(Tile3DLayer).toHaveBeenCalled();
+      const { id, loadOptions } = Tile3DLayer.mock.lastCall[0];
+      expect(id).toBe(
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-HEIGHTROOF--0"
+      );
+      expect(loadOptions.i3s.colorsByAttribute).toEqual({
+        attributeName: "HEIGHTROOF",
+        maxColor: [44, 44, 175, 255],
+        maxValue: 1400,
+        minColor: [146, 146, 252, 255],
+        minValue: 0,
+      });
     });
   });
 
