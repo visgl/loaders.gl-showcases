@@ -446,7 +446,7 @@ export const DeckGlI3s = ({
       const newViewState = {
         main: {
           ...viewState.main,
-          zoom: zoom + 2.5,
+          zoom: zoom + 2,
           longitude: pLongitue,
           latitude: pLatitude,
           transitionDuration: TRANSITION_DURAITON,
