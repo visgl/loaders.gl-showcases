@@ -30,7 +30,15 @@ export class ComparisonLoadManager extends EventTarget {
     this.rightLoadingTime = 0;
   }
 
+  stopLoading() {
+    this.leftResolved = true;
+    this.rightResolved = true;
+  }
+
   resolveLeftSide(stats: StatsMap) {
+    if (this.leftResolved) {
+      return false;
+    }
     this.leftResolved = true;
     this.leftLoadingTime = Date.now() - this.leftStartTime;
     this.rightStartTime = Date.now();
@@ -39,6 +47,9 @@ export class ComparisonLoadManager extends EventTarget {
   }
 
   resolveRightSide(stats: StatsMap) {
+    if (this.rightResolved) {
+      return false;
+    }
     this.rightResolved = true;
     this.rightLoadingTime = Date.now() - this.rightStartTime;
     this._rightStats = stats;
