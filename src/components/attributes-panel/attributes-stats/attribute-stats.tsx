@@ -297,7 +297,6 @@ export const AttributeStats = ({
                 <HistogramTitle>
                   Histogram
                   <ExpandIcon
-                    id={"stats-histogram-icon"}
                     expandState={expandState}
                     collapseDirection={CollapseDirection.bottom}
                     onClick={expand}

@@ -9,11 +9,7 @@ describe("ExpandIcon", () => {
   const onClick = jest.fn();
   beforeEach(() => {
     const { rerender, container } = renderWithTheme(
-      <ExpandIcon
-        id={"test-id"}
-        expandState={ExpandState.expanded}
-        onClick={onClick}
-      />
+      <ExpandIcon expandState={ExpandState.expanded} onClick={onClick} />
     );
     rerenderFunc = rerender;
     componentElement = container;
@@ -39,11 +35,7 @@ describe("ExpandIcon", () => {
     expect(transform).toBe("rotate( 90deg )");
 
     renderWithTheme(
-      <ExpandIcon
-        id={"test-id"}
-        expandState={ExpandState.collapsed}
-        onClick={onClick}
-      />,
+      <ExpandIcon expandState={ExpandState.collapsed} onClick={onClick} />,
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
@@ -53,7 +45,6 @@ describe("ExpandIcon", () => {
   it("Should collapse to the bottom", () => {
     renderWithTheme(
       <ExpandIcon
-        id={"test-id"}
         expandState={ExpandState.expanded}
         collapseDirection={CollapseDirection.bottom}
         onClick={onClick}
@@ -66,7 +57,6 @@ describe("ExpandIcon", () => {
 
     renderWithTheme(
       <ExpandIcon
-        id={"test-id"}
         expandState={ExpandState.collapsed}
         collapseDirection={CollapseDirection.bottom}
         onClick={onClick}
@@ -81,7 +71,6 @@ describe("ExpandIcon", () => {
     const svgElement = componentElement.firstChild;
     renderWithTheme(
       <ExpandIcon
-        id={"test-id"}
         expandState={ExpandState.expanded}
         fillExpanded={"#AAAAAA"}
         fillCollapsed={"#555555"}
@@ -94,7 +83,6 @@ describe("ExpandIcon", () => {
 
     renderWithTheme(
       <ExpandIcon
-        id={"test-id"}
         expandState={ExpandState.collapsed}
         fillExpanded={"#AAAAAA"}
         fillCollapsed={"#555555"}

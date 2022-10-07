@@ -105,7 +105,7 @@ describe("List Item", () => {
     );
 
     const optionsIcon = document.querySelector("#test-id");
-    const expandIcon = document.querySelector("#expand-icon-test-id");
+    const expandIcon = document.querySelector("svg");
     expect(expandIcon).not.toBeNull();
 
     expandIcon && userEvent.click(expandIcon);

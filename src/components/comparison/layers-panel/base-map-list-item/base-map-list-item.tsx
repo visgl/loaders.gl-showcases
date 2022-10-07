@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { ListItemType } from "../../../../types";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
 import { ListItem } from "../list-item/list-item";

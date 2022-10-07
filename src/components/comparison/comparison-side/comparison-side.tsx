@@ -127,6 +127,9 @@ const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   })};
 `;
 
+/** Delay to await asynchronous traversal of the tileset **/
+const IS_LOADED_DELAY = 500;
+
 type ComparisonSideProps = {
   mode: ComparisonMode;
   side: ComparisonSideMode;
@@ -151,8 +154,9 @@ type ComparisonSideProps = {
   onTilesetLoaded: (stats: StatsMap) => void;
 };
 
-/** Delay to await asynchronous traversal of the tileset **/
-const IS_LOADED_DELAY = 500;
+type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
+  token?: string;
+};
 
 export const ComparisonSide = ({
   mode,
@@ -182,7 +186,7 @@ export const ComparisonSide = ({
 
   const tilesetRef = useRef<Tileset3D | null>(null);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayer[]
+    BuildingSceneSublayerWithToken[]
   >([]);
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
@@ -311,7 +315,6 @@ export const ComparisonSide = ({
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
-        // @ts-expect-error - Need to add token field
         token: sublayer?.token,
       }));
   };
@@ -367,16 +370,19 @@ export const ComparisonSide = ({
   const onLayerSelectHandler = (layerId: string, parentId?: string) => {
     const { selectedExample, type } = getSelectedExampleById(layerId);
 
+    let changedLayers: LayerExample[] = [];
+
     if (selectedExample) {
       switch (type) {
         case LayerType.single:
           setLayers([selectedExample]);
-          onChangeLayers && onChangeLayers([selectedExample]);
+          changedLayers = [selectedExample];
+
           break;
         case LayerType.parent: {
           const children = selectedExample?.children || [];
           setLayers([...children, selectedExample]);
-          onChangeLayers && onChangeLayers([...children, selectedExample]);
+          changedLayers = [...children, selectedExample];
           break;
         }
 
@@ -390,7 +396,7 @@ export const ComparisonSide = ({
               (layer) => layer.id !== layerId
             );
             setLayers(filteredValues);
-            onChangeLayers && onChangeLayers(filteredValues);
+            changedLayers = filteredValues;
           } else {
             const { selectedExample: parentLayer } =
               getSelectedExampleById(parentId);
@@ -409,11 +415,13 @@ export const ComparisonSide = ({
             }
 
             setLayers(newLayers);
-            onChangeLayers && onChangeLayers(newLayers);
+            changedLayers = newLayers;
           }
           break;
         }
       }
+
+      onChangeLayers && changedLayers.length && onChangeLayers(changedLayers);
     }
   };
 
@@ -433,13 +441,11 @@ export const ComparisonSide = ({
         break;
       }
 
-      if (example.children) {
-        for (const childExample of example.children) {
-          if (childExample.id === id) {
-            selectedExample = childExample;
-            type = LayerType.child;
-            break;
-          }
+      for (const childExample of example.children || []) {
+        if (childExample.id === id) {
+          selectedExample = childExample;
+          type = LayerType.child;
+          break;
         }
       }
     }
