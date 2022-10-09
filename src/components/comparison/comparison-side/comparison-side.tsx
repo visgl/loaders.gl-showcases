@@ -31,7 +31,6 @@ import {
 } from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
-import { BookmarksPanel } from "../bookmarks-panel/bookmarks-panel";
 
 type LayoutProps = {
   layout: string;
@@ -101,47 +100,6 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
-const LeftBookmarksPanelWrapper = styled.div<LayoutProps>`
-  position: absolute;
-  z-index: 2;
-
-  left: ${getCurrentLayoutProperty({
-    desktop: "30%",
-    tablet: "30%",
-    /**
-     * Make mobile panel centered horisontally
-     * 180px is half the width of the mobile layers panel
-     *  */
-    mobile: "calc(50% - 180px)",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "bottom: 100px;",
-    tablet: "bottom: 100px;",
-    mobile: "bottom: 8px;",
-  })};
-`;
-
-const RightBookmarksPanelWrapper = styled.div<LayoutProps>`
-  position: absolute;
-  z-index: 2;
-
-  right: ${getCurrentLayoutProperty({
-    desktop: "50%",
-    tablet: "50%",
-    /**
-     * Make mobile panel centered horisontally
-     * 180px is half the width of the mobile layers panel
-     *  */
-    mobile: "calc(50% - 180px)",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "bottom: 100px;",
-    tablet: "bottom: 100px;",
-    mobile: "bottom: 8px;",
-  })};
-`;
 
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
@@ -177,6 +135,7 @@ type ComparisonSideProps = {
   dragMode: DragMode;
   loadingTime: number;
   loadTileset?: boolean;
+  activeBookmarkButton: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -185,6 +144,7 @@ type ComparisonSideProps = {
   onDeleteBaseMap: (baseMapId: string) => void;
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
+  showBookmarksPanel: () => void;
 };
 
 /** Delay to await asynchronous traversal of the tileset **/
@@ -203,6 +163,7 @@ export const ComparisonSide = ({
   dragMode,
   loadingTime,
   loadTileset = true,
+  activeBookmarkButton,
   onViewStateChange,
   pointToTileset,
   onChangeLayer,
@@ -211,6 +172,7 @@ export const ComparisonSide = ({
   onDeleteBaseMap,
   disableButtonHandler,
   onTilesetLoaded,
+  showBookmarksPanel,
 }: ComparisonSideProps) => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
@@ -395,10 +357,6 @@ export const ComparisonSide = ({
     side === ComparisonSideMode.left
       ? LeftSidePanelWrapper
       : RightSidePanelWrapper;
-  const BookmarsPanelWrapper =
-    side === ComparisonSideMode.left
-      ? LeftBookmarksPanelWrapper
-      : RightBookmarksPanelWrapper;
 
   return (
     <Container layout={layout}>
@@ -431,9 +389,11 @@ export const ComparisonSide = ({
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
+              activeBookmarkButton={activeBookmarkButton}
               showLayerOptions={showLayerOptions}
               showComparisonSettings={showComparisonSettings}
               onChange={onChangeMainToolsPanelHandler}
+              showBookmarksPanel={showBookmarksPanel}
             />
           </ToolsPanelWrapper>
           {activeButton === ActiveButton.options && (
@@ -491,17 +451,6 @@ export const ComparisonSide = ({
                 }
               />
             </OptionsPanelWrapper>
-          )}
-          {activeButton === ActiveButton.bookmarks && (
-            <BookmarsPanelWrapper layout={layout}>
-              <BookmarksPanel
-                id={`${side}-comparison-bookmarks-panel`}
-                hasBookmarks={true}
-                onClose={() =>
-                  onChangeMainToolsPanelHandler(ActiveButton.bookmarks)
-                }
-              />
-            </BookmarsPanelWrapper>
           )}
         </>
       )}

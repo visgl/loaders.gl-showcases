@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty } from "../../utils/layout";
+import {
+  color_brand_quaternary,
+  color_brand_tertiary,
+} from "../../constants/colors";
 
 export type LayoutProps = {
   layout: string;
@@ -10,6 +14,7 @@ export enum Panels {
   Layers,
   ComparisonParams,
   MemoryUsage,
+  Bookmarks,
 }
 
 export const Container = styled.div<LayoutProps>`
@@ -75,4 +80,95 @@ export const HorizontalLine = styled.div<{ top?: number; bottom?: number }>`
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
   opacity: 0.12;
+`;
+
+export const OptionsIcon = styled.div<{ panel: number }>`
+  position: relative;
+  width: 4px;
+  height: 4px;
+  background-color: ${({ theme, panel }) =>
+    panel === Panels.Layers
+      ? `${color_brand_quaternary}`
+      : theme.colors.buttonIconColor};
+  border-radius: 50%;
+  margin-bottom: 12px;
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    left: 0px;
+    background-color: ${({ theme, panel }) =>
+      panel === Panels.Layers
+        ? `${color_brand_quaternary}`
+        : theme.colors.buttonIconColor};
+    border-radius: inherit;
+  }
+  &:before {
+    top: 6px;
+  }
+  &:after {
+    top: 12px;
+  }
+`;
+
+export const InnerButton = styled.button<{
+  blurButton?: boolean;
+  hide?: boolean;
+  width: number;
+  height: number;
+}>`
+  opacity: ${({ blurButton }) => (blurButton ? 0.4 : 1)};
+  display: ${({ hide }) => (hide ? "none" : "flex")};
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 8px;
+  width: ${({ width }) => width}px;
+  height: ${({ height }) => height}px;
+  cursor: pointer;
+  background-color: ${color_brand_tertiary};
+  fill: ${({ theme }) => theme.colors.buttonIconColor};
+`;
+
+export const MenuContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  width: 202px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.mainColor};
+  color: ${({ theme }) => theme.colors.fontColor};
+`;
+
+export const MenuItem = styled.div<{
+  customColor?: string;
+  opacity?: number;
+}>`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  padding: 10px 0px;
+  color: ${({ theme, customColor }) =>
+    customColor ? customColor : theme.colors.fontColor};
+  opacity: ${({ opacity = 1 }) => opacity};
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+`;
+
+export const MenuSettingsIcon = styled.div`
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  margin-right: 10px;
+`;
+
+export const MenuDevider = styled.div`
+  height: 1px;
+  width: 100%;
+  border-top: 1px solid #393a45;
 `;

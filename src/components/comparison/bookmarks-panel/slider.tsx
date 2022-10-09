@@ -1,109 +1,59 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ChevronIcon from "../../../../public/icons/chevron.svg";
-
-type CompassProps = {
-  url: string;
-  minWidth: number;
-  //   maxWidth: number;
-  moveWidth: number;
-};
+import { LayoutProps } from "../common";
+import { BookmarksListItem } from "./bookmark-list-item";
+import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 
 const BookmarksList = styled.div`
- overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: 0.2s;
+  overflow: hidden;
   flex: 2;
 `;
 
-const Polosa = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  width: content;
-  /* cursor: pointer;
-  margin: 0 16px 0 16px;
-  fill: ${({ theme }) => theme.colors.fontColor}; */
-`;
-
-// const BookmarksList = styled.div.attrs<CompassProps>(({ moveWidth }) => ({
-//   style: {
-//     transform: `translateX(${moveWidth}px)`,
-//   },
-// }))<CompassProps>`
-//   overflow: hidden;
-//   flex: 2;
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   transition: 0.2s;
-// `;
-
-const BookmarkListItem = styled.div.attrs<CompassProps>(
-  ({ url, minWidth, moveWidth }) => ({
-    style: {
-      transform: `translateX(${moveWidth}px)`,
-      background: `url(${url}) no-repeat #232430`,
-      minWidth: `${minWidth}px`,
-      //   maxWidth: `${maxWidth}px`,
-    },
-  })
-)<CompassProps>`
-  background: url(${(url) => `${url}`}) no-repeat #232430;
-  height: 81px;
-  width: 144px;
-  border-radius: 12px;
-  transition: 0.2s;
-
-  /* &:not(:last-child) {
-    margin-right: 16px; */
-  //}
-`;
-
-// const BookmarkListItem = styled.div<{ url: string; minWidth: number }>`
-//   background: url(${(props) => props.url}) no-repeat #232430;
-//   height: 81px;
-//   /* min-width: 144px; */
-//   min-width: ${(props) => `${props.minWidth}px`};
-//   border-radius: 12px;
-//   margin-right: 16px;
-// `;
-
-const ArrowIconLeft = styled.div`
+const ArrowIconLeft = styled.div<LayoutProps>`
   cursor: pointer;
   margin: 0 16px 0 16px;
   fill: ${({ theme }) => theme.colors.fontColor};
+
+  display: ${getCurrentLayoutProperty({
+    desktop: "block",
+    tablet: "none",
+    mobile: "none",
+  })};
 `;
 
-const ArrowIconRight = styled(ArrowIconLeft)`
+const ArrowIconRight = styled(ArrowIconLeft)<LayoutProps>`
   transform: rotate(-180deg);
 `;
 
 type SliderProps = {
-  bookmarks: any;
+  bookmarks: Bookmarks[];
+  editingMode: boolean;
 };
 
-export const Slider = ({ bookmarks }: SliderProps) => {
-  const containerRef = useRef<any>(null);
-  const polosaRef = useRef<any>(null);
-  const slidesToShow = 5;
-  const [itemWidth, setItemWidth] = useState<number>(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
+type Bookmarks = {
+  id: string;
+  url: any;
+};
+
+const ITEM_WIDTH = 144;
+const ITEM_GAP = 16;
+
+export const Slider = ({ bookmarks, editingMode }: SliderProps) => {
   const [position, setPosition] = useState<number>(0);
+  const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmarks>(
+    null
+  );
 
-  useEffect(() => {
-    // console.log(Math.floor(containerRef.current.offsetWidth / slidesToShow));
-
-    console.log(containerRef.current.offsetWidth);
-    console.log(polosaRef.current.offsetWidth);
-    setContainerWidth(
-      containerRef.current.offsetWidth - (16 * bookmarks.length - 1)
-    );
-    setItemWidth(containerRef.current.offsetWidth / slidesToShow);
-  }, []);
+  const layout = useAppLayout();
 
   const handleLeftArrowClick = () => {
     setPosition((prev) => {
-      const newPosition = prev + itemWidth;
+      const newPosition = prev + ITEM_WIDTH;
 
       return Math.min(newPosition, 0);
     });
@@ -111,36 +61,47 @@ export const Slider = ({ bookmarks }: SliderProps) => {
 
   const handleRightArrowClick = () => {
     setPosition((prev) => {
-      const newPosition = prev - itemWidth;
+      const newPosition = prev - ITEM_WIDTH;
 
-      //   const maxWidth = -(containerWidth * (bookmarks.length - 1));
-      const maxWidth = -(itemWidth * (bookmarks.length - 1));
+      const maxWidth = -(
+        (bookmarks.length - 1) * ITEM_WIDTH -
+        (bookmarks.length - 1) * ITEM_GAP
+      );
 
-      console.log("new ", newPosition, "max width ", containerWidth);
-
-      return Math.max(newPosition, -containerWidth);
+      return Math.max(newPosition, maxWidth);
     });
+  };
+
+  const onSelectBookmark = (bookmarkId: string) => {
+    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
+
+    if (bookmark) {
+      setSelectedBookmark(bookmark);
+    }
   };
 
   return (
     <>
-      <ArrowIconLeft onClick={handleLeftArrowClick}>
+      <ArrowIconLeft layout={layout} onClick={handleLeftArrowClick}>
         <ChevronIcon />
       </ArrowIconLeft>
-      <BookmarksList ref={containerRef}>
-        <Polosa ref={polosaRef}>
-          {bookmarks.map((bookmark) => (
-            <BookmarkListItem
+      <BookmarksList>
+        {bookmarks.map((bookmark) => {
+          const bookmarkSelected =
+            bookmark.id === selectedBookmark?.id && !editingMode;
+          return (
+            <BookmarksListItem
+              selected={bookmarkSelected}
               key={bookmark.id}
               url={bookmark.url}
-              minWidth={itemWidth}
-              // maxWidth={containerWidth}
+              editingMode={editingMode}
               moveWidth={position}
+              onSelectBookmark={() => onSelectBookmark(bookmark.id)}
             />
-          ))}
-        </Polosa>
+          );
+        })}
       </BookmarksList>
-      <ArrowIconRight onClick={handleRightArrowClick}>
+      <ArrowIconRight layout={layout} onClick={handleRightArrowClick}>
         <ChevronIcon />
       </ArrowIconRight>
     </>

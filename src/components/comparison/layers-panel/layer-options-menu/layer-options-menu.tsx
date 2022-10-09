@@ -1,50 +1,15 @@
-import styled, { useTheme } from "styled-components";
+import { useTheme } from "styled-components";
 import LocationIcon from "../../../../../public/icons/location.svg";
 import DeleteIcon from "../../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../../public/icons/settings.svg";
 import { color_accent_primary } from "../../../../constants/colors";
 import { ReactEventHandler } from "react";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  width: 202px;
-  border-radius: 8px;
-  background: ${({ theme }) => theme.colors.mainColor};
-  color: ${({ theme }) => theme.colors.fontColor};
-`;
-
-const Item = styled.div<{
-  customColor?: string;
-  opacity?: number;
-}>`
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  padding: 10px 0px;
-  color: ${({ theme, customColor }) =>
-    customColor ? customColor : theme.colors.fontColor};
-  opacity: ${({ opacity = 1 }) => opacity};
-  display: flex;
-  gap: 10px;
-  cursor: pointer;
-`;
-
-const LayerSettingsIcon = styled.div`
-  width: 20px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-  margin-right: 10px;
-`;
-
-const Devider = styled.div`
-  height: 1px;
-  width: 100%;
-  border-top: 1px solid #393a45;
-`;
+import {
+  MenuContainer,
+  MenuItem,
+  MenuSettingsIcon,
+  MenuDevider,
+} from "../../common";
 
 type LayerOptionsMenuProps = {
   layerId: string;
@@ -66,38 +31,38 @@ export const LayerOptionsMenu = ({
   const theme = useTheme();
 
   return (
-    <Container>
-      <Item onClick={onPointToLayerClick}>
-        <LayerSettingsIcon>
+    <MenuContainer>
+      <MenuItem onClick={onPointToLayerClick}>
+        <MenuSettingsIcon>
           <LocationIcon fill={theme.colors.fontColor} />
-        </LayerSettingsIcon>
+        </MenuSettingsIcon>
         Point to layer
-      </Item>
+      </MenuItem>
 
       {showLayerSettings && (
-        <Item onClick={onLayerSettingsClick}>
-          <LayerSettingsIcon>
+        <MenuItem onClick={onLayerSettingsClick}>
+          <MenuSettingsIcon>
             <SettingsIcon fill={theme.colors.fontColor} />
-          </LayerSettingsIcon>
+          </MenuSettingsIcon>
           Layer settings
-        </Item>
+        </MenuItem>
       )}
 
       {showDeleteLayer && (
         <>
-          <Devider />
-          <Item
+          <MenuDevider />
+          <MenuItem
             customColor={color_accent_primary}
             opacity={0.8}
             onClick={() => onDeleteLayerClick(layerId)}
           >
-            <LayerSettingsIcon>
+            <MenuSettingsIcon>
               <DeleteIcon fill={color_accent_primary} />
-            </LayerSettingsIcon>
+            </MenuSettingsIcon>
             Delete layer
-          </Item>
+          </MenuItem>
         </>
       )}
-    </Container>
+    </MenuContainer>
   );
 };
