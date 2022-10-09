@@ -41,6 +41,10 @@ const IconButton = styled.div<{
       fill: ${theme.colors.fontColor};
     `;
   }}
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 type ExpandIconProps = {

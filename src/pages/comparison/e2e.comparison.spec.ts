@@ -674,4 +674,28 @@ describe("Compare button", () => {
     const elemsArray = await page.$$("#compare-button > button");
     expect(elemsArray.length).toEqual(2);
   });
+
+  it("Should be disabled after mode change", async() => {
+    const layerItems = await page.$$("#left-layers-panel input");
+    const sf17Item = layerItems[1];
+    await sf17Item.click();
+
+    await page.waitForSelector("#compare-default-button");
+    await page.click("#compare-default-button");
+    await page.hover("a[href='/compare-across-layers']");
+    await page.click("a[href='/compare-across-layers']");
+
+    const compareButton = await page.$("#compare-button > :first-child");
+    const compareButtonText = await compareButton.$eval(
+      "#compare-button > :first-child > :last-child",
+      (node) => node.innerText
+    );
+    expect(compareButtonText).toBe('Start comparing');
+    await compareButton.click();
+    const compareButtonText2 = await page.$eval(
+      "#compare-button > :first-child > :last-child",
+      (node) => node.innerText
+    );
+    expect(compareButtonText2).toBe('Start comparing');
+  });
 });

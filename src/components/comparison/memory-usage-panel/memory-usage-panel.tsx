@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Stats, Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
 import { useAppLayout } from "../../../utils/layout";
@@ -16,6 +15,7 @@ import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { ExpandState, CollapseDirection } from "../../../types";
 import { formatMemory } from "../../../utils/format-memory";
 import LinkIcon from "../../../../public/icons/link.svg";
+import { useExpand } from "../../../utils/hooks/use-expand";
 
 const StatSection = styled.div`
   display: flex;
@@ -59,20 +59,9 @@ export const MemoryUsagePanel = ({
   loadingTime,
   onClose,
 }: MemoryUsageProps) => {
-  const [expandState, setExpandState] = useState<ExpandState>(
-    ExpandState.expanded
-  );
+  const [expandState, expand] = useExpand(ExpandState.expanded);
   const theme = useTheme();
   const layout = useAppLayout();
-
-  const onExpandClickHandler = () => {
-    setExpandState((prev) => {
-      if (prev === ExpandState.expanded) {
-        return ExpandState.collapsed;
-      }
-      return ExpandState.expanded;
-    });
-  };
 
   return (
     <Container id={id} layout={layout}>
@@ -88,7 +77,7 @@ export const MemoryUsagePanel = ({
         </StatTimeContainer>
         {memoryStats && (
           <StatSection>
-            <Title bottom={12}>{memoryStats.id}</Title>
+            <Title bottom={12}>Memory Usage</Title>
             {Object.values(memoryStats.stats).map((stat: Stat) => (
               <StatContainer key={stat.name}>
                 <StatTitle>{stat.name}</StatTitle>
@@ -105,7 +94,7 @@ export const MemoryUsagePanel = ({
               <ExpandIcon
                 expandState={expandState}
                 collapseDirection={CollapseDirection.bottom}
-                onClick={onExpandClickHandler}
+                onClick={expand}
               />
             </StatContainer>
             {expandState === ExpandState.expanded && (

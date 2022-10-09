@@ -9,12 +9,13 @@ jest.mock("../close-button/close-button", () => ({
     .mockImplementation((props) => <div {...props}>CloseButton</div>),
 }));
 
-jest.mock("./attribute-stats", () => ({
+jest.mock("./attributes-stats/attribute-stats", () => ({
   AttributeStats: jest.fn().mockImplementation(() => <div>AttributeStats</div>),
 }));
 
 describe("AttributesPanel", () => {
   const handleClosePanel = jest.fn();
+  const handleColorsByAttributeChange = jest.fn();
 
   it("Should render AttributesPanel", () => {
     const attributes = {
@@ -29,7 +30,9 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={null}
+        colorsByAttribute={null}
         onClose={handleClosePanel}
+        onColorsByAttributeChange={handleColorsByAttributeChange}
       />
     );
 
@@ -61,7 +64,9 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={statisticsInfo}
+        colorsByAttribute={null}
         onClose={handleClosePanel}
+        onColorsByAttributeChange={handleColorsByAttributeChange}
       />
     );
 

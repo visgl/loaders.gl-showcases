@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { CollapseDirection, ExpandState, DragMode } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
@@ -12,6 +11,7 @@ import {
   color_brand_tertiary,
   color_canvas_primary_inverted,
 } from "../../constants/colors";
+import { useExpand } from "../../utils/hooks/use-expand";
 
 const Container = styled.div`
   position: absolute;
@@ -80,20 +80,11 @@ export const MapControllPanel = ({
   onCompassClick,
   onDragModeToggle,
 }: MapControlPanelProps) => {
-  const [expandState, setExpandState] = useState<ExpandState>(
+  const [expandState, expand] = useExpand(
     ExpandState.expanded
   );
 
   const theme = useTheme();
-
-  const onExpandClickHandler = () => {
-    setExpandState((prev) => {
-      if (prev === ExpandState.expanded) {
-        return ExpandState.collapsed;
-      }
-      return ExpandState.expanded;
-    });
-  };
 
   return (
     <Container id="map-control-panel">
@@ -102,7 +93,7 @@ export const MapControllPanel = ({
         collapseDirection={CollapseDirection.bottom}
         fillExpanded={theme.colors.mapControlExpanderDimColor}
         fillCollapsed={theme.colors.mapControlExpanderColor}
-        onClick={onExpandClickHandler}
+        onClick={expand}
       />
       {expandState === ExpandState.expanded && (
         <>

@@ -61,6 +61,7 @@ describe("ComparisonSide", () => {
         showComparisonSettings
         dragMode={DragMode.pan}
         loadingTime={1123}
+        hasBeenCompared={false}
         activeBookmarkButton={false}
         showBookmarksPanel={showBookmarksPanel}
         compareButtonMode={CompareButtonMode.Start}
