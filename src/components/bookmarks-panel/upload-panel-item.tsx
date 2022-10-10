@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { useAppLayout } from "../../../utils/layout";
-import { ActionButton } from "../../action-button/action-button";
-import { LayoutProps } from "../common";
-import { ActionButtonVariant } from "../../../types";
-import WarningIcon from "../../../../public/icons/warning.svg";
+import { useAppLayout } from "../../utils/layout";
+import { ActionButton } from "../action-button/action-button";
+import { LayoutProps } from "../comparison/common";
+import { ActionButtonVariant } from "../../types";
+import WarningIcon from "../../../public/icons/warning.svg";
 
 const Container = styled.div<LayoutProps>`
   width: 335px;

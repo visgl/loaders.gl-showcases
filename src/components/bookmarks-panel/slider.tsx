@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ChevronIcon from "../../../../public/icons/chevron.svg";
-import { LayoutProps } from "../common";
+import ChevronIcon from "../../../public/icons/chevron.svg";
+import { LayoutProps } from "../comparison/common";
 import { BookmarksListItem } from "./bookmark-list-item";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
 const BookmarksList = styled.div`
   display: flex;

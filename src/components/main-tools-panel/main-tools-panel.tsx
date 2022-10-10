@@ -16,9 +16,9 @@ type MainToolsPanelProps = {
   activeButton: ActiveButton;
   showLayerOptions?: boolean;
   showComparisonSettings?: boolean;
-  activeBookmarkButton: boolean;
+  showBookmarks: boolean;
   onChange?: (active: ActiveButton) => void;
-  showBookmarksPanel: () => void;
+  onShowBookmarksChange: () => void;
 };
 
 type ContainerProps = {
@@ -69,9 +69,9 @@ export const MainToolsPanel = ({
   activeButton,
   showLayerOptions = true,
   showComparisonSettings = true,
-  activeBookmarkButton,
+  showBookmarks,
   onChange = () => ({}),
-  showBookmarksPanel,
+  onShowBookmarksChange,
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
 
@@ -104,8 +104,8 @@ export const MainToolsPanel = ({
       </Button>
       <Button
         layout={layout}
-        active={activeBookmarkButton}
-        onClick={showBookmarksPanel}
+        active={showBookmarks}
+        onClick={onShowBookmarksChange}
       >
         <BookmarksIcon />
       </Button>

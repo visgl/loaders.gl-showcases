@@ -137,7 +137,7 @@ type ComparisonSideProps = {
   loadingTime: number;
   loadTileset?: boolean;
   hasBeenCompared: boolean;
-  activeBookmarkButton: boolean;
+  showBookmarks: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayer?: (layer: LayerExample) => void;
@@ -146,7 +146,7 @@ type ComparisonSideProps = {
   onDeleteBaseMap: (baseMapId: string) => void;
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
-  showBookmarksPanel: () => void;
+  onShowBookmarksChange: () => void;
 };
 
 /** Delay to await asynchronous traversal of the tileset **/
@@ -165,7 +165,7 @@ export const ComparisonSide = ({
   dragMode,
   loadingTime,
   loadTileset = true,
-  activeBookmarkButton,
+  showBookmarks,
   hasBeenCompared,
   onViewStateChange,
   pointToTileset,
@@ -175,7 +175,7 @@ export const ComparisonSide = ({
   onDeleteBaseMap,
   disableButtonHandler,
   onTilesetLoaded,
-  showBookmarksPanel,
+  onShowBookmarksChange,
 }: ComparisonSideProps) => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
@@ -398,11 +398,11 @@ export const ComparisonSide = ({
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
-              activeBookmarkButton={activeBookmarkButton}
+              showBookmarks={showBookmarks}
               showLayerOptions={showLayerOptions}
               showComparisonSettings={showComparisonSettings}
               onChange={onChangeMainToolsPanelHandler}
-              showBookmarksPanel={showBookmarksPanel}
+              onShowBookmarksChange={onShowBookmarksChange}
             />
           </ToolsPanelWrapper>
           {activeButton === ActiveButton.options && (

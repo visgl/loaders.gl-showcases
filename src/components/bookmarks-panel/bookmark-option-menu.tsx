@@ -1,15 +1,15 @@
 import { useTheme } from "styled-components";
-import DownloadBookmarkIcon from "../../../../public/icons/download-bookmark.svg";
-import DeleteIcon from "../../../../public/icons/delete.svg";
-import UploadBookmarkIcon from "../../../../public/icons/upload-bookmark.svg";
-import EditBookmarkIcon from "../../../../public/icons/edit.svg";
-import { color_accent_primary } from "../../../constants/colors";
+import DownloadBookmarkIcon from "../../../public/icons/download-bookmark.svg";
+import DeleteIcon from "../../../public/icons/delete.svg";
+import UploadBookmarkIcon from "../../../public/icons/upload-bookmark.svg";
+import EditBookmarkIcon from "../../../public/icons/edit.svg";
+import { color_accent_primary } from "../../constants/colors";
 import {
   MenuContainer,
   MenuItem,
   MenuSettingsIcon,
   MenuDevider,
-} from "../common";
+} from "../comparison/common";
 
 type BookmarkOptionsMenuProps = {
   onEditBookmark: () => void;

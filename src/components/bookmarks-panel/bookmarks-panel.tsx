@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import styled, { css, useTheme } from "styled-components";
-import { Layout } from "../../../utils/enums";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
+import { Layout } from "../../utils/enums";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import {
   PanelHeader,
   HorizontalLine,
@@ -9,20 +9,21 @@ import {
   Title,
   InnerButton,
   OptionsIcon,
-} from "../common";
-import { CloseButton } from "../../close-button/close-button";
+} from "../comparison/common";
+import { CloseButton } from "../close-button/close-button";
 import { Slider } from "./slider";
-import PlusIcon from "../../../../public/icons/plus.svg";
-import ConfirmationIcon from "../../../../public/icons/confirmation.svg";
-import CloseIcon from "../../../../public/icons/close.svg";
-import ConfirmIcon from "../../../../public/icons/confirmation.svg";
-import DUMMY_BOOKMARK from "../../../../public/icons/dummy-bookmark.png";
+import PlusIcon from "../../../public/icons/plus.svg";
+import ConfirmationIcon from "../../../public/icons/confirmation.svg";
+import CloseIcon from "../../../public/icons/close.svg";
+import ConfirmIcon from "../../../public/icons/confirmation.svg";
+import DUMMY_BOOKMARK from "../../../public/icons/dummy-bookmark.png";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
 import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
+import { color_brand_tertiary } from "../../constants/colors";
 
-export enum ActivePanel {
+enum PopoverType {
   options,
   upload,
   uploadWarning,
@@ -87,12 +88,24 @@ const ButtonWrapper = styled.div<LayoutProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 12px;
   width: 144px;
   height: 81px;
   cursor: pointer;
-  background-color: rgba(96, 93, 236, 0.4);
   gap: 10px;
+  position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: ${color_brand_tertiary};
+    border-radius: 12px;
+    opacity: 0.4;
+    z-index: -1;
+  }
 `;
 
 const ButtonsWrapper = styled.div`
@@ -138,53 +151,51 @@ const DUMMY_BOOKMARKS = [
 export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
-  const [activePanel, setActivePanel] = useState<number>(ActivePanel.none);
+  const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
 
   const layout = useAppLayout();
   const theme = useTheme();
 
-  console.log(layout);
-
   const showOverlayCondition =
-    activePanel === ActivePanel.upload ||
-    activePanel === ActivePanel.uploadWarning;
+    popoverType === PopoverType.upload ||
+    popoverType === PopoverType.uploadWarning;
   const disableAddButton = editingMode || clearBookmarks;
 
   const onEditBookmark = useCallback(() => {
     setEditingMode((prev) => !prev);
-    setActivePanel(ActivePanel.none);
+    setPopoverType(PopoverType.none);
   }, []);
 
   const onClearBookmarks = useCallback(() => {
     setClearBookmarksMode((prev) => !prev);
-    setActivePanel(ActivePanel.none);
+    setPopoverType(PopoverType.none);
   }, []);
 
-  const renderPoppverContent = () => {
-    if (activePanel === ActivePanel.uploadWarning) {
+  const renderPopoverContent = () => {
+    if (popoverType === PopoverType.uploadWarning) {
       return (
         <UnsavedBookmarkWarning
-          onCancel={() => setActivePanel(ActivePanel.none)}
-          onConfirmWarning={() => setActivePanel(ActivePanel.upload)}
+          onCancel={() => setPopoverType(PopoverType.none)}
+          onConfirmWarning={() => setPopoverType(PopoverType.upload)}
         />
       );
     }
 
-    if (activePanel === ActivePanel.upload) {
+    if (popoverType === PopoverType.upload) {
       return (
         <UploadPanel
-          onCancel={() => setActivePanel(ActivePanel.none)}
+          onCancel={() => setPopoverType(PopoverType.none)}
           onConfirmWarning={() => console.log("not implemented yet")}
         />
       );
     }
 
-    if (activePanel === ActivePanel.options) {
+    if (popoverType === PopoverType.options) {
       return (
         <BookmarkOptionsMenu
           onEditBookmark={onEditBookmark}
           onClearBookmarks={onClearBookmarks}
-          onUploadBookmarks={() => setActivePanel(ActivePanel.uploadWarning)}
+          onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
         />
       );
     }
@@ -241,15 +252,15 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
           )}
           <ButtonWrapper layout={layout}>
             <Popover
-              isOpen={activePanel !== ActivePanel.none}
+              isOpen={popoverType !== PopoverType.none}
               reposition={false}
               positions={["top", "bottom", "left", "right"]}
-              content={renderPoppverContent() as JSX.Element}
+              content={renderPopoverContent() as JSX.Element}
               containerStyle={{ zIndex: "4", top: "80px", left: "100px" }}
-              onClickOutside={() => setActivePanel(ActivePanel.none)}
+              onClickOutside={() => setPopoverType(PopoverType.none)}
             >
               <ButtonsWrapper>
-                {editingMode ? (
+                {editingMode && (
                   <InnerButton
                     width={44}
                     height={44}
@@ -257,12 +268,13 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
                   >
                     <ConfirmationIcon />
                   </InnerButton>
-                ) : (
+                )}
+                {!editingMode && (
                   <InnerButton
                     width={44}
                     height={44}
                     hide={clearBookmarks}
-                    onClick={() => setActivePanel(ActivePanel.options)}
+                    onClick={() => setPopoverType(PopoverType.options)}
                   >
                     <OptionsIcon panel={Panels.Bookmarks} />
                   </InnerButton>

@@ -3,12 +3,12 @@ import styled, { css } from "styled-components";
 import {
   color_canvas_secondary,
   color_brand_tertiary,
-} from "../../../constants/colors";
-import { InnerButton, LayoutProps } from "../common";
-import TrashIcon from "../../../../public/icons/trash.svg";
-import CloseIcon from "../../../../public/icons/close.svg";
-import ConfirmIcon from "../../../../public/icons/confirmation.svg";
-import { useAppLayout, getCurrentLayoutProperty } from "../../../utils/layout";
+} from "../../constants/colors";
+import { InnerButton, LayoutProps } from "../comparison/common";
+import TrashIcon from "../../../public/icons/trash.svg";
+import CloseIcon from "../../../public/icons/close.svg";
+import ConfirmIcon from "../../../public/icons/confirmation.svg";
+import { useAppLayout, getCurrentLayoutProperty } from "../../utils/layout";
 
 type TranslateProps = {
   moveWidth: number;
@@ -30,7 +30,7 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  background: url(${(props) => props.url}) no-repeat #232430;
+  background: url(${(props) => props.url}) no-repeat;
   opacity: 1;
   min-width: 144px;
   border-radius: 12px;
@@ -118,7 +118,7 @@ export const BookmarksListItem = ({
     >
       {isHovering && editingMode && (
         <>
-          {deleteBookmark ? (
+          {deleteBookmark && (
             <>
               <InnerButton width={32} height={32}>
                 <ConfirmIcon />
@@ -127,7 +127,8 @@ export const BookmarksListItem = ({
                 <CloseIcon />
               </InnerButton>
             </>
-          ) : (
+          )}
+          {!deleteBookmark && (
             <InnerButton width={32} height={32} onClick={onDeleteBookmark}>
               <TrashIcon />
             </InnerButton>

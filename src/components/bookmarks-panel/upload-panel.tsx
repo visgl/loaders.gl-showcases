@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { UploadPanelItem } from "./upload-panel-item";
-import UploadIcon from "../../../../public/icons/upload.svg";
+import UploadIcon from "../../../public/icons/upload.svg";
 
 const FileInteractionContiner = styled.div`
   box-sizing: border-box;
