@@ -1,4 +1,9 @@
-import type { FeatureAttributes, Sublayer, LayerExample } from "../../types";
+import type {
+  FeatureAttributes,
+  Sublayer,
+  LayerExample,
+  ColorsByAttribute,
+} from "../../types";
 // TODO Add export type to index file in loaders.gl
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 
@@ -85,6 +90,8 @@ export const ViewerApp = () => {
   const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState<FeatureAttributes | null>(null);
+  const [colorsByAttribute, setColorsByAttribute] =
+    useState<ColorsByAttribute | null>(null);
 
   const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
     StatisticsInfo[] | null
@@ -370,6 +377,8 @@ export const ViewerApp = () => {
       attributes={selectedFeatureAttributes}
       statisticsInfo={tilesetStatisticsInfo}
       tilesetBasePath={selectedTilesetBasePath}
+      colorsByAttribute={colorsByAttribute}
+      onColorsByAttributeChange={setColorsByAttribute}
     />
   );
 
@@ -407,6 +416,7 @@ export const ViewerApp = () => {
         loadedTilesets={loadedTilesets}
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
+        colorsByAttribute={colorsByAttribute}
         onAfterRender={() => updateStatWidgets()}
         getTooltip={getTooltip}
         onClick={handleClick}

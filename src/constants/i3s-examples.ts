@@ -25,17 +25,5 @@ export const EXAMPLES: LayerExample[] = [
     id: "turanga-library",
     name: "Turanga Library",
     url: "https://tiles.arcgis.com/tiles/cFEFS0EWrhfDeVw9/arcgis/rest/services/Turanga_Library/SceneServer/layers/0",
-    children: [
-      {
-        id: "1-new-york",
-        name: "New York",
-        url: "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
-      },
-      {
-        id: "1-san-francisco-v1.6",
-        name: "San Francisco v1.6",
-        url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
-      },
-    ]
   },
 ];

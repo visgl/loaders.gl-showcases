@@ -190,13 +190,10 @@ export const ListItem = ({
           </ControlsWrapper>
         </ItemContentWrapper>
         {expandState && (
-          <>
-            SUkaaaaaa
-            <ExpandIcon
-              expandState={expandState}
-              onClick={onExpandClickHandler}
-            />
-          </>
+          <ExpandIcon
+            expandState={expandState}
+            onClick={onExpandClickHandler}
+          />
         )}
         {optionsContent && usePopoverForOptions && (
           <Popover

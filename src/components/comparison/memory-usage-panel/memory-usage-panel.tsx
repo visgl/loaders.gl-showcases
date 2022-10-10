@@ -77,7 +77,7 @@ export const MemoryUsagePanel = ({
         </StatTimeContainer>
         {memoryStats && (
           <StatSection>
-            <Title bottom={12}>{memoryStats.id}</Title>
+            <Title bottom={12}>Memory Usage</Title>
             {Object.values(memoryStats.stats).map((stat: Stat) => (
               <StatContainer key={stat.name}>
                 <StatTitle>{stat.name}</StatTitle>

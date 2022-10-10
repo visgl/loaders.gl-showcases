@@ -23,7 +23,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
-    "@loaders.gl/i3s": "^3.2.3",
+    "@loaders.gl/i3s": "^3.3.0-alpha.4",
     "@luma.gl/core": "^8.5.14",
     "@probe.gl/stats-widget": "^3.5.0",
     "deck.gl": "^8.8.3",

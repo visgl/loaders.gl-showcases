@@ -18,9 +18,15 @@ import { ColorValueItem } from "./color-value-item";
 
 import LayersIcon from "../../../../public/icons/layers.svg";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
-import { CollapseDirection, ExpandState, ArrowDirection } from "../../../types";
+import {
+  CollapseDirection,
+  ExpandState,
+  ArrowDirection,
+  ColorsByAttribute,
+} from "../../../types";
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { calculateAverageValue } from "../../../utils/calculate-average-value";
+import { COLORS_BY_ATTRIBUTE } from "../../../constants/colors";
 
 type VisibilityProps = {
   visible: boolean;
@@ -124,7 +130,12 @@ const FadeContainer = styled.section`
 const Fade = styled.div`
   width: 295px;
   height: 25px;
-  background: linear-gradient(90deg, #9292fc 0%, #0e73f2 100%, #2c2caf 100%);
+  background: linear-gradient(
+    90deg,
+    ${COLORS_BY_ATTRIBUTE.min.hex} 0%,
+    #0e73f2 100%,
+    ${COLORS_BY_ATTRIBUTE.max.hex} 100%
+  );
   border-radius: 2px;
 `;
 
@@ -148,6 +159,10 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
+  colorsByAttribute: ColorsByAttribute | null;
+  onColorsByAttributeChange: (
+    colorsByAttribute: ColorsByAttribute | null
+  ) => void;
 };
 
 export const AttributeStats = ({
@@ -155,6 +170,8 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
+  colorsByAttribute,
+  onColorsByAttributeChange,
 }: AttributeStatsProps) => {
   const theme = useTheme();
 
@@ -162,8 +179,6 @@ export const AttributeStats = ({
   const [statistics, setStatistics] = useState<StatsInfo | null>(null);
   const [histogramData, setHistogramData] = useState<Histogram | null>(null);
   const [expandState, expand] = useExpand(ExpandState.expanded);
-  const [showColorizeByAttribute, setShowColorizeByAttribute] =
-    useState<boolean>(false);
 
   /**
    * Handle base uri and statistic uri
@@ -269,8 +284,25 @@ export const AttributeStats = ({
     return valueCountRows;
   };
 
-  const onColorizeByAttributeClick = () => {
-    setShowColorizeByAttribute((prev) => !prev);
+  const handleColorizeByAttributeClick = () => {
+    if (
+      !colorsByAttribute ||
+      colorsByAttribute.attributeName !== attributeName
+    ) {
+      if (!statistics || !("min" in statistics) || !("max" in statistics)) {
+        onColorsByAttributeChange(null);
+      } else {
+        onColorsByAttributeChange({
+          attributeName,
+          minValue: statistics.min || 0,
+          maxValue: statistics.max || 0,
+          minColor: COLORS_BY_ATTRIBUTE.min.rgba,
+          maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
+        });
+      }
+    } else {
+      onColorsByAttributeChange(null);
+    }
   };
 
   const statisticRows = useMemo(() => renderStatisticRows(), [statistics]);
@@ -320,13 +352,13 @@ export const AttributeStats = ({
                 <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
                 <ToggleSwitch
                   id={"colorize-by-attribute"}
-                  checked={showColorizeByAttribute}
-                  onChange={onColorizeByAttributeClick}
+                  checked={colorsByAttribute?.attributeName === attributeName}
+                  onChange={handleColorizeByAttributeClick}
                 />
               </AttributeColorize>
-              {showColorizeByAttribute && (
+              {colorsByAttribute?.attributeName === attributeName && (
                 <>
-                  <FadeContainer>
+                  <FadeContainer data-testid="colorsByAttributeFadeContainer">
                     <Fade />
                   </FadeContainer>
                   <ColorizeValuesList>

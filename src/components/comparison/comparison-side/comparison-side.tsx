@@ -5,6 +5,7 @@ import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
 import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { lumaStats } from "@luma.gl/core";
 
 import {
   ActiveButton,
@@ -202,6 +203,7 @@ export const ComparisonSide = ({
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
+  const sideId = `${side}-deck-container`;
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -351,8 +353,8 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const onWebGLInitialized = (gl) => {
-    const stats = gl.stats.get("Memory Usage");
+  const onWebGLInitialized = () => {
+    const stats = lumaStats.get(`Memory Usage${sideId}`);
     setMemoryStats(stats);
   };
 
@@ -492,7 +494,7 @@ export const ComparisonSide = ({
   return (
     <Container layout={layout}>
       <DeckGlI3s
-        id={`${side}-deck-container`}
+        id={sideId}
         parentViewState={{
           ...viewState,
           main: {
