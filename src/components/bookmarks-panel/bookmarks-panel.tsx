@@ -16,12 +16,12 @@ import PlusIcon from "../../../public/icons/plus.svg";
 import ConfirmationIcon from "../../../public/icons/confirmation.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
-import DUMMY_BOOKMARK from "../../../public/icons/dummy-bookmark.png";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
 import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
+import { Bookmark } from "../../types";
 
 enum PopoverType {
   options,
@@ -135,20 +135,12 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 
 type BookmarksPanelProps = {
   id: string;
+  bookmarks: Bookmark[];
   onClose: () => void;
+  onAdd: () => void;
 };
 
-const DUMMY_BOOKMARKS = [
-  { id: "1", url: DUMMY_BOOKMARK },
-  { id: "2", url: DUMMY_BOOKMARK },
-  { id: "3", url: DUMMY_BOOKMARK },
-  { id: "4", url: DUMMY_BOOKMARK },
-  { id: "5", url: DUMMY_BOOKMARK },
-  { id: "6", url: DUMMY_BOOKMARK },
-  { id: "7", url: DUMMY_BOOKMARK },
-];
-
-export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
+export const BookmarksPanel = ({ id, bookmarks, onClose, onAdd }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
@@ -213,7 +205,7 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
         height={height}
         disabled={disableAddButton}
         blurButton={disableAddButton}
-        onClick={() => console.log("not implemented yet")}
+        onClick={onAdd}
       >
         <PlusIcon fill={theme.colors.buttonIconColor} />
       </InnerButton>
@@ -245,8 +237,8 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
             renderAddBookmarkButton(66, 44)
           )}
 
-          {DUMMY_BOOKMARKS.length > 0 ? (
-            <Slider bookmarks={DUMMY_BOOKMARKS} editingMode={editingMode} />
+          {bookmarks.length > 0 ? (
+            <Slider bookmarks={bookmarks} editingMode={editingMode} />
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}

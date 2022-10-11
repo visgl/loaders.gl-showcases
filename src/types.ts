@@ -204,3 +204,8 @@ export type LoadOptions = {
     colorsByAttribute?: ColorsByAttribute | null;
   };
 };
+
+export type Bookmark = {
+  id: string;
+  url: string;
+};

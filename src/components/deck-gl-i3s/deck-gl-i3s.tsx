@@ -501,6 +501,12 @@ export const DeckGlI3s = ({
     }
   };
 
+  const onAfterRenderHandler = () => {
+    if (onAfterRender) {
+      onAfterRender();
+    }
+  };
+
   const onTerrainTileLoad = (tile) => {
     const {
       bbox: { east, north, south, west },
@@ -730,8 +736,11 @@ export const DeckGlI3s = ({
               dragMode,
             }
       }
+      glOptions={{
+        preserveDrawingBuffer: true
+      }}
       onWebGLInitialized={onWebGLInitialized}
-      onAfterRender={onAfterRender}
+      onAfterRender={onAfterRenderHandler}
       getTooltip={getTooltip}
       onClick={onClick}
     >
@@ -739,14 +748,20 @@ export const DeckGlI3s = ({
         currentViewport = viewport;
       }}
       {!showTerrain && (
-        <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
+        <StaticMap
+          reuseMaps
+          mapStyle={mapStyle}
+          preventStyleDiffing
+          preserveDrawingBuffer
+        />
       )}
       {mapStyle && (
         <View id="minimap">
           <StaticMap
             reuseMaps
             mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
-            preventStyleDiffing={true}
+            preventStyleDiffing
+            preserveDrawingBuffer
           />
         </View>
       )}

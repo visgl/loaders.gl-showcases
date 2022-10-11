@@ -101,7 +101,6 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
-
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
   top: auto;
@@ -147,6 +146,7 @@ type ComparisonSideProps = {
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
+  onAfterDeckGlRender?: () => void;
 };
 
 /** Delay to await asynchronous traversal of the tileset **/
@@ -176,6 +176,7 @@ export const ComparisonSide = ({
   disableButtonHandler,
   onTilesetLoaded,
   onShowBookmarksChange,
+  onAfterDeckGlRender
 }: ComparisonSideProps) => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
@@ -391,6 +392,7 @@ export const ComparisonSide = ({
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
+        onAfterRender={onAfterDeckGlRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
