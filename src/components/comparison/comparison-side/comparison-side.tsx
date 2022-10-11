@@ -456,10 +456,21 @@ export const ComparisonSide = ({
   };
 
   const onLayerDeleteHandler = (id: string) => {
+    const idsToDelete = [id];
+
+    const layerToDelete = layers.find((layer) => layer.id === id);
+    const childIds = layerToDelete?.children?.map((child) => child.id) || [];
+
+    if (childIds.length) {
+      idsToDelete.push(...childIds);
+    }
+
     setExamples((prevValues) =>
       prevValues.filter((example) => example.id !== id)
     );
-    setLayers((prevValues) => prevValues.filter((layer) => layer.id !== id));
+    setLayers((prevValues) =>
+      prevValues.filter((layer) => !idsToDelete.includes(layer.id))
+    );
   };
 
   const onPointToLayerHandler = () => {

@@ -1,149 +1,110 @@
-import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
-
-import { ExpandState, ListItemType } from "../../../../types";
+import { act, screen } from "@testing-library/react";
 import { renderWithTheme } from "../../../../utils/testing-utils/render-with-theme";
 import { ListItem } from "./list-item";
 
+// Mocked Components
+import { Checkbox } from "../../../checkbox/checkbox";
+import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
+import { RadioButton } from "../../../radio-button/radio-button";
+
+jest.mock("../../../checkbox/checkbox");
+jest.mock("../list-item-wrapper/list-item-wrapper");
+jest.mock("../../../radio-button/radio-button");
+
+const CheckboxMock = Checkbox as unknown as jest.Mocked<any>;
+const ListItemWrapperMock = ListItemWrapper as unknown as jest.Mocked<any>;
+const RadioButtonMock = RadioButton as unknown as jest.Mocked<any>;
+
+beforeAll(() => {
+  CheckboxMock.mockImplementation(() => <div>CheckBox</div>);
+  ListItemWrapperMock.mockImplementation(({ children }) => (
+    <div>
+      ListItemWrapper
+      {children}
+    </div>
+  ));
+  RadioButtonMock.mockImplementation(() => <div>RadioButton</div>);
+});
+
+const onChangeMock = jest.fn();
+const onOptionsClickMock = jest.fn();
+const onClickOutsideMock = jest.fn();
+const expandClickMock = jest.fn();
+
+const callRender = (renderFunc, props = {}) => {
+  return renderFunc(
+    <ListItem
+      id="test"
+      title="Test Title"
+      type={0} //RadioButton,
+      selected={false}
+      isOptionsPanelOpen={false}
+      onChange={onChangeMock}
+      onOptionsClick={onOptionsClickMock}
+      onClickOutside={onClickOutsideMock}
+      onExpandClick={expandClickMock}
+      {...props}
+    />
+  );
+};
+
 describe("List Item", () => {
-  const onClick = jest.fn();
-  const onOptionsClick = jest.fn();
-  const onExpandClick = jest.fn();
+  it("Should render Title and ListItemWrapper", () => {
+    const { container } = callRender(renderWithTheme);
 
-  it("Should render list item wrapper with Title", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Hello world"}</div>}
-        listItemType={ListItemType.Radio}
-      />
-    );
-    const title = screen.getByText("Main title");
-    expect(title).toBeInTheDocument();
+    expect(container).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeInTheDocument();
+
+    expect(screen.getByText("ListItemWrapper")).toBeInTheDocument();
+    const { onOptionsClick, onClick, onExpandClick, onClickOutside } =
+      ListItemWrapperMock.mock.lastCall[0];
+
+    act(() => {
+      onOptionsClick();
+    });
+    expect(onOptionsClickMock).toHaveBeenCalled();
+
+    act(() => {
+      onClick();
+    });
+    expect(onChangeMock).toHaveBeenCalled();
+
+    act(() => {
+      onExpandClick();
+    });
+    expect(expandClickMock).toHaveBeenCalled();
+
+    act(() => {
+      onClickOutside();
+    });
+    expect(onClickOutsideMock).toHaveBeenCalled();
   });
 
-  it("Should render list item wrapper with Radio Button", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Hello world"}</div>}
-        listItemType={ListItemType.Radio}
-      />
-    );
-    const radioButton = document.querySelector("#radio-button-test-id");
-    radioButton && userEvent.click(radioButton);
-    expect(onClick).toHaveBeenCalled();
+  it("Should render Radio List Item", () => {
+    const { container } = callRender(renderWithTheme, { type: 0 });
+    expect(container).toBeInTheDocument();
+
+    expect(screen.getByText("RadioButton")).toBeInTheDocument();
+    const { onChange } = RadioButtonMock.mock.lastCall[0];
+
+    act(() => {
+      onChange();
+    });
+
+    expect(onChangeMock).toHaveBeenCalledWith("test");
   });
 
-  it("Should render list item wrapper with Checkbox", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Hello world"}</div>}
-        listItemType={ListItemType.Checkbox}
-      />
-    );
+  it("Should render CheckBox List Item", () => {
+    const { container } = callRender(renderWithTheme, { type: 1 });
+    expect(container).toBeInTheDocument();
 
-    const checkbox = document.querySelector("#checkbox-test-id");
-    checkbox && userEvent.click(checkbox);
-    expect(onClick).toHaveBeenCalled();
-  });
+    expect(screen.getByText("CheckBox")).toBeInTheDocument();
+    const { onChange } = CheckboxMock.mock.lastCall[0];
 
-  it("Should render list item wrapper with Icon", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Icon"}</div>}
-        listItemType={ListItemType.Icon}
-        usePopoverForOptions={false}
-      />
-    );
+    act(() => {
+      onChange();
+    });
 
-    const icon = screen.getByText("Icon");
-    expect(icon).toBeInTheDocument();
-    icon && userEvent.click(icon);
-    expect(onClick).toHaveBeenCalled();
-  });
-
-  it("Should be able to expand/collapse", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Hello world"}</div>}
-        listItemType={ListItemType.Radio}
-      />
-    );
-
-    const optionsIcon = document.querySelector("#test-id");
-    const expandIcon = document.querySelector("svg");
-    expect(expandIcon).not.toBeNull();
-
-    expandIcon && userEvent.click(expandIcon);
-    expect(onExpandClick).toHaveBeenCalledTimes(1);
-    expect(optionsIcon).not.toBeNull();
-    optionsIcon && userEvent.click(optionsIcon);
-    expect(onOptionsClick).toHaveBeenCalledTimes(1);
-  });
-
-  it("Should be able to render children", () => {
-    renderWithTheme(
-      <ListItem
-        id="test-id"
-        title={"Main title"}
-        selected={true}
-        expandState={ExpandState.expanded}
-        onOptionsClick={onOptionsClick}
-        onExpandClick={onExpandClick}
-        onClick={onClick}
-        optionsContent={<div>{"Hello world"}</div>}
-        listItemType={ListItemType.Radio}
-      >
-        <ListItem
-          id="child-test-id"
-          title={"Child title"}
-          parentId={"test-id"}
-          selected={true}
-          expandState={ExpandState.expanded}
-          onOptionsClick={onOptionsClick}
-          onExpandClick={onExpandClick}
-          onClick={onClick}
-          optionsContent={<div>{"Hello world"}</div>}
-          listItemType={ListItemType.Radio}
-        />
-      </ListItem>
-    );
-
-    const children = screen.getByText("Child title");
-    expect(children).toBeInTheDocument();
+    expect(onChangeMock).toHaveBeenCalledWith("test");
   });
 });

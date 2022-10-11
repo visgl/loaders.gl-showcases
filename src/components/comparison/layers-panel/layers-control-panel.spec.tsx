@@ -89,11 +89,11 @@ describe("Layers Control Panel", () => {
 
     expect(screen.getByText("ListItem-first")).toBeInTheDocument();
 
-    const { onClick, onOptionsClick, onClickOutside } =
+    const { onChange, onOptionsClick, onClickOutside } =
       ListItemMock.mock.lastCall[0];
 
     act(() => {
-      onClick();
+      onChange();
     });
     expect(onSelectLayerMock);
 

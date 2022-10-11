@@ -89,14 +89,14 @@ describe("Building Explorer", () => {
       screen.queryByText("ListItem Mock-first-nested")
     ).not.toBeInTheDocument();
 
-    const { onClick, onExpandClick } = ListItemMock.mock.lastCall[0];
+    const { onChange, onExpandClick } = ListItemMock.mock.lastCall[0];
 
     act(() => {
       onExpandClick();
     });
 
     act(() => {
-      onClick();
+      onChange();
     });
     expect(onUpdateSublayerVisibilityMock).toHaveBeenCalled();
   });

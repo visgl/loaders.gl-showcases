@@ -67,10 +67,10 @@ export const BuildingExplorer = ({
           <ListItem
             id={sublayer.id.toString()}
             title={sublayer.name}
-            listItemType={ListItemType.Checkbox}
+            type={ListItemType.Checkbox}
             selected={Boolean(sublayer.visibility)}
             expandState={expandState}
-            onClick={() => toggleSublayer(sublayer)}
+            onChange={() => toggleSublayer(sublayer)}
             onExpandClick={() => toggleExpandState(sublayer)}
           />
           {sublayer.expanded ? renderSublayers(childLayers, true) : null}
