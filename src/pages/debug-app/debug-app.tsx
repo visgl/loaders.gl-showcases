@@ -197,11 +197,8 @@ export const DebugApp = () => {
     }
 
     const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
-    if (namedExample) {
-      return namedExample;
-    }
 
-    return INITIAL_EXAMPLE;
+    return namedExample || INITIAL_EXAMPLE;
   };
 
   const [mainTileset, setMainTileset] = useState(initMainTileset());
