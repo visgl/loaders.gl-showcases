@@ -199,6 +199,8 @@ export const ComparisonSide = ({
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
+  const layerUpdateCounter = useRef<number>(0);
+  const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -212,7 +214,7 @@ export const ComparisonSide = ({
   }, [mode]);
 
   useEffect(() => {
-    if (staticLayer) {
+    if (staticLayer !== undefined) {
       setLayer(staticLayer);
     }
   }, [staticLayer]);
@@ -230,20 +232,23 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    layerUpdateCounter.current++;
     if (!layer || !loadTileset) {
       setFlattenedSublayers([]);
       return;
     }
 
-    async function fetchFlattenedSublayers(tilesetUrl) {
+    async function fetchFlattenedSublayers(tilesetUrl: string, layerUpdateNumber: number) {
       const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
-      setFlattenedSublayers(flattenedSublayers);
+      if (layerUpdateNumber === layerUpdateCounter.current) {
+        setFlattenedSublayers(flattenedSublayers);
+      }
     }
 
     const params = parseTilesetUrlParams(layer.url, layer);
     const { tilesetUrl, token } = params;
 
-    fetchFlattenedSublayers(tilesetUrl);
+    fetchFlattenedSublayers(tilesetUrl, layerUpdateCounter.current);
 
     setToken(token);
     setSublayers([]);
@@ -328,6 +333,7 @@ export const ComparisonSide = ({
 
     if (selectedExample) {
       setLayer(selectedExample);
+      setPreventTransitions(false);
       onChangeLayer && onChangeLayer(selectedExample);
     }
   };
@@ -356,6 +362,11 @@ export const ComparisonSide = ({
       }
     }
   };
+
+  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
+    setPreventTransitions(true);
+    onViewStateChange(viewStateSet);
+  }
 
   const selectedLayerIds = layer ? [layer.id] : [];
 
@@ -387,8 +398,8 @@ export const ComparisonSide = ({
         lastLayerSelectedId={tilesetRef.current?.url || ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
-        preventTransitions={compareButtonMode === CompareButtonMode.Comparing}
-        onViewStateChange={onViewStateChange}
+        preventTransitions={preventTransitions}
+        onViewStateChange={onViewStateChangeHandler}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}

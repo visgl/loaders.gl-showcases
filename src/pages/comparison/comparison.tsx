@@ -85,6 +85,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
+  const [layerRightSide, setLayerRightSide] = useState<LayerExample | null>(
+    null
+  );
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
@@ -102,6 +105,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   useEffect(() => {
     setLayerLeftSide(null);
+    setLayerRightSide(null);
     setDisableButton([false, false]);
   }, [mode]);
 
@@ -237,9 +241,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setDisableButton((prevValue) => [prevValue[0], true]);
   };
 
-  const onChangeLayerHandler = (layer: LayerExample) => {
-    if (mode === ComparisonMode.withinLayer) {
+  const onChangeLayerHandler = (
+    layer: LayerExample,
+    side: ComparisonSideMode
+  ) => {
+    if (side === ComparisonSideMode.left) {
       setLayerLeftSide(layer);
+    } else if (side === ComparisonSideMode.right) {
+      setLayerRightSide(layer);
     }
   };
 
@@ -284,10 +293,23 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ...prev,
         {
           id: uuidv4(),
-          url: imageUrl,
+          imageUrl,
+          viewState,
+          layerLeftSide,
+          layerRightSide,
         },
       ]);
     });
+  };
+
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+    if (!bookmark) {
+      return;
+    }
+    setViewState(bookmark.viewState);
+    setLayerLeftSide(bookmark.layerLeftSide);
+    setLayerRightSide(bookmark.layerRightSide);
   };
 
   return (
@@ -304,10 +326,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
+        staticLayer={layerLeftSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayer={onChangeLayerHandler}
+        onChangeLayer={(layer) =>
+          onChangeLayerHandler(layer, ComparisonSideMode.left)
+        }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
@@ -334,7 +359,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           id="comparison-bookmarks-panel"
           bookmarks={bookmarks}
           onClose={onCloseBookmarkPanel}
-          onAdd={addBookmarkHandler}
+          onAddBookmark={addBookmarkHandler}
+          onSelectBookmark={onSelectBookmarkHandler}
         />
       )}
 
@@ -351,10 +377,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
-        staticLayer={mode === ComparisonMode.withinLayer ? layerLeftSide : null}
+        staticLayer={
+          mode === ComparisonMode.withinLayer ? layerLeftSide : layerRightSide
+        }
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
+        onChangeLayer={(layer) =>
+          onChangeLayerHandler(layer, ComparisonSideMode.right)
+        }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}

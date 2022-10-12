@@ -207,5 +207,8 @@ export type LoadOptions = {
 
 export type Bookmark = {
   id: string;
-  url: string;
+  imageUrl: string;
+  viewState: ViewStateSet;
+  layerLeftSide: LayerExample | null;
+  layerRightSide: LayerExample | null;
 };

@@ -137,10 +137,11 @@ type BookmarksPanelProps = {
   id: string;
   bookmarks: Bookmark[];
   onClose: () => void;
-  onAdd: () => void;
+  onAddBookmark: () => void;
+  onSelectBookmark: (id: string) => void;
 };
 
-export const BookmarksPanel = ({ id, bookmarks, onClose, onAdd }: BookmarksPanelProps) => {
+export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelectBookmark }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
@@ -205,7 +206,7 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAdd }: BookmarksPanel
         height={height}
         disabled={disableAddButton}
         blurButton={disableAddButton}
-        onClick={onAdd}
+        onClick={onAddBookmark}
       >
         <PlusIcon fill={theme.colors.buttonIconColor} />
       </InnerButton>
@@ -238,7 +239,7 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAdd }: BookmarksPanel
           )}
 
           {bookmarks.length > 0 ? (
-            <Slider bookmarks={bookmarks} editingMode={editingMode} />
+            <Slider bookmarks={bookmarks} editingMode={editingMode} onSelectBookmark={onSelectBookmark}/>
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}
