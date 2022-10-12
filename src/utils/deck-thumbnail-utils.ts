@@ -1,27 +1,54 @@
 import html2canvas from "html2canvas";
 
-const THUMBNAIL_WIDTH = 144;
-const THUMBNAIL_HEIGHT = 81;
+const BOOKMARK_THUMBNAIL_WIDTH = 144;
+const BOOKMARK_THUMBNAIL_HEIGHT = 81;
 
 /**
- * Create a thumbnail image for bookmark from comparison sides
+ * Create a thumbnail from comparison side canvas elements
+ * @param leftContainerId - html id of left canvas container
+ * @param rightContainerId - html id of right canvas container
+ * @returns base64 image
+ */
+export const createComparisonBookmarkThumbnail = async (
+  leftContainerId,
+  rightContainerId
+): Promise<string | null> => {
+  const leftThumbnailCanvas = await createBookmarkThumbnail(
+    leftContainerId,
+    BOOKMARK_THUMBNAIL_WIDTH / 2,
+    BOOKMARK_THUMBNAIL_HEIGHT
+  );
+  const rightThumbnailCanvas = await createBookmarkThumbnail(
+    rightContainerId,
+    BOOKMARK_THUMBNAIL_WIDTH / 2,
+    BOOKMARK_THUMBNAIL_HEIGHT
+  );
+  if (!leftThumbnailCanvas || !rightThumbnailCanvas) {
+    return null;
+  }
+  return mergeComparisonThumbnails(leftThumbnailCanvas, rightThumbnailCanvas);
+};
+
+/**
+ * Create a thumbnail image from comparison side canvas.
+ * Taking screenshots from deck.gl is a tricky task. The current implementation relies
+ * on the comment:
+ * https://github.com/visgl/deck.gl/issues/4436#issuecomment-1138796168
  * @param canvasLeft - left hand side canvas
  * @param canvasRight - right hand side canvas
  * @returns - base64 image
  */
-export const createComparisonBookmarkImage = async (
-  containerId: string
+const createBookmarkThumbnail = async (
+  containerId: string,
+  width: number,
+  height: number
 ): Promise<HTMLCanvasElement | null> => {
   const domElement = document.querySelector(containerId);
   if (!domElement) {
     return null;
   }
   const canvas = await html2canvas(domElement as HTMLElement);
-  const thumbnail = createThumbnail(
-    canvas,
-    THUMBNAIL_WIDTH / 2,
-    THUMBNAIL_HEIGHT
-  );
+  const thumbnail = createThumbnail(canvas, width, height);
   if (!thumbnail) {
     return null;
   }
@@ -46,8 +73,14 @@ export const mergeComparisonThumbnails = (
   outputCanvas.width = leftCanvas.width + rightCanvas.width;
   outputCanvas.height = leftCanvas.height;
   ctx.drawImage(leftCanvas, 0, 0, leftCanvas.width, leftCanvas.height);
-  ctx.drawImage(rightCanvas, leftCanvas.width + 1, 0, rightCanvas.width, rightCanvas.height);
-  return outputCanvas.toDataURL('image/png');
+  ctx.drawImage(
+    rightCanvas,
+    leftCanvas.width + 1,
+    0,
+    rightCanvas.width,
+    rightCanvas.height
+  );
+  return outputCanvas.toDataURL("image/png");
 };
 
 /**

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
+import { v4 as uuidv4 } from "uuid";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { color_brand_primary } from "../../constants/colors";
@@ -22,10 +23,7 @@ import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
-import {
-  createComparisonBookmarkImage,
-  mergeComparisonThumbnails,
-} from "../../utils/image-utils";
+import { createComparisonBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -33,11 +31,6 @@ type ComparisonPageProps = {
 
 type LayoutProps = {
   layout: string;
-};
-
-type SideImages = {
-  left: HTMLCanvasElement | null;
-  right: HTMLCanvasElement | null;
 };
 
 const INITIAL_VIEW_STATE = {
@@ -104,12 +97,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const bookmarksCounter = useRef<number>(0);
-  const interuptScreenshots = useRef<boolean>(true);
-  const sideImages = useRef<SideImages>({
-    left: null,
-    right: null,
-  });
 
   const layout = useAppLayout();
 
@@ -286,45 +273,21 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, []);
 
   const addBookmarkHandler = () => {
-    interuptScreenshots.current = false;
-  };
-
-  const finalizeBookmark = () => {
-    if (!sideImages.current.left || !sideImages.current.right) {
-      return;
-    }
-    interuptScreenshots.current = true;
-    const finalImage = mergeComparisonThumbnails(
-      sideImages.current.left,
-      sideImages.current.right
-    );
-    if (!finalImage) {
-      return;
-    }
-    sideImages.current.left = null;
-    sideImages.current.right = null;
-    setBookmarks((prev) => [
-      ...prev,
-      {
-        id: (++bookmarksCounter.current).toString(),
-        url: finalImage,
-      },
-    ]);
-  };
-
-  const onAfterDeckGlRenderHandler = (side: ComparisonSideMode) => {
-    if (interuptScreenshots.current) {
-      return;
-    }
-    createComparisonBookmarkImage(`#${side}-deck-container-wrapper`).then(
-      (thumbnailCanvas) => {
-        if (!thumbnailCanvas || interuptScreenshots.current) {
-          return;
-        }
-        sideImages.current[side] = thumbnailCanvas;
-        finalizeBookmark();
+    createComparisonBookmarkThumbnail(
+      "#left-deck-container-wrapper",
+      "#right-deck-container-wrapper"
+    ).then((imageUrl) => {
+      if (!imageUrl) {
+        return;
       }
-    );
+      setBookmarks((prev) => [
+        ...prev,
+        {
+          id: uuidv4(),
+          url: imageUrl,
+        },
+      ]);
+    });
   };
 
   return (
@@ -354,9 +317,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
-        onAfterDeckGlRender={() =>
-          onAfterDeckGlRenderHandler(ComparisonSideMode.left)
-        }
       />
       <Devider layout={layout} />
       <CompareButton
@@ -403,9 +363,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
         onShowBookmarksChange={onBookmarkClick}
-        onAfterDeckGlRender={() =>
-          onAfterDeckGlRenderHandler(ComparisonSideMode.right)
-        }
       />
 
       {compareButtonMode === CompareButtonMode.Start && (

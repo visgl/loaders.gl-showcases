@@ -39,7 +39,8 @@
     "react-tiny-popover": "^7.1.0",
     "recharts": "^2.1.13",
     "regenerator-runtime": "^0.13.9",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.0",

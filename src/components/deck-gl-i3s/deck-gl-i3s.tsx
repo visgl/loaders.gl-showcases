@@ -501,12 +501,6 @@ export const DeckGlI3s = ({
     }
   };
 
-  const onAfterRenderHandler = () => {
-    if (onAfterRender) {
-      onAfterRender();
-    }
-  };
-
   const onTerrainTileLoad = (tile) => {
     const {
       bbox: { east, north, south, west },
@@ -740,7 +734,7 @@ export const DeckGlI3s = ({
         preserveDrawingBuffer: true
       }}
       onWebGLInitialized={onWebGLInitialized}
-      onAfterRender={onAfterRenderHandler}
+      onAfterRender={onAfterRender}
       getTooltip={getTooltip}
       onClick={onClick}
     >
