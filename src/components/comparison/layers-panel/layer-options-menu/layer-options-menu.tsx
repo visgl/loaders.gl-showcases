@@ -27,14 +27,15 @@ const Item = styled.div<{
   color: ${({ theme, customColor }) =>
     customColor ? customColor : theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
-  display: flex;s
+  display: flex;
+  align-items: center;
   gap: 10px;
   cursor: pointer;
 `;
 
 const LayerSettingsIcon = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: center;
   margin-right: 10px;
@@ -65,6 +66,11 @@ export const LayerOptionsMenu = ({
 }: LayerOptionsMenuProps) => {
   const theme = useTheme();
 
+  const handleDeleteLayer = (event) => {
+    event.stopPropagation();
+    onDeleteLayerClick(layerId);
+  };
+
   return (
     <Container>
       <Item onClick={onPointToLayerClick}>
@@ -89,7 +95,7 @@ export const LayerOptionsMenu = ({
           <Item
             customColor={color_accent_primary}
             opacity={0.8}
-            onClick={() => onDeleteLayerClick(layerId)}
+            onClick={handleDeleteLayer}
           >
             <LayerSettingsIcon>
               <DeleteIcon fill={color_accent_primary} />

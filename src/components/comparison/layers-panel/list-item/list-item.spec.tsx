@@ -1,15 +1,15 @@
 import { act, screen } from "@testing-library/react";
-import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
+import { renderWithTheme } from "../../../../utils/testing-utils/render-with-theme";
 import { ListItem } from "./list-item";
 
 // Mocked Components
-import { Checkbox } from "../../checkbox/checkbox";
-import { ListItemWrapper } from "./list-item-wrapper/list-item-wrapper";
-import { RadioButton } from "../../radio-button/radio-button";
+import { Checkbox } from "../../../checkbox/checkbox";
+import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
+import { RadioButton } from "../../../radio-button/radio-button";
 
-jest.mock("../../checkbox/checkbox");
-jest.mock("./list-item-wrapper/list-item-wrapper");
-jest.mock("../../radio-button/radio-button");
+jest.mock("../../../checkbox/checkbox");
+jest.mock("../list-item-wrapper/list-item-wrapper");
+jest.mock("../../../radio-button/radio-button");
 
 const CheckboxMock = Checkbox as unknown as jest.Mocked<any>;
 const ListItemWrapperMock = ListItemWrapper as unknown as jest.Mocked<any>;

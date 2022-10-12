@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import {
   color_brand_tertiary,
@@ -8,7 +9,7 @@ import {
 type CheckboxProps = {
   id: string;
   checked: boolean;
-  onChange: () => void;
+  onChange: (event: React.ChangeEvent) => void;
 };
 
 const CheckboxContainer = styled.div`

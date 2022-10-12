@@ -28,7 +28,7 @@ jest.mock("../../../utils/sublayers");
 
 const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
-const onChangeLayerMock = jest.fn();
+const onChangeLayersMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
@@ -64,7 +64,7 @@ describe("ComparisonSide", () => {
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
-        onChangeLayer={onChangeLayerMock}
+        onChangeLayers={onChangeLayersMock}
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
@@ -113,7 +113,7 @@ describe("ComparisonSide", () => {
   it("Should render left side", () => {
     const { rerender, container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
-    callRender(rerender, { onChangeLayer: undefined });
+    callRender(rerender, { onChangeLayers: undefined });
     expect(container).toBeInTheDocument();
   });
 
@@ -126,28 +126,28 @@ describe("ComparisonSide", () => {
 
   it("Should change mode", () => {
     const { rerender } = callRender(renderWithTheme);
-    expect(LayersPanelMock.mock.calls.length).toBe(1);
+    expect(LayersPanelMock.mock.calls.length).toBe(2);
 
     callRender(rerender, {
       mode: ComparisonMode.withinLayer,
       showLayerOptions: false,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(1);
+    expect(LayersPanelMock.mock.calls.length).toBe(2);
 
     callRender(rerender, {
       mode: ComparisonMode.acrossLayers,
       showLayerOptions: true,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(2);
+    expect(LayersPanelMock.mock.calls.length).toBe(4);
   });
 
-  it("Should handle staticLayer", () => {
+  it("Should handle staticLayers", () => {
     callRender(renderWithTheme, {
-      staticLayer: {
+      staticLayers: [{
         id: "static-layer-id",
         name: "static-layer",
         url: "https://static.layer.url",
-      },
+      }],
     });
     expect(loadMock.mock.calls.length).toBe(1);
   });
@@ -204,7 +204,7 @@ describe("ComparisonSide", () => {
   describe("LayersPanel", () => {
     it("Should render", () => {
       callRender(renderWithTheme);
-      expect(LayersPanelMock.mock.calls.length).toBe(1);
+      expect(LayersPanelMock.mock.calls.length).toBe(2);
     });
 
     it("Should call onLayerInsert", () => {
@@ -236,10 +236,10 @@ describe("ComparisonSide", () => {
       expect(layerUrl).toBe(
         "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0"
       );
-      expect(onChangeLayerMock).toHaveBeenCalledTimes(1);
+      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
 
       act(() => onLayerSelect("unknown-id"));
-      expect(onChangeLayerMock).toHaveBeenCalledTimes(1);
+      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerDelete", () => {
@@ -262,10 +262,10 @@ describe("ComparisonSide", () => {
 
     it("Should close", () => {
       callRender(renderWithTheme);
-      expect(LayersPanelMock.mock.calls.length).toBe(1);
+      expect(LayersPanelMock.mock.calls.length).toBe(2);
       const { onClose } = LayersPanelMock.mock.lastCall[0];
       act(() => onClose());
-      expect(LayersPanelMock.mock.calls.length).toBe(1);
+      expect(LayersPanelMock.mock.calls.length).toBe(2);
     });
   });
 
