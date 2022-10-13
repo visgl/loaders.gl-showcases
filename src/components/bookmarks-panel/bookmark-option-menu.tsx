@@ -18,12 +18,14 @@ type BookmarkOptionsMenuProps = {
   onEditBookmark: () => void;
   onClearBookmarks: () => void;
   onUploadBookmarks: () => void;
+  onCollapsed: () => void;
 };
 
 export const BookmarkOptionsMenu = ({
   onEditBookmark,
   onClearBookmarks,
   onUploadBookmarks,
+  onCollapsed,
 }: BookmarkOptionsMenuProps) => {
   const theme = useTheme();
   const layout = useAppLayout();
@@ -52,7 +54,7 @@ export const BookmarkOptionsMenu = ({
       </MenuItem>
 
       {layout !== Layout.Desktop && (
-        <MenuItem>
+        <MenuItem onClick={onCollapsed}>
           <MenuSettingsIcon>
             <CollapseIcon fill={theme.colors.fontColor} />
           </MenuSettingsIcon>

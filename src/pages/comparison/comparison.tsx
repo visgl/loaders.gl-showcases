@@ -311,6 +311,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <BookmarksPanel
           id="comparison-bookmarks-panel"
           onClose={onCloseBookmarkPanel}
+          onCollapsed={onCloseBookmarkPanel}
         />
       )}
 

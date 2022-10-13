@@ -22,11 +22,13 @@ import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
+import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 
 enum PopoverType {
   options,
   upload,
   uploadWarning,
+  clearBookmarks,
   none,
 }
 
@@ -157,6 +159,7 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 type BookmarksPanelProps = {
   id: string;
   onClose: () => void;
+  onCollapsed: () => void;
 };
 
 const DUMMY_BOOKMARKS = [
@@ -169,7 +172,13 @@ const DUMMY_BOOKMARKS = [
   { id: "7", url: DUMMY_BOOKMARK },
 ];
 
-export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
+const confirmText = "Are you sure you  want to clear all  bookmarks?";
+
+export const BookmarksPanel = ({
+  id,
+  onClose,
+  onCollapsed,
+}: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
@@ -181,13 +190,24 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
     popoverType === PopoverType.upload ||
     popoverType === PopoverType.uploadWarning;
   const disableAddButton = editingMode || clearBookmarks;
+  const isDesktop = layout === Layout.Desktop;
 
   const getOptionMenuPosition = () => {
-    return {
-      zIndex: "4",
-      top: layout === Layout.Desktop ? "80px" : "30px",
-      left: layout === Layout.Desktop ? "100px" : "-110px",
-    };
+    if (popoverType === PopoverType.options) {
+      return {
+        zIndex: "4",
+        top: isDesktop ? "80px" : "30px",
+        left: isDesktop ? "100px" : "-110px",
+      };
+    }
+
+    if (popoverType !== PopoverType.options) {
+      return {
+        zIndex: "4",
+        top: isDesktop ? "80px" : "30px",
+        left: isDesktop ? "100px" : "-145px",
+      };
+    }
   };
 
   const onEditBookmark = useCallback(() => {
@@ -195,10 +215,16 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
     setPopoverType(PopoverType.none);
   }, []);
 
-  const onClearBookmarks = useCallback(() => {
+  const onClearBookmarks = () => {
+    if (!isDesktop) {
+      setPopoverType(PopoverType.clearBookmarks);
+    }
+
+    if (isDesktop) {
+      setPopoverType(PopoverType.none);
+    }
     setClearBookmarksMode((prev) => !prev);
-    setPopoverType(PopoverType.none);
-  }, []);
+  };
 
   const renderPopoverContent = () => {
     if (popoverType === PopoverType.uploadWarning) {
@@ -225,12 +251,57 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
           onEditBookmark={onEditBookmark}
           onClearBookmarks={onClearBookmarks}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
+          onCollapsed={onCollapsed}
+        />
+      );
+    }
+
+    if (popoverType === PopoverType.clearBookmarks && !isDesktop) {
+      return (
+        <ConfirmDeletingPanel
+          title={confirmText}
+          onCancel={() => {
+            setClearBookmarksMode(false);
+            setPopoverType(PopoverType.none);
+          }}
+          onConfirm={() => console.log("not implemented yet")}
         />
       );
     }
 
     return null;
   };
+
+  const renderClearBookmarksContent = () => {
+    if (isDesktop) {
+      return (
+        <>
+          <BookmarkInnerButton
+            width={32}
+            height={32}
+            onInnerClick={() => console.log("not implemented yet")}
+          >
+            <ConfirmIcon />
+          </BookmarkInnerButton>
+          <BookmarkInnerButton
+            width={32}
+            height={32}
+            onInnerClick={() => setClearBookmarksMode(false)}
+          >
+            <CloseIcon />
+          </BookmarkInnerButton>
+        </>
+      );
+    }
+
+    return (
+      <BookmarkInnerButton onInnerClick={() => setClearBookmarksMode(false)}>
+        <OptionsIcon panel={Panels.Bookmarks} />
+      </BookmarkInnerButton>
+    );
+  };
+
+  console.log(popoverType);
 
   return (
     <>
@@ -289,24 +360,7 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
                     <OptionsIcon panel={Panels.Bookmarks} />
                   </BookmarkInnerButton>
                 )}
-                {clearBookmarks && (
-                  <>
-                    <BookmarkInnerButton
-                      width={32}
-                      height={32}
-                      onInnerClick={() => console.log("not implemented yet")}
-                    >
-                      <ConfirmIcon />
-                    </BookmarkInnerButton>
-                    <BookmarkInnerButton
-                      width={32}
-                      height={32}
-                      onInnerClick={() => setClearBookmarksMode(false)}
-                    >
-                      <CloseIcon />
-                    </BookmarkInnerButton>
-                  </>
-                )}
+                {clearBookmarks && renderClearBookmarksContent()}
               </ButtonsWrapper>
             </Popover>
           </ButtonWrapper>

@@ -3,7 +3,6 @@ import { Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty } from "../../utils/layout";
 import {
   color_brand_quaternary,
-  color_brand_tertiary,
 } from "../../constants/colors";
 
 export type LayoutProps = {

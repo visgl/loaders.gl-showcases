@@ -43,7 +43,6 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
   fill: ${({ theme }) => theme.colors.fontColor};
   gap: 10px;
   transition: 0.2s;
-  border: 2px solid ${({ deleting }) => deleting && color_accent_primary};
 
   min-width: ${getCurrentLayoutProperty({
     desktop: "144px",
@@ -76,16 +75,26 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
       border: 2px solid ${color_canvas_secondary};
     `}
 
-  &:hover {
-    opacity: 0.6;
-    border: 2px solid
-      ${({ editingMode = false }) =>
-        editingMode ? color_canvas_secondary : color_brand_tertiary};
+    ${({ isMobile }) =>
+    !isMobile &&
+    css<BookmarkListProps>`
+      &:hover {
+        opacity: 0.6;
+        border: 2px solid
+          ${({ editingMode = false }) =>
+            editingMode ? color_canvas_secondary : color_brand_tertiary};
 
-    &:nth-child(n) {
-      opacity: 1;
-    }
-  }
+        &:nth-child(n) {
+          opacity: 1;
+        }
+      }
+    `}
+
+  ${({ deleting }) =>
+    deleting &&
+    css`
+      border: 2px solid ${color_accent_primary};
+    `}
 `;
 
 const TrashIconContainer = styled.div<{ deleting: boolean }>`
@@ -174,8 +183,11 @@ export const BookmarksListItem = ({
 
   const renderListItemContentMobile = () => {
     return (
-      <TrashIconContainer deleting={isDeletePanelOpen}>
-        <TrashIcon onClick={() => setIsDeletePanelOpen((prev) => !prev)} />
+      <TrashIconContainer
+        deleting={isDeletePanelOpen}
+        onClick={() => setIsDeletePanelOpen((prev) => !prev)}
+      >
+        <TrashIcon />
       </TrashIconContainer>
     );
   };
