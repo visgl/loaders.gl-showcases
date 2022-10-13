@@ -28,7 +28,7 @@ export enum ComparisonMode {
 
 export enum ListItemType {
   Radio,
-  Checkbox,
+  Checkbox
 }
 
 export enum ActiveButton {
@@ -124,6 +124,7 @@ export type LayerExample = {
   url: string;
   token?: string;
   custom?: boolean;
+  children?: LayerExample[];
 };
 
 export type Sublayer = BuildingSceneSublayer & {

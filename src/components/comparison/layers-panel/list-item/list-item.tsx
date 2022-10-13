@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { ExpandState, ListItemType } from "../../../types";
-import { Checkbox } from "../../checkbox/checkbox";
-import { ListItemWrapper } from "./list-item-wrapper/list-item-wrapper";
-import { RadioButton } from "../../radio-button/radio-button";
+import { ExpandState, ListItemType } from "../../../../types";
+import { Checkbox } from "../../../checkbox/checkbox";
+import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
+import { RadioButton } from "../../../radio-button/radio-button";
 
 type ListItemProps = {
   id: string;
@@ -24,7 +24,6 @@ const Title = styled.div`
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
-  width: 223px;
   overflow: hidden;
   color: ${({ theme }) => theme.colors.fontColor};
 `;

@@ -127,11 +127,9 @@ export const ViewerApp = () => {
       };
     }
 
-    if (tilesetParam in EXAMPLES) {
-      return EXAMPLES[tilesetParam];
-    }
+    const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
 
-    return INITIAL_EXAMPLE;
+    return namedExample || INITIAL_EXAMPLE;
   };
 
   const [mainTileset, setMainTileset] = useState(initMainTileset());

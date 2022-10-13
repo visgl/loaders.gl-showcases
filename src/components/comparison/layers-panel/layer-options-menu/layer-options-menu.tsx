@@ -30,6 +30,11 @@ export const LayerOptionsMenu = ({
 }: LayerOptionsMenuProps) => {
   const theme = useTheme();
 
+  const handleDeleteLayer = (event) => {
+    event.stopPropagation();
+    onDeleteLayerClick(layerId);
+  };
+
   return (
     <MenuContainer>
       <MenuItem onClick={onPointToLayerClick}>
@@ -54,7 +59,7 @@ export const LayerOptionsMenu = ({
           <MenuItem
             customColor={color_accent_primary}
             opacity={0.8}
-            onClick={() => onDeleteLayerClick(layerId)}
+            onClick={handleDeleteLayer}
           >
             <MenuSettingsIcon>
               <DeleteIcon fill={color_accent_primary} />

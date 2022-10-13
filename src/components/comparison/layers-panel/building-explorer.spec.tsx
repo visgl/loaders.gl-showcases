@@ -3,9 +3,9 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { BuildingExplorer } from "./building-explorer";
 
 // Mocked Component
-import { ListItem } from "./list-item";
+import { ListItem } from "./list-item/list-item";
 
-jest.mock("./list-item");
+jest.mock("./list-item/list-item");
 
 const ListItemMock = ListItem as unknown as jest.Mocked<any>;
 

@@ -30,7 +30,6 @@ const Container = styled.div<ContainerProps>`
   background: transparent;
   cursor: pointer;
   margin-bottom: 8px;
-
   ${({ checked }) =>
     checked &&
     css`
@@ -38,7 +37,6 @@ const Container = styled.div<ContainerProps>`
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     `}
-
   &:hover {
     background: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);

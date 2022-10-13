@@ -10,7 +10,7 @@ type RadioButtonProps = {
   name?: string;
   checked: boolean;
   disabled?: boolean;
-  onChange: () => void;
+  onChange: (event: React.ChangeEvent) => void;
 };
 
 type CheckmarkProps = {

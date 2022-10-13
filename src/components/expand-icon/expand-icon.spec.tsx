@@ -44,7 +44,11 @@ describe("ExpandIcon", () => {
 
   it("Should collapse to the bottom", () => {
     renderWithTheme(
-      <ExpandIcon expandState={ExpandState.expanded} collapseDirection={CollapseDirection.bottom} onClick={onClick} />,
+      <ExpandIcon
+        expandState={ExpandState.expanded}
+        collapseDirection={CollapseDirection.bottom}
+        onClick={onClick}
+      />,
       rerenderFunc
     );
     const svgElement = componentElement.firstChild;
@@ -52,7 +56,11 @@ describe("ExpandIcon", () => {
     expect(transform).toBe("rotate( -90deg )");
 
     renderWithTheme(
-      <ExpandIcon expandState={ExpandState.collapsed} collapseDirection={CollapseDirection.bottom} onClick={onClick} />,
+      <ExpandIcon
+        expandState={ExpandState.collapsed}
+        collapseDirection={CollapseDirection.bottom}
+        onClick={onClick}
+      />,
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
@@ -62,14 +70,24 @@ describe("ExpandIcon", () => {
   it("Should fill svg with custom colors", () => {
     const svgElement = componentElement.firstChild;
     renderWithTheme(
-      <ExpandIcon expandState={ExpandState.expanded} fillExpanded={'#AAAAAA'} fillCollapsed={'#555555'} onClick={onClick} />,
+      <ExpandIcon
+        expandState={ExpandState.expanded}
+        fillExpanded={"#AAAAAA"}
+        fillCollapsed={"#555555"}
+        onClick={onClick}
+      />,
       rerenderFunc
     );
     let fill = getComputedStyle(svgElement).getPropertyValue("fill");
     expect(fill).toBe("#AAAAAA");
 
     renderWithTheme(
-      <ExpandIcon expandState={ExpandState.collapsed} fillExpanded={'#AAAAAA'} fillCollapsed={'#555555'} onClick={onClick} />,
+      <ExpandIcon
+        expandState={ExpandState.collapsed}
+        fillExpanded={"#AAAAAA"}
+        fillCollapsed={"#555555"}
+        onClick={onClick}
+      />,
       rerenderFunc
     );
     fill = getComputedStyle(svgElement).getPropertyValue("fill");
