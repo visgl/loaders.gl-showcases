@@ -113,25 +113,6 @@ export const OptionsIcon = styled.div<{ panel: number }>`
   }
 `;
 
-export const InnerButton = styled.button<{
-  blurButton?: boolean;
-  hide?: boolean;
-  width: number;
-  height: number;
-}>`
-  opacity: ${({ blurButton }) => (blurButton ? 0.4 : 1)};
-  display: ${({ hide }) => (hide ? "none" : "flex")};
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 8px;
-  width: ${({ width }) => width}px;
-  height: ${({ height }) => height}px;
-  cursor: pointer;
-  background-color: ${color_brand_tertiary};
-  fill: ${({ theme }) => theme.colors.buttonIconColor};
-`;
-
 export const MenuContainer = styled.div`
   display: flex;
   flex-direction: column;

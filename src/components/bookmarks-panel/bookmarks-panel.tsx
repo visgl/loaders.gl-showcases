@@ -7,7 +7,6 @@ import {
   HorizontalLine,
   Panels,
   Title,
-  InnerButton,
   OptionsIcon,
 } from "../comparison/common";
 import { CloseButton } from "../close-button/close-button";
@@ -22,6 +21,7 @@ import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
+import { BookmarkInnerButton } from "./bookmark-inner-button";
 
 enum PopoverType {
   options,
@@ -41,7 +41,7 @@ const Container = styled.div<LayoutProps>`
   height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
-    desktop: "8px;",
+    desktop: "8px",
     tablet: "0px",
     mobile: "0px",
   })};
@@ -75,7 +75,12 @@ const ItemsList = styled.div<LayoutProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 16px 0 16px;
+
+  gap: ${getCurrentLayoutProperty({
+    desktop: "16px",
+    tablet: "8px",
+    mobile: "4px",
+  })};
 
   margin: ${getCurrentLayoutProperty({
     desktop: "0 16px 0 16px",
@@ -88,11 +93,21 @@ const ButtonWrapper = styled.div<LayoutProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 144px;
-  height: 81px;
   cursor: pointer;
   gap: 10px;
   position: relative;
+
+  width: ${getCurrentLayoutProperty({
+    desktop: "144px",
+    tablet: "106px",
+    mobile: "68px",
+  })};
+
+  height: ${getCurrentLayoutProperty({
+    desktop: "81px",
+    tablet: "62px",
+    mobile: "44px",
+  })};
 
   &:before {
     content: "";
@@ -102,7 +117,13 @@ const ButtonWrapper = styled.div<LayoutProps>`
     bottom: 0;
     right: 0;
     background-color: ${color_brand_tertiary};
-    border-radius: 12px;
+
+    border-radius: ${getCurrentLayoutProperty({
+      desktop: "12px",
+      tablet: "8px",
+      mobile: "6px",
+    })};
+
     opacity: 0.4;
     z-index: -1;
   }
@@ -161,6 +182,14 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
     popoverType === PopoverType.uploadWarning;
   const disableAddButton = editingMode || clearBookmarks;
 
+  const getOptionMenuPosition = () => {
+    return {
+      zIndex: "4",
+      top: layout === Layout.Desktop ? "80px" : "30px",
+      left: layout === Layout.Desktop ? "100px" : "-110px",
+    };
+  };
+
   const onEditBookmark = useCallback(() => {
     setEditingMode((prev) => !prev);
     setPopoverType(PopoverType.none);
@@ -203,23 +232,6 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
     return null;
   };
 
-  const renderAddBookmarkButton = (
-    width: number,
-    height: number
-  ): JSX.Element => {
-    return (
-      <InnerButton
-        width={width}
-        height={height}
-        disabled={disableAddButton}
-        blurButton={disableAddButton}
-        onClick={() => console.log("not implemented yet")}
-      >
-        <PlusIcon fill={theme.colors.buttonIconColor} />
-      </InnerButton>
-    );
-  };
-
   return (
     <>
       <Container id={id} layout={layout}>
@@ -237,13 +249,15 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
         )}
 
         <ItemsList layout={layout}>
-          {layout === Layout.Desktop ? (
-            <ButtonWrapper layout={layout}>
-              {renderAddBookmarkButton(44, 44)}
-            </ButtonWrapper>
-          ) : (
-            renderAddBookmarkButton(66, 44)
-          )}
+          <ButtonWrapper layout={layout}>
+            <BookmarkInnerButton
+              disabled={disableAddButton}
+              blurButton={disableAddButton}
+              onInnerClick={() => console.log("not implemented yet")}
+            >
+              <PlusIcon fill={theme.colors.buttonIconColor} />
+            </BookmarkInnerButton>
+          </ButtonWrapper>
 
           {DUMMY_BOOKMARKS.length > 0 ? (
             <Slider bookmarks={DUMMY_BOOKMARKS} editingMode={editingMode} />
@@ -256,37 +270,41 @@ export const BookmarksPanel = ({ id, onClose }: BookmarksPanelProps) => {
               reposition={false}
               positions={["top", "bottom", "left", "right"]}
               content={renderPopoverContent() as JSX.Element}
-              containerStyle={{ zIndex: "4", top: "80px", left: "100px" }}
+              containerStyle={getOptionMenuPosition()}
               onClickOutside={() => setPopoverType(PopoverType.none)}
             >
               <ButtonsWrapper>
                 {editingMode && (
-                  <InnerButton
-                    width={44}
-                    height={44}
-                    onClick={() => setEditingMode(false)}
+                  <BookmarkInnerButton
+                    onInnerClick={() => setEditingMode(false)}
                   >
                     <ConfirmationIcon />
-                  </InnerButton>
+                  </BookmarkInnerButton>
                 )}
                 {!editingMode && (
-                  <InnerButton
-                    width={44}
-                    height={44}
+                  <BookmarkInnerButton
                     hide={clearBookmarks}
-                    onClick={() => setPopoverType(PopoverType.options)}
+                    onInnerClick={() => setPopoverType(PopoverType.options)}
                   >
                     <OptionsIcon panel={Panels.Bookmarks} />
-                  </InnerButton>
+                  </BookmarkInnerButton>
                 )}
                 {clearBookmarks && (
                   <>
-                    <InnerButton width={32} height={32}>
+                    <BookmarkInnerButton
+                      width={32}
+                      height={32}
+                      onInnerClick={() => console.log("not implemented yet")}
+                    >
                       <ConfirmIcon />
-                    </InnerButton>
-                    <InnerButton width={32} height={32}>
-                      <CloseIcon onClick={() => setClearBookmarksMode(false)} />
-                    </InnerButton>
+                    </BookmarkInnerButton>
+                    <BookmarkInnerButton
+                      width={32}
+                      height={32}
+                      onInnerClick={() => setClearBookmarksMode(false)}
+                    >
+                      <CloseIcon />
+                    </BookmarkInnerButton>
                   </>
                 )}
               </ButtonsWrapper>

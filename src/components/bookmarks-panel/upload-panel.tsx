@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { UploadPanelItem } from "./upload-panel-item";
 import UploadIcon from "../../../public/icons/upload.svg";
+import { useAppLayout } from "../../utils/layout";
+import { Layout } from "../../utils/enums";
 
 const FileInteractionContiner = styled.div`
   box-sizing: border-box;
@@ -40,18 +42,28 @@ type ExistedLayerWarningProps = {
   onConfirmWarning: () => void;
 };
 
-const dragAndDropText = "Drag and drop you json file here";
+export const dragAndDropText = "Drag and drop you json file here";
 
 export const UploadPanel = ({
   onCancel,
   onConfirmWarning,
 }: ExistedLayerWarningProps) => {
+  const layout = useAppLayout();
+
   return (
-    <UploadPanelItem title={"Upload Bookmarks"} onCancel={onCancel} onConfirm={onConfirmWarning}>
+    <UploadPanelItem
+      title={"Upload Bookmarks"}
+      onCancel={onCancel}
+      onConfirm={onConfirmWarning}
+    >
       <FileInteractionContiner>
         <UploadIcon style={{ marginBottom: "10" }} />
-        <DragAndDropFileText>{dragAndDropText}</DragAndDropFileText>
-        <BrosweFileText>or</BrosweFileText>
+        {layout === Layout.Desktop && (
+          <>
+            <DragAndDropFileText>{dragAndDropText}</DragAndDropFileText>
+            <BrosweFileText>or</BrosweFileText>
+          </>
+        )}
         <BrosweFileLink href="">browse file</BrosweFileLink>
       </FileInteractionContiner>
     </UploadPanelItem>

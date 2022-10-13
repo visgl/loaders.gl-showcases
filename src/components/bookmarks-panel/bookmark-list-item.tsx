@@ -3,12 +3,16 @@ import styled, { css } from "styled-components";
 import {
   color_canvas_secondary,
   color_brand_tertiary,
+  color_accent_primary,
 } from "../../constants/colors";
-import { InnerButton, LayoutProps } from "../comparison/common";
+import { LayoutProps } from "../comparison/common";
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
 import { useAppLayout, getCurrentLayoutProperty } from "../../utils/layout";
+import { BookmarkInnerButton } from "./bookmark-inner-button";
+import { Layout } from "../../utils/enums";
+import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 
 type TranslateProps = {
   moveWidth: number;
@@ -18,7 +22,9 @@ type BookmarkListProps = {
   url: string;
   editingMode: boolean;
   deleteBookmark?: boolean;
+  deleting: boolean;
   selected: boolean;
+  isMobile: boolean;
 };
 
 const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
@@ -33,28 +39,41 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
   background: url(${(props) => props.url}) no-repeat;
   opacity: 1;
   min-width: 144px;
-  border-radius: 12px;
   cursor: pointer;
   fill: ${({ theme }) => theme.colors.fontColor};
   gap: 10px;
   transition: 0.2s;
+  border: 2px solid ${({ deleting }) => deleting && color_accent_primary};
 
   min-width: ${getCurrentLayoutProperty({
     desktop: "144px",
-    tablet: "68px",
+    tablet: "106px",
     mobile: "68px",
   })};
 
   height: ${getCurrentLayoutProperty({
     desktop: "81px",
-    tablet: "44px",
+    tablet: "62px",
     mobile: "44px",
+  })};
+
+  border-radius: ${getCurrentLayoutProperty({
+    desktop: "12px",
+    tablet: "10px",
+    mobile: "8px",
   })};
 
   ${({ selected }) =>
     selected &&
     css`
       border: 2px solid ${color_brand_tertiary};
+    `}
+
+  ${({ editingMode, isMobile }) =>
+    editingMode &&
+    isMobile &&
+    css`
+      border: 2px solid ${color_canvas_secondary};
     `}
 
   &:hover {
@@ -69,6 +88,15 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
   }
 `;
 
+const TrashIconContainer = styled.div<{ deleting: boolean }>`
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  fill: ${({ deleting }) => deleting && color_accent_primary};
+`;
+
 type BookmarksListItemProps = {
   selected: boolean;
   url: string;
@@ -76,6 +104,8 @@ type BookmarksListItemProps = {
   moveWidth: number;
   onSelectBookmark: () => void;
 };
+
+const confirmText = "Are you sure you  want to delete the bookmark?";
 
 export const BookmarksListItem = ({
   selected,
@@ -86,8 +116,11 @@ export const BookmarksListItem = ({
 }: BookmarksListItemProps) => {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [deleteBookmark, setDeleteBookmark] = useState<boolean>(false);
+  const [isDeletePanelOpen, setIsDeletePanelOpen] = useState<boolean>(false);
 
   const layout = useAppLayout();
+
+  const isMobileLayout = layout !== Layout.Desktop;
 
   const onMouseEnter = () => {
     setIsHovering(true);
@@ -105,36 +138,75 @@ export const BookmarksListItem = ({
     setDeleteBookmark(false);
   };
 
+  const renderListItemContentDesktop = () => {
+    return (
+      <>
+        {deleteBookmark && (
+          <>
+            <BookmarkInnerButton
+              width={32}
+              height={32}
+              onInnerClick={() => console.log("not implemented")}
+            >
+              <ConfirmIcon />
+            </BookmarkInnerButton>
+            <BookmarkInnerButton
+              width={32}
+              height={32}
+              onInnerClick={onUndoDeleting}
+            >
+              <CloseIcon />
+            </BookmarkInnerButton>
+          </>
+        )}
+        {!deleteBookmark && (
+          <BookmarkInnerButton
+            width={32}
+            height={32}
+            onInnerClick={onDeleteBookmark}
+          >
+            <TrashIcon />
+          </BookmarkInnerButton>
+        )}
+      </>
+    );
+  };
+
+  const renderListItemContentMobile = () => {
+    return (
+      <TrashIconContainer deleting={isDeletePanelOpen}>
+        <TrashIcon onClick={() => setIsDeletePanelOpen((prev) => !prev)} />
+      </TrashIconContainer>
+    );
+  };
+
   return (
-    <BookmarkListItem
-      layout={layout}
-      url={url}
-      editingMode={editingMode}
-      selected={selected}
-      moveWidth={moveWidth}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onSelectBookmark}
-    >
-      {isHovering && editingMode && (
-        <>
-          {deleteBookmark && (
-            <>
-              <InnerButton width={32} height={32}>
-                <ConfirmIcon />
-              </InnerButton>
-              <InnerButton width={32} height={32} onClick={onUndoDeleting}>
-                <CloseIcon />
-              </InnerButton>
-            </>
-          )}
-          {!deleteBookmark && (
-            <InnerButton width={32} height={32} onClick={onDeleteBookmark}>
-              <TrashIcon />
-            </InnerButton>
-          )}
-        </>
+    <>
+      <BookmarkListItem
+        layout={layout}
+        url={url}
+        editingMode={editingMode}
+        isMobile={isMobileLayout}
+        selected={selected}
+        moveWidth={moveWidth}
+        deleting={isDeletePanelOpen}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onSelectBookmark}
+      >
+        {isHovering &&
+          !isMobileLayout &&
+          editingMode &&
+          renderListItemContentDesktop()}
+        {isMobileLayout && editingMode && renderListItemContentMobile()}
+      </BookmarkListItem>
+      {isDeletePanelOpen && (
+        <ConfirmDeletingPanel
+          title={confirmText}
+          onCancel={() => setIsDeletePanelOpen(false)}
+          onConfirm={() => console.log("not implemented")}
+        />
       )}
-    </BookmarkListItem>
+    </>
   );
 };
