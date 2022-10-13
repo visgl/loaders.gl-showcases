@@ -1,8 +1,12 @@
-import styled from "styled-components";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../../utils/layout";
+import styled, { useTheme } from "styled-components";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../../../utils/layout";
 import { ActionButton } from "../../../action-button/action-button";
 import { LayoutProps } from "../../common";
-import WarningIcon from "../../../../../public/icons/warning.svg?svgr";
+
+import WarningIcon from "../../../../../public/icons/warning.svg";
 
 const Container = styled.div<LayoutProps>`
   position: relative;
@@ -10,8 +14,7 @@ const Container = styled.div<LayoutProps>`
   flex-direction: column;
   justify-content: space-around;
   width: 300px;
-  height: 190px;
-  padding: 18px;
+  padding: 32px 16px 25px 18px;
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.mainColor};
   box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
@@ -23,7 +26,12 @@ const Container = styled.div<LayoutProps>`
   overflow-y: auto;
 `;
 
-const Title = styled.div`
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;
@@ -31,13 +39,6 @@ const Title = styled.div`
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
-  margin-bottom: 16px;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 0 6px;
 `;
 
 const WarningIconContainer = styled.div`
@@ -49,25 +50,37 @@ const WarningIconContainer = styled.div`
   margin-right: 10px;
 `;
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+`;
+
 type ExistedLayerWarningProps = {
   title: string;
+  children?: React.ReactNode;
   onConfirm: () => void;
 };
 
 export const WarningPanel = ({
   title,
+  children,
   onConfirm,
 }: ExistedLayerWarningProps) => {
   const layout = useAppLayout();
+  const theme = useTheme();
 
   return (
     <Container layout={layout}>
-      <Title>
-        <WarningIconContainer>
-          <WarningIcon />
-        </WarningIconContainer>
-        {title}
-      </Title>
+      <ContentContainer>
+        <TitleWrapper>
+          <WarningIconContainer>
+            <WarningIcon fill={theme.colors.mainHiglightColorInverted} />
+          </WarningIconContainer>
+          {title}
+        </TitleWrapper>
+        {children}
+      </ContentContainer>
       <ButtonWrapper>
         <ActionButton onClick={onConfirm}>Ok</ActionButton>
       </ButtonWrapper>

@@ -444,10 +444,52 @@ describe("Layers Panel", () => {
 
   it("Should show not supported layers error in Insert Panel", async () => {
     loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [],
-      })
+      Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
+    );
+
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://test.url" }],
+    });
+    // @ts-expect-error - Property 'mock' does not exist on type
+    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+
+    // Click insert scene
+    act(() => {
+      onInsert({
+        id: "https://test.url",
+        name: "Scene",
+        url: "https://test-another.url",
+        token: "",
+        children: [],
+      });
+    });
+
+    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+
+    // Should close Insert Lyaer Panel
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+    expect(screen.getByText("Warning Panel")).toBeInTheDocument();
+
+    // Shold be able to close warning panel
+    const { onConfirm } = WarningPanelMock.mock.lastCall[0];
+    act(() => {
+      onConfirm();
+    });
+
+    expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
+  });
+
+  it("Should show not supported crs error in Insert Panel", async () => {
+    loadMock.mockImplementation(() =>
+      Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
     );
 
     callRender(renderWithTheme, {
