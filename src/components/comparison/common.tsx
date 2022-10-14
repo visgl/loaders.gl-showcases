@@ -3,7 +3,6 @@ import { Theme } from "../../utils/enums";
 import { getCurrentLayoutProperty } from "../../utils/layout";
 import {
   color_brand_quaternary,
-  color_brand_tertiary,
 } from "../../constants/colors";
 
 export type LayoutProps = {
@@ -111,25 +110,6 @@ export const OptionsIcon = styled.div<{ panel: number }>`
   &:after {
     top: 12px;
   }
-`;
-
-export const InnerButton = styled.button<{
-  blurButton?: boolean;
-  hide?: boolean;
-  width: number;
-  height: number;
-}>`
-  opacity: ${({ blurButton }) => (blurButton ? 0.4 : 1)};
-  display: ${({ hide }) => (hide ? "none" : "flex")};
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 8px;
-  width: ${({ width }) => width}px;
-  height: ${({ height }) => height}px;
-  cursor: pointer;
-  background-color: ${color_brand_tertiary};
-  fill: ${({ theme }) => theme.colors.buttonIconColor};
 `;
 
 export const MenuContainer = styled.div`

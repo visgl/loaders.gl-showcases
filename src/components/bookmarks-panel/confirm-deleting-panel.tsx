@@ -3,47 +3,49 @@ import { useAppLayout } from "../../utils/layout";
 import { ActionButton } from "../action-button/action-button";
 import { LayoutProps } from "../comparison/common";
 import { ActionButtonVariant } from "../../types";
-import WarningIcon from "../../../public/icons/warning.svg";
 
 const Container = styled.div<LayoutProps>`
-  width: 335px;
-  height: 329px;
-  padding: 16px;
+  position: absolute;
+  bottom: 100px;
+  right: calc(50% - 159px);
+  width: 318px;
+  height: 176px;
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.mainColor};
 `;
 
 const Content = styled.div`
   display: flex;
-  flex-direction: column;
   height: 100%;
   width: 100%;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Title = styled.div`
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
+  text-align: center;
 `;
 
 const ButtonsContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  margin-top: 28px;
 `;
 
 type UploadPanelItemProps = {
-  title?: string;
-  children: React.ReactNode;
+  title: string;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
-export const UploadPanelItem = ({
+export const ConfirmDeletingPanel = ({
   title,
-  children,
   onCancel,
   onConfirm,
 }: UploadPanelItemProps) => {
@@ -52,16 +54,15 @@ export const UploadPanelItem = ({
   return (
     <Container layout={layout}>
       <Content>
-        <Title>{title ? title : <WarningIcon />}</Title>
-        {children}
+        <Title>{title}</Title>
         <ButtonsContainer>
           <ActionButton
             variant={ActionButtonVariant.secondary}
             onClick={onCancel}
           >
-            Cancel
+            No, Keep
           </ActionButton>
-          <ActionButton onClick={onConfirm}>Upload</ActionButton>
+          <ActionButton onClick={onConfirm}>Yes, Delete</ActionButton>
         </ButtonsContainer>
       </Content>
     </Container>

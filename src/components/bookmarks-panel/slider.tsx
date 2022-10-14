@@ -6,18 +6,27 @@ import { BookmarksListItem } from "./bookmark-list-item";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { Bookmark } from "../../types";
 
-const BookmarksList = styled.div`
+const BookmarksList = styled.div<LayoutProps>`
   display: flex;
   align-items: center;
-  gap: 16px;
   transition: 0.2s;
-  overflow: hidden;
   flex: 2;
+
+  overflow: ${getCurrentLayoutProperty({
+    desktop: "hidden",
+    tablet: "scroll",
+    mobile: "scroll",
+  })};
+
+  gap: ${getCurrentLayoutProperty({
+    desktop: "16px",
+    tablet: "8px",
+    mobile: "4px",
+  })};
 `;
 
 const ArrowIconLeft = styled.div<LayoutProps>`
   cursor: pointer;
-  margin: 0 16px 0 16px;
   fill: ${({ theme }) => theme.colors.fontColor};
 
   display: ${getCurrentLayoutProperty({
@@ -40,11 +49,7 @@ type SliderProps = {
   onSelectBookmark: (id: string) => void;
 };
 
-export const Slider = ({
-  bookmarks,
-  editingMode,
-  onSelectBookmark,
-}: SliderProps) => {
+export const Slider = ({ bookmarks, editingMode, onSelectBookmark }: SliderProps) => {
   const [position, setPosition] = useState<number>(0);
   const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmark>(
     null
@@ -87,14 +92,14 @@ export const Slider = ({
       <ArrowIconLeft layout={layout} onClick={handleLeftArrowClick}>
         <ChevronIcon />
       </ArrowIconLeft>
-      <BookmarksList>
+      <BookmarksList layout={layout}>
         {bookmarks.map((bookmark) => {
           const bookmarkSelected =
             bookmark.id === selectedBookmark?.id && !editingMode;
           return (
             <BookmarksListItem
-              selected={bookmarkSelected}
               key={bookmark.id}
+              selected={bookmarkSelected}
               url={bookmark.imageUrl}
               editingMode={editingMode}
               moveWidth={position}

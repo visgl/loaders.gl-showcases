@@ -84,10 +84,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const [layerLeftSide, setLayerLeftSide] = useState<LayerExample | null>(null);
-  const [layerRightSide, setLayerRightSide] = useState<LayerExample | null>(
-    null
-  );
+  const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
+  const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
@@ -104,8 +102,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const layout = useAppLayout();
 
   useEffect(() => {
-    setLayerLeftSide(null);
-    setLayerRightSide(null);
+    setLayersLeftSide([]);
+    setLayersRightSide([]);
     setDisableButton([false, false]);
   }, [mode]);
 
@@ -241,14 +239,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setDisableButton((prevValue) => [prevValue[0], true]);
   };
 
-  const onChangeLayerHandler = (
-    layer: LayerExample,
+  const onChangeLayersHandler = (
+    layers: LayerExample[],
     side: ComparisonSideMode
   ) => {
     if (side === ComparisonSideMode.left) {
-      setLayerLeftSide(layer);
+      setLayersLeftSide(layers);
     } else if (side === ComparisonSideMode.right) {
-      setLayerRightSide(layer);
+      setLayersRightSide(layers);
     }
   };
 
@@ -295,8 +293,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           id: uuidv4(),
           imageUrl,
           viewState,
-          layerLeftSide,
-          layerRightSide,
+          layersLeftSide,
+          layersRightSide,
         },
       ]);
     });
@@ -308,8 +306,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       return;
     }
     setViewState(bookmark.viewState);
-    setLayerLeftSide(bookmark.layerLeftSide);
-    setLayerRightSide(bookmark.layerRightSide);
+    setLayersLeftSide(bookmark.layersLeftSide);
+    setLayersRightSide(bookmark.layersRightSide);
   };
 
   return (
@@ -326,12 +324,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
-        staticLayer={layerLeftSide}
+        staticLayers={layersLeftSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayer={(layer) =>
-          onChangeLayerHandler(layer, ComparisonSideMode.left)
+        onChangeLayers={(layers) =>
+          onChangeLayersHandler(layers, ComparisonSideMode.left)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
@@ -361,6 +359,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onClose={onCloseBookmarkPanel}
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
+          onCollapsed={onCloseBookmarkPanel}
         />
       )}
 
@@ -377,14 +376,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
-        staticLayer={
-          mode === ComparisonMode.withinLayer ? layerLeftSide : layerRightSide
+        staticLayers={
+          mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayer={(layer) =>
-          onChangeLayerHandler(layer, ComparisonSideMode.right)
+        onChangeLayers={(layer) =>
+          onChangeLayersHandler(layer, ComparisonSideMode.right)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}

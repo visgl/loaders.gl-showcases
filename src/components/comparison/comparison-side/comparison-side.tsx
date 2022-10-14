@@ -33,6 +33,12 @@ import {
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
+enum LayerType {
+  parent,
+  child,
+  single,
+}
+
 type LayoutProps = {
   layout: string;
 };
@@ -101,6 +107,7 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
+
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
   top: auto;
@@ -122,6 +129,9 @@ const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   })};
 `;
 
+/** Delay to await asynchronous traversal of the tileset **/
+const IS_LOADED_DELAY = 500;
+
 type ComparisonSideProps = {
   mode: ComparisonMode;
   side: ComparisonSideMode;
@@ -130,7 +140,7 @@ type ComparisonSideProps = {
   baseMaps: BaseMap[];
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
-  staticLayer?: LayerExample | null;
+  staticLayers?: LayerExample[];
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
@@ -139,7 +149,7 @@ type ComparisonSideProps = {
   showBookmarks: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
-  onChangeLayer?: (layer: LayerExample) => void;
+  onChangeLayers?: (layer: LayerExample[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
@@ -149,8 +159,9 @@ type ComparisonSideProps = {
   onAfterDeckGlRender?: () => void;
 };
 
-/** Delay to await asynchronous traversal of the tileset **/
-const IS_LOADED_DELAY = 500;
+type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
+  token?: string;
+};
 
 export const ComparisonSide = ({
   mode,
@@ -160,7 +171,7 @@ export const ComparisonSide = ({
   baseMaps,
   showLayerOptions,
   showComparisonSettings,
-  staticLayer,
+  staticLayers,
   compareButtonMode,
   dragMode,
   loadingTime,
@@ -169,7 +180,7 @@ export const ComparisonSide = ({
   hasBeenCompared,
   onViewStateChange,
   pointToTileset,
-  onChangeLayer,
+  onChangeLayers,
   onInsertBaseMap,
   onSelectBaseMap,
   onDeleteBaseMap,
@@ -178,11 +189,12 @@ export const ComparisonSide = ({
   onShowBookmarksChange,
   onAfterDeckGlRender
 }: ComparisonSideProps) => {
-  const tilesetRef = useRef<Tileset3D | null>(null);
+  const forceUpdate = useForceUpdate();
   const layout = useAppLayout();
-  const [token, setToken] = useState(null);
+
+  const tilesetRef = useRef<Tileset3D | null>(null);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayer[]
+    BuildingSceneSublayerWithToken[]
   >([]);
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
@@ -192,7 +204,7 @@ export const ComparisonSide = ({
     ActiveButton.none
   );
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
-  const [layer, setLayer] = useState<LayerExample | null>(null);
+  const [layers, setLayers] = useState<LayerExample[]>([]);
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
@@ -210,14 +222,14 @@ export const ComparisonSide = ({
     }
     setIsCompressedGeometry(true);
     setIsCompressedTextures(true);
-    setLayer(null);
+    setLayers([]);
   }, [mode]);
 
   useEffect(() => {
-    if (staticLayer !== undefined) {
-      setLayer(staticLayer);
+    if (staticLayers?.length) {
+      setLayers(staticLayers);
     }
-  }, [staticLayer]);
+  }, [staticLayers]);
 
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
@@ -233,40 +245,79 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     layerUpdateCounter.current++;
-    if (!layer || !loadTileset) {
+    if (!layers.length || !loadTileset) {
       setFlattenedSublayers([]);
       return;
     }
 
-    async function fetchFlattenedSublayers(tilesetUrl: string, layerUpdateNumber: number) {
-      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
-      if (layerUpdateNumber === layerUpdateCounter.current) {
-        setFlattenedSublayers(flattenedSublayers);
+    async function fetchFlattenedSublayers(
+      tilesetsData: {
+        id: string;
+        url: string;
+        token: string;
+        hasChildren: boolean;
+      }[]
+    ) {
+      const promises: Promise<any>[] = [];
+
+      for (const data of tilesetsData) {
+        if (!data.hasChildren) {
+          promises.push(getFlattenedSublayers(data));
+        }
       }
+
+      Promise.all(promises).then((results) => {
+        setFlattenedSublayers(results.flat());
+      });
     }
 
-    const params = parseTilesetUrlParams(layer.url, layer);
-    const { tilesetUrl, token } = params;
+    const tilesetsData: {
+      id: string;
+      url: string;
+      token: string;
+      hasChildren: boolean;
+    }[] = [];
 
-    fetchFlattenedSublayers(tilesetUrl, layerUpdateCounter.current);
+    for (const layer of layers) {
+      const params = parseTilesetUrlParams(layer.url, layer);
+      const { tilesetUrl, token } = params;
 
-    setToken(token);
+      tilesetsData.push({
+        id: layer.id,
+        url: tilesetUrl,
+        token,
+        hasChildren: Boolean(layer.children),
+      });
+    }
+
+    fetchFlattenedSublayers(tilesetsData);
     setSublayers([]);
     disableButtonHandler();
-  }, [layer, loadTileset]);
+  }, [layers, loadTileset]);
 
-  const getFlattenedSublayers = async (tilesetUrl) => {
+  const getFlattenedSublayers = async (tilesetData: {
+    id: string;
+    url: string;
+    token: string;
+  }) => {
     try {
-      const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
+      const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
       const childSublayers = sublayersTree?.sublayers || [];
       setSublayers(childSublayers);
-      const sublayers = tileset?.sublayers.filter(
-        (sublayer) => sublayer.name !== "Overview"
-      );
+      const sublayers = tileset?.sublayers
+        .filter((sublayer) => sublayer.name !== "Overview")
+        .map((item) => ({ ...item, token: tilesetData.token }));
       return sublayers;
     } catch (e) {
-      return [{ url: tilesetUrl, visibility: true }];
+      return [
+        {
+          id: tilesetData.id,
+          url: tilesetData.url,
+          visibility: true,
+          token: tilesetData.token,
+        },
+      ];
     }
   };
 
@@ -276,7 +327,7 @@ export const ComparisonSide = ({
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
-        token,
+        token: sublayer?.token,
       }));
   };
 
@@ -325,24 +376,111 @@ export const ComparisonSide = ({
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
     setExamples((prevValues) => [...prevValues, newLayer]);
-    setLayer(newLayer);
+    setLayers([newLayer]);
   };
 
-  const onLayerSelectHandler = (id: string) => {
-    const selectedExample = examples.find((example) => example.id === id);
+  const onLayerSelectHandler = (layerId: string, parentId?: string) => {
+    const { selectedExample, type } = getSelectedExampleById(layerId);
+
+    let changedLayers: LayerExample[] = [];
 
     if (selectedExample) {
-      setLayer(selectedExample);
-      setPreventTransitions(false);
-      onChangeLayer && onChangeLayer(selectedExample);
+      switch (type) {
+        case LayerType.single:
+          setLayers([selectedExample]);
+          changedLayers = [selectedExample];
+
+          break;
+        case LayerType.parent: {
+          const children = selectedExample?.children || [];
+          setLayers([...children, selectedExample]);
+          changedLayers = [...children, selectedExample];
+          break;
+        }
+
+        case LayerType.child: {
+          const isLayerAlreadyInList = layers.some(
+            (layer) => layer.id === layerId
+          );
+
+          if (isLayerAlreadyInList) {
+            const filteredValues = layers.filter(
+              (layer) => layer.id !== layerId
+            );
+            setLayers(filteredValues);
+            changedLayers = filteredValues;
+          } else {
+            const { selectedExample: parentLayer } =
+              getSelectedExampleById(parentId);
+
+            const childrenIds =
+              parentLayer?.children?.map((child) => child.id) || [];
+
+            // Find only layers which have the same current parent.
+            const childrenToSave =
+              layers.filter((layer) => childrenIds?.includes(layer.id)) || [];
+
+            const newLayers = [...childrenToSave, selectedExample];
+
+            if (parentLayer) {
+              newLayers.push(parentLayer);
+            }
+
+            setLayers(newLayers);
+            changedLayers = newLayers;
+          }
+          break;
+        }
+      }
+
+      onChangeLayers && changedLayers.length && onChangeLayers(changedLayers);
     }
   };
 
+  const getSelectedExampleById = (
+    id?: string
+  ): { selectedExample: LayerExample | null; type: LayerType } => {
+    let selectedExample: LayerExample | null = null;
+    let type: LayerType = LayerType.single;
+
+    for (const example of examples) {
+      if (example.id === id) {
+        selectedExample = example;
+
+        if (example.children?.length) {
+          type = LayerType.parent;
+        }
+        break;
+      }
+
+      for (const childExample of example.children || []) {
+        if (childExample.id === id) {
+          selectedExample = childExample;
+          type = LayerType.child;
+          break;
+        }
+      }
+    }
+
+    return { selectedExample, type };
+  };
+
   const onLayerDeleteHandler = (id: string) => {
+    const idsToDelete = [id];
+
+    const layerToDelete = layers.find((layer) => layer.id === id);
+    const childIds = layerToDelete?.children?.map((child) => child.id) || [];
+
+    if (childIds.length) {
+      idsToDelete.push(...childIds);
+    }
+
     setExamples((prevValues) =>
       prevValues.filter((example) => example.id !== id)
     );
-    setLayer(null);
+    setLayers((prevValues) =>
+      prevValues.filter((layer) => !idsToDelete.includes(layer.id))
+    );
   };
 
   const onPointToLayerHandler = () => {
@@ -358,7 +496,7 @@ export const ComparisonSide = ({
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        useForceUpdate();
+        forceUpdate();
       }
     }
   };
@@ -367,8 +505,8 @@ export const ComparisonSide = ({
     setPreventTransitions(true);
     onViewStateChange(viewStateSet);
   }
-
-  const selectedLayerIds = layer ? [layer.id] : [];
+  
+  const selectedLayerIds = layers.map((layer) => layer.id);
 
   const ToolsPanelWrapper =
     side === ComparisonSideMode.left

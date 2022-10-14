@@ -7,7 +7,6 @@ import {
   HorizontalLine,
   Panels,
   Title,
-  InnerButton,
   OptionsIcon,
 } from "../comparison/common";
 import { CloseButton } from "../close-button/close-button";
@@ -22,11 +21,14 @@ import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark } from "../../types";
+import { BookmarkInnerButton } from "./bookmark-inner-button";
+import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 
 enum PopoverType {
   options,
   upload,
   uploadWarning,
+  clearBookmarks,
   none,
 }
 
@@ -41,7 +43,7 @@ const Container = styled.div<LayoutProps>`
   height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
-    desktop: "8px;",
+    desktop: "8px",
     tablet: "0px",
     mobile: "0px",
   })};
@@ -75,7 +77,12 @@ const ItemsList = styled.div<LayoutProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 16px 0 16px;
+
+  gap: ${getCurrentLayoutProperty({
+    desktop: "16px",
+    tablet: "8px",
+    mobile: "4px",
+  })};
 
   margin: ${getCurrentLayoutProperty({
     desktop: "0 16px 0 16px",
@@ -88,11 +95,21 @@ const ButtonWrapper = styled.div<LayoutProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 144px;
-  height: 81px;
   cursor: pointer;
   gap: 10px;
   position: relative;
+
+  width: ${getCurrentLayoutProperty({
+    desktop: "144px",
+    tablet: "106px",
+    mobile: "68px",
+  })};
+
+  height: ${getCurrentLayoutProperty({
+    desktop: "81px",
+    tablet: "62px",
+    mobile: "44px",
+  })};
 
   &:before {
     content: "";
@@ -102,7 +119,13 @@ const ButtonWrapper = styled.div<LayoutProps>`
     bottom: 0;
     right: 0;
     background-color: ${color_brand_tertiary};
-    border-radius: 12px;
+
+    border-radius: ${getCurrentLayoutProperty({
+      desktop: "12px",
+      tablet: "8px",
+      mobile: "6px",
+    })};
+
     opacity: 0.4;
     z-index: -1;
   }
@@ -139,9 +162,12 @@ type BookmarksPanelProps = {
   onClose: () => void;
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
+  onCollapsed: () => void;
 };
 
-export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelectBookmark }: BookmarksPanelProps) => {
+const confirmText = "Are you sure you  want to clear all  bookmarks?";
+
+export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelectBookmark, onCollapsed }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
@@ -153,16 +179,41 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
     popoverType === PopoverType.upload ||
     popoverType === PopoverType.uploadWarning;
   const disableAddButton = editingMode || clearBookmarks;
+  const isDesktop = layout === Layout.Desktop;
+
+  const getOptionMenuPosition = () => {
+    if (popoverType === PopoverType.options) {
+      return {
+        zIndex: "4",
+        top: isDesktop ? "80px" : "30px",
+        left: isDesktop ? "100px" : "-110px",
+      };
+    }
+
+    if (popoverType !== PopoverType.options) {
+      return {
+        zIndex: "4",
+        top: isDesktop ? "80px" : "30px",
+        left: isDesktop ? "100px" : "-145px",
+      };
+    }
+  };
 
   const onEditBookmark = useCallback(() => {
     setEditingMode((prev) => !prev);
     setPopoverType(PopoverType.none);
   }, []);
 
-  const onClearBookmarks = useCallback(() => {
+  const onClearBookmarks = () => {
+    if (!isDesktop) {
+      setPopoverType(PopoverType.clearBookmarks);
+    }
+
+    if (isDesktop) {
+      setPopoverType(PopoverType.none);
+    }
     setClearBookmarksMode((prev) => !prev);
-    setPopoverType(PopoverType.none);
-  }, []);
+  };
 
   const renderPopoverContent = () => {
     if (popoverType === PopoverType.uploadWarning) {
@@ -189,6 +240,20 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
           onEditBookmark={onEditBookmark}
           onClearBookmarks={onClearBookmarks}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
+          onCollapsed={onCollapsed}
+        />
+      );
+    }
+
+    if (popoverType === PopoverType.clearBookmarks && !isDesktop) {
+      return (
+        <ConfirmDeletingPanel
+          title={confirmText}
+          onCancel={() => {
+            setClearBookmarksMode(false);
+            setPopoverType(PopoverType.none);
+          }}
+          onConfirm={() => console.log("not implemented yet")}
         />
       );
     }
@@ -196,22 +261,36 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
     return null;
   };
 
-  const renderAddBookmarkButton = (
-    width: number,
-    height: number
-  ): JSX.Element => {
+  const renderClearBookmarksContent = () => {
+    if (isDesktop) {
+      return (
+        <>
+          <BookmarkInnerButton
+            width={32}
+            height={32}
+            onInnerClick={() => console.log("not implemented yet")}
+          >
+            <ConfirmIcon />
+          </BookmarkInnerButton>
+          <BookmarkInnerButton
+            width={32}
+            height={32}
+            onInnerClick={() => setClearBookmarksMode(false)}
+          >
+            <CloseIcon />
+          </BookmarkInnerButton>
+        </>
+      );
+    }
+
     return (
-      <InnerButton
-        width={width}
-        height={height}
-        disabled={disableAddButton}
-        blurButton={disableAddButton}
-        onClick={onAddBookmark}
-      >
-        <PlusIcon fill={theme.colors.buttonIconColor} />
-      </InnerButton>
+      <BookmarkInnerButton onInnerClick={() => setClearBookmarksMode(false)}>
+        <OptionsIcon panel={Panels.Bookmarks} />
+      </BookmarkInnerButton>
     );
   };
+
+  console.log(popoverType);
 
   return (
     <>
@@ -230,16 +309,18 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
         )}
 
         <ItemsList layout={layout}>
-          {layout === Layout.Desktop ? (
-            <ButtonWrapper layout={layout}>
-              {renderAddBookmarkButton(44, 44)}
-            </ButtonWrapper>
-          ) : (
-            renderAddBookmarkButton(66, 44)
-          )}
+          <ButtonWrapper layout={layout}>
+            <BookmarkInnerButton
+              disabled={disableAddButton}
+              blurButton={disableAddButton}
+              onInnerClick={onAddBookmark}
+            >
+              <PlusIcon fill={theme.colors.buttonIconColor} />
+            </BookmarkInnerButton>
+          </ButtonWrapper>
 
           {bookmarks.length > 0 ? (
-            <Slider bookmarks={bookmarks} editingMode={editingMode} onSelectBookmark={onSelectBookmark}/>
+            <Slider bookmarks={bookmarks} editingMode={editingMode} onSelectBookmark={onSelectBookmark} />
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}
@@ -249,39 +330,26 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
               reposition={false}
               positions={["top", "bottom", "left", "right"]}
               content={renderPopoverContent() as JSX.Element}
-              containerStyle={{ zIndex: "4", top: "80px", left: "100px" }}
+              containerStyle={getOptionMenuPosition()}
               onClickOutside={() => setPopoverType(PopoverType.none)}
             >
               <ButtonsWrapper>
                 {editingMode && (
-                  <InnerButton
-                    width={44}
-                    height={44}
-                    onClick={() => setEditingMode(false)}
+                  <BookmarkInnerButton
+                    onInnerClick={() => setEditingMode(false)}
                   >
                     <ConfirmationIcon />
-                  </InnerButton>
+                  </BookmarkInnerButton>
                 )}
                 {!editingMode && (
-                  <InnerButton
-                    width={44}
-                    height={44}
+                  <BookmarkInnerButton
                     hide={clearBookmarks}
-                    onClick={() => setPopoverType(PopoverType.options)}
+                    onInnerClick={() => setPopoverType(PopoverType.options)}
                   >
                     <OptionsIcon panel={Panels.Bookmarks} />
-                  </InnerButton>
+                  </BookmarkInnerButton>
                 )}
-                {clearBookmarks && (
-                  <>
-                    <InnerButton width={32} height={32}>
-                      <ConfirmIcon />
-                    </InnerButton>
-                    <InnerButton width={32} height={32}>
-                      <CloseIcon onClick={() => setClearBookmarksMode(false)} />
-                    </InnerButton>
-                  </>
-                )}
+                {clearBookmarks && renderClearBookmarksContent()}
               </ButtonsWrapper>
             </Popover>
           </ButtonWrapper>

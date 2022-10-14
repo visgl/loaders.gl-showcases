@@ -3,6 +3,7 @@ import DownloadBookmarkIcon from "../../../public/icons/download-bookmark.svg";
 import DeleteIcon from "../../../public/icons/delete.svg";
 import UploadBookmarkIcon from "../../../public/icons/upload-bookmark.svg";
 import EditBookmarkIcon from "../../../public/icons/edit.svg";
+import CollapseIcon from "../../../public/icons/collapse.svg";
 import { color_accent_primary } from "../../constants/colors";
 import {
   MenuContainer,
@@ -10,19 +11,24 @@ import {
   MenuSettingsIcon,
   MenuDevider,
 } from "../comparison/common";
+import { useAppLayout } from "../../utils/layout";
+import { Layout } from "../../utils/enums";
 
 type BookmarkOptionsMenuProps = {
   onEditBookmark: () => void;
   onClearBookmarks: () => void;
   onUploadBookmarks: () => void;
+  onCollapsed: () => void;
 };
 
 export const BookmarkOptionsMenu = ({
   onEditBookmark,
   onClearBookmarks,
   onUploadBookmarks,
+  onCollapsed,
 }: BookmarkOptionsMenuProps) => {
   const theme = useTheme();
+  const layout = useAppLayout();
 
   return (
     <MenuContainer>
@@ -46,6 +52,15 @@ export const BookmarkOptionsMenu = ({
         </MenuSettingsIcon>
         Upload bookmarks
       </MenuItem>
+
+      {layout !== Layout.Desktop && (
+        <MenuItem onClick={onCollapsed}>
+          <MenuSettingsIcon>
+            <CollapseIcon fill={theme.colors.fontColor} />
+          </MenuSettingsIcon>
+          Collapse panel
+        </MenuItem>
+      )}
 
       <MenuDevider />
       <MenuItem
