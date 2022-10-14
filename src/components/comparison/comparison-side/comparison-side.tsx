@@ -107,6 +107,7 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
+
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
   top: auto;
@@ -145,6 +146,7 @@ type ComparisonSideProps = {
   loadingTime: number;
   loadTileset?: boolean;
   hasBeenCompared: boolean;
+  showBookmarks: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset: Tileset3D) => void;
   onChangeLayers?: (layer: LayerExample[]) => void;
@@ -153,6 +155,7 @@ type ComparisonSideProps = {
   onDeleteBaseMap: (baseMapId: string) => void;
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
+  onShowBookmarksChange: () => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -172,6 +175,7 @@ export const ComparisonSide = ({
   dragMode,
   loadingTime,
   loadTileset = true,
+  showBookmarks,
   hasBeenCompared,
   onViewStateChange,
   pointToTileset,
@@ -181,6 +185,7 @@ export const ComparisonSide = ({
   onDeleteBaseMap,
   disableButtonHandler,
   onTilesetLoaded,
+  onShowBookmarksChange,
 }: ComparisonSideProps) => {
   const forceUpdate = useForceUpdate();
   const layout = useAppLayout();
@@ -533,9 +538,11 @@ export const ComparisonSide = ({
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
+              showBookmarks={showBookmarks}
               showLayerOptions={showLayerOptions}
               showComparisonSettings={showComparisonSettings}
               onChange={onChangeMainToolsPanelHandler}
+              onShowBookmarksChange={onShowBookmarksChange}
             />
           </ToolsPanelWrapper>
           {activeButton === ActiveButton.options && (

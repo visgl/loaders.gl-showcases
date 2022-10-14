@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
@@ -20,6 +20,7 @@ import { CompareButton } from "../../components/comparison/compare-button/compar
 import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
+import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -91,6 +92,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
+  const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
 
   const layout = useAppLayout();
 
@@ -258,6 +260,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setSelectedBaseMap(BASE_MAPS[0]);
   };
 
+  const onBookmarkClick = useCallback(() => {
+    setShowBookmarksPanel((prev) => !prev);
+  }, []);
+
+  const onCloseBookmarkPanel = useCallback(() => {
+    setShowBookmarksPanel(false);
+  }, []);
+
   return (
     <Container layout={layout}>
       <ComparisonSide
@@ -272,6 +282,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         hasBeenCompared={hasBeenCompared}
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
+        showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={onChangeLayersHandler}
@@ -283,6 +294,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
         }}
+        onShowBookmarksChange={onBookmarkClick}
       />
       <Devider layout={layout} />
       <CompareButton
@@ -295,6 +307,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
       />
+      {showBookmarksPanel && (
+        <BookmarksPanel
+          id="comparison-bookmarks-panel"
+          onClose={onCloseBookmarkPanel}
+          onCollapsed={onCloseBookmarkPanel}
+        />
+      )}
 
       <ComparisonSide
         mode={mode}
@@ -310,6 +329,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={mode === ComparisonMode.withinLayer ? layersLeftSide : []}
+        showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onInsertBaseMap={onInsertBaseMapHandler}
@@ -319,6 +339,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
+        onShowBookmarksChange={onBookmarkClick}
       />
 
       {compareButtonMode === CompareButtonMode.Start && (

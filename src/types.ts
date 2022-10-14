@@ -35,6 +35,7 @@ export enum ActiveButton {
   options,
   settings,
   memory,
+  bookmarks,
   none,
 }
 

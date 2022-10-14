@@ -7,6 +7,7 @@ import {
 import GearIcon from "../../../public/icons/gear.svg";
 import SettingsIcon from "../../../public/icons/settings.svg";
 import MemoryIcon from "../../../public/icons/memory.svg";
+import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { ActiveButton, Layout } from "../../types";
 import { useAppLayout } from "../../utils/layout";
 
@@ -15,7 +16,9 @@ type MainToolsPanelProps = {
   activeButton: ActiveButton;
   showLayerOptions?: boolean;
   showComparisonSettings?: boolean;
+  showBookmarks: boolean;
   onChange?: (active: ActiveButton) => void;
+  onShowBookmarksChange: () => void;
 };
 
 type ContainerProps = {
@@ -66,7 +69,9 @@ export const MainToolsPanel = ({
   activeButton,
   showLayerOptions = true,
   showComparisonSettings = true,
+  showBookmarks,
   onChange = () => ({}),
+  onShowBookmarksChange,
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
 
@@ -96,6 +101,13 @@ export const MainToolsPanel = ({
         onClick={() => onChange(ActiveButton.memory)}
       >
         <MemoryIcon />
+      </Button>
+      <Button
+        layout={layout}
+        active={showBookmarks}
+        onClick={onShowBookmarksChange}
+      >
+        <BookmarksIcon />
       </Button>
     </Container>
   );

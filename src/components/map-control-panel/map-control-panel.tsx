@@ -12,11 +12,11 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { useExpand } from "../../utils/hooks/use-expand";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { LayoutProps } from "../comparison/common";
 
-const Container = styled.div`
+const Container = styled.div<LayoutProps>`
   position: absolute;
-  right: 24px;
-  bottom: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,6 +24,18 @@ const Container = styled.div`
   border-radius: 12px;
   padding: 8px;
   gap: 10px;
+
+  right: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "24px",
+    mobile: "24px",
+  })};
+
+  bottom: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "80px",
+    mobile: "80px",
+  })};
 `;
 
 const Button = styled.button<{ active?: boolean }>`
@@ -80,14 +92,13 @@ export const MapControllPanel = ({
   onCompassClick,
   onDragModeToggle,
 }: MapControlPanelProps) => {
-  const [expandState, expand] = useExpand(
-    ExpandState.expanded
-  );
+  const [expandState, expand] = useExpand(ExpandState.expanded);
 
   const theme = useTheme();
+  const layout = useAppLayout();
 
   return (
-    <Container id="map-control-panel">
+    <Container layout={layout} id="map-control-panel">
       <ExpandIcon
         expandState={expandState}
         collapseDirection={CollapseDirection.bottom}
