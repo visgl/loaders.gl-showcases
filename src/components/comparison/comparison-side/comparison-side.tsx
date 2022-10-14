@@ -433,6 +433,7 @@ export const ComparisonSide = ({
         }
       }
 
+      setPreventTransitions(false);
       onChangeLayers && changedLayers.length && onChangeLayers(changedLayers);
     }
   };

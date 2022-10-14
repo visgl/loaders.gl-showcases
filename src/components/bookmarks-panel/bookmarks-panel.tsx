@@ -290,8 +290,6 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
     );
   };
 
-  console.log(popoverType);
-
   return (
     <>
       <Container id={id} layout={layout}>
