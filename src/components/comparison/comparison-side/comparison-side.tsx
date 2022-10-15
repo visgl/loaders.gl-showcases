@@ -107,7 +107,6 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
-
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
   top: auto;
@@ -187,7 +186,7 @@ export const ComparisonSide = ({
   disableButtonHandler,
   onTilesetLoaded,
   onShowBookmarksChange,
-  onAfterDeckGlRender
+  onAfterDeckGlRender,
 }: ComparisonSideProps) => {
   const forceUpdate = useForceUpdate();
   const layout = useAppLayout();
@@ -226,7 +225,7 @@ export const ComparisonSide = ({
   }, [mode]);
 
   useEffect(() => {
-    if (staticLayers?.length) {
+    if (staticLayers) {
       setLayers(staticLayers);
     }
   }, [staticLayers]);
@@ -256,7 +255,8 @@ export const ComparisonSide = ({
         url: string;
         token: string;
         hasChildren: boolean;
-      }[]
+      }[],
+      layerUpdateNumber: number
     ) {
       const promises: Promise<any>[] = [];
 
@@ -267,7 +267,9 @@ export const ComparisonSide = ({
       }
 
       Promise.all(promises).then((results) => {
-        setFlattenedSublayers(results.flat());
+        if (layerUpdateNumber === layerUpdateCounter.current) {
+          setFlattenedSublayers(results.flat());
+        }
       });
     }
 
@@ -290,7 +292,7 @@ export const ComparisonSide = ({
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData);
+    fetchFlattenedSublayers(tilesetsData, layerUpdateCounter.current);
     setSublayers([]);
     disableButtonHandler();
   }, [layers, loadTileset]);
@@ -505,8 +507,8 @@ export const ComparisonSide = ({
   const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
     setPreventTransitions(true);
     onViewStateChange(viewStateSet);
-  }
-  
+  };
+
   const selectedLayerIds = layers.map((layer) => layer.id);
 
   const ToolsPanelWrapper =

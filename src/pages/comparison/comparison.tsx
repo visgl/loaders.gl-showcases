@@ -105,6 +105,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayersLeftSide([]);
     setLayersRightSide([]);
     setDisableButton([false, false]);
+    setBookmarks([]);
   }, [mode]);
 
   useEffect(() => {
