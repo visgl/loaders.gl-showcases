@@ -210,7 +210,7 @@ export const ComparisonSide = ({
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
-  const layerUpdateCounter = useRef<number>(0);
+  const fetchSublayersCounter = useRef<number>(0);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   useEffect(() => {
@@ -243,7 +243,7 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
-    layerUpdateCounter.current++;
+    fetchSublayersCounter.current++;
     if (!layers.length || !loadTileset) {
       setFlattenedSublayers([]);
       return;
@@ -267,7 +267,7 @@ export const ComparisonSide = ({
       }
 
       Promise.all(promises).then((results) => {
-        if (layerUpdateNumber === layerUpdateCounter.current) {
+        if (layerUpdateNumber === fetchSublayersCounter.current) {
           setFlattenedSublayers(results.flat());
         }
       });
@@ -292,7 +292,7 @@ export const ComparisonSide = ({
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData, layerUpdateCounter.current);
+    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
     disableButtonHandler();
   }, [layers, loadTileset]);

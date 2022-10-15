@@ -155,7 +155,7 @@ export const BookmarksListItem = ({
             <BookmarkInnerButton
               width={32}
               height={32}
-              onInnerClick={onSelectBookmark}
+              onInnerClick={() => console.log("not implemented")}
             >
               <ConfirmIcon />
             </BookmarkInnerButton>

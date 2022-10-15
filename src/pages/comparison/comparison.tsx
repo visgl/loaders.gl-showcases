@@ -383,8 +383,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layer) =>
-          onChangeLayersHandler(layer, ComparisonSideMode.right)
+        onChangeLayers={(layers) =>
+          onChangeLayersHandler(layers, ComparisonSideMode.right)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
