@@ -28,7 +28,7 @@ export enum ComparisonMode {
 
 export enum ListItemType {
   Radio,
-  Checkbox
+  Checkbox,
 }
 
 export enum ActiveButton {

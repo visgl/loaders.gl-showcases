@@ -167,7 +167,14 @@ type BookmarksPanelProps = {
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
 
-export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelectBookmark, onCollapsed }: BookmarksPanelProps) => {
+export const BookmarksPanel = ({
+  id,
+  bookmarks,
+  onClose,
+  onAddBookmark,
+  onSelectBookmark,
+  onCollapsed,
+}: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
@@ -318,7 +325,11 @@ export const BookmarksPanel = ({ id, bookmarks, onClose, onAddBookmark, onSelect
           </ButtonWrapper>
 
           {bookmarks.length > 0 ? (
-            <Slider bookmarks={bookmarks} editingMode={editingMode} onSelectBookmark={onSelectBookmark} />
+            <Slider
+              bookmarks={bookmarks}
+              editingMode={editingMode}
+              onSelectBookmark={onSelectBookmark}
+            />
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}

@@ -49,7 +49,11 @@ type SliderProps = {
   onSelectBookmark: (id: string) => void;
 };
 
-export const Slider = ({ bookmarks, editingMode, onSelectBookmark }: SliderProps) => {
+export const Slider = ({
+  bookmarks,
+  editingMode,
+  onSelectBookmark,
+}: SliderProps) => {
   const [position, setPosition] = useState<number>(0);
   const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmark>(
     null

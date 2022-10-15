@@ -731,7 +731,7 @@ export const DeckGlI3s = ({
             }
       }
       glOptions={{
-        preserveDrawingBuffer: true
+        preserveDrawingBuffer: true,
       }}
       onWebGLInitialized={onWebGLInitialized}
       onAfterRender={onAfterRender}
