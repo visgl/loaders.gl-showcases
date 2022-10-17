@@ -361,6 +361,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
+          onClearBookmarks={() => setBookmarks([])}
         />
       )}
 
