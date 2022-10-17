@@ -19,6 +19,7 @@ import {
   CompareButtonMode,
   DragMode,
   StatsMap,
+  LayerView,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -146,7 +147,7 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
-  pointToTileset: (tileset: Tileset3D) => void;
+  pointToTileset: (view?: LayerView) => void;
   onChangeLayers?: (layer: LayerExample[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
@@ -323,6 +324,9 @@ export const ComparisonSide = ({
 
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     setTilesetStats(newTileset.stats);
+    setExamples((prevExamples) =>
+      findExampleAndUpdateWithView(newTileset, prevExamples)
+    );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
@@ -336,6 +340,37 @@ export const ComparisonSide = ({
         });
       }
     }, IS_LOADED_DELAY);
+  };
+
+  const findExampleAndUpdateWithView = (
+    tileset: Tileset3D,
+    examples: LayerExample[]
+  ): LayerExample[] => {
+    // Shallow copy of example objects to prevent mutation of the state object.
+    const examplesCopy = [...examples];
+
+    for (const example of examplesCopy) {
+      // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
+      if (tileset.url.includes(example.url) && !example.view) {
+        const { zoom, cartographicCenter } = tileset;
+        const [longitude, latitude] = cartographicCenter || [];
+        example.view = {
+          zoom,
+          longitude,
+          latitude,
+        };
+        break;
+      }
+
+      if (example.children) {
+        example.children = findExampleAndUpdateWithView(
+          tileset,
+          example.children
+        );
+      }
+    }
+
+    return examplesCopy;
   };
 
   const onTileLoad = (tile: Tile3D) => {
@@ -366,7 +401,7 @@ export const ComparisonSide = ({
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
     setExamples((prevValues) => [...prevValues, newLayer]);
-    setLayers([newLayer]);
+    setLayers([newLayer, ...(newLayer.children || [])]);
   };
 
   const onLayerSelectHandler = (layerId: string, parentId?: string) => {
@@ -473,12 +508,6 @@ export const ComparisonSide = ({
     );
   };
 
-  const onPointToLayerHandler = () => {
-    if (tilesetRef.current) {
-      pointToTileset(tilesetRef.current);
-    }
-  };
-
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
@@ -547,7 +576,7 @@ export const ComparisonSide = ({
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}
-                onPointToLayer={onPointToLayerHandler}
+                onPointToLayer={(view) => pointToTileset(view)}
                 type={ListItemType.Radio}
                 sublayers={sublayers}
                 onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}

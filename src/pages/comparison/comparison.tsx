@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
@@ -13,6 +12,7 @@ import {
   ComparisonSideMode,
   CompareButtonMode,
   StatsMap,
+  LayerView,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -121,19 +121,20 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset: Tileset3D) => {
-    const { zoom, cartographicCenter } = tileset;
-    const [longitude, latitude] = cartographicCenter || [];
+  const pointToTileset = (view?: LayerView) => {
+    if (view) {
+      const { zoom, longitude, latitude } = view;
 
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-        transitionDuration: 1000,
-      },
-    });
+      setViewState({
+        main: {
+          ...viewState.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      });
+    }
   };
 
   const onZoomIn = () => {

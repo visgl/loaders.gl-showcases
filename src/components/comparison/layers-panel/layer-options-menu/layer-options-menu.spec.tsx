@@ -11,9 +11,13 @@ describe("Layer option menu", () => {
 
     renderWithTheme(
       <LayerOptionsMenu
-        layerId={"test"}
+        layer={{
+          id: "test",
+          name: "test",
+          url: "https://test.url",
+        }}
+        selected={false}
         showLayerSettings={false}
-        showDeleteLayer={false}
         onPointToLayerClick={onPointToLayerClick}
         onLayerSettingsClick={onLayerSettingsClick}
         onDeleteLayerClick={onDeleteLayerClick}
@@ -33,9 +37,14 @@ describe("Layer option menu", () => {
 
     renderWithTheme(
       <LayerOptionsMenu
-        layerId={"test"}
+        layer={{
+          id: "test",
+          name: "test",
+          url: "https://test.url",
+          custom: true,
+        }}
+        selected={false}
         showLayerSettings={true}
-        showDeleteLayer={true}
         onPointToLayerClick={onPointToLayerClick}
         onLayerSettingsClick={onLayerSettingsClick}
         onDeleteLayerClick={onDeleteLayerClick}

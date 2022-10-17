@@ -157,16 +157,28 @@ describe("ComparisonSide", () => {
 
     const { onPointToLayer } = LayersPanelMock.mock.lastCall[0];
     act(() => onPointToLayer());
-    expect(pointToTilesetMock).not.toHaveBeenCalled();
+    expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
+    expect(pointToTilesetMock).toHaveBeenCalledWith(undefined);
+    pointToTilesetMock.mockReset();
 
     const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
     act(() => onTilesetLoad({ url: "http://tileset.url" }));
 
     const { onPointToLayer: onPointToLayer2 } =
       LayersPanelMock.mock.lastCall[0];
-    act(() => onPointToLayer2());
-    // It doesn't work as expected. Jest don't update state variable `tileset` after `onTilesetLoad`
-    // expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
+    act(() =>
+      onPointToLayer2({
+        latitude: 122,
+        longitude: 41,
+        zoom: 10,
+      })
+    );
+    expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
+    expect(pointToTilesetMock).toHaveBeenCalledWith({
+      latitude: 122,
+      longitude: 41,
+      zoom: 10,
+    });
   });
 
   it("Should handle tileset load", () => {

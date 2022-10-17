@@ -1,7 +1,7 @@
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
 
-import { LayerExample, ListItemType } from "../../../types";
+import { LayerExample, LayerView, ListItemType } from "../../../types";
 
 import { ListItem } from "./list-item/list-item";
 import { PlusButton } from "../../plus-button/plus-button";
@@ -19,7 +19,7 @@ type LayersControlPanelProps = {
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
-  onPointToLayer: () => void;
+  onPointToLayer: (view?: LayerView) => void;
   deleteLayer: (id: string) => void;
 };
 
@@ -102,12 +102,12 @@ export const LayersControlPanel = ({
             }
             optionsContent={
               <LayerOptionsMenu
-                layerId={settingsLayerId}
-                showDeleteLayer={Boolean(layer?.custom)}
+                layer={layer}
+                selected={isLayerSelected}
                 showLayerSettings={hasSettings && isLayerSelected}
-                onPointToLayerClick={() => {
+                onPointToLayerClick={(view) => {
                   setShowLayerSettings(false);
-                  onPointToLayer();
+                  onPointToLayer(view);
                 }}
                 onLayerSettingsClick={onLayerSettingsClick}
                 onDeleteLayerClick={() => {

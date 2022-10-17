@@ -124,6 +124,13 @@ export type LayerExample = {
   token?: string;
   custom?: boolean;
   children?: LayerExample[];
+  view?: LayerView;
+};
+
+export type LayerView = {
+  longitude: number;
+  latitude: number;
+  zoom: number;
 };
 
 export type Sublayer = BuildingSceneSublayer & {
