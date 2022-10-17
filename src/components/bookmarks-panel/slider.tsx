@@ -4,6 +4,7 @@ import ChevronIcon from "../../../public/icons/chevron.svg";
 import { LayoutProps } from "../comparison/common";
 import { BookmarksListItem } from "./bookmark-list-item";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { Bookmark } from "../../types";
 
 const BookmarksList = styled.div<LayoutProps>`
   display: flex;
@@ -39,22 +40,22 @@ const ArrowIconRight = styled(ArrowIconLeft)<LayoutProps>`
   transform: rotate(-180deg);
 `;
 
-type SliderProps = {
-  bookmarks: Bookmarks[];
-  editingMode: boolean;
-};
-
-type Bookmarks = {
-  id: string;
-  url: any;
-};
-
 const ITEM_WIDTH = 144;
 const ITEM_GAP = 16;
 
-export const Slider = ({ bookmarks, editingMode }: SliderProps) => {
+type SliderProps = {
+  bookmarks: Bookmark[];
+  editingMode: boolean;
+  onSelectBookmark: (id: string) => void;
+};
+
+export const Slider = ({
+  bookmarks,
+  editingMode,
+  onSelectBookmark,
+}: SliderProps) => {
   const [position, setPosition] = useState<number>(0);
-  const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmarks>(
+  const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmark>(
     null
   );
 
@@ -81,12 +82,13 @@ export const Slider = ({ bookmarks, editingMode }: SliderProps) => {
     });
   };
 
-  const onSelectBookmark = (bookmarkId: string) => {
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
     const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
 
     if (bookmark) {
       setSelectedBookmark(bookmark);
     }
+    onSelectBookmark(bookmarkId);
   };
 
   return (
@@ -102,10 +104,10 @@ export const Slider = ({ bookmarks, editingMode }: SliderProps) => {
             <BookmarksListItem
               key={bookmark.id}
               selected={bookmarkSelected}
-              url={bookmark.url}
+              url={bookmark.imageUrl}
               editingMode={editingMode}
               moveWidth={position}
-              onSelectBookmark={() => onSelectBookmark(bookmark.id)}
+              onSelectBookmark={() => onSelectBookmarkHandler(bookmark.id)}
             />
           );
         })}

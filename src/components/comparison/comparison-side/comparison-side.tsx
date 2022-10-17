@@ -107,7 +107,6 @@ const LeftSidePanelWrapper = styled.div<LayoutProps>`
   })};
 `;
 
-
 const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   left: auto;
   top: auto;
@@ -156,6 +155,7 @@ type ComparisonSideProps = {
   disableButtonHandler: () => void;
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
+  onAfterDeckGlRender?: () => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -186,6 +186,7 @@ export const ComparisonSide = ({
   disableButtonHandler,
   onTilesetLoaded,
   onShowBookmarksChange,
+  onAfterDeckGlRender,
 }: ComparisonSideProps) => {
   const forceUpdate = useForceUpdate();
   const layout = useAppLayout();
@@ -209,6 +210,8 @@ export const ComparisonSide = ({
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
+  const fetchSublayersCounter = useRef<number>(0);
+  const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -222,7 +225,7 @@ export const ComparisonSide = ({
   }, [mode]);
 
   useEffect(() => {
-    if (staticLayers?.length) {
+    if (staticLayers) {
       setLayers(staticLayers);
     }
   }, [staticLayers]);
@@ -240,6 +243,7 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    fetchSublayersCounter.current++;
     if (!layers.length || !loadTileset) {
       setFlattenedSublayers([]);
       return;
@@ -251,7 +255,8 @@ export const ComparisonSide = ({
         url: string;
         token: string;
         hasChildren: boolean;
-      }[]
+      }[],
+      layerUpdateNumber: number
     ) {
       const promises: Promise<any>[] = [];
 
@@ -262,7 +267,9 @@ export const ComparisonSide = ({
       }
 
       Promise.all(promises).then((results) => {
-        setFlattenedSublayers(results.flat());
+        if (layerUpdateNumber === fetchSublayersCounter.current) {
+          setFlattenedSublayers(results.flat());
+        }
       });
     }
 
@@ -285,7 +292,7 @@ export const ComparisonSide = ({
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData);
+    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
     disableButtonHandler();
   }, [layers, loadTileset]);
@@ -428,6 +435,7 @@ export const ComparisonSide = ({
         }
       }
 
+      setPreventTransitions(false);
       onChangeLayers && changedLayers.length && onChangeLayers(changedLayers);
     }
   };
@@ -496,6 +504,11 @@ export const ComparisonSide = ({
     }
   };
 
+  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
+    setPreventTransitions(true);
+    onViewStateChange(viewStateSet);
+  };
+
   const selectedLayerIds = layers.map((layer) => layer.id);
 
   const ToolsPanelWrapper =
@@ -526,11 +539,12 @@ export const ComparisonSide = ({
         lastLayerSelectedId={tilesetRef.current?.url || ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
-        preventTransitions={compareButtonMode === CompareButtonMode.Comparing}
-        onViewStateChange={onViewStateChange}
+        preventTransitions={preventTransitions}
+        onViewStateChange={onViewStateChangeHandler}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
+        onAfterRender={onAfterDeckGlRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
