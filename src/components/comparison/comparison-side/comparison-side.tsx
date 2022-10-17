@@ -19,7 +19,6 @@ import {
   CompareButtonMode,
   DragMode,
   StatsMap,
-  LayerView,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -147,7 +146,7 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
-  pointToTileset: (view?: LayerView) => void;
+  pointToTileset: (tileset?: Tileset3D) => void;
   onChangeLayers?: (layer: LayerExample[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
@@ -325,7 +324,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     setTilesetStats(newTileset.stats);
     setExamples((prevExamples) =>
-      findExampleAndUpdateWithView(newTileset, prevExamples)
+      findExampleAndUpdateWithTileset(newTileset, prevExamples)
     );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
@@ -342,7 +341,7 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const findExampleAndUpdateWithView = (
+  const findExampleAndUpdateWithTileset = (
     tileset: Tileset3D,
     examples: LayerExample[]
   ): LayerExample[] => {
@@ -351,19 +350,13 @@ export const ComparisonSide = ({
 
     for (const example of examplesCopy) {
       // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
-      if (tileset.url.includes(example.url) && !example.view) {
-        const { zoom, cartographicCenter } = tileset;
-        const [longitude, latitude] = cartographicCenter || [];
-        example.view = {
-          zoom,
-          longitude,
-          latitude,
-        };
+      if (tileset.url.includes(example.url) && !example.tileset) {
+        example.tileset = tileset;
         break;
       }
 
       if (example.children) {
-        example.children = findExampleAndUpdateWithView(
+        example.children = findExampleAndUpdateWithTileset(
           tileset,
           example.children
         );
@@ -576,7 +569,7 @@ export const ComparisonSide = ({
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}
-                onPointToLayer={(view) => pointToTileset(view)}
+                onPointToLayer={(tileset) => pointToTileset(tileset)}
                 type={ListItemType.Radio}
                 sublayers={sublayers}
                 onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
