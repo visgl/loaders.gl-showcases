@@ -15,12 +15,12 @@ import PlusIcon from "../../../public/icons/plus.svg";
 import ConfirmationIcon from "../../../public/icons/confirmation.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
-import DUMMY_BOOKMARK from "../../../public/icons/dummy-bookmark.png";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
 import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
+import { Bookmark } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 
@@ -158,25 +158,21 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 
 type BookmarksPanelProps = {
   id: string;
+  bookmarks: Bookmark[];
   onClose: () => void;
+  onAddBookmark: () => void;
+  onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
 };
-
-const DUMMY_BOOKMARKS = [
-  { id: "1", url: DUMMY_BOOKMARK },
-  { id: "2", url: DUMMY_BOOKMARK },
-  { id: "3", url: DUMMY_BOOKMARK },
-  { id: "4", url: DUMMY_BOOKMARK },
-  { id: "5", url: DUMMY_BOOKMARK },
-  { id: "6", url: DUMMY_BOOKMARK },
-  { id: "7", url: DUMMY_BOOKMARK },
-];
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
 
 export const BookmarksPanel = ({
   id,
+  bookmarks,
   onClose,
+  onAddBookmark,
+  onSelectBookmark,
   onCollapsed,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
@@ -301,8 +297,6 @@ export const BookmarksPanel = ({
     );
   };
 
-  console.log(popoverType);
-
   return (
     <>
       <Container id={id} layout={layout}>
@@ -324,14 +318,18 @@ export const BookmarksPanel = ({
             <BookmarkInnerButton
               disabled={disableAddButton}
               blurButton={disableAddButton}
-              onInnerClick={() => console.log("not implemented yet")}
+              onInnerClick={onAddBookmark}
             >
               <PlusIcon fill={theme.colors.buttonIconColor} />
             </BookmarkInnerButton>
           </ButtonWrapper>
 
-          {DUMMY_BOOKMARKS.length > 0 ? (
-            <Slider bookmarks={DUMMY_BOOKMARKS} editingMode={editingMode} />
+          {bookmarks.length > 0 ? (
+            <Slider
+              bookmarks={bookmarks}
+              editingMode={editingMode}
+              onSelectBookmark={onSelectBookmark}
+            />
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}
