@@ -163,6 +163,7 @@ type BookmarksPanelProps = {
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
+  onDownloadBookmarks: () => void;
 };
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
@@ -174,6 +175,7 @@ export const BookmarksPanel = ({
   onAddBookmark,
   onSelectBookmark,
   onCollapsed,
+  onDownloadBookmarks,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
@@ -246,6 +248,7 @@ export const BookmarksPanel = ({
         <BookmarkOptionsMenu
           onEditBookmark={onEditBookmark}
           onClearBookmarks={onClearBookmarks}
+          onDownloadBookmarks={onDownloadBookmarks}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
         />

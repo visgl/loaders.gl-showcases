@@ -208,6 +208,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const downloadJsonFile = (data: {[key: string]: any}, fileName: string) => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = fileName;
+
+    link.click();
+  }
+
   const downloadClickHandler = () => {
     const data = {
       viewState: viewState.main,
@@ -222,15 +233,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         },
       ],
     };
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(data)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = "comparison-stats.json";
-
-    link.click();
+    downloadJsonFile(data, "comparison-stats.json");
   };
+
+  const onDownloadBookmarksHandler = () => {
+    downloadJsonFile(bookmarks, "bookmarks.json");
+  }
 
   const disableButtonHandlerLeft = () => {
     setDisableButton((prevValue) => [true, prevValue[1]]);
@@ -361,6 +369,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
+          onDownloadBookmarks={onDownloadBookmarksHandler}
         />
       )}
 

@@ -17,6 +17,7 @@ import { Layout } from "../../utils/enums";
 type BookmarkOptionsMenuProps = {
   onEditBookmark: () => void;
   onClearBookmarks: () => void;
+  onDownloadBookmarks: () => void;
   onUploadBookmarks: () => void;
   onCollapsed: () => void;
 };
@@ -24,6 +25,7 @@ type BookmarkOptionsMenuProps = {
 export const BookmarkOptionsMenu = ({
   onEditBookmark,
   onClearBookmarks,
+  onDownloadBookmarks,
   onUploadBookmarks,
   onCollapsed,
 }: BookmarkOptionsMenuProps) => {
@@ -39,7 +41,7 @@ export const BookmarkOptionsMenu = ({
         Edit Bookmark
       </MenuItem>
 
-      <MenuItem>
+      <MenuItem onClick={onDownloadBookmarks}>
         <MenuSettingsIcon>
           <DownloadBookmarkIcon fill={theme.colors.fontColor} />
         </MenuSettingsIcon>
