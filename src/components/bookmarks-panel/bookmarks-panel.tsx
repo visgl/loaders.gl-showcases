@@ -213,7 +213,7 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
   }, []);
 
-  const onClearBookmarksClick = () => {
+  const onClearBookmarksClickHandler = () => {
     if (!isDesktop) {
       setPopoverType(PopoverType.clearBookmarks);
     }
@@ -254,7 +254,7 @@ export const BookmarksPanel = ({
         <BookmarkOptionsMenu
           showDeleteBookmarksOption={bookmarks.length > 0}
           onEditBookmark={onEditBookmark}
-          onClearBookmarks={onClearBookmarksClick}
+          onClearBookmarks={onClearBookmarksClickHandler}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
         />
