@@ -15,6 +15,7 @@ import { useAppLayout } from "../../utils/layout";
 import { Layout } from "../../utils/enums";
 
 type BookmarkOptionsMenuProps = {
+  showDeleteBookmarksOption: boolean;
   onEditBookmark: () => void;
   onClearBookmarks: () => void;
   onUploadBookmarks: () => void;
@@ -22,6 +23,7 @@ type BookmarkOptionsMenuProps = {
 };
 
 export const BookmarkOptionsMenu = ({
+  showDeleteBookmarksOption,
   onEditBookmark,
   onClearBookmarks,
   onUploadBookmarks,
@@ -61,18 +63,21 @@ export const BookmarkOptionsMenu = ({
           Collapse panel
         </MenuItem>
       )}
-
-      <MenuDevider />
-      <MenuItem
-        customColor={color_accent_primary}
-        opacity={0.8}
-        onClick={onClearBookmarks}
-      >
-        <MenuSettingsIcon>
-          <DeleteIcon fill={color_accent_primary} />
-        </MenuSettingsIcon>
-        Clear bookmarks
-      </MenuItem>
+      {showDeleteBookmarksOption && (
+        <>
+          <MenuDevider />
+          <MenuItem
+            customColor={color_accent_primary}
+            opacity={0.8}
+            onClick={onClearBookmarks}
+          >
+            <MenuSettingsIcon>
+              <DeleteIcon fill={color_accent_primary} />
+            </MenuSettingsIcon>
+            Clear bookmarks
+          </MenuItem>
+        </>
+      )}
     </MenuContainer>
   );
 };
