@@ -2,8 +2,8 @@ import { SyntheticEvent } from "react";
 import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
 import { ExpandState } from "../../../../types";
-import { color_brand_quaternary } from "../../../../constants/colors";
 import { ExpandIcon } from "../../../expand-icon/expand-icon";
+import {OptionsIcon, Panels} from '../../common'
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -57,31 +57,6 @@ const OptionsButton = styled.div`
   justify-content: center;
 `;
 
-const OptionsIcon = styled.div`
-  position: relative;
-  width: 4px;
-  height: 4px;
-  background-color: ${color_brand_quaternary};
-  border-radius: 50%;
-  margin-bottom: 12px;
-  &:before,
-  &:after {
-    content: "";
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    left: 0px;
-    background-color: ${color_brand_quaternary};
-    border-radius: inherit;
-  }
-  &:before {
-    top: 6px;
-  }
-  &:after {
-    top: 12px;
-  }
-`;
-
 export const ListItemWrapper = ({
   children,
   id,
@@ -120,7 +95,7 @@ export const ListItemWrapper = ({
               onOptionsClick(id);
             }}
           >
-            <OptionsIcon />
+            <OptionsIcon panel={Panels.Layers}/>
           </OptionsButton>
         </Popover>
       )}

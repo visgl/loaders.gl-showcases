@@ -65,7 +65,7 @@ describe("Main tools panel Across Layers mode", () => {
     const panel = await page.$("#left-tools-panel");
     const panelChildren = await panel.$$(":scope > *");
 
-    expect(panelChildren.length).toEqual(2);
+    expect(panelChildren.length).toEqual(3);
   });
 
   it("Right panel should be present", async () => {
@@ -75,7 +75,7 @@ describe("Main tools panel Across Layers mode", () => {
     const panel = await page.$("#right-tools-panel");
     const panelChildren = await panel.$$(":scope > *");
 
-    expect(panelChildren.length).toEqual(2);
+    expect(panelChildren.length).toEqual(3);
   });
 });
 
@@ -102,7 +102,7 @@ describe("Main tools panel Within Layer mode", () => {
     const panel = await page.$("#left-tools-panel");
     const panelChildren = await panel.$$(":scope > *");
 
-    expect(panelChildren.length).toEqual(3);
+    expect(panelChildren.length).toEqual(4);
   });
 
   it("Right panel should be present", async () => {
@@ -112,7 +112,7 @@ describe("Main tools panel Within Layer mode", () => {
     const panel = await page.$("#right-tools-panel");
     const panelChildren = await panel.$$(":scope > *");
 
-    expect(panelChildren.length).toEqual(2);
+    expect(panelChildren.length).toEqual(3);
   });
 });
 

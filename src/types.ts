@@ -29,13 +29,14 @@ export enum ComparisonMode {
 
 export enum ListItemType {
   Radio,
-  Checkbox
+  Checkbox,
 }
 
 export enum ActiveButton {
   options,
   settings,
   memory,
+  bookmarks,
   none,
 }
 
@@ -205,4 +206,12 @@ export type LoadOptions = {
     token?: string;
     colorsByAttribute?: ColorsByAttribute | null;
   };
+};
+
+export type Bookmark = {
+  id: string;
+  imageUrl: string;
+  viewState: ViewStateSet;
+  layersLeftSide: LayerExample[];
+  layersRightSide: LayerExample[];
 };
