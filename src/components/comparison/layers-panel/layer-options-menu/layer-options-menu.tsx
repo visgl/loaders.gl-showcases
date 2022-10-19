@@ -1,9 +1,11 @@
+import type { Tileset3D } from "@loaders.gl/tiles";
 import styled, { useTheme } from "styled-components";
 import LocationIcon from "../../../../../public/icons/location.svg";
 import DeleteIcon from "../../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../../public/icons/settings.svg";
 import { color_accent_primary } from "../../../../constants/colors";
 import { ReactEventHandler } from "react";
+import { LayerExample } from "../../../../types";
 
 const Container = styled.div`
   display: flex;
@@ -48,18 +50,18 @@ const Devider = styled.div`
 `;
 
 type LayerOptionsMenuProps = {
-  layerId: string;
+  layer: LayerExample;
+  selected: boolean;
   showLayerSettings: boolean;
-  showDeleteLayer: boolean;
-  onPointToLayerClick: ReactEventHandler;
+  onPointToLayerClick: (tileset?: Tileset3D) => void;
   onLayerSettingsClick: ReactEventHandler;
   onDeleteLayerClick: (id: string) => void;
 };
 
 export const LayerOptionsMenu = ({
-  layerId,
+  layer,
+  selected,
   showLayerSettings,
-  showDeleteLayer,
   onPointToLayerClick,
   onLayerSettingsClick,
   onDeleteLayerClick,
@@ -68,12 +70,20 @@ export const LayerOptionsMenu = ({
 
   const handleDeleteLayer = (event) => {
     event.stopPropagation();
-    onDeleteLayerClick(layerId);
+    onDeleteLayerClick(layer.id);
+  };
+
+  const handlePointToLayer = (event) => {
+    if (selected) {
+      event.stopPropagation();
+    }
+
+    onPointToLayerClick(layer.tileset);
   };
 
   return (
     <Container>
-      <Item onClick={onPointToLayerClick}>
+      <Item onClick={handlePointToLayer}>
         <LayerSettingsIcon>
           <LocationIcon fill={theme.colors.fontColor} />
         </LayerSettingsIcon>
@@ -89,7 +99,7 @@ export const LayerOptionsMenu = ({
         </Item>
       )}
 
-      {showDeleteLayer && (
+      {layer.custom && (
         <>
           <Devider />
           <Item

@@ -1,5 +1,6 @@
+import type { Tileset3D } from "@loaders.gl/tiles";
+
 import { useEffect, useRef, useState } from "react";
-import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
@@ -121,19 +122,21 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset: Tileset3D) => {
-    const { zoom, cartographicCenter } = tileset;
-    const [longitude, latitude] = cartographicCenter || [];
+  const pointToTileset = (tileset?: Tileset3D) => {
+    if (tileset) {
+      const { zoom, cartographicCenter } = tileset;
+      const [longitude, latitude] = cartographicCenter || [];
 
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-        transitionDuration: 1000,
-      },
-    });
+      setViewState({
+        main: {
+          ...viewState.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      });
+    }
   };
 
   const onZoomIn = () => {

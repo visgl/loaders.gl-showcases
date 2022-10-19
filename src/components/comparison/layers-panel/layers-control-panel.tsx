@@ -1,3 +1,5 @@
+import type { Tileset3D } from "@loaders.gl/tiles";
+
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
 
@@ -19,7 +21,7 @@ type LayersControlPanelProps = {
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
-  onPointToLayer: () => void;
+  onPointToLayer: (tileset?: Tileset3D) => void;
   deleteLayer: (id: string) => void;
 };
 
@@ -102,12 +104,12 @@ export const LayersControlPanel = ({
             }
             optionsContent={
               <LayerOptionsMenu
-                layerId={settingsLayerId}
-                showDeleteLayer={Boolean(layer?.custom)}
+                layer={layer}
+                selected={isLayerSelected}
                 showLayerSettings={hasSettings && isLayerSelected}
-                onPointToLayerClick={() => {
+                onPointToLayerClick={(tileset) => {
                   setShowLayerSettings(false);
-                  onPointToLayer();
+                  onPointToLayer(tileset);
                 }}
                 onLayerSettingsClick={onLayerSettingsClick}
                 onDeleteLayerClick={() => {

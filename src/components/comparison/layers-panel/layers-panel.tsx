@@ -1,3 +1,5 @@
+import type { Tileset3D } from "@loaders.gl/tiles";
+
 import { useState } from "react";
 import styled, { css } from "styled-components";
 
@@ -55,7 +57,7 @@ type LayersPanelProps = {
   onLayerDelete: (id: string) => void;
   onUpdateSublayerVisibility: (Sublayer) => void;
   onClose: () => void;
-  onPointToLayer: () => void;
+  onPointToLayer: (tileset?: Tileset3D) => void;
 };
 
 type TabProps = {

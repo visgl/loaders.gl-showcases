@@ -1,5 +1,6 @@
 import { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/dist/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
+import type { Tileset3D } from "@loaders.gl/tiles";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";
 import { ViewState } from "@deck.gl/core";
@@ -124,6 +125,7 @@ export type LayerExample = {
   token?: string;
   custom?: boolean;
   children?: LayerExample[];
+  tileset?: Tileset3D;
 };
 
 export type Sublayer = BuildingSceneSublayer & {
