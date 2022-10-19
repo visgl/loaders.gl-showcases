@@ -26,8 +26,7 @@ const callRender = (renderFunc, props = {}) => {
 describe("BookmarkOptionsMenu", () => {
   it("Should render bookmark options menu", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    const { container, getByText, debug } = callRender(renderWithTheme);
-    debug(container.firstChild);
+    const { container, getByText } = callRender(renderWithTheme);
     expect(container.firstChild).toBeInTheDocument();
     getByText("Edit Bookmark");
     getByText("Download file");

@@ -81,7 +81,7 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
       &:hover {
         opacity: 0.6;
         border: 2px solid
-          ${({ editingMode = false }) =>
+          ${({ editingMode }) =>
             editingMode ? color_canvas_secondary : color_brand_tertiary};
 
         &:nth-child(n) {
