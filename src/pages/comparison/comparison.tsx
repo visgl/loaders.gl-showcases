@@ -311,6 +311,36 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayersRightSide(bookmark.layersRightSide);
   };
 
+  const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
+    setBookmarks((prev) =>
+      prev.filter((bookmark) => bookmark.id !== bookmarkId)
+    );
+  }, []);
+
+  const onEditBookmarkHandler = (bookmarkId: string) => {
+    createComparisonBookmarkThumbnail(
+      "#left-deck-container-wrapper",
+      "#right-deck-container-wrapper"
+    ).then((imageUrl) => {
+      if (!imageUrl) {
+        return;
+      }
+      setBookmarks((prev) =>
+        prev.map((bookmark) =>
+          bookmark.id === bookmarkId
+            ? {
+                ...bookmark,
+                imageUrl,
+                viewState,
+                layersLeftSide,
+                layersRightSide,
+              }
+            : bookmark
+        )
+      );
+    });
+  };
+
   return (
     <Container layout={layout}>
       <ComparisonSide
@@ -362,6 +392,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onClearBookmarks={() => setBookmarks([])}
+          onDeleteBookmark={onDeleteBookmarkHandler}
+          onEditBookmark={onEditBookmarkHandler}
         />
       )}
 

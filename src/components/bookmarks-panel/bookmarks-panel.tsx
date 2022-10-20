@@ -164,6 +164,8 @@ type BookmarksPanelProps = {
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
   onClearBookmarks: () => void;
+  onDeleteBookmark: (id: string) => void;
+  onEditBookmark: (id: string) => void;
 };
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
@@ -176,10 +178,13 @@ export const BookmarksPanel = ({
   onSelectBookmark,
   onCollapsed,
   onClearBookmarks,
+  onDeleteBookmark,
+  onEditBookmark,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
+  const [eitingBookmarkId, setEditingBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -208,7 +213,7 @@ export const BookmarksPanel = ({
     }
   };
 
-  const onEditBookmark = useCallback(() => {
+  const onEditBookmarksClickHandler = useCallback(() => {
     setEditingMode((prev) => !prev);
     setPopoverType(PopoverType.none);
   }, []);
@@ -253,7 +258,7 @@ export const BookmarksPanel = ({
       return (
         <BookmarkOptionsMenu
           showDeleteBookmarksOption={bookmarks.length > 0}
-          onEditBookmark={onEditBookmark}
+          onEditBookmarks={onEditBookmarksClickHandler}
           onClearBookmarks={onClearBookmarksClickHandler}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
@@ -336,8 +341,13 @@ export const BookmarksPanel = ({
           {bookmarks.length > 0 ? (
             <Slider
               bookmarks={bookmarks}
+              editingBookmarkId={eitingBookmarkId}
               editingMode={editingMode}
               onSelectBookmark={onSelectBookmark}
+              onDeleteBookmark={onDeleteBookmark}
+              onEditingBookmark={(bookmarkId) =>
+                setEditingBookmarkId(bookmarkId)
+              }
             />
           ) : (
             <Title>Bookmarks list is empty</Title>
@@ -354,7 +364,11 @@ export const BookmarksPanel = ({
               <ButtonsWrapper>
                 {editingMode && (
                   <BookmarkInnerButton
-                    onInnerClick={() => setEditingMode(false)}
+                    onInnerClick={() => {
+                      onEditBookmark(eitingBookmarkId);
+                      setEditingBookmarkId("");
+                      setEditingMode(false);
+                    }}
                   >
                     <ConfirmationIcon />
                   </BookmarkInnerButton>
