@@ -226,6 +226,13 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (staticLayers) {
+      const newLayers: LayerExample[] = [];
+      for (const layer of staticLayers) {
+        if (!examples.find(({ id }) => id === layer.id)) {
+          newLayers.push(layer);
+        }
+      }
+      setExamples((prev) => [...prev, ...newLayers]);
       setLayers(staticLayers);
     }
   }, [staticLayers]);

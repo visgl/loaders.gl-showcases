@@ -232,6 +232,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     link.click();
   };
 
+  const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+  }
+
   const disableButtonHandlerLeft = () => {
     setDisableButton((prevValue) => [true, prevValue[1]]);
   };
@@ -362,6 +366,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onClearBookmarks={() => setBookmarks([])}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
         />
       )}
 
