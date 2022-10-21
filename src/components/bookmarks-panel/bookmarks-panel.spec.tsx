@@ -88,7 +88,7 @@ describe("BookmarksPanel", () => {
     expect(getAllByRole("button").length).toBe(3);
   });
 
-  it("Should render clear bookmarks dekstop content", () => {
+  it("Should cancel clear bookmarks", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const optionButton = getAllByRole("button")[1];

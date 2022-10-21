@@ -39,7 +39,7 @@ describe("BookmarkInnerButton", () => {
     expect(button).toHaveStyle("height: 144px");
   });
 
-  it("Should have hide the button", () => {
+  it("Should have blur the button", () => {
     const { getByText } = callRender(renderWithTheme, {
       blurButton: true,
     });
