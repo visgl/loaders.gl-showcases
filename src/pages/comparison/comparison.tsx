@@ -280,14 +280,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setShowBookmarksPanel(false);
   }, []);
 
-  const addBookmarkHandler = () => {
-    createComparisonBookmarkThumbnail(
+  const makeScreenshot = async () => {
+    const imageUrl = await createComparisonBookmarkThumbnail(
       "#left-deck-container-wrapper",
       "#right-deck-container-wrapper"
-    ).then((imageUrl) => {
-      if (!imageUrl) {
-        return;
-      }
+    );
+    if (!imageUrl) {
+      throw new Error();
+    }
+    return imageUrl;
+  };
+
+  const addBookmarkHandler = () => {
+    makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
         {
@@ -318,13 +323,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, []);
 
   const onEditBookmarkHandler = (bookmarkId: string) => {
-    createComparisonBookmarkThumbnail(
-      "#left-deck-container-wrapper",
-      "#right-deck-container-wrapper"
-    ).then((imageUrl) => {
-      if (!imageUrl) {
-        return;
-      }
+    makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) =>
         prev.map((bookmark) =>
           bookmark.id === bookmarkId

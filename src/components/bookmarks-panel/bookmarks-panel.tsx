@@ -184,7 +184,8 @@ export const BookmarksPanel = ({
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
-  const [eitingBookmarkId, setEditingBookmarkId] = useState<string>("");
+  const [editingBookmarkId, setEditingBookmarkId] = useState<string>("");
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -233,6 +234,20 @@ export const BookmarksPanel = ({
     onClearBookmarks();
     setClearBookmarksMode(false);
     setPopoverType(PopoverType.none);
+  };
+
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
+
+    if (bookmark) {
+      setSelectedBookmarkId(bookmark.id);
+    }
+
+    if (bookmark && editingMode) {
+      setEditingBookmarkId(bookmark.id);
+    }
+
+    onSelectBookmark(bookmarkId);
   };
 
   const renderPopoverContent = () => {
@@ -341,13 +356,11 @@ export const BookmarksPanel = ({
           {bookmarks.length > 0 ? (
             <Slider
               bookmarks={bookmarks}
-              editingBookmarkId={eitingBookmarkId}
+              editingBookmarkId={editingBookmarkId}
+              selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
-              onSelectBookmark={onSelectBookmark}
               onDeleteBookmark={onDeleteBookmark}
-              onEditingBookmark={(bookmarkId) =>
-                setEditingBookmarkId(bookmarkId)
-              }
+              onSelectBookmark={onSelectBookmarkHandler}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>
@@ -365,7 +378,7 @@ export const BookmarksPanel = ({
                 {editingMode && (
                   <BookmarkInnerButton
                     onInnerClick={() => {
-                      onEditBookmark(eitingBookmarkId);
+                      onEditBookmark(editingBookmarkId);
                       setEditingBookmarkId("");
                       setEditingMode(false);
                     }}
