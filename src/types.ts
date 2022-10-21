@@ -127,7 +127,7 @@ export type LayerExample = {
   children?: LayerExample[];
 };
 
-export type Sublayer = BuildingSceneSublayer & {
+export interface Sublayer extends BuildingSceneSublayer {
   expanded: boolean;
   childNodesCount: number;
   sublayers: Sublayer[];

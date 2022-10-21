@@ -17,6 +17,7 @@ import {
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
+import { ActiveSublayer } from "../../../utils/active-sublayer";
 
 enum Tabs {
   Layers,
@@ -31,7 +32,7 @@ export enum ButtonSize {
 type LayersPanelProps = {
   id: string;
   layers: LayerExample[];
-  sublayers: Sublayer[];
+  sublayers: ActiveSublayer[];
   selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: BaseMap[];
