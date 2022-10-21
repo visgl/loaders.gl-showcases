@@ -62,7 +62,7 @@ describe("Building Explorer", () => {
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("SublayerWidget Mock-0")).toBeInTheDocument();
-    screen.findAllByText("SublayerWidget Mock-1").then(res => expect(res).toBe([]));
+    expect(screen.queryByTestId("SublayerWidget Mock-1")).toBeNull();
     expect(screen.getByText("SublayerWidget Mock-2")).toBeInTheDocument();
   });
 });

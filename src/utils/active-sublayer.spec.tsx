@@ -54,10 +54,10 @@ describe("Active Sublayer", () => {
     expect(activeSublayer.visibility).toBe(false)
   });
 
-  it("onChildVisibilityChange() should update visibility according to children visibility", () => {
+  it("setVisibility() should update subtree visibility", () => {
     const activeSublayer = new ActiveSublayer(parentSublayer, true)
 
-    const changedLeafs = activeSublayer.setVisibilityForSubtreeAndReturnChangedLeafs(false)
+    const changedLeafs = activeSublayer.setVisibility(false)
 
     activeSublayer.sublayers.forEach(leaf => expect(leaf.visibility).toBe(false))
     expect(changedLeafs.length).toBe(2)

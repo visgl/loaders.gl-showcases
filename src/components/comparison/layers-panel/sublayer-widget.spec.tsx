@@ -27,7 +27,7 @@ const callRender = (renderFunc, props: Omit<SublayerWidgetProps, 'onUpdateSublay
   );
 };
 
-describe("Building Explorer", () => {
+describe("Sublayer Widget", () => {
   it("Should render multiple sublayers", () => {
     const { container } = callRender(renderWithTheme, {sublayer: new ActiveSublayer({
       id: 100,

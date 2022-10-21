@@ -19,14 +19,13 @@ export interface SublayerWidgetProps {
     onUpdate?: () => void 
 }
 
-export const SublayerWidget = (props: SublayerWidgetProps) => {
-    const { sublayer, hasParent = false, onUpdateSublayerVisibility, onUpdate } = props;
+export const SublayerWidget = ({ sublayer, hasParent = false, onUpdateSublayerVisibility, onUpdate }: SublayerWidgetProps) => {
     const childLayers = sublayer.sublayers || [];
 
     const [expanded, setExpanded] = useState(false);
 
     const toggleSublayer = () => {
-        const leafsToUpdate = sublayer.setVisibilityForSubtreeAndReturnChangedLeafs(!(sublayer.visibility??false))
+        const leafsToUpdate = sublayer.setVisibility(!(sublayer.visibility??false))
         onUpdate?.()
         leafsToUpdate.forEach(leaf => onUpdateSublayerVisibility(leaf))
     };

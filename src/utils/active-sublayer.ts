@@ -36,10 +36,15 @@ export class ActiveSublayer implements Sublayer {
         return !(this.sublayers?.length > 0)
     }
 
-    setVisibilityForSubtreeAndReturnChangedLeafs = (visibility: boolean): ActiveSublayer[] => {
+    /**
+     * Sets visibility for the whole subtree
+     * @param {boolean} visibility - Visibility to set for subtree
+     * @returns {ActiveSublayer[]} - list of changed leafs
+     */
+    setVisibility = (visibility: boolean): ActiveSublayer[] => {
         this.visibility = visibility;
         if (!this.isLeaf()) {
-            return this.sublayers.reduce((res, sublayer) => res.concat(sublayer.setVisibilityForSubtreeAndReturnChangedLeafs(visibility)), [] as ActiveSublayer[])
+            return this.sublayers.reduce((res, sublayer) => res.concat(sublayer.setVisibility(visibility)), [] as ActiveSublayer[])
         }
         else {
             return [this]
