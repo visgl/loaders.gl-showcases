@@ -30,7 +30,7 @@ export class ActiveSublayer implements Sublayer {
         if (checkVisibility) {
             this.setAllTreeBranchVisibility()
         }
-    };
+    }
     
     isLeaf = (): boolean => {
         return !(this.sublayers?.length > 0)

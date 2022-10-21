@@ -12,30 +12,28 @@ const GroupContainer = styled.div<{ needIndentation: boolean }>`
         `}
 `;
 
-const nop = () => {}
-
 export interface SublayerWidgetProps { 
     sublayer: ActiveSublayer,
     hasParent?: boolean, 
-    onUpdateSublayerVisibility: Function, 
-    onUpdate?: Function 
+    onUpdateSublayerVisibility: (sublayer: ActiveSublayer) => void, 
+    onUpdate?: () => void 
 }
 
 export const SublayerWidget = (props: SublayerWidgetProps) => {
-    const { sublayer, hasParent = false, onUpdateSublayerVisibility, onUpdate = nop } = props;
+    const { sublayer, hasParent = false, onUpdateSublayerVisibility, onUpdate } = props;
     const childLayers = sublayer.sublayers || [];
 
     const [expanded, setExpanded] = useState(false);
 
     const toggleSublayer = () => {
-        const leafsToUpdate = sublayer.setVisibilityForSubtreeAndReturnChangedLeafs(!Boolean(sublayer.visibility))
-        onUpdate()
+        const leafsToUpdate = sublayer.setVisibilityForSubtreeAndReturnChangedLeafs(!(sublayer.visibility??false))
+        onUpdate?.()
         leafsToUpdate.forEach(leaf => onUpdateSublayerVisibility(leaf))
     };
 
     const onChildUpdated = () => {
         sublayer.onChildVisibilityChange()
-        onUpdate()
+        onUpdate?.()
     }
     return (
         <GroupContainer key={sublayer.id} needIndentation={hasParent}>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useAppLayout } from "../../../utils/layout";
-import { LayerExample, ListItemType, Sublayer, BaseMap } from "../../../types";
+import { LayerExample, ListItemType, BaseMap } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";

@@ -2,7 +2,6 @@ import { ReactEventHandler } from "react";
 import styled, { useTheme } from "styled-components";
 
 import ArrowLeftIcon from "../../../../public/icons/arrow-left.svg";
-import { Sublayer } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
 import { HorizontalLine } from "../common";

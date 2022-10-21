@@ -1,18 +1,18 @@
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { BuildingExplorer } from "./building-explorer";
 
 // Mocked Component
-import { ListItem } from "./list-item/list-item";
+import { SublayerWidget } from "./sublayer-widget";
 
-jest.mock("./list-item/list-item");
+jest.mock("./sublayer-widget");
 
-const ListItemMock = ListItem as unknown as jest.Mocked<any>;
+const SublayerWidgetMock = SublayerWidget as unknown as jest.Mocked<any>;
 
 beforeAll(() => {
-  ListItemMock.mockImplementation((props) => (
-    <div>{`ListItem Mock-${props.id}`}</div>
+  SublayerWidgetMock.mockImplementation((props) => (
+    <div>{`SublayerWidget Mock-${props.sublayer.id}`}</div>
   ));
 });
 
@@ -61,49 +61,8 @@ describe("Building Explorer", () => {
     });
 
     expect(container).toBeInTheDocument();
-    expect(screen.getByText("ListItem Mock-0")).toBeInTheDocument();
-    screen.findAllByText("ListItem Mock-1").then(res => expect(res).toBe([]));
-    expect(screen.getByText("ListItem Mock-2")).toBeInTheDocument();
-  });
-
-  it("Should be able to toggle sublayer", () => {
-    const { container } = callRender(renderWithTheme, {
-      sublayers: [
-        {
-          id: 0,
-          expanded: false,
-          name: "first",
-          childNodesCount: 0,
-          layerType: "group" as "group" | "3DObject" | "Point",
-          sublayers: [
-            {
-              id: 1,
-              expanded: true,
-              name: "first-nested",
-              childNodesCount: 0,
-              layerType: "group" as "group" | "3DObject" | "Point",
-              sublayers: [],
-            },
-          ],
-        },
-      ].map(sublayer => new ActiveSublayer(sublayer)),
-    });
-
-    expect(container).toBeInTheDocument();
-    expect(screen.getByText("ListItem Mock-0")).toBeInTheDocument();
-    expect(
-      screen.queryByText("ListItem Mock-1")
-    ).not.toBeInTheDocument();
-
-    const { onChange, onExpandClick } = ListItemMock.mock.lastCall[0];
-
-    act(() => {
-      onExpandClick();
-    });
-
-    act(() => {
-      onChange();
-    });
-    expect(onUpdateSublayerVisibilityMock).toHaveBeenCalled();
+    expect(screen.getByText("SublayerWidget Mock-0")).toBeInTheDocument();
+    screen.findAllByText("SublayerWidget Mock-1").then(res => expect(res).toBe([]));
+    expect(screen.getByText("SublayerWidget Mock-2")).toBeInTheDocument();
   });
 });
