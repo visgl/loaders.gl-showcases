@@ -25,6 +25,7 @@ type BookmarkListProps = {
   deleting: boolean;
   selected: boolean;
   isMobile: boolean;
+  editing: boolean;
 };
 
 const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
@@ -75,6 +76,12 @@ const BookmarkListItem = styled.div.attrs<TranslateProps>(({ moveWidth }) => ({
       border: 2px solid ${color_canvas_secondary};
     `}
 
+    ${({ editing }) =>
+    editing &&
+    css`
+      border: 2px solid ${color_canvas_secondary};
+    `}
+
     ${({ isMobile }) =>
     !isMobile &&
     css<BookmarkListProps>`
@@ -110,8 +117,10 @@ type BookmarksListItemProps = {
   selected: boolean;
   url: string;
   editingMode: boolean;
+  editingSelected: boolean;
   moveWidth: number;
   onSelectBookmark: () => void;
+  onDeleteBookmark: () => void;
 };
 
 const confirmText = "Are you sure you  want to delete the bookmark?";
@@ -121,7 +130,9 @@ export const BookmarksListItem = ({
   url,
   editingMode,
   moveWidth,
+  editingSelected,
   onSelectBookmark,
+  onDeleteBookmark,
 }: BookmarksListItemProps) => {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [deleteBookmark, setDeleteBookmark] = useState<boolean>(false);
@@ -139,7 +150,7 @@ export const BookmarksListItem = ({
     setIsHovering(false);
   };
 
-  const onDeleteBookmark = () => {
+  const onDeleteBookmarkClickHandler = () => {
     setDeleteBookmark(true);
   };
 
@@ -155,7 +166,7 @@ export const BookmarksListItem = ({
             <BookmarkInnerButton
               width={32}
               height={32}
-              onInnerClick={() => console.log("not implemented")}
+              onInnerClick={onDeleteBookmark}
             >
               <ConfirmIcon />
             </BookmarkInnerButton>
@@ -172,7 +183,7 @@ export const BookmarksListItem = ({
           <BookmarkInnerButton
             width={32}
             height={32}
-            onInnerClick={onDeleteBookmark}
+            onInnerClick={onDeleteBookmarkClickHandler}
           >
             <TrashIcon />
           </BookmarkInnerButton>
@@ -202,6 +213,7 @@ export const BookmarksListItem = ({
         selected={selected}
         moveWidth={moveWidth}
         deleting={isDeletePanelOpen}
+        editing={editingSelected}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onClick={onSelectBookmark}
@@ -216,7 +228,7 @@ export const BookmarksListItem = ({
         <ConfirmDeletingPanel
           title={confirmText}
           onCancel={() => setIsDeletePanelOpen(false)}
-          onConfirm={() => console.log("not implemented")}
+          onConfirm={onDeleteBookmark}
         />
       )}
     </>
