@@ -184,7 +184,6 @@ export const BookmarksPanel = ({
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
-  const [editingBookmarkId, setEditingBookmarkId] = useState<string>("");
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
@@ -241,10 +240,6 @@ export const BookmarksPanel = ({
 
     if (bookmark) {
       setSelectedBookmarkId(bookmark.id);
-    }
-
-    if (bookmark && editingMode) {
-      setEditingBookmarkId(bookmark.id);
     }
 
     onSelectBookmark(bookmarkId);
@@ -356,7 +351,6 @@ export const BookmarksPanel = ({
           {bookmarks.length > 0 ? (
             <Slider
               bookmarks={bookmarks}
-              editingBookmarkId={editingBookmarkId}
               selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
               onDeleteBookmark={onDeleteBookmark}
@@ -378,8 +372,7 @@ export const BookmarksPanel = ({
                 {editingMode && (
                   <BookmarkInnerButton
                     onInnerClick={() => {
-                      onEditBookmark(editingBookmarkId);
-                      setEditingBookmarkId("");
+                      onEditBookmark(selectedBookmarkId);
                       setEditingMode(false);
                     }}
                   >

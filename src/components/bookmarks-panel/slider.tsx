@@ -46,7 +46,6 @@ const ITEM_GAP = 16;
 type SliderProps = {
   bookmarks: Bookmark[];
   editingMode: boolean;
-  editingBookmarkId: string;
   selectedBookmarkId: string;
   onSelectBookmark: (id: string) => void;
   onDeleteBookmark: (id: string) => void;
@@ -55,7 +54,6 @@ type SliderProps = {
 export const Slider = ({
   bookmarks,
   editingMode,
-  editingBookmarkId,
   selectedBookmarkId,
   onSelectBookmark,
   onDeleteBookmark,
@@ -95,7 +93,7 @@ export const Slider = ({
           const bookmarkSelected =
             bookmark.id === selectedBookmarkId && !editingMode;
           const editingSelected =
-            bookmark.id === editingBookmarkId && editingMode;
+            bookmark.id === selectedBookmarkId && editingMode;
           return (
             <BookmarksListItem
               key={bookmark.id}
