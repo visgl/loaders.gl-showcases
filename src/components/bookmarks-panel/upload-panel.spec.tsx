@@ -24,6 +24,6 @@ describe("UploadPanel", () => {
     getByText(dragAndDropText);
     getByText("or");
     getByText("browse file");
-    expect(fileInteractionContiner.childNodes.length).toBe(3);
+    expect(fileInteractionContiner.childNodes.length).toBe(4);
   });
 });
