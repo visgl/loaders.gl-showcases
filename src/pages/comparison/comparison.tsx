@@ -236,6 +236,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     downloadJsonFile(data, "comparison-stats.json");
   };
 
+  const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+  }
+  
   const onDownloadBookmarksHandler = () => {
     downloadJsonFile(bookmarks, "bookmarks.json");
   }
@@ -400,6 +404,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
           onClearBookmarks={() => setBookmarks([])}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
         />

@@ -1871,6 +1871,49 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@hyperjump/json-pointer@^0.9.2", "@hyperjump/json-pointer@^0.9.4":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@hyperjump/json-pointer/-/json-pointer-0.9.6.tgz#07dac32ccca4f47402a9ca2ffbb580af1211f734"
+  integrity sha512-3szMJLfz+1wtfPHnGi1sHzwFfFdZqIZLCCYtaD47vLZMAQCbtoBRVZn44jJgIQ6v37+8fom5rsxSSIMKWi0zbg==
+  dependencies:
+    just-curry-it "^5.2.1"
+
+"@hyperjump/json-schema-core@^0.28.0":
+  version "0.28.5"
+  resolved "https://registry.yarnpkg.com/@hyperjump/json-schema-core/-/json-schema-core-0.28.5.tgz#21d29ae4e018ef953eded38effbcea5ab084b79b"
+  integrity sha512-+f5P3oHYCQru3s+Ha+E10rIyEvyK0Hfa2oj3+cDoGaVMbT4Jg5TgCoIM7B5rl3t3KRA7EOmrLjKFGeLi5yd1pg==
+  dependencies:
+    "@hyperjump/json" "^0.1.0"
+    "@hyperjump/json-pointer" "^0.9.4"
+    "@hyperjump/pact" "^0.2.3"
+    content-type "^1.0.4"
+    node-fetch "^2.6.5"
+    pubsub-js "^1.9.4"
+    uri-js "^4.4.1"
+
+"@hyperjump/json-schema@^0.23.2":
+  version "0.23.2"
+  resolved "https://registry.yarnpkg.com/@hyperjump/json-schema/-/json-schema-0.23.2.tgz#32e9faa19bd62fe215f0521703345a4e8e35fb3b"
+  integrity sha512-/m5emi8ruTGXxrsy6Pik4ipsjdUZVGePzqwm36oWtEB1DcExHnGheW/BDDBGrGZHdIqFV2PMTIfXjmbg7h8xQQ==
+  dependencies:
+    "@hyperjump/json-schema-core" "^0.28.0"
+    fastest-stable-stringify "^2.0.2"
+
+"@hyperjump/json@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@hyperjump/json/-/json-0.1.0.tgz#77b3e844a8dde70522a64b855b423174ef7a6bb2"
+  integrity sha512-jWsAOHjweWhi0UEBCN57YZzyTt76Z6Fm/OJXOfNBJbEZt569AcTRsjv6Dqj5t4gQhW9td72oquiyaVp9oHbhBQ==
+  dependencies:
+    "@hyperjump/json-pointer" "^0.9.2"
+    moo "^0.5.1"
+
+"@hyperjump/pact@^0.2.3":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@hyperjump/pact/-/pact-0.2.4.tgz#6a78da6af5eff8f55b0c2a2898edb2ff8ab5350b"
+  integrity sha512-BGmyLaUSCMVyHrwXr67rMxgiQHPHwcmVCjROoY8q232EpMz9d9aFCkgGhdx//yEfHM7zgsm0zZ8RD/F89uPySg==
+  dependencies:
+    just-curry-it "^3.1.0"
+
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
@@ -4348,7 +4391,7 @@ content-disposition@0.5.4:
   dependencies:
     safe-buffer "5.2.1"
 
-content-type@~1.0.4:
+content-type@^1.0.4, content-type@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
@@ -5360,6 +5403,11 @@ fastest-levenshtein@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/fastest-levenshtein/-/fastest-levenshtein-1.0.12.tgz#9990f7d3a88cc5a9ffd1f1745745251700d497e2"
   integrity sha512-On2N+BpYJ15xIC974QNVuYGMOlEVt4s0EOI3wwMqOmK1fdDY+FN/zltPV8vosq4ad4c/gJ1KHScUn/6AWIgiow==
+
+fastest-stable-stringify@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/fastest-stable-stringify/-/fastest-stable-stringify-2.0.2.tgz#3757a6774f6ec8de40c4e86ec28ea02417214c76"
+  integrity sha512-bijHueCGd0LqqNK9b5oCMHc0MluJAx0cwqASgbWMvkO01lCYgIhacVRLcaDz3QnyYIRNJRDwMb41VuT6pHJ91Q==
 
 fastq@^1.6.0:
   version "1.13.0"
@@ -6809,6 +6857,16 @@ json5@^2.2.1:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
+just-curry-it@^3.1.0:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/just-curry-it/-/just-curry-it-3.2.1.tgz#7bb18284c8678ed816bfc5c19e44400605fbe461"
+  integrity sha512-Q8206k8pTY7krW32cdmPsP+DqqLgWx/hYPSj9/+7SYqSqz7UuwPbfSe07lQtvuuaVyiSJveXk0E5RydOuWwsEg==
+
+just-curry-it@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/just-curry-it/-/just-curry-it-5.2.1.tgz#93f17967b933e5dd6769ec86eea0eda8f32fce43"
+  integrity sha512-M8qhhO9WVNc3yZgf3qfiNxMIsQlHqFHJ3vMI8N/rkp852h1utOB/N3ebS8jeXGAwYSbkdd0K6zP9eZneUtjHwA==
+
 kdbush@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/kdbush/-/kdbush-3.0.0.tgz#f8484794d47004cc2d85ed3a79353dbe0abc2bf0"
@@ -7197,6 +7255,11 @@ moment-timezone@^0.5.33:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
+moo@^0.5.1:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/moo/-/moo-0.5.2.tgz#f9fe82473bc7c184b0d32e2215d3f6e67278733c"
+  integrity sha512-iSAJLHYKnX41mKcJKjqvnAN9sf0LMDTXDEvFv+ffuRR9a1MIuXLjMNL6EsnDHSkKLTWNqQQ5uo61P4EbU4NU+Q==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -7263,7 +7326,7 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
-node-fetch@2.6.7:
+node-fetch@2.6.7, node-fetch@^2.6.5:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -7752,6 +7815,11 @@ psl@^1.1.33:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.8.0.tgz#9326f8bcfb013adcc005fdff056acce020e51c24"
   integrity sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==
+
+pubsub-js@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.9.4.tgz#5c8678600e34e95b1269e96c17e1b51dab3ecb5a"
+  integrity sha512-hJYpaDvPH4w8ZX/0Fdf9ma1AwRgU353GfbaVfPjfJQf1KxZ2iHaHl3fAUw1qlJIR5dr4F3RzjGaWohYUEyoh7A==
 
 pump@^3.0.0:
   version "3.0.0"
@@ -9084,7 +9152,7 @@ update-check@1.5.2:
     registry-auth-token "3.3.2"
     registry-url "3.1.0"
 
-uri-js@^4.2.2:
+uri-js@^4.2.2, uri-js@^4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/uri-js/-/uri-js-4.4.1.tgz#9b1a52595225859e55f669d928f88c6c57f2a77e"
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==

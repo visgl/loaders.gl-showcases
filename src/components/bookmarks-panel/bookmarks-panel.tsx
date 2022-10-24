@@ -167,6 +167,7 @@ type BookmarksPanelProps = {
   onClearBookmarks: () => void;
   onDeleteBookmark: (id: string) => void;
   onEditBookmark: (id: string) => void;
+  onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
 };
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
@@ -180,6 +181,7 @@ export const BookmarksPanel = ({
   onCollapsed,
   onDownloadBookmarks,
   onClearBookmarks,
+  onBookmarksUploaded,
   onDeleteBookmark,
   onEditBookmark,
 }: BookmarksPanelProps) => {
@@ -237,6 +239,10 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
   };
 
+  const onBookmarksUploadedHandler = (bookmarks) => {
+    setPopoverType(PopoverType.none);
+    onBookmarksUploaded(bookmarks);
+  }
   const onSelectBookmarkHandler = (bookmarkId: string) => {
     const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
 
@@ -262,6 +268,7 @@ export const BookmarksPanel = ({
         <UploadPanel
           onCancel={() => setPopoverType(PopoverType.none)}
           onConfirmWarning={() => console.log("not implemented yet")}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
         />
       );
     }
@@ -272,8 +279,12 @@ export const BookmarksPanel = ({
           showDeleteBookmarksOption={bookmarks.length > 0}
           onEditBookmarks={onEditBookmarksClickHandler}
           onClearBookmarks={onClearBookmarksClickHandler}
+          onUploadBookmarks={() =>
+            setPopoverType(
+              bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
+            )
+          }
           onDownloadBookmarks={onDownloadBookmarks}
-          onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
         />
       );
