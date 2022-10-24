@@ -62,7 +62,7 @@ export const bookmarksSchemaJson: Draft202012Schema = {
         },
         required: ["id", "name", "url"],
       },
-      minItems: 1,
+      minItems: 0,
     },
     ViewState: {
       type: "object",

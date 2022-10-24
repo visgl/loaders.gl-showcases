@@ -3,12 +3,14 @@ import { UploadPanel, dragAndDropText } from "./upload-panel";
 
 const onCancel = jest.fn();
 const onConfirmWarning = jest.fn();
+const onBookmarksUploaded = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <UploadPanel
       onCancel={onCancel}
       onConfirmWarning={onConfirmWarning}
+      onBookmarksUploaded={onBookmarksUploaded}
       {...props}
     />
   );
