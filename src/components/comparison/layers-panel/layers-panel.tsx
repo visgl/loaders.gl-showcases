@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useAppLayout } from "../../../utils/layout";
-import { LayerExample, ListItemType, Sublayer, BaseMap } from "../../../types";
+import { LayerExample, ListItemType, BaseMap } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
@@ -17,6 +17,7 @@ import {
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
+import { ActiveSublayer } from "../../../utils/active-sublayer";
 
 enum Tabs {
   Layers,
@@ -31,7 +32,7 @@ export enum ButtonSize {
 type LayersPanelProps = {
   id: string;
   layers: LayerExample[];
-  sublayers: Sublayer[];
+  sublayers: ActiveSublayer[];
   selectedLayerIds: string[];
   type: ListItemType;
   baseMaps: BaseMap[];

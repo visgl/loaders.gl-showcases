@@ -2,10 +2,10 @@ import { ReactEventHandler } from "react";
 import styled, { useTheme } from "styled-components";
 
 import ArrowLeftIcon from "../../../../public/icons/arrow-left.svg";
-import { Sublayer } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
 import { HorizontalLine } from "../common";
+import { ActiveSublayer } from "../../../utils/active-sublayer";
 
 const Container = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ export const LayerSettingsPanel = ({
   onBackClick,
   onCloseClick,
 }: {
-  sublayers: Sublayer[];
+  sublayers: ActiveSublayer[];
   onUpdateSublayerVisibility: (Sublayer) => void;
   onBackClick: ReactEventHandler;
   onCloseClick: ReactEventHandler;
