@@ -163,6 +163,7 @@ type BookmarksPanelProps = {
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
+  onDownloadBookmarks: () => void;
   onClearBookmarks: () => void;
   onDeleteBookmark: (id: string) => void;
   onEditBookmark: (id: string) => void;
@@ -177,6 +178,7 @@ export const BookmarksPanel = ({
   onAddBookmark,
   onSelectBookmark,
   onCollapsed,
+  onDownloadBookmarks,
   onClearBookmarks,
   onDeleteBookmark,
   onEditBookmark,
@@ -270,6 +272,7 @@ export const BookmarksPanel = ({
           showDeleteBookmarksOption={bookmarks.length > 0}
           onEditBookmarks={onEditBookmarksClickHandler}
           onClearBookmarks={onClearBookmarksClickHandler}
+          onDownloadBookmarks={onDownloadBookmarks}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
         />

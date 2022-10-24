@@ -18,6 +18,7 @@ type BookmarkOptionsMenuProps = {
   showDeleteBookmarksOption: boolean;
   onEditBookmarks: () => void;
   onClearBookmarks: () => void;
+  onDownloadBookmarks: () => void;
   onUploadBookmarks: () => void;
   onCollapsed: () => void;
 };
@@ -26,6 +27,7 @@ export const BookmarkOptionsMenu = ({
   showDeleteBookmarksOption,
   onEditBookmarks,
   onClearBookmarks,
+  onDownloadBookmarks,
   onUploadBookmarks,
   onCollapsed,
 }: BookmarkOptionsMenuProps) => {
@@ -41,7 +43,7 @@ export const BookmarkOptionsMenu = ({
         Edit Bookmark
       </MenuItem>
 
-      <MenuItem>
+      <MenuItem onClick={onDownloadBookmarks}>
         <MenuSettingsIcon>
           <DownloadBookmarkIcon fill={theme.colors.fontColor} />
         </MenuSettingsIcon>

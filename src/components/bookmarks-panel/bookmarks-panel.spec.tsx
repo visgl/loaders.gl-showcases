@@ -39,6 +39,7 @@ const onAddBookmark = jest.fn();
 const onClearBookmarks = jest.fn();
 const onEditBookmark = jest.fn();
 const onDeleteBookmark = jest.fn();
+const onDownloadBookmarks = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -52,6 +53,7 @@ const callRender = (renderFunc, props = {}) => {
       onClearBookmarks={onClearBookmarks}
       onEditBookmark={onEditBookmark}
       onDeleteBookmark={onDeleteBookmark}
+      onDownloadBookmarks={onDownloadBookmarks}
       {...props}
     />
   );
