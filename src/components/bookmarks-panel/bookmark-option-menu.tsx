@@ -16,16 +16,18 @@ import { Layout } from "../../utils/enums";
 
 type BookmarkOptionsMenuProps = {
   showDeleteBookmarksOption: boolean;
-  onEditBookmark: () => void;
+  onEditBookmarks: () => void;
   onClearBookmarks: () => void;
+  onDownloadBookmarks: () => void;
   onUploadBookmarks: () => void;
   onCollapsed: () => void;
 };
 
 export const BookmarkOptionsMenu = ({
   showDeleteBookmarksOption,
-  onEditBookmark,
+  onEditBookmarks,
   onClearBookmarks,
+  onDownloadBookmarks,
   onUploadBookmarks,
   onCollapsed,
 }: BookmarkOptionsMenuProps) => {
@@ -34,14 +36,14 @@ export const BookmarkOptionsMenu = ({
 
   return (
     <MenuContainer>
-      <MenuItem onClick={onEditBookmark}>
+      <MenuItem onClick={onEditBookmarks}>
         <MenuSettingsIcon>
           <EditBookmarkIcon fill={theme.colors.fontColor} />
         </MenuSettingsIcon>
         Edit Bookmark
       </MenuItem>
 
-      <MenuItem>
+      <MenuItem onClick={onDownloadBookmarks}>
         <MenuSettingsIcon>
           <DownloadBookmarkIcon fill={theme.colors.fontColor} />
         </MenuSettingsIcon>

@@ -163,7 +163,10 @@ type BookmarksPanelProps = {
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
+  onDownloadBookmarks: () => void;
   onClearBookmarks: () => void;
+  onDeleteBookmark: (id: string) => void;
+  onEditBookmark: (id: string) => void;
   onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
 };
 
@@ -176,12 +179,16 @@ export const BookmarksPanel = ({
   onAddBookmark,
   onSelectBookmark,
   onCollapsed,
+  onDownloadBookmarks,
   onClearBookmarks,
-  onBookmarksUploaded
+  onBookmarksUploaded,
+  onDeleteBookmark,
+  onEditBookmark,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -210,7 +217,7 @@ export const BookmarksPanel = ({
     }
   };
 
-  const onEditBookmark = useCallback(() => {
+  const onEditBookmarksClickHandler = useCallback(() => {
     setEditingMode((prev) => !prev);
     setPopoverType(PopoverType.none);
   }, []);
@@ -236,6 +243,15 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
     onBookmarksUploaded(bookmarks);
   }
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
+
+    if (bookmark) {
+      setSelectedBookmarkId(bookmark.id);
+    }
+
+    onSelectBookmark(bookmarkId);
+  };
 
   const renderPopoverContent = () => {
     if (popoverType === PopoverType.uploadWarning) {
@@ -261,13 +277,14 @@ export const BookmarksPanel = ({
       return (
         <BookmarkOptionsMenu
           showDeleteBookmarksOption={bookmarks.length > 0}
-          onEditBookmark={onEditBookmark}
+          onEditBookmarks={onEditBookmarksClickHandler}
           onClearBookmarks={onClearBookmarksClickHandler}
           onUploadBookmarks={() =>
             setPopoverType(
               bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
             )
           }
+          onDownloadBookmarks={onDownloadBookmarks}
           onCollapsed={onCollapsed}
         />
       );
@@ -348,8 +365,10 @@ export const BookmarksPanel = ({
           {bookmarks.length > 0 ? (
             <Slider
               bookmarks={bookmarks}
+              selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
-              onSelectBookmark={onSelectBookmark}
+              onDeleteBookmark={onDeleteBookmark}
+              onSelectBookmark={onSelectBookmarkHandler}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>
@@ -366,7 +385,10 @@ export const BookmarksPanel = ({
               <ButtonsWrapper>
                 {editingMode && (
                   <BookmarkInnerButton
-                    onInnerClick={() => setEditingMode(false)}
+                    onInnerClick={() => {
+                      onEditBookmark(selectedBookmarkId);
+                      setEditingMode(false);
+                    }}
                   >
                     <ConfirmationIcon />
                   </BookmarkInnerButton>
