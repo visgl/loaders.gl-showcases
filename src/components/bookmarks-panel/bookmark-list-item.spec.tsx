@@ -8,6 +8,7 @@ jest.mock("../../utils/layout");
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
 const onSelectBookmark = jest.fn();
+const onDeleteBookmark = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -15,8 +16,10 @@ const callRender = (renderFunc, props = {}) => {
       selected={false}
       url={"screenshot"}
       editingMode={false}
+      editingSelected={false}
       moveWidth={144}
       onSelectBookmark={onSelectBookmark}
+      onDeleteBookmark={onDeleteBookmark}
       {...props}
     />
   );
@@ -37,6 +40,15 @@ describe("BookmarksListItem", () => {
     const { container } = callRender(renderWithTheme, { selected: true });
     const listItem = container.firstChild;
     expect(listItem).toHaveStyle("border: 2px solid #605DEC");
+  });
+
+  it("Should select bookmark for editing", () => {
+    useAppLayoutMock.mockImplementation(() => "desktop");
+    const { container } = callRender(renderWithTheme, {
+      editingSelected: true,
+    });
+    const listItem = container.firstChild;
+    expect(listItem).toHaveStyle("border: 2px solid #FBFCFE");
   });
 
   it("Should render mobile content", () => {
@@ -77,12 +89,11 @@ describe("BookmarksListItem", () => {
     const { container, getByText } = callRender(renderWithTheme, {
       editingMode: true,
     });
-    const logSpy = jest.spyOn(console, "log");
     const listItem = container.firstChild;
     userEvent.click(listItem.firstChild);
     const confrimButton = getByText("Yes, Delete");
     userEvent.click(confrimButton);
-    expect(logSpy).toHaveBeenCalledWith("not implemented");
+    expect(onDeleteBookmark).toHaveBeenCalled();
   });
 
   it("Should render desktop content", () => {
@@ -102,14 +113,13 @@ describe("BookmarksListItem", () => {
     const { container } = callRender(renderWithTheme, {
       editingMode: true,
     });
-    const logSpy = jest.spyOn(console, "log");
 
     const listItem = container.firstChild;
     userEvent.hover(listItem);
     userEvent.click(listItem.firstChild);
     expect(listItem.childNodes.length).toBe(2);
     userEvent.click(listItem.firstChild);
-    expect(logSpy).toHaveBeenCalledWith("not implemented");
+    expect(onDeleteBookmark).toHaveBeenCalled();
     userEvent.click(listItem.lastChild);
     expect(listItem.childNodes.length).toBe(1);
   });

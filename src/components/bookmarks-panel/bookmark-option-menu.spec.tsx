@@ -6,7 +6,7 @@ jest.mock("../../utils/layout");
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
-const onEditBookmark = jest.fn();
+const onEditBookmarks = jest.fn();
 const onClearBookmarks = jest.fn();
 const onUploadBookmarks = jest.fn();
 const onCollapsed = jest.fn();
@@ -15,7 +15,7 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <BookmarkOptionsMenu
       showDeleteBookmarksOption={true}
-      onEditBookmark={onEditBookmark}
+      onEditBookmarks={onEditBookmarks}
       onClearBookmarks={onClearBookmarks}
       onUploadBookmarks={onUploadBookmarks}
       onCollapsed={onCollapsed}

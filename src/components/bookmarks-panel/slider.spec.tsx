@@ -27,13 +27,16 @@ const TEST_BOOKMARKS = [
 ];
 
 const onSelectBookmark = jest.fn();
+const onDeleteBookmark = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <Slider
+      selectedBookmarkId=""
       bookmarks={TEST_BOOKMARKS}
       editingMode={false}
       onSelectBookmark={onSelectBookmark}
+      onDeleteBookmark={onDeleteBookmark}
       {...props}
     />
   );
