@@ -14,6 +14,7 @@ const onCollapsed = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <BookmarkOptionsMenu
+      showDeleteBookmarksOption={true}
       onEditBookmark={onEditBookmark}
       onClearBookmarks={onClearBookmarks}
       onUploadBookmarks={onUploadBookmarks}
@@ -32,11 +33,20 @@ describe("BookmarkOptionsMenu", () => {
     getByText("Download file");
     getByText("Upload bookmarks");
     getByText("Clear bookmarks");
+    expect(container.firstChild.childNodes.length).toBe(5);
   });
 
   it("Should render collapse panel", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getByText } = callRender(renderWithTheme);
     expect(getByText("Collapse panel")).toBeInTheDocument();
+  });
+
+  it("Should not render clear all bookmarks option", () => {
+    useAppLayoutMock.mockImplementation(() => "desktop");
+    const { container } = callRender(renderWithTheme, {
+      showDeleteBookmarksOption: false,
+    });
+    expect(container.firstChild.childNodes.length).toBe(3);
   });
 });

@@ -36,6 +36,7 @@ const onSelectBookmark = jest.fn();
 const onClose = jest.fn();
 const onCollapsed = jest.fn();
 const onAddBookmark = jest.fn();
+const onClearBookmarks = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -46,6 +47,7 @@ const callRender = (renderFunc, props = {}) => {
       onClose={onClose}
       onCollapsed={onCollapsed}
       onAddBookmark={onAddBookmark}
+      onClearBookmarks={onClearBookmarks}
       {...props}
     />
   );
