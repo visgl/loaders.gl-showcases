@@ -163,6 +163,7 @@ type BookmarksPanelProps = {
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
+  onClearBookmarks: () => void;
 };
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
@@ -174,6 +175,7 @@ export const BookmarksPanel = ({
   onAddBookmark,
   onSelectBookmark,
   onCollapsed,
+  onClearBookmarks,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
@@ -211,7 +213,7 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
   }, []);
 
-  const onClearBookmarks = () => {
+  const onClearBookmarksClickHandler = () => {
     if (!isDesktop) {
       setPopoverType(PopoverType.clearBookmarks);
     }
@@ -220,6 +222,12 @@ export const BookmarksPanel = ({
       setPopoverType(PopoverType.none);
     }
     setClearBookmarksMode((prev) => !prev);
+  };
+
+  const onClearBookmarksHandler = () => {
+    onClearBookmarks();
+    setClearBookmarksMode(false);
+    setPopoverType(PopoverType.none);
   };
 
   const renderPopoverContent = () => {
@@ -244,8 +252,9 @@ export const BookmarksPanel = ({
     if (popoverType === PopoverType.options) {
       return (
         <BookmarkOptionsMenu
+          showDeleteBookmarksOption={bookmarks.length > 0}
           onEditBookmark={onEditBookmark}
-          onClearBookmarks={onClearBookmarks}
+          onClearBookmarks={onClearBookmarksClickHandler}
           onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
           onCollapsed={onCollapsed}
         />
@@ -260,7 +269,7 @@ export const BookmarksPanel = ({
             setClearBookmarksMode(false);
             setPopoverType(PopoverType.none);
           }}
-          onConfirm={() => console.log("not implemented yet")}
+          onConfirm={() => onClearBookmarksHandler()}
         />
       );
     }
@@ -275,7 +284,7 @@ export const BookmarksPanel = ({
           <BookmarkInnerButton
             width={32}
             height={32}
-            onInnerClick={() => console.log("not implemented yet")}
+            onInnerClick={() => onClearBookmarksHandler()}
           >
             <ConfirmIcon />
           </BookmarkInnerButton>
