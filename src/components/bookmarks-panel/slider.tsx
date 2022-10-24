@@ -46,18 +46,19 @@ const ITEM_GAP = 16;
 type SliderProps = {
   bookmarks: Bookmark[];
   editingMode: boolean;
+  selectedBookmarkId: string;
   onSelectBookmark: (id: string) => void;
+  onDeleteBookmark: (id: string) => void;
 };
 
 export const Slider = ({
   bookmarks,
   editingMode,
+  selectedBookmarkId,
   onSelectBookmark,
+  onDeleteBookmark,
 }: SliderProps) => {
   const [position, setPosition] = useState<number>(0);
-  const [selectedBookmark, setSelectedBookmark] = useState<null | Bookmark>(
-    null
-  );
 
   const layout = useAppLayout();
 
@@ -82,15 +83,6 @@ export const Slider = ({
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
-
-    if (bookmark) {
-      setSelectedBookmark(bookmark);
-    }
-    onSelectBookmark(bookmarkId);
-  };
-
   return (
     <>
       <ArrowIconLeft layout={layout} onClick={handleLeftArrowClick}>
@@ -99,15 +91,19 @@ export const Slider = ({
       <BookmarksList layout={layout}>
         {bookmarks.map((bookmark) => {
           const bookmarkSelected =
-            bookmark.id === selectedBookmark?.id && !editingMode;
+            bookmark.id === selectedBookmarkId && !editingMode;
+          const editingSelected =
+            bookmark.id === selectedBookmarkId && editingMode;
           return (
             <BookmarksListItem
               key={bookmark.id}
               selected={bookmarkSelected}
+              editingSelected={editingSelected}
               url={bookmark.imageUrl}
               editingMode={editingMode}
               moveWidth={position}
-              onSelectBookmark={() => onSelectBookmarkHandler(bookmark.id)}
+              onSelectBookmark={() => onSelectBookmark(bookmark.id)}
+              onDeleteBookmark={() => onDeleteBookmark(bookmark.id)}
             />
           );
         })}

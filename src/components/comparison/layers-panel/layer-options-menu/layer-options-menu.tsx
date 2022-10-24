@@ -35,6 +35,11 @@ export const LayerOptionsMenu = ({
     onDeleteLayerClick(layerId);
   };
 
+  const handleShowLayerSettings = (event) => {
+    event.stopPropagation();
+    onLayerSettingsClick(event);
+  };
+
   return (
     <MenuContainer>
       <MenuItem onClick={onPointToLayerClick}>
@@ -45,7 +50,7 @@ export const LayerOptionsMenu = ({
       </MenuItem>
 
       {showLayerSettings && (
-        <MenuItem onClick={onLayerSettingsClick}>
+        <MenuItem onClick={handleShowLayerSettings}>
           <MenuSettingsIcon>
             <SettingsIcon fill={theme.colors.fontColor} />
           </MenuSettingsIcon>
