@@ -146,11 +146,13 @@ describe("ComparisonSide", () => {
 
   it("Should handle staticLayers", () => {
     callRender(renderWithTheme, {
-      staticLayers: [{
-        id: "static-layer-id",
-        name: "static-layer",
-        url: "https://static.layer.url",
-      }],
+      staticLayers: [
+        {
+          id: "static-layer-id",
+          name: "static-layer",
+          url: "https://static.layer.url",
+        },
+      ],
     });
     expect(loadMock.mock.calls.length).toBe(1);
   });
@@ -246,14 +248,15 @@ describe("ComparisonSide", () => {
       callRender(renderWithTheme);
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() => onLayerSelect("new-york"));
-      const layerUrl = parseTilesetUrlParamsMock.mock.lastCall[0];
-      expect(layerUrl).toBe(
-        "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0"
+      act(() =>
+        onLayerSelect({
+          id: "test",
+          name: "new-york",
+          url: "https://new-york.test",
+        })
       );
-      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
-
-      act(() => onLayerSelect("unknown-id"));
+      const layerUrl = parseTilesetUrlParamsMock.mock.lastCall[0];
+      expect(layerUrl).toBe("https://new-york.test");
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
