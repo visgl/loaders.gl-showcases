@@ -1,4 +1,5 @@
 import type { Tileset3D } from "@loaders.gl/tiles";
+import type { OperationalLayer } from "@loaders.gl/i3s/src/types";
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
@@ -53,7 +54,7 @@ type LayersPanelProps = {
   selectBaseMap: (id: string) => void;
   deleteBaseMap: (id: string) => void;
   onLayerInsert: (layer: LayerExample) => void;
-  onLayerSelect: (id: string, parentId?: string) => void;
+  onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
   onUpdateSublayerVisibility: (Sublayer) => void;
   onClose: () => void;
@@ -205,6 +206,28 @@ export const LayersPanel = ({
     setShowLayerInsertPanel(false);
   };
 
+  const prepareLayerExamples = (layers: OperationalLayer[]): LayerExample[] => {
+    const layersList: LayerExample[] = [];
+
+    for (let index = 0; index < layers.length; index++) {
+      const layer = layers[index];
+
+      const layerItem: LayerExample = {
+        id: layer.id,
+        name: layer.title,
+        url: layer.url || "",
+      };
+
+      if (layer?.layers?.length) {
+        layerItem.layers = prepareLayerExamples(layer?.layers);
+      }
+
+      layersList.push(layerItem);
+    }
+
+    return layersList;
+  };
+
   // TODO Add loader to show webscene loading
   const handleInsertScene = async (scene: {
     name: string;
@@ -223,17 +246,13 @@ export const LayersPanel = ({
 
     try {
       const webScene = await load(scene.url, ArcGisWebSceneLoader);
-      const children = webScene.layers.map((child) => ({
-        id: child.id,
-        name: child.title,
-        url: child.url,
-      }));
+      const layers = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
         ...scene,
         id: scene.url,
         custom: true,
-        children,
+        layers,
       };
 
       // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
@@ -246,11 +265,13 @@ export const LayersPanel = ({
             setShowNoSupportedLayersInSceneError(true);
             break;
           }
-
           case "NOT_SUPPORTED_CRS_ERROR": {
             setShowSceneInsertPanel(false);
             setShowNoSupportedCRSInSceneError(true);
             break;
+          }
+          default: {
+            console.error(error.message);
           }
         }
       }

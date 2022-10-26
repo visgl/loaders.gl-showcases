@@ -125,7 +125,7 @@ export type LayerExample = {
   url: string;
   token?: string;
   custom?: boolean;
-  children?: LayerExample[];
+  layers?: LayerExample[];
   tileset?: Tileset3D;
 };
 

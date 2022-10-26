@@ -4,6 +4,10 @@ export const parseTilesetFromUrl = () => {
 };
 
 export const parseTilesetUrlParams = (url, options) => {
+  if (!url) {
+    return { ...options, tilesetUrl: '', token: '', metadataUrl: '' }
+  }
+
   const parsedUrl = new URL(url);
   let token = options && options.token;
   const tilesetUrl = prepareTilesetUrl(parsedUrl);

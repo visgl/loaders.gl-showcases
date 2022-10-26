@@ -33,12 +33,6 @@ import {
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 
-enum LayerType {
-  parent,
-  child,
-  single,
-}
-
 type LayoutProps = {
   layout: string;
 };
@@ -203,7 +197,7 @@ export const ComparisonSide = ({
     ActiveButton.none
   );
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
-  const [layers, setLayers] = useState<LayerExample[]>([]);
+  const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
@@ -221,12 +215,12 @@ export const ComparisonSide = ({
     }
     setIsCompressedGeometry(true);
     setIsCompressedTextures(true);
-    setLayers([]);
+    setActiveLayers([]);
   }, [mode]);
 
   useEffect(() => {
     if (staticLayers) {
-      setLayers(staticLayers);
+      setActiveLayers(staticLayers);
     }
   }, [staticLayers]);
 
@@ -244,7 +238,7 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     fetchSublayersCounter.current++;
-    if (!layers.length || !loadTileset) {
+    if (!activeLayers.length || !loadTileset) {
       setFlattenedSublayers([]);
       return;
     }
@@ -280,7 +274,7 @@ export const ComparisonSide = ({
       hasChildren: boolean;
     }[] = [];
 
-    for (const layer of layers) {
+    for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
       const { tilesetUrl, token } = params;
 
@@ -288,14 +282,14 @@ export const ComparisonSide = ({
         id: layer.id,
         url: tilesetUrl,
         token,
-        hasChildren: Boolean(layer.children),
+        hasChildren: Boolean(layer.layers),
       });
     }
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
     disableButtonHandler();
-  }, [layers, loadTileset]);
+  }, [activeLayers, loadTileset]);
 
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
@@ -367,15 +361,30 @@ export const ComparisonSide = ({
         break;
       }
 
-      if (example.children) {
-        example.children = findExampleAndUpdateWithTileset(
+      if (example.layers) {
+        example.layers = findExampleAndUpdateWithTileset(
           tileset,
-          example.children
+          example.layers
         );
       }
     }
 
     return examplesCopy;
+  };
+
+  const flattenLayersTree = (
+    layer: LayerExample,
+    flattened: LayerExample[] = []
+  ): LayerExample[] => {
+    flattened.push(layer);
+
+    if (layer?.layers?.length) {
+      for (const childLayer of layer.layers) {
+        flattenLayersTree(childLayer, flattened);
+      }
+    }
+
+    return flattened;
   };
 
   const onTileLoad = (tile: Tile3D) => {
@@ -406,101 +415,112 @@ export const ComparisonSide = ({
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
     setExamples((prevValues) => [...prevValues, newLayer]);
-    setLayers([newLayer, ...(newLayer.children || [])]);
+    const flattenedLayers = getAllLayersInGroupsTree(newLayer);
+    setActiveLayers(flattenedLayers);
   };
 
-  const onLayerSelectHandler = (layerId: string, parentId?: string) => {
-    const { selectedExample, type } = getSelectedExampleById(layerId);
-
-    let changedLayers: LayerExample[] = [];
-
-    if (selectedExample) {
-      switch (type) {
-        case LayerType.single:
-          setLayers([selectedExample]);
-          changedLayers = [selectedExample];
-
-          break;
-        case LayerType.parent: {
-          const children = selectedExample?.children || [];
-          setLayers([...children, selectedExample]);
-          changedLayers = [...children, selectedExample];
-          break;
-        }
-
-        case LayerType.child: {
-          const isLayerAlreadyInList = layers.some(
-            (layer) => layer.id === layerId
-          );
-
-          if (isLayerAlreadyInList) {
-            const filteredValues = layers.filter(
-              (layer) => layer.id !== layerId
-            );
-            setLayers(filteredValues);
-            changedLayers = filteredValues;
-          } else {
-            const { selectedExample: parentLayer } =
-              getSelectedExampleById(parentId);
-
-            const childrenIds =
-              parentLayer?.children?.map((child) => child.id) || [];
-
-            // Find only layers which have the same current parent.
-            const childrenToSave =
-              layers.filter((layer) => childrenIds?.includes(layer.id)) || [];
-
-            const newLayers = [...childrenToSave, selectedExample];
-
-            if (parentLayer) {
-              newLayers.push(parentLayer);
-            }
-
-            setLayers(newLayers);
-            changedLayers = newLayers;
-          }
-          break;
-        }
+  const getAllLayersInGroupsTree = (
+    layer: LayerExample,
+    leafs: LayerExample[] = []
+  ) => {
+    if (layer?.layers?.length) {
+      for (const childLayer of layer.layers) {
+        leafs = getAllLayersInGroupsTree(childLayer, leafs);
       }
-
-      setPreventTransitions(false);
-      onChangeLayers && changedLayers.length && onChangeLayers(changedLayers);
+    } else {
+      leafs.push(layer);
     }
+
+    return leafs;
   };
 
-  const getSelectedExampleById = (
-    id?: string
-  ): { selectedExample: LayerExample | null; type: LayerType } => {
-    let selectedExample: LayerExample | null = null;
-    let type: LayerType = LayerType.single;
+  const handleSelectGroupLayer = (
+    layer: LayerExample,
+    isMainGroup: boolean,
+    rootLayer?: LayerExample
+  ) => {
+    const activeLayerIdsFromRoot = rootLayer
+      ? getAllLayersInGroupsTree(rootLayer).map((layer) => layer.id)
+      : [];
+    const activeLayersInSelectedGroup = activeLayers.filter((activeLayer) =>
+      activeLayerIdsFromRoot.includes(activeLayer.id)
+    );
+    const layersInGroupsTree = getAllLayersInGroupsTree(layer);
+    const selectedChildrenIds = layersInGroupsTree.map((child) => child.id);
+    const isGroupAlreadySelected = activeLayers.some((activeLayer) =>
+      selectedChildrenIds.includes(activeLayer.id)
+    );
 
-    for (const example of examples) {
-      if (example.id === id) {
-        selectedExample = example;
+    if (isGroupAlreadySelected && !isMainGroup) {
+      return activeLayers.filter(
+        (activeLayer) => !selectedChildrenIds.includes(activeLayer.id)
+      );
+    }
 
-        if (example.children?.length) {
-          type = LayerType.parent;
-        }
+    if (isMainGroup) {
+      return layersInGroupsTree;
+    }
+
+    return [...activeLayersInSelectedGroup, ...layersInGroupsTree];
+  };
+
+  const handleSelectLeafLayer = (
+    layer: LayerExample,
+    rootLayer?: LayerExample
+  ) => {
+    const isLayerAlreadySelected = activeLayers.some(
+      (activeLayer) => activeLayer.id === layer.id
+    );
+
+    if (isLayerAlreadySelected) {
+      return activeLayers.filter((activeLayer) => activeLayer.id !== layer.id);
+    }
+
+    const activeLayerIdsFromRoot = rootLayer
+      ? getAllLayersInGroupsTree(rootLayer).map((layer) => layer.id)
+      : [];
+    const activeLayersInSelectedGroup = activeLayers.filter((activeLayer) =>
+      activeLayerIdsFromRoot.includes(activeLayer.id)
+    );
+
+    return [...activeLayersInSelectedGroup, layer];
+  };
+
+  const onLayerSelectHandler = (
+    layer: LayerExample,
+    rootLayer?: LayerExample
+  ) => {
+    const isGroup = !!layer?.layers?.length;
+    const isUnitLayer = !rootLayer && !isGroup;
+    const isLeaf = rootLayer && !isGroup;
+    const isMainGroup = isGroup && !rootLayer;
+
+    let newActiveLayers: LayerExample[] = [];
+
+    switch (true) {
+      case isUnitLayer:
+        newActiveLayers = [layer];
         break;
-      }
-
-      for (const childExample of example.children || []) {
-        if (childExample.id === id) {
-          selectedExample = childExample;
-          type = LayerType.child;
-          break;
-        }
-      }
+      case isGroup:
+        newActiveLayers = handleSelectGroupLayer(layer, isMainGroup, rootLayer);
+        break;
+      case isLeaf:
+        newActiveLayers = handleSelectLeafLayer(layer, rootLayer);
+        break;
     }
 
-    return { selectedExample, type };
+    setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
+    onChangeLayers && newActiveLayers.length && onChangeLayers(newActiveLayers);
   };
 
   const onLayerDeleteHandler = (id: string) => {
     const idsToDelete = [id];
 
-    const layerToDelete = layers.find((layer) => layer.id === id);
-    const childIds = layerToDelete?.children?.map((child) => child.id) || [];
+    const layerToDelete = activeLayers.find((layer) => layer.id === id);
+    const childIds = layerToDelete
+      ? flattenLayersTree(layerToDelete).map((layer) => layer.id)
+      : [];
 
     if (childIds.length) {
       idsToDelete.push(...childIds);
@@ -509,7 +529,7 @@ export const ComparisonSide = ({
     setExamples((prevValues) =>
       prevValues.filter((example) => example.id !== id)
     );
-    setLayers((prevValues) =>
+    setActiveLayers((prevValues) =>
       prevValues.filter((layer) => !idsToDelete.includes(layer.id))
     );
   };
@@ -531,7 +551,7 @@ export const ComparisonSide = ({
     onViewStateChange(viewStateSet);
   };
 
-  const selectedLayerIds = layers.map((layer) => layer.id);
+  const selectedLayerIds = activeLayers.map((layer) => layer.id);
 
   const ToolsPanelWrapper =
     side === ComparisonSideMode.left
