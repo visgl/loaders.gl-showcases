@@ -13,11 +13,11 @@ const onDeleteBookmark = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <BookmarksListItem
+      id="list-item-test-id"
       selected={false}
       url={"screenshot"}
       editingMode={false}
       editingSelected={false}
-      moveWidth={144}
       onSelectBookmark={onSelectBookmark}
       onDeleteBookmark={onDeleteBookmark}
       {...props}
@@ -31,7 +31,6 @@ describe("BookmarksListItem", () => {
     const { container } = callRender(renderWithTheme);
     const listItem = container.firstChild;
     expect(listItem).toBeInTheDocument();
-    expect(listItem).toHaveStyle("transform: translateX(144px)");
     expect(listItem.childNodes.length).toBe(0);
   });
 
