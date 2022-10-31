@@ -89,6 +89,31 @@ export const LayersControlPanel = ({
     return leafs;
   };
 
+  const isListItemSelected = (
+    layer: LayerExample,
+    parentLayer?: LayerExample
+  ): boolean => {
+    const childLayers = layer.layers || [];
+    const groupLeafs = handleSelectAllLeafsInGroup(layer);
+    let selected = false;
+
+    if (!childLayers.length) {
+      selected = selectedLayerIds.includes(layer.id);
+    }
+
+    if (childLayers.length && !parentLayer) {
+      selected = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id));
+    }
+
+    if (childLayers.length && parentLayer) {
+      selected = !groupLeafs.some(
+        (leaf) => !selectedLayerIds.includes(leaf.id)
+      );
+    }
+
+    return selected;
+  };
+
   const renderLayers = (
     layers: LayerExample[],
     parentLayer?: LayerExample,
@@ -96,12 +121,7 @@ export const LayersControlPanel = ({
   ) => {
     return layers.map((layer: LayerExample) => {
       const childLayers = layer.layers || [];
-      const isLayerSelected = selectedLayerIds.includes(layer.id);
-      const groupLeafs = handleSelectAllLeafsInGroup(layer);
-      const isGroupSelected = groupLeafs.some((leaf) =>
-        selectedLayerIds.includes(leaf.id)
-      );
-      const isSelected = childLayers.length ? isGroupSelected : isLayerSelected;
+      const isSelected = isListItemSelected(layer, parentLayer);
 
       rootLayer = rootLayer || parentLayer;
 
@@ -127,8 +147,8 @@ export const LayersControlPanel = ({
             optionsContent={
               <LayerOptionsMenu
                 layer={layer}
-                selected={isLayerSelected}
-                showLayerSettings={hasSettings && isLayerSelected}
+                selected={isSelected}
+                showLayerSettings={hasSettings && isSelected}
                 onPointToLayerClick={(tileset) => {
                   setShowLayerSettings(false);
                   onPointToLayer(tileset);
