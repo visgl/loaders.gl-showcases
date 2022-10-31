@@ -153,6 +153,7 @@ describe("ComparisonSide", () => {
           url: "https://static.layer.url",
         },
       ],
+      activeLayersIds: ["static-layer-id"],
     });
     expect(loadMock.mock.calls.length).toBe(1);
   });

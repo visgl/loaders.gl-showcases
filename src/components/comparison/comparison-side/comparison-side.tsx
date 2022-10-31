@@ -220,7 +220,7 @@ export const ComparisonSide = ({
     if (staticLayers) {
       const getActiveLayersByIds = (
         staticLayers: LayerExample[],
-        activeIds: string[],
+        activeIds: string[] = [],
         activeLayers: LayerExample[] = []
       ) => {
         for (const layer of staticLayers) {
