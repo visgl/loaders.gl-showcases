@@ -131,6 +131,7 @@ type ComparisonSideProps = {
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
+  activeLayersIds: string[];
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
@@ -139,7 +140,7 @@ type ComparisonSideProps = {
   showBookmarks: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (tileset?: Tileset3D) => void;
-  onChangeLayers?: (layer: LayerExample[]) => void;
+  onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
@@ -162,6 +163,7 @@ export const ComparisonSide = ({
   showLayerOptions,
   showComparisonSettings,
   staticLayers,
+  activeLayersIds,
   compareButtonMode,
   dragMode,
   loadingTime,
@@ -216,14 +218,30 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (staticLayers) {
-      const newLayers: LayerExample[] = [];
-      for (const layer of staticLayers) {
-        if (!examples.find(({ id }) => id === layer.id)) {
-          newLayers.push(layer);
+      const getActiveLayersByIds = (
+        staticLayers: LayerExample[],
+        activeIds: string[],
+        activeLayers: LayerExample[] = []
+      ) => {
+        for (const layer of staticLayers) {
+          if (activeIds.includes(layer.id)) {
+            activeLayers.push(layer);
+          }
+
+          if (layer?.layers?.length) {
+            getActiveLayersByIds(layer?.layers, activeIds, activeLayers);
+          }
         }
-      }
-      setExamples((prev) => [...prev, ...newLayers]);
-      setActiveLayers(staticLayers);
+
+        return activeLayers;
+      };
+
+      const activeLayers = getActiveLayersByIds(staticLayers, activeLayersIds);
+
+      setExamples((prevValues) =>
+        staticLayers.length ? staticLayers : prevValues
+      );
+      setActiveLayers(activeLayers);
     }
   }, [staticLayers]);
 
@@ -491,6 +509,21 @@ export const ComparisonSide = ({
     return [...activeLayersInSelectedGroup, layer];
   };
 
+  const getActiveLayerIds = (
+    layers: LayerExample[],
+    activeLayerIds: string[] = []
+  ) => {
+    for (const layer of layers) {
+      activeLayerIds.push(layer.id);
+
+      if (layer?.layers?.length) {
+        getActiveLayerIds(layer?.layers, activeLayerIds);
+      }
+    }
+
+    return activeLayerIds;
+  };
+
   const onLayerSelectHandler = (
     layer: LayerExample,
     rootLayer?: LayerExample
@@ -516,7 +549,10 @@ export const ComparisonSide = ({
 
     setActiveLayers(newActiveLayers);
     setPreventTransitions(false);
-    onChangeLayers && newActiveLayers.length && onChangeLayers(newActiveLayers);
+    const activeLayersIds = getActiveLayerIds(newActiveLayers);
+    onChangeLayers &&
+      newActiveLayers.length &&
+      onChangeLayers(examples, activeLayersIds);
   };
 
   const onLayerDeleteHandler = (id: string) => {

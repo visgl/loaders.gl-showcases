@@ -214,5 +214,7 @@ export type Bookmark = {
   imageUrl: string;
   viewState: ViewStateSet;
   layersLeftSide: LayerExample[];
+  activeLayersIdsLeftSide: string[];
   layersRightSide: LayerExample[];
+  activeLayersIdsRightSide: string[];
 };
