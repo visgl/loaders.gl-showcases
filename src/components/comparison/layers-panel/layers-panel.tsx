@@ -1,4 +1,3 @@
-import type { Tileset3D } from "@loaders.gl/tiles";
 import type { OperationalLayer } from "@loaders.gl/i3s/src/types";
 
 import { useState } from "react";
@@ -6,7 +5,12 @@ import styled, { css } from "styled-components";
 
 import { load } from "@loaders.gl/core";
 import { useAppLayout } from "../../../utils/layout";
-import { LayerExample, ListItemType, BaseMap } from "../../../types";
+import {
+  LayerExample,
+  ListItemType,
+  BaseMap,
+  LayerViewState,
+} from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
@@ -59,7 +63,7 @@ type LayersPanelProps = {
   onLayerDelete: (id: string) => void;
   onUpdateSublayerVisibility: (Sublayer) => void;
   onClose: () => void;
-  onPointToLayer: (tileset?: Tileset3D) => void;
+  onPointToLayer: (viewState?: LayerViewState) => void;
 };
 
 type TabProps = {

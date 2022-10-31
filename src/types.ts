@@ -126,7 +126,13 @@ export type LayerExample = {
   token?: string;
   custom?: boolean;
   layers?: LayerExample[];
-  tileset?: Tileset3D;
+  viewState?: LayerViewState;
+};
+
+export type LayerViewState = {
+  longitude: number;
+  latitude: number;
+  zoom: number;
 };
 
 export interface Sublayer extends BuildingSceneSublayer {

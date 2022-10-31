@@ -15,6 +15,7 @@ import {
   CompareButtonMode,
   StatsMap,
   Bookmark,
+  LayerViewState,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -137,10 +138,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset?: Tileset3D) => {
-    if (tileset) {
-      const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
+  const pointToTileset = (layerViewState?: LayerViewState) => {
+    if (layerViewState) {
+      const { zoom, longitude, latitude } = layerViewState;
 
       setViewState({
         main: {

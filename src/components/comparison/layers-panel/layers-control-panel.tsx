@@ -1,9 +1,7 @@
-import type { Tileset3D } from "@loaders.gl/tiles";
-
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
 
-import { LayerExample, ListItemType } from "../../../types";
+import { LayerExample, LayerViewState, ListItemType } from "../../../types";
 
 import { ListItem } from "./list-item/list-item";
 import { PlusButton } from "../../plus-button/plus-button";
@@ -21,7 +19,7 @@ type LayersControlPanelProps = {
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
-  onPointToLayer: (tileset?: Tileset3D) => void;
+  onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
 };
 
@@ -149,9 +147,9 @@ export const LayersControlPanel = ({
                 layer={layer}
                 selected={isSelected}
                 showLayerSettings={hasSettings && isSelected}
-                onPointToLayerClick={(tileset) => {
+                onPointToLayerClick={(viewState) => {
                   setShowLayerSettings(false);
-                  onPointToLayer(tileset);
+                  onPointToLayer(viewState);
                 }}
                 onLayerSettingsClick={onLayerSettingsClick}
                 onDeleteLayerClick={() => {

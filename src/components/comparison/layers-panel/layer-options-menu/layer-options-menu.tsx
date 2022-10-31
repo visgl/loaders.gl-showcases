@@ -1,11 +1,10 @@
-import type { Tileset3D } from "@loaders.gl/tiles";
 import { useTheme } from "styled-components";
 import LocationIcon from "../../../../../public/icons/location.svg";
 import DeleteIcon from "../../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../../public/icons/settings.svg";
 import { color_accent_primary } from "../../../../constants/colors";
 import { ReactEventHandler } from "react";
-import { LayerExample } from "../../../../types";
+import { LayerExample, LayerViewState } from "../../../../types";
 import {
   MenuContainer,
   MenuItem,
@@ -17,7 +16,7 @@ type LayerOptionsMenuProps = {
   layer: LayerExample;
   selected: boolean;
   showLayerSettings: boolean;
-  onPointToLayerClick: (tileset?: Tileset3D) => void;
+  onPointToLayerClick: (viewState?: LayerViewState) => void;
   onLayerSettingsClick: ReactEventHandler;
   onDeleteLayerClick: (id: string) => void;
 };
@@ -42,7 +41,7 @@ export const LayerOptionsMenu = ({
       event.stopPropagation();
     }
 
-    onPointToLayerClick(layer.tileset);
+    onPointToLayerClick(layer.viewState);
   };
 
   const handleShowLayerSettings = (event) => {

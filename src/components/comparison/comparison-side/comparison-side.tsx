@@ -19,6 +19,7 @@ import {
   CompareButtonMode,
   DragMode,
   StatsMap,
+  LayerViewState,
 } from "../../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
@@ -139,7 +140,7 @@ type ComparisonSideProps = {
   hasBeenCompared: boolean;
   showBookmarks: boolean;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
-  pointToTileset: (tileset?: Tileset3D) => void;
+  pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
@@ -379,8 +380,10 @@ export const ComparisonSide = ({
 
     for (const example of examplesCopy) {
       // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
-      if (tileset.url.includes(example.url) && !example.tileset) {
-        example.tileset = tileset;
+      if (tileset.url.includes(example.url) && !example.viewState) {
+        const { zoom, cartographicCenter } = tileset;
+        const [longitude, latitude] = cartographicCenter || [];
+        example.viewState = { zoom, latitude, longitude };
         break;
       }
 
@@ -651,7 +654,7 @@ export const ComparisonSide = ({
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}
-                onPointToLayer={(tileset) => pointToTileset(tileset)}
+                onPointToLayer={(viewState) => pointToTileset(viewState)}
                 type={ListItemType.Radio}
                 sublayers={sublayers}
                 onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
