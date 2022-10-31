@@ -25,13 +25,10 @@ import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import {
-  buildSublayersTree,
-  parseTilesetUrlParams,
-  useForceUpdate,
-} from "../../../utils";
+import { buildSublayersTree, parseTilesetUrlParams } from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
+import { ActiveSublayer } from "../../../utils/active-sublayer";
 
 type LayoutProps = {
   layout: string;
@@ -182,7 +179,6 @@ export const ComparisonSide = ({
   onShowBookmarksChange,
   onAfterDeckGlRender,
 }: ComparisonSideProps) => {
-  const forceUpdate = useForceUpdate();
   const layout = useAppLayout();
 
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -198,7 +194,7 @@ export const ComparisonSide = ({
   );
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
-  const [sublayers, setSublayers] = useState<Sublayer[]>([]);
+  const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
@@ -220,6 +216,13 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (staticLayers) {
+      const newLayers: LayerExample[] = [];
+      for (const layer of staticLayers) {
+        if (!examples.find(({ id }) => id === layer.id)) {
+          newLayers.push(layer);
+        }
+      }
+      setExamples((prev) => [...prev, ...newLayers]);
       setActiveLayers(staticLayers);
     }
   }, [staticLayers]);
@@ -300,7 +303,9 @@ export const ComparisonSide = ({
       const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
       const childSublayers = sublayersTree?.sublayers || [];
-      setSublayers(childSublayers);
+      setSublayers(
+        childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+      );
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
         .map((item) => ({ ...item, token: tilesetData.token }));
@@ -541,7 +546,7 @@ export const ComparisonSide = ({
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        forceUpdate();
+        setSublayers([...sublayers]);
       }
     }
   };

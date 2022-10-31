@@ -210,6 +210,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const downloadJsonFile = (data: {[key: string]: any}, fileName: string) => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = fileName;
+
+    link.click();
+  }
+
   const downloadClickHandler = () => {
     const data = {
       viewState: viewState.main,
@@ -224,15 +235,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         },
       ],
     };
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(data)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = "comparison-stats.json";
-
-    link.click();
+    downloadJsonFile(data, "comparison-stats.json");
   };
+
+  const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+  }
+  
+  const onDownloadBookmarksHandler = () => {
+    downloadJsonFile(bookmarks, "bookmarks.json");
+  }
 
   const disableButtonHandlerLeft = () => {
     setDisableButton((prevValue) => [true, prevValue[1]]);
@@ -282,14 +294,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setShowBookmarksPanel(false);
   }, []);
 
-  const addBookmarkHandler = () => {
-    createComparisonBookmarkThumbnail(
+  const makeScreenshot = async () => {
+    const imageUrl = await createComparisonBookmarkThumbnail(
       "#left-deck-container-wrapper",
       "#right-deck-container-wrapper"
-    ).then((imageUrl) => {
-      if (!imageUrl) {
-        return;
-      }
+    );
+    if (!imageUrl) {
+      throw new Error();
+    }
+    return imageUrl;
+  };
+
+  const addBookmarkHandler = () => {
+    makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
         {
@@ -311,6 +328,30 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
+  };
+
+  const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
+    setBookmarks((prev) =>
+      prev.filter((bookmark) => bookmark.id !== bookmarkId)
+    );
+  }, []);
+
+  const onEditBookmarkHandler = (bookmarkId: string) => {
+    makeScreenshot().then((imageUrl) => {
+      setBookmarks((prev) =>
+        prev.map((bookmark) =>
+          bookmark.id === bookmarkId
+            ? {
+                ...bookmark,
+                imageUrl,
+                viewState,
+                layersLeftSide,
+                layersRightSide,
+              }
+            : bookmark
+        )
+      );
+    });
   };
 
   return (
@@ -363,6 +404,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
+          onDownloadBookmarks={onDownloadBookmarksHandler}
+          onClearBookmarks={() => setBookmarks([])}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
+          onDeleteBookmark={onDeleteBookmarkHandler}
+          onEditBookmark={onEditBookmarkHandler}
         />
       )}
 

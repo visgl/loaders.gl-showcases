@@ -163,6 +163,11 @@ type BookmarksPanelProps = {
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
   onCollapsed: () => void;
+  onDownloadBookmarks: () => void;
+  onClearBookmarks: () => void;
+  onDeleteBookmark: (id: string) => void;
+  onEditBookmark: (id: string) => void;
+  onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
 };
 
 const confirmText = "Are you sure you  want to clear all  bookmarks?";
@@ -174,10 +179,16 @@ export const BookmarksPanel = ({
   onAddBookmark,
   onSelectBookmark,
   onCollapsed,
+  onDownloadBookmarks,
+  onClearBookmarks,
+  onBookmarksUploaded,
+  onDeleteBookmark,
+  onEditBookmark,
 }: BookmarksPanelProps) => {
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -206,12 +217,12 @@ export const BookmarksPanel = ({
     }
   };
 
-  const onEditBookmark = useCallback(() => {
+  const onEditBookmarksClickHandler = useCallback(() => {
     setEditingMode((prev) => !prev);
     setPopoverType(PopoverType.none);
   }, []);
 
-  const onClearBookmarks = () => {
+  const onClearBookmarksClickHandler = () => {
     if (!isDesktop) {
       setPopoverType(PopoverType.clearBookmarks);
     }
@@ -220,6 +231,26 @@ export const BookmarksPanel = ({
       setPopoverType(PopoverType.none);
     }
     setClearBookmarksMode((prev) => !prev);
+  };
+
+  const onClearBookmarksHandler = () => {
+    onClearBookmarks();
+    setClearBookmarksMode(false);
+    setPopoverType(PopoverType.none);
+  };
+
+  const onBookmarksUploadedHandler = (bookmarks) => {
+    setPopoverType(PopoverType.none);
+    onBookmarksUploaded(bookmarks);
+  }
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
+
+    if (bookmark) {
+      setSelectedBookmarkId(bookmark.id);
+    }
+
+    onSelectBookmark(bookmarkId);
   };
 
   const renderPopoverContent = () => {
@@ -237,6 +268,7 @@ export const BookmarksPanel = ({
         <UploadPanel
           onCancel={() => setPopoverType(PopoverType.none)}
           onConfirmWarning={() => console.log("not implemented yet")}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
         />
       );
     }
@@ -244,9 +276,15 @@ export const BookmarksPanel = ({
     if (popoverType === PopoverType.options) {
       return (
         <BookmarkOptionsMenu
-          onEditBookmark={onEditBookmark}
-          onClearBookmarks={onClearBookmarks}
-          onUploadBookmarks={() => setPopoverType(PopoverType.uploadWarning)}
+          showDeleteBookmarksOption={bookmarks.length > 0}
+          onEditBookmarks={onEditBookmarksClickHandler}
+          onClearBookmarks={onClearBookmarksClickHandler}
+          onUploadBookmarks={() =>
+            setPopoverType(
+              bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
+            )
+          }
+          onDownloadBookmarks={onDownloadBookmarks}
           onCollapsed={onCollapsed}
         />
       );
@@ -260,7 +298,7 @@ export const BookmarksPanel = ({
             setClearBookmarksMode(false);
             setPopoverType(PopoverType.none);
           }}
-          onConfirm={() => console.log("not implemented yet")}
+          onConfirm={() => onClearBookmarksHandler()}
         />
       );
     }
@@ -275,7 +313,7 @@ export const BookmarksPanel = ({
           <BookmarkInnerButton
             width={32}
             height={32}
-            onInnerClick={() => console.log("not implemented yet")}
+            onInnerClick={() => onClearBookmarksHandler()}
           >
             <ConfirmIcon />
           </BookmarkInnerButton>
@@ -327,8 +365,10 @@ export const BookmarksPanel = ({
           {bookmarks.length > 0 ? (
             <Slider
               bookmarks={bookmarks}
+              selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
-              onSelectBookmark={onSelectBookmark}
+              onDeleteBookmark={onDeleteBookmark}
+              onSelectBookmark={onSelectBookmarkHandler}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>
@@ -345,7 +385,10 @@ export const BookmarksPanel = ({
               <ButtonsWrapper>
                 {editingMode && (
                   <BookmarkInnerButton
-                    onInnerClick={() => setEditingMode(false)}
+                    onInnerClick={() => {
+                      onEditBookmark(selectedBookmarkId);
+                      setEditingMode(false);
+                    }}
                   >
                     <ConfirmationIcon />
                   </BookmarkInnerButton>
