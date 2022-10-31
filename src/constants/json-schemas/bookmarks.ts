@@ -31,6 +31,18 @@ export const bookmarksSchemaJson: Draft202012Schema = {
       layersRightSide: {
         $ref: "#/$defs/LayerExample",
       },
+      activeLayersIdsLeftSide: {
+        type: "array",
+        items: {
+          type: "string"
+        }
+      },
+      activeLayersIdsRightSide: {
+        type: "array",
+        items: {
+          type: "string"
+        }
+      },
     },
     required: ["id", "imageUrl"],
   },

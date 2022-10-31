@@ -52,6 +52,7 @@ describe("ComparisonSide", () => {
   const callRender = (renderFunc, props = {}) => {
     return renderFunc(
       <ComparisonSide
+        activeLayersIds={[]}
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
         viewState={viewState}
