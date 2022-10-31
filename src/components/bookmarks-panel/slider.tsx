@@ -76,9 +76,10 @@ export const Slider = ({
   };
 
   const disableLeftArrow =
-    selectedBookmarkId === bookmarks?.at(0)?.id || !selectedBookmarkId;
+    selectedBookmarkId === bookmarks[0]?.id || !selectedBookmarkId;
   const disableRightArrow =
-    selectedBookmarkId === bookmarks.at(-1)?.id || !selectedBookmarkId;
+    selectedBookmarkId === bookmarks[bookmarks.length - 1]?.id ||
+    !selectedBookmarkId;
 
   const layout = useAppLayout();
 
