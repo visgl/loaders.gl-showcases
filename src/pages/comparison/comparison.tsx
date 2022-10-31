@@ -361,6 +361,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 viewState,
                 layersLeftSide,
                 layersRightSide,
+                activeLayersIdsLeftSide,
+                activeLayersIdsRightSide
               }
             : bookmark
         )

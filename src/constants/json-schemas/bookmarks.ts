@@ -68,7 +68,10 @@ export const bookmarksSchemaJson: Draft202012Schema = {
           custom: {
             type: "boolean",
           },
-          children: {
+          viewState: {
+            $ref: "#/$defs/LayerViewState"
+          },
+          layers: {
             $ref: "#/$defs/LayerExample",
           },
         },
@@ -129,5 +132,20 @@ export const bookmarksSchemaJson: Draft202012Schema = {
       },
       required: ["latitude", "longitude", "zoom", "bearing", "pitch"],
     },
+    LayerViewState: {
+      type: "object",
+      properties: {
+        latitude: {
+          type: "number",
+        },
+        longitude: {
+          type: "number",
+        },
+        zoom: {
+          type: "number",
+        },
+      },
+      required: ["latitude", "longitude", "zoom"],
+    }
   },
 };
