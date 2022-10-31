@@ -655,7 +655,9 @@ describe("Compare button", () => {
     expect(compareButtonText).toEqual("Start comparing");
   });
 
-  it("Compare button should change mode", async () => {
+  // All tiles loading is required to press button
+  // So the test is be flaky due to internet dependency
+  it.skip("Compare button should change mode", async () => {
     await page.waitForSelector("#compare-button");
     const sfLayer = await page.$(
       `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
