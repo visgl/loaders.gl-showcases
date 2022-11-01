@@ -1,4 +1,3 @@
-import type { Tileset3D } from "@loaders.gl/tiles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuidv4 } from "uuid";
@@ -362,7 +361,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 layersLeftSide,
                 layersRightSide,
                 activeLayersIdsLeftSide,
-                activeLayersIdsRightSide
+                activeLayersIdsRightSide,
               }
             : bookmark
         )
