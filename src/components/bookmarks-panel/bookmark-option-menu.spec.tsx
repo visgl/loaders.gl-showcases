@@ -2,7 +2,7 @@ import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
 
-jest.mock("../../utils/layout");
+jest.mock("../../utils/hooks/layout");
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 

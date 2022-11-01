@@ -13,7 +13,7 @@ jest.mock("./non-desktop-shortcuts-tabs");
 jest.mock("./non-desktop-shortcuts-list-panel");
 jest.mock("./non-desktop-video-panel");
 jest.mock("../close-button/close-button");
-jest.mock("../../utils/layout", () => ({
+jest.mock("../../utils/hooks/layout", () => ({
   getCurrentLayoutProperty: jest.fn(),
   useAppLayout: jest
     .fn()

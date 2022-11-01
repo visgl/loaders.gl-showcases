@@ -3,7 +3,7 @@ import { Header } from "./header";
 import { screen } from "@testing-library/react";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-jest.mock("../../utils/layout");
+jest.mock("../../utils/hooks/layout");
 jest.mock("react-router-dom", () => ({
   useLocation: jest.fn().mockImplementation(() => ({
     pathname: "hellp-world",

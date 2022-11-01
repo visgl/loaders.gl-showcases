@@ -17,7 +17,7 @@ const DesktopHelpPanelMock = DesktopHelpPanel as unknown as jest.Mocked<any>;
 const NonDesktopHelpPanelMock =
   NonDesktopHelpPanel as unknown as jest.Mocked<any>;
 
-jest.mock("../../utils/layout", () => ({
+jest.mock("../../utils/hooks/layout", () => ({
   getCurrentLayoutProperty: jest.fn(),
   useAppLayout: jest
     .fn()

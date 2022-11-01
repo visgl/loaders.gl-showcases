@@ -16,12 +16,12 @@ jest.mock("@deck.gl/core");
 jest.mock("@deck.gl/layers");
 jest.mock("@deck.gl/geo-layers");
 jest.mock("react-map-gl");
-jest.mock("../../utils/build-minimap-data");
-jest.mock("../../utils/texture-selector-utils");
-jest.mock("../../utils/frustum-utils");
+jest.mock("../../utils/debug/build-minimap-data");
+jest.mock("../../utils/debug/texture-selector-utils");
+jest.mock("../../utils/debug/frustum-utils");
 jest.mock("../../utils/terrain-elevation");
-jest.mock("../../utils/colors-map");
-jest.mock("../../utils/normals-utils");
+jest.mock("../../utils/debug/colors-map");
+jest.mock("../../utils/debug/normals-utils");
 jest.mock("../../layers/bounding-volume-layer/bounding-volume-layer");
 
 import { act, render } from "@testing-library/react";

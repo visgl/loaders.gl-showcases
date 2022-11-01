@@ -7,7 +7,7 @@ jest.mock('@math.gl/culling', () => ({
   BoundingSphere: jest.fn().mockImplementation(() => ({ result: 'MBS is created' }))
 }));
 
-jest.mock('../constants/bounding-volumes', () => ({
+jest.mock('../../constants/bounding-volumes', () => ({
   OBB: 'Oriented Bounding Box',
   MBS: 'Minimum Bounding Sphere'
 }));

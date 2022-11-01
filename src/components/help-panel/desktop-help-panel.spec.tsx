@@ -21,7 +21,7 @@ const DesktopShortcutsListPanelMock =
 const CloseButtonMock = CloseButton as unknown as jest.Mocked<any>;
 const DesktopVideoPanelMock = DesktopVideoPanel as unknown as jest.Mocked<any>;
 
-jest.mock("../../utils/layout", () => ({
+jest.mock("../../utils/hooks/layout", () => ({
   useAppLayout: jest
     .fn()
     .mockImplementationOnce(() => {

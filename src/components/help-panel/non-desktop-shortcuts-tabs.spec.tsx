@@ -5,7 +5,7 @@ import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";
 
-jest.mock("../../utils/layout");
+jest.mock("../../utils/hooks/layout");
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 

@@ -1,7 +1,7 @@
 import { validateTile, isTileGeometryInsideBoundingVolume } from "./tile-debug";
 import { isAllVerticesInsideBoundingVolume } from "./bounding-volume-vertices";
 import { getTileDataForValidation } from "./validation-utils/tile-validation/tile-validation-data";
-import { getTile3d } from "../test/tile-stub";
+import { getTile3d } from "../../test/tile-stub";
 
 jest.mock(
   "./validation-utils/tile-validation/bounding-volume-validation",
