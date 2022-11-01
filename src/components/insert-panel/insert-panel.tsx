@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import { ActionButtonVariant } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 import { ActionButton } from "../action-button/action-button";
 import { InputText } from "../input-text/input-text";
 

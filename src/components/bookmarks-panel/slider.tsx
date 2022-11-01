@@ -3,8 +3,8 @@ import styled from "styled-components";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 import { LayoutProps } from "../comparison/common";
 import { BookmarksListItem } from "./bookmark-list-item";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { Bookmark } from "../../types";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 const BookmarksList = styled.div<LayoutProps>`
   display: flex;

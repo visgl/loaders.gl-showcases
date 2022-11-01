@@ -9,10 +9,10 @@ import { LayoutProps } from "../comparison/common";
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
-import { useAppLayout, getCurrentLayoutProperty } from "../../utils/layout";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { Layout } from "../../utils/enums";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 type TranslateProps = {
   moveWidth: number;

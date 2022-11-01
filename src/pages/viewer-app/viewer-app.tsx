@@ -22,14 +22,6 @@ import {
 import { StatsWidget } from "@probe.gl/stats-widget";
 
 import { ControlPanel, BuildingExplorer } from "../../components";
-import {
-  parseTilesetFromUrl,
-  parseTilesetUrlParams,
-  buildSublayersTree,
-  initStats,
-  sumTilesetsStats,
-  useForceUpdate,
-} from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
@@ -43,6 +35,10 @@ import {
 
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
+import { useForceUpdate } from "../../utils/hooks/force-update-hook";
+import { initStats, sumTilesetsStats } from "../../utils/stats";
+import { parseTilesetFromUrl, parseTilesetUrlParams } from "../../utils/url-utils";
+import { buildSublayersTree } from "../../utils/sublayers";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;

@@ -14,7 +14,7 @@ import MouseImageTablet from "../../../public/images/mouseTabTablet.svg";
 import TouchImageTablet from "../../../public/images/touchTabTablet.svg";
 
 import { useState } from "react";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 type ContainerProps = {
   layout: string;

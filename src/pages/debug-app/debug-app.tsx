@@ -18,7 +18,6 @@ import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader, SceneLayer3D } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
-import { useForceUpdate } from "../../utils";
 import {
   EXAMPLES,
   CUSTOM_EXAMPLE_VALUE,
@@ -31,20 +30,6 @@ import {
   INITIAL_BOUNDING_VOLUME_COLOR_MODE,
   INITIAL_BOUNDING_VOLUME_TYPE,
 } from "../../constants/map-styles";
-
-import {
-  COLORED_BY,
-  makeRGBObjectFromColor,
-  getRGBValueFromColorObject,
-  parseTilesetFromUrl,
-  parseTilesetUrlParams,
-  ColorMap,
-  validateTile as handleValidateTile,
-  generateBinaryNormalsDebugData,
-  buildSublayersTree,
-  initStats,
-  sumTilesetsStats,
-} from "../../utils";
 
 import {
   ControlPanel,
@@ -66,6 +51,13 @@ import { TileDetailsPanel } from "../../components/tile-details-panel/tile-detai
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
+import ColorMap, { COLORED_BY, getRGBValueFromColorObject, makeRGBObjectFromColor } from "../../utils/debug/colors-map";
+import { initStats, sumTilesetsStats } from "../../utils/stats";
+import { parseTilesetFromUrl, parseTilesetUrlParams } from "../../utils/url-utils";
+import { buildSublayersTree } from "../../utils/sublayers";
+import { validateTile } from "../../utils/debug/tile-debug";
+import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
+import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -303,7 +295,7 @@ export const DebugApp = () => {
 
   const onTileLoad = (tile) => {
     updateStatWidgets();
-    validateTile(tile);
+    handleValidateTile(tile);
   };
 
   const onTileUnload = () => updateStatWidgets();
@@ -333,8 +325,8 @@ export const DebugApp = () => {
     setDebugOptions(updatedDebugOptions);
   };
 
-  const validateTile = (tile) => {
-    const newWarnings = handleValidateTile(tile);
+  const handleValidateTile = (tile) => {
+    const newWarnings = validateTile(tile);
 
     if (newWarnings.length) {
       setWarnings((prevValues) => [...prevValues, ...newWarnings]);

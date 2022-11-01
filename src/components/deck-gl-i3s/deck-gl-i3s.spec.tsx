@@ -33,20 +33,14 @@ import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { ImageLoader } from "@loaders.gl/images";
 import { Tileset3D } from "@loaders.gl/tiles";
-import {
-  selectDebugTextureForTileset,
-  selectOriginalTextureForTileset,
-  getFrustumBounds,
-  getElevationByCentralTile,
-  selectOriginalTextureForTile,
-  selectDebugTextureForTile,
-  ColorMap,
-  buildMinimapData,
-  getNormalSourcePosition,
-  getNormalTargetPosition,
-} from "../../utils";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
+import ColorMap from "../../utils/debug/colors-map";
+import { selectDebugTextureForTile, selectDebugTextureForTileset, selectOriginalTextureForTile, selectOriginalTextureForTileset } from "../../utils/debug/texture-selector-utils";
+import { getElevationByCentralTile } from "../../utils/terrain-elevation";
+import { getNormalSourcePosition, getNormalTargetPosition } from "../../utils/debug/normals-utils";
+import { getFrustumBounds } from "../../utils/debug/frustum-utils";
+import { buildMinimapData } from "../../utils/debug/build-minimap-data";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */

@@ -1,6 +1,5 @@
 import { Stats, Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
-import { useAppLayout } from "../../../utils/layout";
 import {
   Container,
   PanelHeader,
@@ -13,9 +12,10 @@ import {
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { ExpandState, CollapseDirection } from "../../../types";
-import { formatMemory } from "../../../utils/format-memory";
 import LinkIcon from "../../../../public/icons/link.svg";
 import { useExpand } from "../../../utils/hooks/use-expand";
+import { useAppLayout } from "../../../utils/hooks/layout";
+import { formatMemory } from "../../../utils/format/format-memory";
 
 const StatSection = styled.div`
   display: flex;

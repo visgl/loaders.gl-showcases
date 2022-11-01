@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { Theme } from "../../utils/enums";
-import { getCurrentLayoutProperty } from "../../utils/layout";
 import {
   color_brand_quaternary,
 } from "../../constants/colors";
+import { getCurrentLayoutProperty } from "../../utils/hooks/layout";
 
 export type LayoutProps = {
   layout: string;

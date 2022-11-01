@@ -1,8 +1,8 @@
-import type { ObbData } from '../types';
+import type { ObbData } from '../../types';
 import type { Tile3D } from "@loaders.gl/tiles";
 
 import { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
-import { OBB, MBS } from "../constants/bounding-volumes";
+import { OBB, MBS } from "../../constants/bounding-volumes";
 
 /**
  * Generates needed bounding volume from tile bounding volume

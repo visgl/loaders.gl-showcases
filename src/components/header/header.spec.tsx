@@ -1,7 +1,7 @@
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { Header } from "./header";
-import { useAppLayout } from "../../utils/layout";
 import { screen } from "@testing-library/react";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 jest.mock("../../utils/layout");
 jest.mock("react-router-dom", () => ({

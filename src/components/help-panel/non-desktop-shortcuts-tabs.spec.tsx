@@ -1,10 +1,9 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelpPanelSelectedTab } from "../../types";
+import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";
-
-import { useAppLayout } from "../../utils/layout";
 
 jest.mock("../../utils/layout");
 

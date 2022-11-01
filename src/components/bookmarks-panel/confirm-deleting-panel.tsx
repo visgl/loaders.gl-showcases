@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { useAppLayout } from "../../utils/layout";
 import { ActionButton } from "../action-button/action-button";
 import { LayoutProps } from "../comparison/common";
 import { ActionButtonVariant } from "../../types";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 const Container = styled.div<LayoutProps>`
   position: absolute;

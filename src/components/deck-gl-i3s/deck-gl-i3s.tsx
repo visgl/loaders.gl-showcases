@@ -15,18 +15,6 @@ import {
   View,
 } from "@deck.gl/core";
 import { useEffect, useMemo, useState } from "react";
-import {
-  buildMinimapData,
-  ColorMap,
-  getElevationByCentralTile,
-  getFrustumBounds,
-  getNormalSourcePosition,
-  getNormalTargetPosition,
-  selectDebugTextureForTile,
-  selectDebugTextureForTileset,
-  selectOriginalTextureForTile,
-  selectOriginalTextureForTileset,
-} from "../../utils";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
@@ -37,6 +25,12 @@ import {
   LoadOptions,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
+import ColorMap from "../../utils/debug/colors-map";
+import { selectDebugTextureForTile, selectDebugTextureForTileset, selectOriginalTextureForTile, selectOriginalTextureForTileset } from "../../utils/debug/texture-selector-utils";
+import { getElevationByCentralTile } from "../../utils/terrain-elevation";
+import { getFrustumBounds } from "../../utils/debug/frustum-utils";
+import { buildMinimapData } from "../../utils/debug/build-minimap-data";
+import { getNormalSourcePosition, getNormalTargetPosition } from "../../utils/debug/normals-utils";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {

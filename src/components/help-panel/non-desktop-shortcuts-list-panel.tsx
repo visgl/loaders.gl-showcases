@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { HelpShortcutItem } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 import { NonDesktopShortcutItem } from "./non-desktop-shortcut-item";
 
 type NonDesktopShortcutsListPanelProps = {

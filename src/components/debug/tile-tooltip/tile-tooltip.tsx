@@ -1,11 +1,7 @@
 import styled from "styled-components";
 import { Tile3D } from "@loaders.gl/tiles";
-import {
-  formatFloatNumber,
-  formatIntValue,
-  formatStringValue,
-} from "../../../utils/format-utils";
-import { getChildrenInfo } from "../../../utils/tile-debug";
+import { getChildrenInfo } from "../../../utils/debug/tile-debug";
+import { formatFloatNumber, formatIntValue, formatStringValue } from "../../../utils/format/format-utils";
 
 const NO_DATA = "No Data";
 

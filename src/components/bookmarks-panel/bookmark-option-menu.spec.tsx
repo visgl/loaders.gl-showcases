@@ -1,4 +1,4 @@
-import { useAppLayout } from "../../utils/layout";
+import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
 

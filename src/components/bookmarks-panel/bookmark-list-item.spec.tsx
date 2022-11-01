@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { useAppLayout } from "../../utils/layout";
+import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksListItem } from "./bookmark-list-item";
 
