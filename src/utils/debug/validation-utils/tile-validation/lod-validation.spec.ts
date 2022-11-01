@@ -1,6 +1,6 @@
 import { checkLOD } from "./lod-validation";
 
-jest.mock('../../../constants/map-styles', () => ({
+jest.mock('../../../../constants/map-styles', () => ({
   LOD_WARNING_TYPE: 'LOD_WARNING_TYPE',
   PARENT_LOD_WARNING_TYPE: 'PARENT_LOD_WARNING_TYPE'
 }));

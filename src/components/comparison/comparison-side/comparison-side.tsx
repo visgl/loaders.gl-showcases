@@ -20,18 +20,16 @@ import {
   DragMode,
   StatsMap,
 } from "../../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
-import {
-  buildSublayersTree,
-  parseTilesetUrlParams
-} from "../../../utils";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
+import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/hooks/layout";
+import { buildSublayersTree } from "../../../utils/sublayers";
+import { parseTilesetUrlParams } from "../../../utils/url-utils";
 
 enum LayerType {
   parent,

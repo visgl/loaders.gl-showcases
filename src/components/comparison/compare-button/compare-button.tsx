@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { CompareButtonMode } from "../../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/layout";
 import { Title } from "../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
 import DownloadIcon from "../../../../public/icons/download.svg";
+import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/hooks/layout";
 
 type LayoutProps = {
   layout: string;

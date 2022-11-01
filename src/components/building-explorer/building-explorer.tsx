@@ -8,8 +8,8 @@ import {
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { useForceUpdate } from "../../utils";
 import { color_brand_primary, color_canvas_primary_inverted } from "../../constants/colors";
+import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 
 const BuildingExplorerContainer = styled.div<{
   debugMode: boolean;

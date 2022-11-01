@@ -42,12 +42,12 @@ jest.mock('../../convert-positions-to-vectors', () => ({
   convertPositionsToVectors: jest.fn()
 }));
 
-jest.mock('../../../constants/bounding-volumes', () => ({
+jest.mock('../../../../constants/bounding-volumes', () => ({
   OBB: 'OBB',
   MBS: 'MBS'
 }));
 
-jest.mock('../../../constants/map-styles', () => ({
+jest.mock('../../../../constants/map-styles', () => ({
   BOUNDING_VOLUME_WARNING_TYPE: 'BOUNDING_VOLUME_WARNING_TYPE'
 }));
 

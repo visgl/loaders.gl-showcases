@@ -1,4 +1,3 @@
-import { useAppLayout } from "../../../utils/layout";
 import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
 import {
   Container,
@@ -9,6 +8,7 @@ import {
   ItemContainer,
 } from "../common";
 import { CloseButton } from "../../close-button/close-button";
+import { useAppLayout } from "../../../utils/hooks/layout";
 
 type ComparisonParamsProps = {
   id: string;

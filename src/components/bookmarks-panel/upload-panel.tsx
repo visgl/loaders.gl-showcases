@@ -6,7 +6,6 @@ import JsonSchema, {
 } from "@hyperjump/json-schema";
 import { UploadPanelItem } from "./upload-panel-item";
 import UploadIcon from "../../../public/icons/upload.svg";
-import { useAppLayout } from "../../utils/layout";
 import { Layout } from "../../utils/enums";
 import { useRef, useState } from "react";
 import {
@@ -14,6 +13,7 @@ import {
   bookmarksSchemaJson,
 } from "../../constants/json-schemas/bookmarks";
 import { Bookmark } from "../../types";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 const UPLOAD_INPUT_ID = "upload-bookmarks-input";
 

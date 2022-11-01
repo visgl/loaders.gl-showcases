@@ -1,7 +1,6 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 
-import { useAppLayout } from "../../../utils/layout";
 import { LayerExample, ListItemType, BaseMap } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
@@ -18,6 +17,7 @@ import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
+import { useAppLayout } from "../../../utils/hooks/layout";
 
 enum Tabs {
   Layers,

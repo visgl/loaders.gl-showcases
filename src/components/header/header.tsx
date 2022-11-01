@@ -2,13 +2,13 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import { Layout, Theme } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 
 import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
 import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 
 import { DesktopHeaderContent } from "./desktop-header-content";
 import { NonDesktopHeaderContent } from "./non-desktop-header-content";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 type HeaderProps = {
   theme: Theme;

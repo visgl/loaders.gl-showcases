@@ -1,5 +1,4 @@
-import { LayoutProperties, Layout } from "../types";
-
+import { LayoutProperties, Layout } from "../../types";
 import { useMediaQuery } from "react-responsive";
 
 /**

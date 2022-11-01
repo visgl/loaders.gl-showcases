@@ -1,10 +1,10 @@
 import userEvent from "@testing-library/user-event";
-import { useAppLayout } from "../../utils/layout";
+import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksPanel } from "./bookmarks-panel";
 import { dragAndDropText } from "./upload-panel";
 
-jest.mock("../../utils/layout");
+jest.mock("../../utils/hooks/layout");
 
 const TEST_BOOKMARKS = [
   {

@@ -1,12 +1,8 @@
 import styled from "styled-components";
 import { Tile3D } from "@loaders.gl/tiles";
-import {
-  formatFloatNumber,
-  formatIntValue,
-  formatStringValue,
-} from "../../../utils/format-utils";
-import { getChildrenInfo } from "../../../utils/tile-debug";
-import { getBoundingType } from "../../../utils/bounding-volume";
+import { getChildrenInfo } from "../../../utils/debug/tile-debug";
+import { formatFloatNumber, formatIntValue, formatStringValue } from "../../../utils/format/format-utils";
+import { getBoundingType } from "../../../utils/debug/bounding-volume";
 
 const REFINEMENT_TYPES = {
   1: "Add",

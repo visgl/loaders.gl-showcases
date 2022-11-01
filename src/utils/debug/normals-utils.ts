@@ -2,7 +2,7 @@ import type { Tile3D } from "@loaders.gl/tiles";
 
 import { Vector3 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
-import { NormalsDebugData } from "../types";
+import { NormalsDebugData } from "../../types";
 
 const VALUES_PER_VERTEX = 3;
 

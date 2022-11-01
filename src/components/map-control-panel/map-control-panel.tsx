@@ -12,8 +12,8 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { useExpand } from "../../utils/hooks/use-expand";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { LayoutProps } from "../comparison/common";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 const Container = styled.div<LayoutProps>`
   position: absolute;
