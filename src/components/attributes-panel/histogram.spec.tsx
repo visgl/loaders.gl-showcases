@@ -36,7 +36,6 @@ describe("HistogramChart", () => {
         histogramData={{
           minimum: 0,
           maximum: 0,
-          // @ts-expect-error - Change types in loaders.gl
           counts: [1, 2, 3, 4, 5],
         }}
       />
