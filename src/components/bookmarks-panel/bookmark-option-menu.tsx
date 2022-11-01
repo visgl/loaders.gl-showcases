@@ -11,8 +11,8 @@ import {
   MenuSettingsIcon,
   MenuDevider,
 } from "../comparison/common";
-import { useAppLayout } from "../../utils/layout";
 import { Layout } from "../../utils/enums";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 type BookmarkOptionsMenuProps = {
   showDeleteBookmarksOption: boolean;

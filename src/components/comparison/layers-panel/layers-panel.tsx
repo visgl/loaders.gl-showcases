@@ -2,15 +2,9 @@ import type { OperationalLayer } from "@loaders.gl/i3s/src/types";
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
-
 import { load } from "@loaders.gl/core";
-import { useAppLayout } from "../../../utils/layout";
-import {
-  LayerExample,
-  ListItemType,
-  BaseMap,
-  LayerViewState,
-} from "../../../types";
+
+import { LayerExample, ListItemType, BaseMap, LayerViewState } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
@@ -28,6 +22,7 @@ import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 import { ArcGisWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
+import { useAppLayout } from "../../../utils/hooks/layout";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 

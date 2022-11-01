@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import styled, { css, useTheme } from "styled-components";
 import { Layout } from "../../utils/enums";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import {
   PanelHeader,
   HorizontalLine,
@@ -23,6 +22,7 @@ import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 enum PopoverType {
   options,

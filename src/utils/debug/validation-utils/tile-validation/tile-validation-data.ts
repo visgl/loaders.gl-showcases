@@ -1,4 +1,4 @@
-import type { TileValidationData } from "../../../types";
+import type { TileValidationData } from "../../../../types";
 import type { Tile3D } from "@loaders.gl/tiles";
 
 import { getBoundingType, createBoundingVolumeFromTile } from "../../bounding-volume";

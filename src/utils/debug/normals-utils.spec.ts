@@ -3,7 +3,7 @@ import {
   getNormalSourcePosition,
   getNormalTargetPosition,
 } from "./normals-utils";
-import { getTile3d } from "../test/tile-stub";
+import { getTile3d } from "../../test/tile-stub";
 
 jest.mock("@math.gl/geospatial", () => ({
   Ellipsoid: {

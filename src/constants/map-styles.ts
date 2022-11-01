@@ -1,5 +1,5 @@
 import { BaseMap } from "../types";
-import { COLORED_BY } from "../utils";
+import { COLORED_BY } from "../utils/debug/colors-map";
 
 export const BASE_MAPS: BaseMap[] = [
   {

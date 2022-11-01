@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuidv4 } from "uuid";
 
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
 import { color_brand_primary } from "../../constants/colors";
 import {
   ComparisonMode,
@@ -24,6 +23,7 @@ import { ComparisonSide } from "../../components/comparison/comparison-side/comp
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { createComparisonBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;

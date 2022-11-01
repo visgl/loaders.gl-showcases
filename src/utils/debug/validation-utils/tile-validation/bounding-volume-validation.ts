@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { TileWarning } from "../../../types";
+import type { TileWarning } from "../../../../types";
 
 import {
   OrientedBoundingBox,
@@ -11,8 +11,8 @@ import { createBoundingVolumeFromTile, getBoundingType } from "../../bounding-vo
 import { getTileObbVertices, isAllVerticesInsideBoundingVolume } from "../../bounding-volume-vertices";
 import { getTileDataForValidation } from "./tile-validation-data";
 import { convertPositionsToVectors } from "../../convert-positions-to-vectors";
-import { OBB, MBS } from '../../../constants/bounding-volumes';
-import { BOUNDING_VOLUME_WARNING_TYPE } from "../../../constants/map-styles";
+import { OBB, MBS } from '../../../../constants/bounding-volumes';
+import { BOUNDING_VOLUME_WARNING_TYPE } from "../../../../constants/map-styles";
 
 /**
 * Do validation of tile's Bounding Volumes

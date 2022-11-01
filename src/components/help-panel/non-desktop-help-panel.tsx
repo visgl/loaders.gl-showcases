@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { HelpPanelSelectedTab, HelpShortcutItem } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/layout";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import { NonDesktopShortcutsListPanel } from "./non-desktop-shortcuts-list-panel";
 import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";

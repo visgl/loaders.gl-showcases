@@ -9,7 +9,7 @@ import SettingsIcon from "../../../public/icons/settings.svg";
 import MemoryIcon from "../../../public/icons/memory.svg";
 import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { ActiveButton, Layout } from "../../types";
-import { useAppLayout } from "../../utils/layout";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 type MainToolsPanelProps = {
   id: string;

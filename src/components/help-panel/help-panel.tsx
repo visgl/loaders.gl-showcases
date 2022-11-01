@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { HelpPanelSelectedTab, HelpShortcutItem, Layout } from "../../types";
-import { useAppLayout } from "../../utils/layout";
 import { DesktopHelpPanel } from "./desktop-help-panel";
 import { NonDesktopHelpPanel } from "./non-desktop-help-panel";
 
 import { useTheme } from "styled-components";
 import { getShortcuts } from "./shotrcuts-config";
+import { useAppLayout } from "../../utils/hooks/layout";
 
 type HelpPanelProps = {
   onClose: () => void;

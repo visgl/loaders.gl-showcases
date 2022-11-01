@@ -1,13 +1,11 @@
 import type { Tile3D } from "@loaders.gl/tiles";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import {
-  isTileGeometryInsideBoundingVolume,
-  getGeometryVsTextureMetrics,
-  isGeometryBoundingVolumeMoreSuitable,
-} from "../../utils";
 import { Checkbox } from "../";
 import { color_canvas_primary_inverted } from "../../constants/colors";
+import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
+import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
+import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
 
 const TileValidatorContainer = styled.div`
   display: flex;
