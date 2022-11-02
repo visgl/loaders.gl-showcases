@@ -32,8 +32,9 @@ const onChangeLayersMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
-const disableButtonHandler = jest.fn();
+const onLayerSelected = jest.fn();
 const onTilesetLoaded = jest.fn();
+const onLoadingStateChange = jest.fn();
 const onShowBookmarksChange = jest.fn();
 const loadMock = load as unknown as jest.Mocked<any>;
 const DeckGlI3sMock = DeckGlI3s as unknown as jest.Mocked<any>;
@@ -72,7 +73,8 @@ describe("ComparisonSide", () => {
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
-        disableButtonHandler={disableButtonHandler}
+        onLayerSelected={onLayerSelected}
+        onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
         {...props}
       />
@@ -169,7 +171,9 @@ describe("ComparisonSide", () => {
     pointToTilesetMock.mockReset();
 
     const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
-    act(() => onTilesetLoad({ url: "http://tileset.url" }));
+    act(() =>
+      onTilesetLoad({ url: "http://tileset.url", setProps: () => undefined })
+    );
 
     const { onPointToLayer: onPointToLayer2 } =
       LayersPanelMock.mock.lastCall[0];
@@ -194,7 +198,11 @@ describe("ComparisonSide", () => {
 
     const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
     act(() =>
-      onTilesetLoad({ url: "http://tileset.url", isLoaded: () => true })
+      onTilesetLoad({
+        url: "http://tileset.url",
+        isLoaded: () => true,
+        setProps: () => undefined,
+      })
     );
 
     jest.advanceTimersByTime(500);
@@ -206,7 +214,11 @@ describe("ComparisonSide", () => {
     jest.useFakeTimers();
     callRender(renderWithTheme);
 
-    const tilesetStub = { url: "http://tileset.url", isLoaded: () => true };
+    const tilesetStub = {
+      url: "http://tileset.url",
+      isLoaded: () => true,
+      setProps: () => undefined,
+    };
     const { onTileLoad, onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
     act(() => onTilesetLoad(tilesetStub));
     act(() =>
