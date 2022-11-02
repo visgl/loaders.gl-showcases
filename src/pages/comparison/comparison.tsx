@@ -97,8 +97,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     CompareButtonMode.Start
   );
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
-    false,
-    false,
+    true,
+    true,
   ]);
   const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
@@ -111,7 +111,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   useEffect(() => {
     setLayersLeftSide([]);
     setLayersRightSide([]);
-    setDisableButton([false, false]);
+    setDisableButton([true, true]);
     setBookmarks([]);
   }, [mode]);
 
@@ -252,12 +252,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     downloadJsonFile(bookmarks, "bookmarks.json");
   };
 
-  const disableButtonHandlerLeft = () => {
-    setDisableButton((prevValue) => [true, prevValue[1]]);
+  const disableButtonHandlerLeft = (state = true) => {
+    setDisableButton((prevValue) => [state, prevValue[1]]);
   };
 
-  const disableButtonHandlerRight = () => {
-    setDisableButton((prevValue) => [prevValue[0], true]);
+  const disableButtonHandlerRight = (state = true) => {
+    setDisableButton((prevValue) => [prevValue[0], state]);
   };
 
   const onChangeLayersHandler = (
@@ -394,7 +394,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        disableButtonHandler={disableButtonHandlerLeft}
+        onLayerSelected={() => disableButtonHandlerLeft(false)}
+        onLoadingStateChange={(state) =>
+          disableButtonHandlerLeft(
+            compareButtonMode === CompareButtonMode.Start ? state : false
+          )
+        }
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
@@ -407,7 +412,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         downloadStats={
           compareButtonMode === CompareButtonMode.Start && compared
         }
-        disableButton={disableButton.includes(false)}
+        disableButton={disableButton.includes(true)}
         disableDownloadButton={!hasBeenCompared}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
@@ -454,7 +459,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        disableButtonHandler={disableButtonHandlerRight}
+        onLayerSelected={() => disableButtonHandlerRight(false)}
+        onLoadingStateChange={(state) =>
+          disableButtonHandlerRight(
+            compareButtonMode === CompareButtonMode.Start ? state : false
+          )
+        }
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
