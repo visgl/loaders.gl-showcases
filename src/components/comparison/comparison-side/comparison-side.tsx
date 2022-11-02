@@ -150,7 +150,8 @@ type ComparisonSideProps = {
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
-  disableButtonHandler: () => void;
+  onLayerSelected: () => void;
+  onLoadingStateChange: (isLoading: boolean) => void;
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
@@ -181,7 +182,8 @@ export const ComparisonSide = ({
   onInsertBaseMap,
   onSelectBaseMap,
   onDeleteBaseMap,
-  disableButtonHandler,
+  onLayerSelected,
+  onLoadingStateChange,
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
@@ -298,7 +300,7 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-    disableButtonHandler();
+    onLayerSelected();
   }, [layers, loadTileset]);
 
   const getFlattenedSublayers = async (tilesetData: {
@@ -337,12 +339,20 @@ export const ComparisonSide = ({
       }));
   };
 
+  const onTraversalCompleteHandler = (selectedTiles) => {
+    onLoadingStateChange(true);
+    return selectedTiles;
+  }
+
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
+    newTileset.setProps({onTraversalComplete: onTraversalCompleteHandler})
+    onLoadingStateChange(true);
     setTilesetStats(newTileset.stats);
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
       if (newTileset.isLoaded()) {
+        onLoadingStateChange(false);
         onTilesetLoaded({
           url: newTileset.url,
           tilesetStats: newTileset.stats,
@@ -358,6 +368,7 @@ export const ComparisonSide = ({
     setTimeout(() => {
       setUpdateStatsNumber((prev) => prev + 1);
       if (tile.tileset === tilesetRef.current && tile.tileset.isLoaded()) {
+        onLoadingStateChange(false);
         onTilesetLoaded({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
