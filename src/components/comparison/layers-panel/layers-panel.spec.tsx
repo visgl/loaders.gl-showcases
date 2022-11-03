@@ -315,8 +315,6 @@ describe("Layers Panel", () => {
     // @ts-expect-error - Property 'mock' does not exist on type
     const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
 
-    screen.debug();
-
     act(() => {
       onSceneInsertClick();
     });
@@ -328,11 +326,11 @@ describe("Layers Panel", () => {
     // Click insert scene
     act(() => {
       onInsert({
-        id: "ttps://test.url",
+        id: "https://test.url",
         name: "Scene",
         url: "https://test.url",
         token: "",
-        children: [
+        layers: [
           {
             id: "child-layer-id",
             name: "child-test",
@@ -416,7 +414,7 @@ describe("Layers Panel", () => {
         name: "Scene",
         url: "https://test.url",
         token: "",
-        children: [
+        layers: [
           {
             id: "child-layer-id",
             name: "child-test",
@@ -468,7 +466,7 @@ describe("Layers Panel", () => {
         name: "Scene",
         url: "https://test-another.url",
         token: "",
-        children: [],
+        layers: [],
       });
     });
 
@@ -513,7 +511,7 @@ describe("Layers Panel", () => {
         name: "Scene",
         url: "https://test-another.url",
         token: "",
-        children: [],
+        layers: [],
       });
     });
 
