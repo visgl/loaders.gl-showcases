@@ -36,12 +36,36 @@ export const LayerOptionsMenu = ({
     onDeleteLayerClick(layer.id);
   };
 
+  const getChildLayerViewState = (
+    layer: LayerExample
+  ): LayerViewState | undefined => {
+    let viewState: LayerViewState | undefined;
+
+    // Try to find across nearest children;
+    for (const childLayer of layer?.layers || []) {
+      if (childLayer.viewState) {
+        viewState = childLayer.viewState;
+        break;
+      }
+    }
+    // If didn't find across children we should check deeply.
+    if (!viewState) {
+      for (const childLayer of layer?.layers || []) {
+        viewState = getChildLayerViewState(childLayer);
+      }
+    }
+
+    return viewState;
+  };
+
   const handlePointToLayer = (event) => {
     if (selected) {
       event.stopPropagation();
     }
 
-    onPointToLayerClick(layer.viewState);
+    const viewState = layer.viewState || getChildLayerViewState(layer);
+
+    onPointToLayerClick(viewState);
   };
 
   const handleShowLayerSettings = (event) => {
