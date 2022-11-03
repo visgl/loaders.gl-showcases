@@ -451,29 +451,32 @@ export const ComparisonSide = ({
     isMainGroup: boolean,
     rootLayer?: LayerExample
   ) => {
-    const activeLayerIdsFromRoot = rootLayer
+    const allLeafsInRootLayer = rootLayer
       ? handleSelectAllLeafsInGroup(rootLayer).map((layer) => layer.id)
       : [];
+
     const activeLayersInRootGroup = activeLayers.filter((activeLayer) =>
-      activeLayerIdsFromRoot.includes(activeLayer.id)
+      allLeafsInRootLayer.includes(activeLayer.id)
     );
-    const layersInGroupsTree = handleSelectAllLeafsInGroup(layer);
-    const selectedChildrenIds = layersInGroupsTree.map((child) => child.id);
+
+    const leafsInGroupsTree = handleSelectAllLeafsInGroup(layer);
+    const selectedChildrenIds = leafsInGroupsTree.map((child) => child.id);
     const isGroupAlreadySelected = activeLayers.some((activeLayer) =>
       selectedChildrenIds.includes(activeLayer.id)
     );
 
     if (isGroupAlreadySelected && !isMainGroup) {
-      return activeLayers.filter(
+      const result = activeLayers.filter(
         (activeLayer) => !selectedChildrenIds.includes(activeLayer.id)
       );
+      return result;
     }
 
     if (isMainGroup) {
-      return layersInGroupsTree;
+      return leafsInGroupsTree;
     }
 
-    return [...activeLayersInRootGroup, ...layersInGroupsTree];
+    return [...activeLayersInRootGroup, ...leafsInGroupsTree];
   };
 
   const handleSelectLeafLayer = (
@@ -524,9 +527,7 @@ export const ComparisonSide = ({
     setActiveLayers(newActiveLayers);
     setPreventTransitions(false);
     const activeLayersIds = newActiveLayers.map((layer) => layer.id);
-    onChangeLayers &&
-      newActiveLayers.length &&
-      onChangeLayers(examples, activeLayersIds);
+    onChangeLayers && onChangeLayers(examples, activeLayersIds);
   };
 
   const onLayerDeleteHandler = (id: string) => {
