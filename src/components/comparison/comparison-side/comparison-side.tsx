@@ -205,6 +205,7 @@ export const ComparisonSide = ({
   const [layers, setLayers] = useState<LayerExample[]>([]);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
+  const [textureSetDefinitions, setTextureSetDefinitions] = useState<string[]>([]);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -348,6 +349,10 @@ export const ComparisonSide = ({
     newTileset.setProps({onTraversalComplete: onTraversalCompleteHandler})
     onLoadingStateChange(true);
     setTilesetStats(newTileset.stats);
+    setTextureSetDefinitions(Array.from((newTileset.tileset?.textureSetDefinitions as any[])?.reduce<Set<string>>((set, definition) => {
+        definition.formats?.forEach(format => set.add(format.format))
+        return set;
+      }, new Set<string>())??[]));
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
@@ -604,6 +609,7 @@ export const ComparisonSide = ({
                 id={`${side}-comparison-params-panel`}
                 isCompressedGeometry={isCompressedGeometry}
                 isCompressedTextures={isCompressedTextures}
+                textureSetDefinitions={textureSetDefinitions}
                 onGeometryChange={() =>
                   setIsCompressedGeometry((prevValue) => !prevValue)
                 }

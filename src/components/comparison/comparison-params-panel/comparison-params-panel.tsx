@@ -14,6 +14,7 @@ type ComparisonParamsProps = {
   id: string;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
+  textureSetDefinitions: string[];
   onGeometryChange: () => void;
   onTexturesChange: () => void;
   onClose: () => void;
@@ -23,6 +24,7 @@ export const ComparisonParamsPanel = ({
   id,
   isCompressedGeometry,
   isCompressedTextures,
+  textureSetDefinitions,
   onGeometryChange,
   onTexturesChange,
   onClose,
@@ -48,7 +50,7 @@ export const ComparisonParamsPanel = ({
         />
       </ItemContainer>
       <ItemContainer>
-        <Title left={16}>Compressed textures</Title>
+        <Title left={16}>{`Compressed textures${textureSetDefinitions?.length ? ` (${textureSetDefinitions.join(', ')})` : ''}`}</Title>
         <ToggleSwitch
           id={`${id}-textures`}
           checked={isCompressedTextures}
