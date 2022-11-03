@@ -79,7 +79,8 @@ describe("BookmarksPanel", () => {
   it("Should open option menu", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
     const editOption = getByText("Edit Bookmark");
@@ -90,31 +91,47 @@ describe("BookmarksPanel", () => {
   it("Should render clear bookmarks dekstop content", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
-    expect(getAllByRole("button").length).toBe(2);
+    expect(getAllByRole("button").length).toBe(4);
     const clearOption = getByText("Clear bookmarks");
     userEvent.click(clearOption);
-    expect(getAllByRole("button").length).toBe(3);
+    expect(getAllByRole("button").length).toBe(5);
   });
 
   it("Should cancel clear bookmarks", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const clearOption = getByText("Clear bookmarks");
     userEvent.click(clearOption);
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 0.4");
-    const cancelClear = getAllByRole("button")[2];
+    const cancelClear = getAllByRole("button")[4];
     userEvent.click(cancelClear);
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
+  });
+
+  it("Should clear bookmarks", () => {
+    useAppLayoutMock.mockImplementation(() => "desktop");
+    const { getAllByRole, getByText } = callRender(renderWithTheme);
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
+    userEvent.click(optionButton);
+    const clearOption = getByText("Clear bookmarks");
+    userEvent.click(clearOption);
+    const confirmButton = getAllByRole("button")[3];
+    userEvent.click(confirmButton);
+    expect(onClearBookmarks).toHaveBeenCalled();
   });
 
   it("Should render clear bookmarks mobile content", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const clearOption = getByText("Clear bookmarks");
     userEvent.click(clearOption);
@@ -127,7 +144,8 @@ describe("BookmarksPanel", () => {
   it("Should render bookmarks unsaved warning content", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const uploadOption = getByText("Upload bookmarks");
     userEvent.click(uploadOption);
@@ -141,7 +159,8 @@ describe("BookmarksPanel", () => {
   it("Should render bookmarks upload content", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const uploadOption = getByText("Upload bookmarks");
     userEvent.click(uploadOption);
@@ -155,7 +174,8 @@ describe("BookmarksPanel", () => {
   it("Should close unsaved content", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const uploadOption = getByText("Upload bookmarks");
     userEvent.click(uploadOption);
@@ -169,7 +189,8 @@ describe("BookmarksPanel", () => {
   it("Should close upload content", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const uploadOption = getByText("Upload bookmarks");
     userEvent.click(uploadOption);
@@ -185,7 +206,8 @@ describe("BookmarksPanel", () => {
   it("Should render confirm deleting mobile", () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
-    const optionButton = getAllByRole("button")[1];
+    const buttons = getAllByRole("button");
+    const optionButton = buttons[buttons.length - 1];
     userEvent.click(optionButton);
     const clearOption = getByText("Clear bookmarks");
     userEvent.click(clearOption);
