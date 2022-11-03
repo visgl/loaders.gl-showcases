@@ -48,7 +48,7 @@ export const LayerOptionsMenu = ({
         break;
       }
     }
-    // If didn't find actross children we should check deeply.
+    // If didn't find across children we should check deeply.
     if (!viewState) {
       for (const childLayer of layer?.layers || []) {
         viewState = getChildLayerViewState(childLayer);
