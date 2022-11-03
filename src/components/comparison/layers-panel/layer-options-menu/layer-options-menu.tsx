@@ -15,7 +15,7 @@ import {
 type LayerOptionsMenuProps = {
   layer: LayerExample;
   selected: boolean;
-  showLayerSettings: boolean;
+  hasSettings: boolean;
   onPointToLayerClick: (viewState?: LayerViewState) => void;
   onLayerSettingsClick: ReactEventHandler;
   onDeleteLayerClick: (id: string) => void;
@@ -24,7 +24,7 @@ type LayerOptionsMenuProps = {
 export const LayerOptionsMenu = ({
   layer,
   selected,
-  showLayerSettings,
+  hasSettings,
   onPointToLayerClick,
   onLayerSettingsClick,
   onDeleteLayerClick,
@@ -82,7 +82,7 @@ export const LayerOptionsMenu = ({
         Point to layer
       </MenuItem>
 
-      {showLayerSettings && (
+      {hasSettings && (
         <MenuItem onClick={handleShowLayerSettings}>
           <MenuSettingsIcon>
             <SettingsIcon fill={theme.colors.fontColor} />

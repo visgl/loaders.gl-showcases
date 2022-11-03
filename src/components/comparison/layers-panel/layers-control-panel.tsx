@@ -9,6 +9,7 @@ import { PlusButton } from "../../plus-button/plus-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "./layers-panel";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
+import { handleSelectAllLeafsInGroup } from "../../../utils/layer-utils";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -72,21 +73,6 @@ export const LayersControlPanel = ({
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
-  const handleSelectAllLeafsInGroup = (
-    layer: LayerExample,
-    leafs: LayerExample[] = []
-  ) => {
-    if (layer?.layers?.length) {
-      for (const childLayer of layer.layers) {
-        leafs = handleSelectAllLeafsInGroup(childLayer, leafs);
-      }
-    } else {
-      leafs.push(layer);
-    }
-
-    return leafs;
-  };
-
   const isListItemSelected = (
     layer: LayerExample,
     parentLayer?: LayerExample
@@ -146,7 +132,7 @@ export const LayersControlPanel = ({
               <LayerOptionsMenu
                 layer={layer}
                 selected={isSelected}
-                showLayerSettings={hasSettings && isSelected}
+                hasSettings={hasSettings}
                 onPointToLayerClick={(viewState) => {
                   setShowLayerSettings(false);
                   onPointToLayer(viewState);

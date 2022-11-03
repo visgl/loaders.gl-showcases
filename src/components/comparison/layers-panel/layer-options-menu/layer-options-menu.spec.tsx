@@ -17,7 +17,7 @@ describe("Layer option menu", () => {
           url: "https://test.url",
         }}
         selected={false}
-        showLayerSettings={false}
+        hasSettings={false}
         onPointToLayerClick={onPointToLayerClick}
         onLayerSettingsClick={onLayerSettingsClick}
         onDeleteLayerClick={onDeleteLayerClick}
@@ -44,7 +44,7 @@ describe("Layer option menu", () => {
           custom: true,
         }}
         selected={false}
-        showLayerSettings={true}
+        hasSettings={true}
         onPointToLayerClick={onPointToLayerClick}
         onLayerSettingsClick={onLayerSettingsClick}
         onDeleteLayerClick={onDeleteLayerClick}
