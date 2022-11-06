@@ -78,7 +78,7 @@ describe("Url Utils - getTilesetType", () => {
     const result = getTilesetType(
       "https://assets.cesium.com/1234556/tileset.json"
     );
-    expect(result).toEqual(TilesetType.Cesium);
+    expect(result).toEqual(TilesetType.CesiumIon);
   });
 
   test("Should return 3DTiles type", () => {

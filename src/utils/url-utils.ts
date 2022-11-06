@@ -9,7 +9,9 @@ export const parseTilesetUrlParams = (url, options) => {
   const parsedUrl = new URL(url);
   let token = options && options.token;
   const tilesetUrl =
-    options.type === TilesetType.I3S ? prepareTilesetUrl(parsedUrl) : url;
+    !options?.type || options.type === TilesetType.I3S
+      ? prepareTilesetUrl(parsedUrl)
+      : url;
   const index = tilesetUrl.lastIndexOf("/layers/0");
   let metadataUrl = tilesetUrl.substring(0, index);
 

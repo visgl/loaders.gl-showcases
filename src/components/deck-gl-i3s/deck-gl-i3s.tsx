@@ -6,7 +6,7 @@ import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
-import {CesiumIonLoader, Tiles3DLoader} from "@loaders.gl/3d-tiles";
+import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
@@ -28,11 +28,19 @@ import {
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
-import { selectDebugTextureForTile, selectDebugTextureForTileset, selectOriginalTextureForTile, selectOriginalTextureForTileset } from "../../utils/debug/texture-selector-utils";
+import {
+  selectDebugTextureForTile,
+  selectDebugTextureForTileset,
+  selectOriginalTextureForTile,
+  selectOriginalTextureForTileset,
+} from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
 import { getFrustumBounds } from "../../utils/debug/frustum-utils";
 import { buildMinimapData } from "../../utils/debug/build-minimap-data";
-import { getNormalSourcePosition, getNormalTargetPosition } from "../../utils/debug/normals-utils";
+import {
+  getNormalSourcePosition,
+  getNormalTargetPosition,
+} from "../../utils/debug/normals-utils";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -98,7 +106,12 @@ type DeckGlI3sProps = {
   /** Show wireframe representation of layers */
   wireframe?: boolean;
   /** Layers loading data  */
-  i3sLayers: { id?: number; url?: string; token?: string | null; type: TilesetType }[];
+  i3sLayers: {
+    id?: number;
+    url?: string;
+    token?: string | null;
+    type: TilesetType;
+  }[];
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -649,11 +662,15 @@ export const DeckGlI3s = ({
         ? selectedIndex
         : -1,
     });
-  }
+  };
 
   const render3DTilesLayer = (layer) => {
-    const loadOptions = layer.type === TilesetType.CesiumIon ? {'cesium-ion': {accessToken: layer.token}} : {};
-    const loader = layer.type === TilesetType.CesiumIon ? CesiumIonLoader : Tiles3DLoader;
+    const loadOptions =
+      layer.type === TilesetType.CesiumIon
+        ? { "cesium-ion": { accessToken: layer.token } }
+        : {};
+    const loader =
+      layer.type === TilesetType.CesiumIon ? CesiumIonLoader : Tiles3DLoader;
     return new Tile3DLayer({
       id: `tile-layer-${layer.id}--${loadNumber}`,
       data: layer.url,
@@ -663,18 +680,17 @@ export const DeckGlI3s = ({
       onTileLoad: onTileLoadHandler,
       onTileUnload,
     });
-  }
+  };
 
   const renderLayers = () => {
     const tile3dLayers = i3sLayers.map((layer) => {
       switch (layer.type) {
-        case TilesetType.I3S:
-          return renderI3SLayer(layer);
         case TilesetType.CesiumIon:
         case TilesetType.Tiles3D:
           return render3DTilesLayer(layer);
+        case TilesetType.I3S:
         default:
-          return null;
+          return renderI3SLayer(layer);
       }
     });
 
