@@ -1,9 +1,10 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import type {
+import {
   LayerExample,
   NormalsDebugData,
   TileWarning,
   Sublayer,
+  TilesetType,
 } from "../../types";
 
 import { useEffect, useRef, useState } from "react";
@@ -45,15 +46,23 @@ import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
 
 import { Color, Font } from "../../constants/common";
 import {
-  color_brand_primary, color_canvas_primary_inverted,
+  color_brand_primary,
+  color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-import ColorMap, { COLORED_BY, getRGBValueFromColorObject, makeRGBObjectFromColor } from "../../utils/debug/colors-map";
+import ColorMap, {
+  COLORED_BY,
+  getRGBValueFromColorObject,
+  makeRGBObjectFromColor,
+} from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetFromUrl, parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetFromUrl,
+  parseTilesetUrlParams,
+} from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
@@ -598,6 +607,7 @@ export const DebugApp = () => {
         id: sublayer.id,
         url: sublayer.url,
         token,
+        type: TilesetType.I3S,
       }));
   };
 

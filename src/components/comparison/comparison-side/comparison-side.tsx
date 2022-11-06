@@ -19,6 +19,7 @@ import {
   CompareButtonMode,
   DragMode,
   StatsMap,
+  TilesetType,
 } from "../../../types";
 import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -158,6 +159,7 @@ type ComparisonSideProps = {
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
   token?: string;
+  type?: TilesetType;
 };
 
 export const ComparisonSide = ({
@@ -282,6 +284,7 @@ export const ComparisonSide = ({
       url: string;
       token: string;
       hasChildren: boolean;
+      type?: TilesetType;
     }[] = [];
 
     for (const layer of layers) {
@@ -293,6 +296,7 @@ export const ComparisonSide = ({
         url: tilesetUrl,
         token,
         hasChildren: Boolean(layer.children),
+        type: layer.type
       });
     }
 
@@ -305,6 +309,7 @@ export const ComparisonSide = ({
     id: string;
     url: string;
     token: string;
+    type?: TilesetType;
   }) => {
     try {
       const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
@@ -313,7 +318,7 @@ export const ComparisonSide = ({
       setSublayers(childSublayers.map(sublayer => new ActiveSublayer(sublayer, true)));
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
-        .map((item) => ({ ...item, token: tilesetData.token }));
+        .map((item) => ({ ...item, token: tilesetData.token, type: tilesetData.type }));
       return sublayers;
     } catch (e) {
       return [
@@ -322,6 +327,7 @@ export const ComparisonSide = ({
           url: tilesetData.url,
           visibility: true,
           token: tilesetData.token,
+          type: tilesetData.type
         },
       ];
     }
@@ -333,7 +339,8 @@ export const ComparisonSide = ({
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
-        token: sublayer?.token,
+        token: sublayer.token,
+        type: sublayer.type || TilesetType.I3S
       }));
   };
 

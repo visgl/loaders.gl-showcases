@@ -1,7 +1,7 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
-import { DragMode } from "../../types";
+import { DragMode, TilesetType } from "../../types";
 
 // Mocks
 jest.mock("@loaders.gl/core");
@@ -76,6 +76,7 @@ const callRender = (renderFunc, props = {}) => {
         i3sLayers={[
           {
             url: tilesetUrl,
+            type: TilesetType.I3S
           },
         ]}
         disableController={false}

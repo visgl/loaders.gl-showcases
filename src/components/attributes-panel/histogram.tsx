@@ -38,9 +38,7 @@ export const HistogramChart = ({
     let min = histogramData.minimum;
     const binSize =
       (histogramData.maximum - histogramData.minimum) /
-      // @ts-expect-error - Change types in loaders.gl
       histogramData.counts.length;
-    // @ts-expect-error - Change types in loaders.gl
     for (const count of histogramData.counts) {
       data.push({
         xAxisData: Math.floor(min),

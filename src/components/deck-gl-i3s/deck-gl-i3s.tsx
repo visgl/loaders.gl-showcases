@@ -6,6 +6,7 @@ import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
+import {CesiumIonLoader, Tiles3DLoader} from "@loaders.gl/3d-tiles";
 import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
@@ -23,6 +24,7 @@ import {
   DragMode,
   ColorsByAttribute,
   LoadOptions,
+  TilesetType,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -96,7 +98,7 @@ type DeckGlI3sProps = {
   /** Show wireframe representation of layers */
   wireframe?: boolean;
   /** Layers loading data  */
-  i3sLayers: { id?: number; url?: string; token?: string | null }[];
+  i3sLayers: { id?: number; url?: string; token?: string | null; type: TilesetType }[];
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -613,41 +615,67 @@ export const DeckGlI3s = ({
     });
   };
 
+  const renderI3SLayer = (layer) => {
+    const loadOptions: LoadOptions = {
+      i3s: {
+        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+        useDracoGeometry,
+        useCompressedTextures,
+        colorsByAttribute,
+      },
+    };
+    if (layer.token) {
+      loadOptions.i3s.token = layer.token;
+    }
+    return new Tile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
+      data: layer.url,
+      loader: I3SLoader,
+      onTilesetLoad: onTilesetLoadHandler,
+      onTileLoad: onTileLoadHandler,
+      onTileUnload,
+      loadOptions,
+      pickable,
+      autoHighlight,
+      _subLayerProps: {
+        mesh: {
+          wireframe,
+        },
+      },
+      _getMeshColor: getMeshColor,
+      highlightedObjectIndex: autoHighlight
+        ? undefined
+        : layer.url === selectedTilesetBasePath
+        ? selectedIndex
+        : -1,
+    });
+  }
+
+  const render3DTilesLayer = (layer) => {
+    const loadOptions = layer.type === TilesetType.CesiumIon ? {'cesium-ion': {accessToken: layer.token}} : {};
+    const loader = layer.type === TilesetType.CesiumIon ? CesiumIonLoader : Tiles3DLoader;
+    return new Tile3DLayer({
+      id: `tile-layer-${layer.id}--${loadNumber}`,
+      data: layer.url,
+      loader,
+      loadOptions,
+      onTilesetLoad: onTilesetLoadHandler,
+      onTileLoad: onTileLoadHandler,
+      onTileUnload,
+    });
+  }
+
   const renderLayers = () => {
     const tile3dLayers = i3sLayers.map((layer) => {
-      const loadOptions: LoadOptions = {
-        i3s: {
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-          useDracoGeometry,
-          useCompressedTextures,
-          colorsByAttribute,
-        },
-      };
-      if (layer.token) {
-        loadOptions.i3s.token = layer.token;
+      switch (layer.type) {
+        case TilesetType.I3S:
+          return renderI3SLayer(layer);
+        case TilesetType.CesiumIon:
+        case TilesetType.Tiles3D:
+          return render3DTilesLayer(layer);
+        default:
+          return null;
       }
-      return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
-        data: layer.url,
-        loader: I3SLoader,
-        onTilesetLoad: onTilesetLoadHandler,
-        onTileLoad: onTileLoadHandler,
-        onTileUnload,
-        loadOptions,
-        pickable,
-        autoHighlight,
-        _subLayerProps: {
-          mesh: {
-            wireframe,
-          },
-        },
-        _getMeshColor: getMeshColor,
-        highlightedObjectIndex: autoHighlight
-          ? undefined
-          : layer.url === selectedTilesetBasePath
-          ? selectedIndex
-          : -1,
-      });
     });
 
     if (showTerrain) {

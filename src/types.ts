@@ -78,6 +78,12 @@ export enum ArrowDirection {
   right = "right",
 }
 
+export enum TilesetType {
+  I3S = "I3S",
+  Tiles3D = "3DTiles",
+  CesiumIon = "CesiumIon",
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -125,6 +131,7 @@ export type LayerExample = {
   token?: string;
   custom?: boolean;
   children?: LayerExample[];
+  type?: TilesetType;
 };
 
 export interface Sublayer extends BuildingSceneSublayer {

@@ -3,10 +3,34 @@ import { ExpandState, ListItemType } from "../../../../types";
 import { Checkbox } from "../../../checkbox/checkbox";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 import { RadioButton } from "../../../radio-button/radio-button";
+import { color_brand_secondary } from "../../../../constants/colors";
+
+const Title = styled.div`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  overflow: hidden;
+  color: ${({ theme }) => theme.colors.fontColor};
+`;
+
+const SubTitle = styled.div`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  margin-top: 2px;
+  color: ${color_brand_secondary};
+`;
+
+const ItemContent = styled.div`
+  margin-left: 16px;
+`;
 
 type ListItemProps = {
   id: string;
   title: string;
+  subtitle?: string;
   optionsContent?: JSX.Element;
   type: ListItemType;
   selected: boolean;
@@ -18,19 +42,10 @@ type ListItemProps = {
   onClickOutside?: () => void;
 };
 
-const Title = styled.div`
-  margin-left: 16px;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  overflow: hidden;
-  color: ${({ theme }) => theme.colors.fontColor};
-`;
-
 export const ListItem = ({
   id,
   title,
+  subtitle,
   optionsContent,
   type,
   selected,
@@ -63,7 +78,10 @@ export const ListItem = ({
       {type === ListItemType.Radio && (
         <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
       )}
-      <Title>{title}</Title>
+      <ItemContent>
+        <Title>{title}</Title>
+        {subtitle && <SubTitle>{subtitle}</SubTitle>}
+      </ItemContent>
     </ListItemWrapper>
   );
 };

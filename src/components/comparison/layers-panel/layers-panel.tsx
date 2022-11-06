@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 
-import { LayerExample, ListItemType, BaseMap } from "../../../types";
+import { LayerExample, ListItemType, BaseMap, TilesetType } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
@@ -18,6 +18,7 @@ import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
 import { useAppLayout } from "../../../utils/hooks/layout";
+import { getTilesetType } from "../../../utils/url-utils";
 
 enum Tabs {
   Layers,
@@ -159,6 +160,7 @@ export const LayersPanel = ({
       ...layer,
       id,
       custom: true,
+      type: getTilesetType(layer.url)
     };
 
     onLayerInsert(newLayer);

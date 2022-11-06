@@ -1,3 +1,5 @@
+import { TilesetType } from "../types";
+
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
   return parsedUrl.searchParams.get("tileset") || "";
@@ -6,7 +8,8 @@ export const parseTilesetFromUrl = () => {
 export const parseTilesetUrlParams = (url, options) => {
   const parsedUrl = new URL(url);
   let token = options && options.token;
-  const tilesetUrl = prepareTilesetUrl(parsedUrl);
+  const tilesetUrl =
+    options.type === TilesetType.I3S ? prepareTilesetUrl(parsedUrl) : url;
   const index = tilesetUrl.lastIndexOf("/layers/0");
   let metadataUrl = tilesetUrl.substring(0, index);
 
@@ -16,6 +19,22 @@ export const parseTilesetUrlParams = (url, options) => {
   }
 
   return { ...options, tilesetUrl, token, metadataUrl };
+};
+
+const CESIUM_URL_PREFIX = "https://assets.cesium.com";
+/**
+ * Deduce tileset type (I3S/3DTiles/Cesium) from the url
+ * @param url tileset url
+ * @returns type of the tileset
+ */
+export const getTilesetType = (url: string): TilesetType => {
+  if (url.includes(CESIUM_URL_PREFIX)) {
+    return TilesetType.CesiumIon;
+  } else if (url.substring(url.length - 5) === ".json") {
+    return TilesetType.Tiles3D;
+  } else {
+    return TilesetType.I3S;
+  }
 };
 
 const prepareTilesetUrl = (parsedUrl) => {

@@ -1,8 +1,9 @@
-import type {
+import {
   FeatureAttributes,
   Sublayer,
   LayerExample,
   ColorsByAttribute,
+  TilesetType,
 } from "../../types";
 // TODO Add export type to index file in loaders.gl
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
@@ -37,7 +38,10 @@ import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetFromUrl, parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetFromUrl,
+  parseTilesetUrlParams,
+} from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
@@ -391,6 +395,7 @@ export const ViewerApp = () => {
         id: sublayer.id,
         url: sublayer.url,
         token,
+        type: TilesetType.I3S,
       }));
   };
 
