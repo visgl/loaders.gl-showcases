@@ -24,6 +24,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@hyperjump/json-schema": "^0.23.2",
+    "@loaders.gl/3d-tiles": "^3.3.0-alpha.6",
     "@loaders.gl/i3s": "^3.3.0-alpha.6",
     "@luma.gl/core": "^8.5.14",
     "@probe.gl/stats-widget": "^3.5.0",

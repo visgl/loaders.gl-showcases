@@ -55,6 +55,10 @@ describe("List Item", () => {
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Test Title")).toBeInTheDocument();
 
+    const contentContainer = screen.getByTestId("list-item-content");
+    expect(contentContainer).toBeInTheDocument();
+    expect(contentContainer.children.length).toBe(1);
+
     expect(screen.getByText("ListItemWrapper")).toBeInTheDocument();
     const { onOptionsClick, onClick, onExpandClick, onClickOutside } =
       ListItemWrapperMock.mock.lastCall[0];
@@ -78,6 +82,16 @@ describe("List Item", () => {
       onClickOutside();
     });
     expect(onClickOutsideMock).toHaveBeenCalled();
+  });
+
+  it("Should render Subtitle", () => {
+    callRender(renderWithTheme, { subtitle: "I3S" });
+    const contentContainer = screen.getByTestId("list-item-content");
+    expect(contentContainer).toBeInTheDocument();
+    expect(contentContainer.children.length).toBe(2);
+
+    const subtitle = contentContainer.children[1];
+    expect(subtitle.innerHTML).toBe('I3S')
   });
 
   it("Should render Radio List Item", () => {

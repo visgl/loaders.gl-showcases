@@ -6,6 +6,7 @@ import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
+import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import {
   FlyToInterpolator,
   COORDINATE_SYSTEM,
@@ -23,14 +24,23 @@ import {
   DragMode,
   ColorsByAttribute,
   LoadOptions,
+  TilesetType,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
-import { selectDebugTextureForTile, selectDebugTextureForTileset, selectOriginalTextureForTile, selectOriginalTextureForTileset } from "../../utils/debug/texture-selector-utils";
+import {
+  selectDebugTextureForTile,
+  selectDebugTextureForTileset,
+  selectOriginalTextureForTile,
+  selectOriginalTextureForTileset,
+} from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
 import { getFrustumBounds } from "../../utils/debug/frustum-utils";
 import { buildMinimapData } from "../../utils/debug/build-minimap-data";
-import { getNormalSourcePosition, getNormalTargetPosition } from "../../utils/debug/normals-utils";
+import {
+  getNormalSourcePosition,
+  getNormalTargetPosition,
+} from "../../utils/debug/normals-utils";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -96,7 +106,12 @@ type DeckGlI3sProps = {
   /** Show wireframe representation of layers */
   wireframe?: boolean;
   /** Layers loading data  */
-  i3sLayers: { id?: number; url?: string; token?: string | null }[];
+  layers3d: {
+    id?: number;
+    url?: string;
+    token?: string | null;
+    type: TilesetType;
+  }[];
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -156,7 +171,7 @@ type DeckGlI3sProps = {
   onTileUnload?: (tile: Tile3D) => void;
 };
 
-export const DeckGlI3s = ({
+export const DeckGlWrapper = ({
   id,
   parentViewState,
   showMinimap,
@@ -170,7 +185,7 @@ export const DeckGlI3s = ({
   boundingVolumeColorMode,
   pickable = false,
   wireframe,
-  i3sLayers,
+  layers3d,
   lastLayerSelectedId,
   loadDebugTextureImage = false,
   showDebugTexture = false,
@@ -613,41 +628,70 @@ export const DeckGlI3s = ({
     });
   };
 
+  const renderI3SLayer = (layer) => {
+    const loadOptions: LoadOptions = {
+      i3s: {
+        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+        useDracoGeometry,
+        useCompressedTextures,
+        colorsByAttribute,
+      },
+    };
+    if (layer.token) {
+      loadOptions.i3s.token = layer.token;
+    }
+    return new Tile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
+      data: layer.url,
+      loader: I3SLoader,
+      onTilesetLoad: onTilesetLoadHandler,
+      onTileLoad: onTileLoadHandler,
+      onTileUnload,
+      loadOptions,
+      pickable,
+      autoHighlight,
+      _subLayerProps: {
+        mesh: {
+          wireframe,
+        },
+      },
+      _getMeshColor: getMeshColor,
+      highlightedObjectIndex: autoHighlight
+        ? undefined
+        : layer.url === selectedTilesetBasePath
+        ? selectedIndex
+        : -1,
+    });
+  };
+
+  const render3DTilesLayer = (layer) => {
+    const loadOptions =
+      layer.type === TilesetType.CesiumIon
+        ? { "cesium-ion": { accessToken: layer.token } }
+        : {};
+    const loader =
+      layer.type === TilesetType.CesiumIon ? CesiumIonLoader : Tiles3DLoader;
+    return new Tile3DLayer({
+      id: `tile-layer-${layer.id}--${loadNumber}`,
+      data: layer.url,
+      loader,
+      loadOptions,
+      onTilesetLoad: onTilesetLoadHandler,
+      onTileLoad: onTileLoadHandler,
+      onTileUnload,
+    });
+  };
+
   const renderLayers = () => {
-    const tile3dLayers = i3sLayers.map((layer) => {
-      const loadOptions: LoadOptions = {
-        i3s: {
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-          useDracoGeometry,
-          useCompressedTextures,
-          colorsByAttribute,
-        },
-      };
-      if (layer.token) {
-        loadOptions.i3s.token = layer.token;
+    const tile3dLayers = layers3d.map((layer) => {
+      switch (layer.type) {
+        case TilesetType.CesiumIon:
+        case TilesetType.Tiles3D:
+          return render3DTilesLayer(layer);
+        case TilesetType.I3S:
+        default:
+          return renderI3SLayer(layer);
       }
-      return new Tile3DLayer({
-        id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
-        data: layer.url,
-        loader: I3SLoader,
-        onTilesetLoad: onTilesetLoadHandler,
-        onTileLoad: onTileLoadHandler,
-        onTileUnload,
-        loadOptions,
-        pickable,
-        autoHighlight,
-        _subLayerProps: {
-          mesh: {
-            wireframe,
-          },
-        },
-        _getMeshColor: getMeshColor,
-        highlightedObjectIndex: autoHighlight
-          ? undefined
-          : layer.url === selectedTilesetBasePath
-          ? selectedIndex
-          : -1,
-      });
     });
 
     if (showTerrain) {

@@ -2165,6 +2165,19 @@
     "@math.gl/core" "^3.5.1"
     "@math.gl/geospatial" "^3.5.1"
 
+"@loaders.gl/3d-tiles@^3.3.0-alpha.6":
+  version "3.3.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/3d-tiles/-/3d-tiles-3.3.0-alpha.6.tgz#1149268782ff3a0da730079312aea55ef6caf9d3"
+  integrity sha512-1tpUFp7JFqQWovaoOgWFMTSm0qdXBWPXgblp+6sMZrW1UadC4GvZrbLNelT+xz2+EnbVkz+B2pEi4DIvvI0sGg==
+  dependencies:
+    "@loaders.gl/draco" "3.3.0-alpha.6"
+    "@loaders.gl/gltf" "3.3.0-alpha.6"
+    "@loaders.gl/loader-utils" "3.3.0-alpha.6"
+    "@loaders.gl/math" "3.3.0-alpha.6"
+    "@loaders.gl/tiles" "3.3.0-alpha.6"
+    "@math.gl/core" "^3.5.1"
+    "@math.gl/geospatial" "^3.5.1"
+
 "@loaders.gl/core@^3.2.0":
   version "3.2.9"
   resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-3.2.9.tgz#b60db0e5567715c16ab8b4254e1943c1e86c6e53"
@@ -2218,6 +2231,17 @@
     "@loaders.gl/images" "3.2.9"
     "@loaders.gl/loader-utils" "3.2.9"
     "@loaders.gl/textures" "3.2.9"
+
+"@loaders.gl/gltf@3.3.0-alpha.6":
+  version "3.3.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/gltf/-/gltf-3.3.0-alpha.6.tgz#d458c8f976166ca0b3edf5981f161e955bf0f46f"
+  integrity sha512-+UgbjroUVZkwEggGl0XEviI18yuPCmjHNgFlx0xjb+P2j61AjVW5FI0jtAfxpvgD0/P4bIBdWqWqNNjB7xdx1w==
+  dependencies:
+    "@loaders.gl/draco" "3.3.0-alpha.6"
+    "@loaders.gl/images" "3.3.0-alpha.6"
+    "@loaders.gl/loader-utils" "3.3.0-alpha.6"
+    "@loaders.gl/textures" "3.3.0-alpha.6"
+    "@math.gl/core" "^3.5.1"
 
 "@loaders.gl/i3s@^3.3.0-alpha.6":
   version "3.3.0-alpha.6"

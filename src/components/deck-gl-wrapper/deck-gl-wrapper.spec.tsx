@@ -1,7 +1,7 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
-import { DragMode } from "../../types";
+import { DragMode, TilesetType } from "../../types";
 
 // Mocks
 jest.mock("@loaders.gl/core");
@@ -25,7 +25,7 @@ jest.mock("../../utils/debug/normals-utils");
 jest.mock("../../layers/bounding-volume-layer/bounding-volume-layer");
 
 import { act, render } from "@testing-library/react";
-import { DeckGlI3s } from "./deck-gl-i3s";
+import { DeckGlWrapper } from "./deck-gl-wrapper";
 import DeckGL from "@deck.gl/react";
 import { MapController } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
@@ -36,17 +36,28 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import { BoundingVolumeLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
 import ColorMap from "../../utils/debug/colors-map";
-import { selectDebugTextureForTile, selectDebugTextureForTileset, selectOriginalTextureForTile, selectOriginalTextureForTileset } from "../../utils/debug/texture-selector-utils";
+import {
+  selectDebugTextureForTile,
+  selectDebugTextureForTileset,
+  selectOriginalTextureForTile,
+  selectOriginalTextureForTileset,
+} from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
-import { getNormalSourcePosition, getNormalTargetPosition } from "../../utils/debug/normals-utils";
+import {
+  getNormalSourcePosition,
+  getNormalTargetPosition,
+} from "../../utils/debug/normals-utils";
 import { getFrustumBounds } from "../../utils/debug/frustum-utils";
 import { buildMinimapData } from "../../utils/debug/build-minimap-data";
+import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
 });
 const tilesetUrl =
   "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0";
+const cesiumUrl = "https://assets.cesium.com/687891/tileset.json";
+const tiles3DUrl = "https://path.to.tileset/tileset.json";
 const mapStyle =
   "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 const imageStubObject = { width: 1024, height: 1024, data: new ArrayBuffer(0) };
@@ -70,12 +81,13 @@ const callRender = (renderFunc, props = {}) => {
   let renderResult;
   act(() => {
     const result = renderFunc(
-      <DeckGlI3s
+      <DeckGlWrapper
         mapStyle={mapStyle}
         pickable={false}
-        i3sLayers={[
+        layers3d={[
           {
             url: tilesetUrl,
+            type: TilesetType.I3S,
           },
         ]}
         disableController={false}
@@ -247,6 +259,53 @@ describe("Deck.gl I3S map component", () => {
       expect(highlightedObjectIndex).toBe(undefined);
     });
 
+    it("Should render Tile3DLayer with CesiumIon tileset", () => {
+      callRender(render, {
+        layers3d: [
+          {
+            url: cesiumUrl,
+            type: TilesetType.CesiumIon,
+            token: "<asdfasdffffd>",
+          },
+        ],
+      });
+      expect(Tile3DLayer).toHaveBeenCalled();
+      const {
+        id,
+        data,
+        loader,
+        loadOptions
+      } = Tile3DLayer.mock.lastCall[0];
+      expect(id).toBe("tile-layer-undefined--0");
+      expect(data).toBe(cesiumUrl);
+      expect(loader).toBe(CesiumIonLoader);
+      expect(loadOptions).toEqual({
+        "cesium-ion": { accessToken: "<asdfasdffffd>" },
+      });
+    });
+
+    it("Should render Tile3DLayer with 3DTiles tileset", () => {
+      callRender(render, {
+        layers3d: [
+          {
+            url: tiles3DUrl,
+            type: TilesetType.Tiles3D,
+          },
+        ],
+      });
+      expect(Tile3DLayer).toHaveBeenCalled();
+      const {
+        id,
+        data,
+        loader,
+        loadOptions
+      } = Tile3DLayer.mock.lastCall[0];
+      expect(id).toBe("tile-layer-undefined--0");
+      expect(data).toBe(tiles3DUrl);
+      expect(loader).toBe(Tiles3DLoader);
+      expect(loadOptions).toEqual({});
+    });
+
     it("Should update layer", () => {
       callRender(render, { loadNumber: 1 });
       const { id } = Tile3DLayer.mock.lastCall[0];
@@ -290,7 +349,7 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should render with token", () => {
       callRender(render, {
-        i3sLayers: [
+        layers3d: [
           {
             url: tilesetUrl,
             token: "<abcdefg123456>",

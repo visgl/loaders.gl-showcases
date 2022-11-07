@@ -4,7 +4,12 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 import { load } from "@loaders.gl/core";
 
-import { LayerExample, ListItemType, BaseMap, LayerViewState } from "../../../types";
+import {
+  LayerExample,
+  ListItemType,
+  BaseMap,
+  LayerViewState,
+} from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
@@ -23,6 +28,7 @@ import { useClickOutside } from "../../../utils/hooks/use-click-outside-hook";
 import { ArcGisWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
 import { useAppLayout } from "../../../utils/hooks/layout";
+import { getTilesetType } from "../../../utils/url-utils";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -200,6 +206,7 @@ export const LayersPanel = ({
       ...layer,
       id,
       custom: true,
+      type: getTilesetType(layer.url),
     };
 
     onLayerInsert(newLayer);
@@ -216,6 +223,7 @@ export const LayersPanel = ({
         id: layer.id,
         name: layer.title,
         url: layer.url || "",
+        type: getTilesetType(layer.url),
       };
 
       if (layer?.layers?.length) {
@@ -253,6 +261,7 @@ export const LayersPanel = ({
         id: scene.url,
         custom: true,
         layers,
+        type: getTilesetType(scene.url),
       };
 
       // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.

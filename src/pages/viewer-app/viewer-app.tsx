@@ -1,8 +1,9 @@
-import type {
+import {
   FeatureAttributes,
   Sublayer,
   LayerExample,
   ColorsByAttribute,
+  TilesetType,
 } from "../../types";
 // TODO Add export type to index file in loaders.gl
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
@@ -33,11 +34,14 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 
-import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetFromUrl, parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetFromUrl,
+  parseTilesetUrlParams,
+} from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
@@ -384,13 +388,14 @@ export const ViewerApp = () => {
     );
   };
 
-  const getI3sLayers = () => {
+  const getLayers3d = () => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
         token,
+        type: TilesetType.I3S,
       }));
   };
 
@@ -400,11 +405,11 @@ export const ViewerApp = () => {
       {selectedFeatureAttributes && renderAttributesPanel()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
       {renderMemory()}
-      <DeckGlI3s
+      <DeckGlWrapper
         showTerrain={useTerrainLayer}
         mapStyle={selectedMapStyle}
         pickable={isLayerPickable()}
-        i3sLayers={getI3sLayers()}
+        layers3d={getLayers3d()}
         lastLayerSelectedId={mainTileset.url}
         metadata={metadata}
         loadedTilesets={loadedTilesets}

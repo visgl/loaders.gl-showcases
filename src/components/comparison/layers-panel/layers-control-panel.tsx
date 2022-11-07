@@ -114,6 +114,7 @@ export const LayersControlPanel = ({
           <ListItem
             id={layer.id}
             title={layer.name}
+            subtitle={layer.type}
             type={parentLayer ? ListItemType.Checkbox : type}
             selected={isSelected}
             onChange={() => onLayerSelect(layer, rootLayer)}
