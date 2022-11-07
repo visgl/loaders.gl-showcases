@@ -51,7 +51,7 @@ import {
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
-import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
 import ColorMap, {
   COLORED_BY,
@@ -600,7 +600,7 @@ export const DebugApp = () => {
     );
   };
 
-  const getI3sLayers = () => {
+  const getLayers3d = () => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -637,7 +637,7 @@ export const DebugApp = () => {
       {renderTilePanel()}
       {semanticValidator && renderSemanticValidator()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
-      <DeckGlI3s
+      <DeckGlWrapper
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
         showTerrain={useTerrainLayer}
@@ -648,7 +648,7 @@ export const DebugApp = () => {
         boundingVolumeColorMode={boundingVolumeColorMode}
         pickable={pickable}
         wireframe={wireframe}
-        i3sLayers={getI3sLayers()}
+        layers3d={getLayers3d()}
         lastLayerSelectedId={mainTileset.url}
         loadDebugTextureImage
         showDebugTexture={showUVDebugTexture}

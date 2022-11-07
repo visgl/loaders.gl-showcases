@@ -34,7 +34,7 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 
-import { DeckGlI3s } from "../../components/deck-gl-i3s/deck-gl-i3s";
+import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
@@ -388,7 +388,7 @@ export const ViewerApp = () => {
     );
   };
 
-  const getI3sLayers = () => {
+  const getLayers3d = () => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -405,11 +405,11 @@ export const ViewerApp = () => {
       {selectedFeatureAttributes && renderAttributesPanel()}
       {Boolean(sublayers?.length) && renderBuildingExplorer()}
       {renderMemory()}
-      <DeckGlI3s
+      <DeckGlWrapper
         showTerrain={useTerrainLayer}
         mapStyle={selectedMapStyle}
         pickable={isLayerPickable()}
-        i3sLayers={getI3sLayers()}
+        layers3d={getLayers3d()}
         lastLayerSelectedId={mainTileset.url}
         metadata={metadata}
         loadedTilesets={loadedTilesets}

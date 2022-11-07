@@ -14,7 +14,7 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-const SubTitle = styled.div`
+const Subtitle = styled.div`
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -78,9 +78,9 @@ export const ListItem = ({
       {type === ListItemType.Radio && (
         <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
       )}
-      <ItemContent>
+      <ItemContent data-testid="list-item-content">
         <Title>{title}</Title>
-        {subtitle && <SubTitle>{subtitle}</SubTitle>}
+        {subtitle && <Subtitle>{subtitle}</Subtitle>}
       </ItemContent>
     </ListItemWrapper>
   );

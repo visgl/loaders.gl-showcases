@@ -106,7 +106,7 @@ type DeckGlI3sProps = {
   /** Show wireframe representation of layers */
   wireframe?: boolean;
   /** Layers loading data  */
-  i3sLayers: {
+  layers3d: {
     id?: number;
     url?: string;
     token?: string | null;
@@ -171,7 +171,7 @@ type DeckGlI3sProps = {
   onTileUnload?: (tile: Tile3D) => void;
 };
 
-export const DeckGlI3s = ({
+export const DeckGlWrapper = ({
   id,
   parentViewState,
   showMinimap,
@@ -185,7 +185,7 @@ export const DeckGlI3s = ({
   boundingVolumeColorMode,
   pickable = false,
   wireframe,
-  i3sLayers,
+  layers3d,
   lastLayerSelectedId,
   loadDebugTextureImage = false,
   showDebugTexture = false,
@@ -683,7 +683,7 @@ export const DeckGlI3s = ({
   };
 
   const renderLayers = () => {
-    const tile3dLayers = i3sLayers.map((layer) => {
+    const tile3dLayers = layers3d.map((layer) => {
       switch (layer.type) {
         case TilesetType.CesiumIon:
         case TilesetType.Tiles3D:

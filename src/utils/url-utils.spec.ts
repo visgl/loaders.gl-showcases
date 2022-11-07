@@ -6,22 +6,38 @@ import {
 } from "./url-utils";
 
 const mockResponse = jest.fn();
-Object.defineProperty(window, "location", {
-  value: {
-    hash: {
-      endsWith: mockResponse,
-      includes: mockResponse,
-    },
-    assign: mockResponse,
-    href: "https://test.com?tileset=https://tileset-url.com",
-  },
-  writable: true,
-});
 
 describe("Url Utils - parseTilesetUrlFromUrl", () => {
   test("Should parse tileset url", () => {
+    Object.defineProperty(window, "location", {
+      value: {
+        hash: {
+          endsWith: mockResponse,
+          includes: mockResponse,
+        },
+        assign: mockResponse,
+        href: "https://test.com?tileset=https://tileset-url.com",
+      },
+      writable: true,
+    });
     const result = parseTilesetFromUrl();
     expect(result).toStrictEqual("https://tileset-url.com");
+  });
+
+  test("Should parse url without tileset", () => {
+    Object.defineProperty(window, "location", {
+      value: {
+        hash: {
+          endsWith: mockResponse,
+          includes: mockResponse,
+        },
+        assign: mockResponse,
+        href: "https://test.com",
+      },
+      writable: true,
+    });
+    const result = parseTilesetFromUrl();
+    expect(result).toBe("");
   });
 });
 
@@ -69,6 +85,28 @@ describe("Url Utils - parseTilesetUrlParams", () => {
       metadataUrl: "https://tileset-url.com",
       tilesetUrl: "https://tileset-url.com/layers/0",
       token: null,
+    });
+  });
+
+  test("Should parse with type 'I3S'", () => {
+    const url = "https://tileset-url.com/layers/0";
+    const options = { type: TilesetType.I3S };
+    const result = parseTilesetUrlParams(url, options);
+    expect(result).toEqual({
+      metadataUrl: "https://tileset-url.com",
+      tilesetUrl: "https://tileset-url.com/layers/0",
+      type: TilesetType.I3S,
+    });
+  });
+
+  test("Should parse with type 'CesiumIon'", () => {
+    const url = "https://tileset-url.com/tileset.json";
+    const options = { type: TilesetType.CesiumIon };
+    const result = parseTilesetUrlParams(url, options);
+    expect(result).toEqual({
+      metadataUrl: "",
+      tilesetUrl: "https://tileset-url.com/tileset.json",
+      type: TilesetType.CesiumIon,
     });
   });
 });

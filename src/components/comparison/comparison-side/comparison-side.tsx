@@ -21,7 +21,7 @@ import {
   StatsMap,
   TilesetType,
 } from "../../../types";
-import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
+import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../layers-panel/layers-panel";
@@ -333,7 +333,7 @@ export const ComparisonSide = ({
     }
   };
 
-  const getI3sLayers = () => {
+  const getLayers3d = () => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -533,7 +533,7 @@ export const ComparisonSide = ({
 
   return (
     <Container layout={layout}>
-      <DeckGlI3s
+      <DeckGlWrapper
         id={sideId}
         parentViewState={{
           ...viewState,
@@ -545,7 +545,7 @@ export const ComparisonSide = ({
         mapStyle={selectedBaseMap.mapUrl}
         dragMode={dragMode}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
-        i3sLayers={getI3sLayers()}
+        layers3d={getLayers3d()}
         loadNumber={loadNumber}
         lastLayerSelectedId={tilesetRef.current?.url || ""}
         useDracoGeometry={isCompressedGeometry}

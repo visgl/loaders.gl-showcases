@@ -9,7 +9,7 @@ import {
   DragMode,
 } from "../../../types";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
-import { DeckGlI3s } from "../../deck-gl-i3s/deck-gl-i3s";
+import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { LayersPanel } from "../layers-panel/layers-panel";
@@ -18,7 +18,7 @@ import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
 
 jest.mock("@loaders.gl/core");
-jest.mock("../../deck-gl-i3s/deck-gl-i3s");
+jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../layers-panel/layers-panel");
 jest.mock("../comparison-params-panel/comparison-params-panel");
@@ -36,7 +36,7 @@ const disableButtonHandler = jest.fn();
 const onTilesetLoaded = jest.fn();
 const onShowBookmarksChange = jest.fn();
 const loadMock = load as unknown as jest.Mocked<any>;
-const DeckGlI3sMock = DeckGlI3s as unknown as jest.Mocked<any>;
+const DeckGlWrapperMock = DeckGlWrapper as unknown as jest.Mocked<any>;
 const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
 const LayersPanelMock = LayersPanel as unknown as jest.Mocked<any>;
 const ComparisonParamsPanelMock =
@@ -79,7 +79,7 @@ describe("ComparisonSide", () => {
   };
 
   beforeAll(() => {
-    DeckGlI3sMock.mockImplementation(() => <div></div>);
+    DeckGlWrapperMock.mockImplementation(() => <div></div>);
     MainToolsPanelMock.mockImplementation(() => <div></div>);
     LayersPanelMock.mockImplementation(() => <div></div>);
     ComparisonParamsPanelMock.mockImplementation(() => <div></div>);
@@ -162,7 +162,7 @@ describe("ComparisonSide", () => {
     act(() => onPointToLayer());
     expect(pointToTilesetMock).not.toHaveBeenCalled();
 
-    const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    const { onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
     act(() => onTilesetLoad({ url: "http://tileset.url" }));
 
     const { onPointToLayer: onPointToLayer2 } =
@@ -176,7 +176,7 @@ describe("ComparisonSide", () => {
     jest.useFakeTimers();
     callRender(renderWithTheme);
 
-    const { onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    const { onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
     act(() =>
       onTilesetLoad({ url: "http://tileset.url", isLoaded: () => true })
     );
@@ -191,7 +191,7 @@ describe("ComparisonSide", () => {
     callRender(renderWithTheme);
 
     const tilesetStub = { url: "http://tileset.url", isLoaded: () => true };
-    const { onTileLoad, onTilesetLoad } = DeckGlI3sMock.mock.lastCall[0];
+    const { onTileLoad, onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
     act(() => onTilesetLoad(tilesetStub));
     act(() =>
       onTileLoad({
@@ -285,26 +285,26 @@ describe("ComparisonSide", () => {
     });
 
     it("Should call onGeometryChange", () => {
-      const { useDracoGeometry } = DeckGlI3sMock.mock.lastCall[0];
+      const { useDracoGeometry } = DeckGlWrapperMock.mock.lastCall[0];
       expect(useDracoGeometry).toBeTruthy();
 
       const { onGeometryChange } = ComparisonParamsPanelMock.mock.lastCall[0];
       act(() => onGeometryChange());
 
       const { useDracoGeometry: newUseDracoGeometry } =
-        DeckGlI3sMock.mock.lastCall[0];
+      DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseDracoGeometry).toBeFalsy();
     });
 
     it("Should call onTexturesChange", () => {
-      const { useCompressedTextures } = DeckGlI3sMock.mock.lastCall[0];
+      const { useCompressedTextures } = DeckGlWrapperMock.mock.lastCall[0];
       expect(useCompressedTextures).toBeTruthy();
 
       const { onTexturesChange } = ComparisonParamsPanelMock.mock.lastCall[0];
       act(() => onTexturesChange());
 
       const { useCompressedTextures: newUseCompressedTextures } =
-        DeckGlI3sMock.mock.lastCall[0];
+      DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseCompressedTextures).toBeFalsy();
     });
 
