@@ -49,7 +49,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("List Item", () => {
-  it("Should render Subtitle and ListItemWrapper", () => {
+  it("Should render Title and ListItemWrapper", () => {
     const { container } = callRender(renderWithTheme);
 
     expect(container).toBeInTheDocument();
