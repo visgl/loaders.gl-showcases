@@ -124,7 +124,14 @@ export type LayerExample = {
   url: string;
   token?: string;
   custom?: boolean;
-  children?: LayerExample[];
+  layers?: LayerExample[];
+  viewState?: LayerViewState;
+};
+
+export type LayerViewState = {
+  longitude: number;
+  latitude: number;
+  zoom: number;
 };
 
 export interface Sublayer extends BuildingSceneSublayer {
@@ -212,5 +219,7 @@ export type Bookmark = {
   imageUrl: string;
   viewState: ViewStateSet;
   layersLeftSide: LayerExample[];
+  activeLayersIdsLeftSide: string[];
   layersRightSide: LayerExample[];
+  activeLayersIdsRightSide: string[];
 };

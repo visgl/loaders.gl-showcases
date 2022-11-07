@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 import { v4 as uuidv4 } from "uuid";
 
@@ -14,6 +13,7 @@ import {
   CompareButtonMode,
   StatsMap,
   Bookmark,
+  LayerViewState,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -86,6 +86,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
+  const [activeLayersIdsLeftSide, setActiveLayersIdsLeftSide] = useState<
+    string[]
+  >([]);
+  const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
+    string[]
+  >([]);
+
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
@@ -130,19 +137,20 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset: Tileset3D) => {
-    const { zoom, cartographicCenter } = tileset;
-    const [longitude, latitude] = cartographicCenter || [];
+  const pointToTileset = (layerViewState?: LayerViewState) => {
+    if (layerViewState) {
+      const { zoom, longitude, latitude } = layerViewState;
 
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-        transitionDuration: 1000,
-      },
-    });
+      setViewState({
+        main: {
+          ...viewState.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      });
+    }
   };
 
   const onZoomIn = () => {
@@ -254,12 +262,15 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const onChangeLayersHandler = (
     layers: LayerExample[],
+    activeIds: string[],
     side: ComparisonSideMode
   ) => {
     if (side === ComparisonSideMode.left) {
       setLayersLeftSide(layers);
+      setActiveLayersIdsLeftSide(activeIds);
     } else if (side === ComparisonSideMode.right) {
       setLayersRightSide(layers);
+      setActiveLayersIdsRightSide(activeIds);
     }
   };
 
@@ -313,6 +324,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           viewState,
           layersLeftSide,
           layersRightSide,
+          activeLayersIdsLeftSide,
+          activeLayersIdsRightSide,
         },
       ]);
     });
@@ -326,6 +339,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
+    setActiveLayersIdsLeftSide(bookmark.activeLayersIdsLeftSide);
+    setActiveLayersIdsRightSide(bookmark.activeLayersIdsRightSide);
   };
 
   const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
@@ -345,6 +360,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 viewState,
                 layersLeftSide,
                 layersRightSide,
+                activeLayersIdsLeftSide,
+                activeLayersIdsRightSide,
               }
             : bookmark
         )
@@ -367,11 +384,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={layersLeftSide}
+        activeLayersIds={activeLayersIdsLeftSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers) =>
-          onChangeLayersHandler(layers, ComparisonSideMode.left)
+        onChangeLayers={(layers, activeIds) =>
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
@@ -431,11 +449,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
+        activeLayersIds={activeLayersIdsRightSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers) =>
-          onChangeLayersHandler(layers, ComparisonSideMode.right)
+        onChangeLayers={(layers, activeIds) =>
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}

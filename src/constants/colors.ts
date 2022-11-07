@@ -10,6 +10,7 @@ export const color_brand_secondary = "#60C2A4";
 export const color_brand_tertiary = "#605DEC";
 export const color_brand_quaternary = "#9EA2AE";
 export const color_brand_quinary = "#30B18A";
+export const color_brand_senary = '#29293B';
 
 export const dim_brand_tertinary = "#4744D3";
 

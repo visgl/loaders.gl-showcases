@@ -12,6 +12,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
   {
@@ -19,6 +21,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
   {
@@ -26,6 +30,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
 ];
