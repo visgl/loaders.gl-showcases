@@ -33,6 +33,7 @@ beforeAll(() => {
 });
 
 const onInsertLayerMock = jest.fn();
+const onInsertSceneMock = jest.fn();
 const onDeleteLayerMock = jest.fn();
 const onSelectLayerMock = jest.fn();
 const onLayerSettingsClickMock = jest.fn();
@@ -41,6 +42,7 @@ const onPointToLayerMock = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <LayersControlPanel
+      onSceneInsertClick={onInsertSceneMock}
       layers={[]}
       selectedLayerIds={[]}
       type={0} // Radio Button type
@@ -70,12 +72,42 @@ describe("Layers Control Panel", () => {
       layers: [
         { id: "first", name: "first name", url: "https://first-url.com" },
         { id: "second", name: "second name", url: "https://second-url.com" },
+        {
+          id: "third",
+          name: "third name",
+          url: "",
+          layers: [
+            {
+              id: "fourth",
+              name: "fourth name",
+              url: "https://fourth-url.com",
+            },
+            { id: "fith", name: "fith name", url: "https://fith-url.com" },
+            {
+              id: "sixth",
+              name: "sixth name",
+              url: "https://sixth-url.com",
+              layers: [
+                {
+                  id: "seventh",
+                  name: "seventh name",
+                  url: "https://seventh-url.com",
+                },
+              ],
+            },
+          ],
+        },
       ],
     });
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("ListItem-first")).toBeInTheDocument();
     expect(screen.getByText("ListItem-second")).toBeInTheDocument();
+    expect(screen.getByText("ListItem-third")).toBeInTheDocument();
+    expect(screen.getByText("ListItem-fourth")).toBeInTheDocument();
+    expect(screen.getByText("ListItem-fith")).toBeInTheDocument();
+    expect(screen.getByText("ListItem-sixth")).toBeInTheDocument();
+    expect(screen.getByText("ListItem-seventh")).toBeInTheDocument();
   });
 
   it("Should be able to call functions", () => {

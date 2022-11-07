@@ -8,6 +8,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
   {
@@ -15,6 +17,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
   {
@@ -22,6 +26,8 @@ const TEST_BOOKMARKS = [
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
+    activeLayersIdsLeftSide: [],
+    activeLayersIdsRightSide: [],
     viewState: {},
   },
 ];
@@ -32,7 +38,7 @@ const onDeleteBookmark = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <Slider
-      selectedBookmarkId=""
+      selectedBookmarkId="testId2"
       bookmarks={TEST_BOOKMARKS}
       editingMode={false}
       onSelectBookmark={onSelectBookmark}
@@ -43,37 +49,28 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Slider", () => {
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+  window.HTMLElement.prototype.scrollBy = jest.fn();
   it("Should render slider", () => {
     const { container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
-
-    for (const item of container.childNodes[1].childNodes) {
-      expect(item).toHaveStyle("transform: translateX(0px)");
-    }
+    const item = container.childNodes[1].childNodes[1];
+    expect(item).toHaveStyle("border: 2px solid #605DEC");
+    expect(container.childNodes[1].childNodes.length).toBe(3);
   });
 
   it("Should click arrow right", () => {
     const { container } = callRender(renderWithTheme);
     const arrowRight = container.lastChild;
     userEvent.click(arrowRight);
-
-    for (const item of container.childNodes[1].childNodes) {
-      expect(item).toHaveStyle("transform: translateX(-144px)");
-    }
+    expect(onSelectBookmark).toHaveBeenCalled();
   });
 
   it("Should click arrow left", () => {
     const { container } = callRender(renderWithTheme);
-    const arrowRight = container.lastChild;
     const arrowLeft = container.firstChild;
-    userEvent.click(arrowRight);
-    userEvent.click(arrowRight);
-    userEvent.click(arrowRight);
     userEvent.click(arrowLeft);
-
-    for (const item of container.childNodes[1].childNodes) {
-      expect(item).toHaveStyle("transform: translateX(-112px)");
-    }
+    expect(onSelectBookmark).toHaveBeenCalled();
   });
 
   it("Should select slider item", () => {
@@ -82,5 +79,19 @@ describe("Slider", () => {
 
     userEvent.click(sliderItem);
     expect(onSelectBookmark).toHaveBeenCalled();
+  });
+
+  it("Should delete slider item", () => {
+    const { container } = callRender(renderWithTheme, {
+      editingMode: true,
+    });
+    const sliderItem = container.childNodes[1].firstChild;
+
+    userEvent.hover(sliderItem);
+    const deleteButton = sliderItem.firstChild;
+    userEvent.click(deleteButton);
+    const confirmButton = sliderItem.firstChild;
+    userEvent.click(confirmButton);
+    expect(onDeleteBookmark).toHaveBeenCalled();
   });
 });

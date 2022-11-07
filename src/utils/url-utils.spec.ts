@@ -129,5 +129,8 @@ describe("Url Utils - getTilesetType", () => {
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0"
     );
     expect(result).toEqual(TilesetType.I3S);
+
+    const resultEmptyUrl = getTilesetType();
+    expect(resultEmptyUrl).toEqual(TilesetType.I3S);
   });
 });

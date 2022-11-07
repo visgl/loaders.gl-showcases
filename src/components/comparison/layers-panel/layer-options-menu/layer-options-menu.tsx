@@ -4,6 +4,7 @@ import DeleteIcon from "../../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../../public/icons/settings.svg";
 import { color_accent_primary } from "../../../../constants/colors";
 import { ReactEventHandler } from "react";
+import { LayerExample, LayerViewState } from "../../../../types";
 import {
   MenuContainer,
   MenuItem,
@@ -12,18 +13,18 @@ import {
 } from "../../common";
 
 type LayerOptionsMenuProps = {
-  layerId: string;
-  showLayerSettings: boolean;
-  showDeleteLayer: boolean;
-  onPointToLayerClick: ReactEventHandler;
+  layer: LayerExample;
+  selected: boolean;
+  hasSettings: boolean;
+  onPointToLayerClick: (viewState?: LayerViewState) => void;
   onLayerSettingsClick: ReactEventHandler;
   onDeleteLayerClick: (id: string) => void;
 };
 
 export const LayerOptionsMenu = ({
-  layerId,
-  showLayerSettings,
-  showDeleteLayer,
+  layer,
+  selected,
+  hasSettings,
   onPointToLayerClick,
   onLayerSettingsClick,
   onDeleteLayerClick,
@@ -32,7 +33,39 @@ export const LayerOptionsMenu = ({
 
   const handleDeleteLayer = (event) => {
     event.stopPropagation();
-    onDeleteLayerClick(layerId);
+    onDeleteLayerClick(layer.id);
+  };
+
+  const getChildLayerViewState = (
+    layer: LayerExample
+  ): LayerViewState | undefined => {
+    let viewState: LayerViewState | undefined;
+
+    // Try to find across nearest children;
+    for (const childLayer of layer?.layers || []) {
+      if (childLayer.viewState) {
+        viewState = childLayer.viewState;
+        break;
+      }
+    }
+    // If didn't find across children we should check deeply.
+    if (!viewState) {
+      for (const childLayer of layer?.layers || []) {
+        viewState = getChildLayerViewState(childLayer);
+      }
+    }
+
+    return viewState;
+  };
+
+  const handlePointToLayer = (event) => {
+    if (selected) {
+      event.stopPropagation();
+    }
+
+    const viewState = layer.viewState || getChildLayerViewState(layer);
+
+    onPointToLayerClick(viewState);
   };
 
   const handleShowLayerSettings = (event) => {
@@ -42,14 +75,14 @@ export const LayerOptionsMenu = ({
 
   return (
     <MenuContainer>
-      <MenuItem onClick={onPointToLayerClick}>
+      <MenuItem onClick={handlePointToLayer}>
         <MenuSettingsIcon>
           <LocationIcon fill={theme.colors.fontColor} />
         </MenuSettingsIcon>
         Point to layer
       </MenuItem>
 
-      {showLayerSettings && (
+      {hasSettings && (
         <MenuItem onClick={handleShowLayerSettings}>
           <MenuSettingsIcon>
             <SettingsIcon fill={theme.colors.fontColor} />
@@ -58,7 +91,7 @@ export const LayerOptionsMenu = ({
         </MenuItem>
       )}
 
-      {showDeleteLayer && (
+      {layer.custom && (
         <>
           <MenuDevider />
           <MenuItem

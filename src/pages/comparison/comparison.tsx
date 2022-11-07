@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Tileset3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
 import { v4 as uuidv4 } from "uuid";
 
@@ -14,6 +13,7 @@ import {
   CompareButtonMode,
   StatsMap,
   Bookmark,
+  LayerViewState,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -86,12 +86,19 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
+  const [activeLayersIdsLeftSide, setActiveLayersIdsLeftSide] = useState<
+    string[]
+  >([]);
+  const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
+    string[]
+  >([]);
+
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
-    false,
-    false,
+    true,
+    true,
   ]);
   const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
@@ -104,7 +111,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   useEffect(() => {
     setLayersLeftSide([]);
     setLayersRightSide([]);
-    setDisableButton([false, false]);
+    setDisableButton([true, true]);
     setBookmarks([]);
   }, [mode]);
 
@@ -130,19 +137,20 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(viewStateSet);
   };
 
-  const pointToTileset = (tileset: Tileset3D) => {
-    const { zoom, cartographicCenter } = tileset;
-    const [longitude, latitude] = cartographicCenter || [];
+  const pointToTileset = (layerViewState?: LayerViewState) => {
+    if (layerViewState) {
+      const { zoom, longitude, latitude } = layerViewState;
 
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 2.5,
-        longitude,
-        latitude,
-        transitionDuration: 1000,
-      },
-    });
+      setViewState({
+        main: {
+          ...viewState.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      });
+    }
   };
 
   const onZoomIn = () => {
@@ -208,7 +216,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const downloadJsonFile = (data: {[key: string]: any}, fileName: string) => {
+  const downloadJsonFile = (data: { [key: string]: any }, fileName: string) => {
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(data)
     )}`;
@@ -217,7 +225,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     link.download = fileName;
 
     link.click();
-  }
+  };
 
   const downloadClickHandler = () => {
     const data = {
@@ -238,28 +246,31 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
     setBookmarks(bookmarks);
-  }
-  
-  const onDownloadBookmarksHandler = () => {
-    downloadJsonFile(bookmarks, "bookmarks.json");
-  }
-
-  const disableButtonHandlerLeft = () => {
-    setDisableButton((prevValue) => [true, prevValue[1]]);
   };
 
-  const disableButtonHandlerRight = () => {
-    setDisableButton((prevValue) => [prevValue[0], true]);
+  const onDownloadBookmarksHandler = () => {
+    downloadJsonFile(bookmarks, "bookmarks.json");
+  };
+
+  const disableButtonHandlerLeft = (state = true) => {
+    setDisableButton((prevValue) => [state, prevValue[1]]);
+  };
+
+  const disableButtonHandlerRight = (state = true) => {
+    setDisableButton((prevValue) => [prevValue[0], state]);
   };
 
   const onChangeLayersHandler = (
     layers: LayerExample[],
+    activeIds: string[],
     side: ComparisonSideMode
   ) => {
     if (side === ComparisonSideMode.left) {
       setLayersLeftSide(layers);
+      setActiveLayersIdsLeftSide(activeIds);
     } else if (side === ComparisonSideMode.right) {
       setLayersRightSide(layers);
+      setActiveLayersIdsRightSide(activeIds);
     }
   };
 
@@ -313,6 +324,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           viewState,
           layersLeftSide,
           layersRightSide,
+          activeLayersIdsLeftSide,
+          activeLayersIdsRightSide,
         },
       ]);
     });
@@ -326,6 +339,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
+    setActiveLayersIdsLeftSide(bookmark.activeLayersIdsLeftSide);
+    setActiveLayersIdsRightSide(bookmark.activeLayersIdsRightSide);
   };
 
   const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
@@ -345,6 +360,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
                 viewState,
                 layersLeftSide,
                 layersRightSide,
+                activeLayersIdsLeftSide,
+                activeLayersIdsRightSide,
               }
             : bookmark
         )
@@ -367,16 +384,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showLayerOptions
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={layersLeftSide}
+        activeLayersIds={activeLayersIdsLeftSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers) =>
-          onChangeLayersHandler(layers, ComparisonSideMode.left)
+        onChangeLayers={(layers, activeIds) =>
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        disableButtonHandler={disableButtonHandlerLeft}
+        onLayerSelected={() => disableButtonHandlerLeft(false)}
+        onLoadingStateChange={(state) =>
+          disableButtonHandlerLeft(
+            compareButtonMode === CompareButtonMode.Start ? state : false
+          )
+        }
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
@@ -389,7 +412,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         downloadStats={
           compareButtonMode === CompareButtonMode.Start && compared
         }
-        disableButton={disableButton.includes(false)}
+        disableButton={disableButton.includes(true)}
         disableDownloadButton={!hasBeenCompared}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
@@ -426,16 +449,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
+        activeLayersIds={activeLayersIdsRightSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers) =>
-          onChangeLayersHandler(layers, ComparisonSideMode.right)
+        onChangeLayers={(layers, activeIds) =>
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
         }
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        disableButtonHandler={disableButtonHandlerRight}
+        onLayerSelected={() => disableButtonHandlerRight(false)}
+        onLoadingStateChange={(state) =>
+          disableButtonHandlerRight(
+            compareButtonMode === CompareButtonMode.Start ? state : false
+          )
+        }
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
