@@ -22,7 +22,10 @@ import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 enum PopoverType {
   options,
@@ -39,7 +42,7 @@ type LayoutProps = {
 const Container = styled.div<LayoutProps>`
   background: ${({ theme }) => theme.colors.mainCanvasColor};
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
@@ -159,6 +162,8 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 type BookmarksPanelProps = {
   id: string;
   bookmarks: Bookmark[];
+  selectedBookmarkId: string;
+  onSelecteBookmarkId: (id: string) => void;
   onClose: () => void;
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
@@ -175,6 +180,8 @@ const confirmText = "Are you sure you  want to clear all  bookmarks?";
 export const BookmarksPanel = ({
   id,
   bookmarks,
+  selectedBookmarkId,
+  onSelecteBookmarkId,
   onClose,
   onAddBookmark,
   onSelectBookmark,
@@ -188,7 +195,7 @@ export const BookmarksPanel = ({
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
-  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
+  
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -242,12 +249,13 @@ export const BookmarksPanel = ({
   const onBookmarksUploadedHandler = (bookmarks) => {
     setPopoverType(PopoverType.none);
     onBookmarksUploaded(bookmarks);
-  }
+  };
+
   const onSelectBookmarkHandler = (bookmarkId: string) => {
     const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
 
     if (bookmark) {
-      setSelectedBookmarkId(bookmark.id);
+      onSelecteBookmarkId(bookmark.id);
     }
 
     onSelectBookmark(bookmarkId);

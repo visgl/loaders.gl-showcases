@@ -41,12 +41,15 @@ const onEditBookmark = jest.fn();
 const onDeleteBookmark = jest.fn();
 const onDownloadBookmarks = jest.fn();
 const onBookmarksUploaded = jest.fn();
+const onSelecteBookmarkId = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <BookmarksPanel
       id="test-bookmarks"
       bookmarks={TEST_BOOKMARKS}
+      selectedBookmarkId={""}
+      onSelecteBookmarkId={onSelecteBookmarkId}
       onSelectBookmark={onSelectBookmark}
       onClose={onClose}
       onCollapsed={onCollapsed}

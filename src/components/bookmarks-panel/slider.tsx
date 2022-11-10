@@ -4,7 +4,10 @@ import ChevronIcon from "../../../public/icons/chevron.svg";
 import { LayoutProps } from "../comparison/common";
 import { BookmarksListItem } from "./bookmark-list-item";
 import { Bookmark } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 const BookmarksList = styled.div<LayoutProps>`
   display: flex;

@@ -23,7 +23,10 @@ import { ComparisonSide } from "../../components/comparison/comparison-side/comp
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { createComparisonBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -95,9 +98,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   ]);
   const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
+  const [rightSideLoaded, setRightSideLoaded] = useState<boolean>(true);
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
+  
+  const bookmarksComparingMode = bookmarks.length > 0;
+  const bothLoaded = leftSideLoaded && rightSideLoaded;
 
   const layout = useAppLayout();
 
@@ -109,22 +117,57 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, [mode]);
 
   useEffect(() => {
+    console.log(leftSideLoaded, rightSideLoaded);
+  }, [rightSideLoaded, leftSideLoaded]);
+
+  useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setComapred(true);
       setLeftSideLoaded(false);
+      setRightSideLoaded(false);
     }
   }, [compareButtonMode]);
 
   useEffect(() => {
+    const currentSelectedIndex = bookmarks.findIndex(
+      (bookmark) => bookmark.id === selectedBookmarkId
+    );
+
+    const lastBookmarkId =
+      selectedBookmarkId === bookmarks[bookmarks.length - 1]?.id;
+
+    if (
+      bookmarksComparingMode &&
+      compareButtonMode === CompareButtonMode.Comparing
+    ) {
+      console.log(selectedBookmarkId);
+
+      if (lastBookmarkId && bothLoaded) {
+        setSelectedBookmarkId("");
+        setCompareButtonMode(CompareButtonMode.Start);
+      }
+
+      return () => {
+        if (!lastBookmarkId) {
+          setSelectedBookmarkId(bookmarks[currentSelectedIndex + 1].id);
+          onSelectBookmarkHandler(bookmarks[currentSelectedIndex + 1].id);
+        }
+      };
+    }
+  }, [compareButtonMode, selectedBookmarkId, bothLoaded]);
+
+  useEffect(() => {
     const loadedHandler = () => {
-      setCompareButtonMode(CompareButtonMode.Start);
+      if (!bookmarksComparingMode) {
+        setCompareButtonMode(CompareButtonMode.Start);
+      }
       setHasBeenCompared(true);
     };
     loadManagerRef.current.addEventListener("loaded", loadedHandler);
     return () => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
-  }, []);
+  }, [bookmarksComparingMode]);
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -199,8 +242,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const toggleCompareButtonMode = () => {
     setCompareButtonMode((prev) => {
       if (prev === CompareButtonMode.Start) {
-        loadManagerRef.current.startLoading();
-        setHasBeenCompared(false);
+        if (!bookmarksComparingMode) {
+          loadManagerRef.current.startLoading();
+          setHasBeenCompared(false);
+        }
+
         return CompareButtonMode.Comparing;
       }
       loadManagerRef.current.stopLoading();
@@ -323,6 +369,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (!bookmark) {
       return;
     }
+
+    if (bookmarksComparingMode) {
+      loadManagerRef.current.startLoading();
+      setLeftSideLoaded(false);
+      setRightSideLoaded(false);
+    }
+
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
@@ -394,7 +447,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         downloadStats={
           compareButtonMode === CompareButtonMode.Start && compared
         }
-        disableButton={disableButton.includes(true)}
+        disableButton={disableButton.includes(true) && !bookmarks.length}
         disableDownloadButton={!hasBeenCompared}
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
@@ -403,6 +456,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <BookmarksPanel
           id="comparison-bookmarks-panel"
           bookmarks={bookmarks}
+          selectedBookmarkId={selectedBookmarkId}
+          onSelecteBookmarkId={(id: string) => setSelectedBookmarkId(id)}
           onClose={onCloseBookmarkPanel}
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
@@ -448,6 +503,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
+          setRightSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
       />
