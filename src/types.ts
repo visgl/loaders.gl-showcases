@@ -230,3 +230,9 @@ export type Bookmark = {
   layersRightSide: LayerExample[];
   activeLayersIdsRightSide: string[];
 };
+
+export enum SelectionState {
+  selected,
+  unselected,
+  partiallySelected
+}

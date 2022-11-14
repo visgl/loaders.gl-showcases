@@ -1,7 +1,7 @@
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
 
-import { LayerExample, LayerViewState, ListItemType } from "../../../types";
+import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../../types";
 
 import { ListItem } from "./list-item/list-item";
 import { PlusButton } from "../../plus-button/plus-button";
@@ -76,26 +76,33 @@ export const LayersControlPanel = ({
   const isListItemSelected = (
     layer: LayerExample,
     parentLayer?: LayerExample
-  ): boolean => {
+  ): SelectionState => {
     const childLayers = layer.layers || [];
     const groupLeafs = handleSelectAllLeafsInGroup(layer);
-    let selected = false;
+    let selectedState = SelectionState.unselected;
 
     if (!childLayers.length) {
-      selected = selectedLayerIds.includes(layer.id);
+      selectedState = selectedLayerIds.includes(layer.id) ? SelectionState.selected : SelectionState.unselected;
     }
 
     if (childLayers.length && !parentLayer) {
-      selected = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id));
+      selectedState = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id)) ? SelectionState.selected : SelectionState.unselected;
     }
 
     if (childLayers.length && parentLayer) {
-      selected = !groupLeafs.some(
-        (leaf) => !selectedLayerIds.includes(leaf.id)
-      );
+      const isAllChildLayersSelected = !groupLeafs.some(
+        (leaf) => !selectedLayerIds.includes(leaf.id));
+      const isAnyChildLayerSelected = groupLeafs.some(
+        (leaf) => selectedLayerIds.includes(leaf.id));
+
+      if (isAllChildLayersSelected) {
+        selectedState = SelectionState.selected;
+      } else if (isAnyChildLayerSelected) {
+        selectedState = SelectionState.partiallySelected
+      }
     }
 
-    return selected;
+    return selectedState;
   };
 
   const renderLayers = (
@@ -132,7 +139,7 @@ export const LayersControlPanel = ({
             optionsContent={
               <LayerOptionsMenu
                 layer={layer}
-                selected={isSelected}
+                selected={isSelected === SelectionState.selected}
                 hasSettings={hasSettings}
                 onPointToLayerClick={(viewState) => {
                   setShowLayerSettings(false);

@@ -9,6 +9,7 @@ import {
   BOUNDING_VOLUME_COLOR_MODES,
   BOUNDING_VOLUME_TYPE,
 } from "../../constants/map-styles";
+import { SelectionState } from "../../types";
 
 const Container = styled.div<{
   renderControlPanel: boolean;
@@ -219,7 +220,7 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="loadTiles"
-              checked={loadTiles}
+              checked={loadTiles ? SelectionState.selected : SelectionState.unselected}
               onChange={() => onDebugOptionsChange({ loadTiles: !loadTiles })}
             />
             <CheckboxTitle>Load tiles</CheckboxTitle>
@@ -229,7 +230,7 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="pickable"
-              checked={pickable}
+              checked={pickable ? SelectionState.selected : SelectionState.unselected}
               onChange={() => onDebugOptionsChange({ pickable: !pickable })}
             ></Checkbox>
             <CheckboxTitle>Picking</CheckboxTitle>
@@ -239,7 +240,7 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="uvDebugTexture"
-              checked={showUVDebugTexture}
+              checked={showUVDebugTexture ? SelectionState.selected : SelectionState.unselected}
               onChange={() =>
                 onDebugOptionsChange({
                   showUVDebugTexture: !showUVDebugTexture,
@@ -254,7 +255,7 @@ export const DebugPanel = ({
           <label>
             <Checkbox
               id="wireframe"
-              checked={wireframe}
+              checked={wireframe ? SelectionState.selected : SelectionState.unselected}
               onChange={() => onDebugOptionsChange({ wireframe: !wireframe })}
             />
             <CheckboxTitle>Wireframe</CheckboxTitle>
@@ -292,7 +293,7 @@ export const DebugPanel = ({
         <label>
           <Checkbox
             id="showFrustumCullingMinimapViewport"
-            checked={minimapViewport}
+            checked={minimapViewport ? SelectionState.selected : SelectionState.unselected}
             onChange={() =>
               onDebugOptionsChange({ minimapViewport: !minimapViewport })
             }
