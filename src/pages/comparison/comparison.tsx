@@ -449,7 +449,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
-        activeLayersIds={activeLayersIdsRightSide}
+        activeLayersIds={mode === ComparisonMode.withinLayer ? activeLayersIdsLeftSide : activeLayersIdsRightSide}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
