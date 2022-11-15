@@ -105,6 +105,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   const layout = useAppLayout();
 
@@ -119,6 +120,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setComapred(true);
       setLeftSideLoaded(false);
+      setPreventTransitions(true);
     }
   }, [compareButtonMode]);
 
@@ -265,6 +267,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     activeIds: string[],
     side: ComparisonSideMode
   ) => {
+    setPreventTransitions(false);
     if (side === ComparisonSideMode.left) {
       setLayersLeftSide(layers);
       setActiveLayersIdsLeftSide(activeIds);
@@ -336,6 +339,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (!bookmark) {
       return;
     }
+    setPreventTransitions(true)
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
@@ -385,6 +389,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={layersLeftSide}
         activeLayersIds={activeLayersIdsLeftSide}
+        preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
@@ -450,6 +455,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
         activeLayersIds={activeLayersIdsRightSide}
+        preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
