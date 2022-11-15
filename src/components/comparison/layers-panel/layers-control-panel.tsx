@@ -98,7 +98,7 @@ export const LayersControlPanel = ({
       if (isAllChildLayersSelected) {
         selectedState = SelectionState.selected;
       } else if (isAnyChildLayerSelected) {
-        selectedState = SelectionState.partiallySelected
+        selectedState = SelectionState.indeterminate
       }
     }
 

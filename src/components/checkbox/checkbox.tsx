@@ -6,6 +6,8 @@ import {
   dim_brand_tertinary,
 } from "../../constants/colors";
 import { SelectionState } from "../../types";
+import CheckedIcon from "../../../public/icons/checked.svg";
+import IndeterminateIcon from "../../../public/icons/indeterminate.svg";
 
 type CheckboxProps = {
   id: string;
@@ -18,12 +20,6 @@ const CheckboxContainer = styled.div`
   vertical-align: middle;
   cursor: pointer;
   position: relative;
-`;
-
-const Icon = styled.svg`
-  fill: none;
-  stroke: ${color_canvas_primary_inverted};
-  stroke-width: 2px;
 `;
 
 const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
@@ -42,62 +38,26 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
 const StyledCheckbox = styled.div<{ checkedState: SelectionState }>`
   width: 24px;
   height: 24px;
-  background: ${({ checkedState }) => {
-    switch (checkedState) {
-      case SelectionState.selected:
-      case SelectionState.partiallySelected:
-        return color_brand_tertiary;
-      default:
-        return "transparent";
-    }
-  }};
+  background: ${({ checkedState }) => checkedState === SelectionState.unselected ? "transparent" : color_brand_tertiary};
   border: 1px solid ${color_brand_tertiary};
   border-radius: 4px;
 
   &:hover {
-    background: ${({ checkedState }) => {
-    switch (checkedState) {
-      case SelectionState.selected:
-      case SelectionState.partiallySelected:
-        return dim_brand_tertinary;
-      default:
-        return "transparent";
-    }
-  }}
+    background: ${({ checkedState }) => checkedState === SelectionState.unselected ? "transparent" : dim_brand_tertinary};
     border: 1px solid ${dim_brand_tertinary};
   }
-
-  ${Icon} {
-    visibility: ${({ checkedState }) => {
-    switch (checkedState) {
-      case SelectionState.selected:
-      case SelectionState.partiallySelected:
-        return "visible";
-      default:
-        return "hidden";
-    }
-  }};
 `;
 
 export const Checkbox = ({ id, onChange, checked: checkedState, ...rest }: CheckboxProps) => {
-  const checked = checkedState == SelectionState.selected;
+  const checked = checkedState === SelectionState.selected;
 
   return (
     <CheckboxContainer>
-      <HiddenCheckbox id={id} checked={checked} onChange={onChange} {...rest} />
+      <HiddenCheckbox id={id} data-testid={`checkbox-${id}`} checked={checked} onChange={onChange} {...rest} />
       <StyledCheckbox id={`${id}-icon`} checkedState={checkedState}>
-        {checkedState === SelectionState.selected &&
-          (<Icon  viewBox="0 0 24 24">
-            <polyline points="20 6 9 17 4 12" />
-          </Icon>)
-        }
-        {checkedState === SelectionState.partiallySelected &&
-          (<Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="6" y="12" width="12" height="1" />
-          </Icon>)
-        }
+        {checkedState === SelectionState.selected && <CheckedIcon data-testid="checkbox-icon" stroke={color_canvas_primary_inverted} />}
+        {checkedState === SelectionState.indeterminate && <IndeterminateIcon data-testid="indeterminate-icon" stroke={color_canvas_primary_inverted} />}
       </StyledCheckbox>
     </CheckboxContainer>
   )
 }
-

@@ -48,7 +48,7 @@ export const SublayerWidget = ({ sublayer, hasParent = false, onUpdateSublayerVi
         const hasAnyChildSelectedSublayer = sublayer.sublayers.some(sublayer => sublayer.visibility);
 
         if (hasAnyChildSelectedSublayer) {
-            return SelectionState.partiallySelected;
+            return SelectionState.indeterminate;
         }
 
         return SelectionState.unselected;

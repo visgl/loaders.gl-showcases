@@ -234,5 +234,5 @@ export type Bookmark = {
 export enum SelectionState {
   selected,
   unselected,
-  partiallySelected
+  indeterminate
 }
