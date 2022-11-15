@@ -112,6 +112,7 @@ describe("ComparisonSide", () => {
         loadingTime={1123}
         hasBeenCompared={false}
         showBookmarks={false}
+        preventTransitions={false}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
