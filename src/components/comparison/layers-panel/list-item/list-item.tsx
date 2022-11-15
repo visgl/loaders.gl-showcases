@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ExpandState, ListItemType } from "../../../../types";
+import { SelectionState, ExpandState, ListItemType } from "../../../../types";
 import { Checkbox } from "../../../checkbox/checkbox";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 import { RadioButton } from "../../../radio-button/radio-button";
@@ -33,7 +33,7 @@ type ListItemProps = {
   subtitle?: string;
   optionsContent?: JSX.Element;
   type: ListItemType;
-  selected: boolean;
+  selected: SelectionState;
   isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onChange: (id: string) => void;
@@ -76,7 +76,7 @@ export const ListItem = ({
         <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
       )}
       {type === ListItemType.Radio && (
-        <RadioButton id={id} checked={selected} onChange={() => onChange(id)} />
+        <RadioButton id={id} checked={selected === SelectionState.selected} onChange={() => onChange(id)} />
       )}
       <ItemContent data-testid="list-item-content">
         <Title>{title}</Title>

@@ -2,6 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BaseMapListItem } from "./base-map-list-item";
 import { renderWithTheme } from "../../../../utils/testing-utils/render-with-theme";
+import { SelectionState } from "../../../../types";
 
 describe("Base Map List Item", () => {
   it("Should render base map list item", () => {
@@ -12,7 +13,7 @@ describe("Base Map List Item", () => {
       <BaseMapListItem
         id="test-id"
         title="san-francisco"
-        selected={false}
+        selected={SelectionState.unselected}
         onMapsSelect={onChange}
         onOptionsClick={onOptionsClick}
         isOptionsPanelOpen={false}
