@@ -80,7 +80,6 @@ const onChangeLayersMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
-const onLayerSelected = jest.fn();
 const onTilesetLoaded = jest.fn();
 const onLoadingStateChange = jest.fn();
 const onShowBookmarksChange = jest.fn();
@@ -122,7 +121,6 @@ describe("ComparisonSide", () => {
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
-        onLayerSelected={onLayerSelected}
         onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
         {...props}
