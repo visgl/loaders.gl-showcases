@@ -139,6 +139,7 @@ type ComparisonSideProps = {
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
   activeLayersIds: string[];
+  preventTransitions: boolean;
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
@@ -173,6 +174,7 @@ export const ComparisonSide = ({
   showComparisonSettings,
   staticLayers,
   activeLayersIds,
+  preventTransitions,
   compareButtonMode,
   dragMode,
   loadingTime,
@@ -213,7 +215,6 @@ export const ComparisonSide = ({
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
-  const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -539,7 +540,6 @@ export const ComparisonSide = ({
     }
 
     setActiveLayers(newActiveLayers);
-    setPreventTransitions(false);
     const activeLayersIds = newActiveLayers.map((layer) => layer.id);
     onChangeLayers && onChangeLayers(examples, activeLayersIds);
   };
@@ -577,7 +577,6 @@ export const ComparisonSide = ({
   };
 
   const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    setPreventTransitions(true);
     onViewStateChange(viewStateSet);
   };
 

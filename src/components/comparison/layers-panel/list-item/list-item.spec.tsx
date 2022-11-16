@@ -6,6 +6,7 @@ import { ListItem } from "./list-item";
 import { Checkbox } from "../../../checkbox/checkbox";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 import { RadioButton } from "../../../radio-button/radio-button";
+import { SelectionState } from "../../../../types";
 
 jest.mock("../../../checkbox/checkbox");
 jest.mock("../list-item-wrapper/list-item-wrapper");
@@ -37,7 +38,7 @@ const callRender = (renderFunc, props = {}) => {
       id="test"
       title="Test Title"
       type={0} //RadioButton,
-      selected={false}
+      selected={SelectionState.unselected}
       isOptionsPanelOpen={false}
       onChange={onChangeMock}
       onOptionsClick={onOptionsClickMock}

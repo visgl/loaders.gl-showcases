@@ -1,7 +1,7 @@
 import { SyntheticEvent } from "react";
 import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
-import { ExpandState } from "../../../../types";
+import { SelectionState, ExpandState } from "../../../../types";
 import { ExpandIcon } from "../../../expand-icon/expand-icon";
 import {OptionsIcon, Panels} from '../../common'
 
@@ -9,7 +9,7 @@ type BaseMapsItemProps = {
   children: React.ReactNode;
   id: string;
   optionsContent?: JSX.Element;
-  selected: boolean;
+  selected: SelectionState;
   isOptionsPanelOpen?: boolean;
   expandState?: ExpandState;
   onClick: () => void;
@@ -75,7 +75,7 @@ export const ListItemWrapper = ({
   };
 
   return (
-    <Container checked={selected} onClick={onClick}>
+    <Container checked={selected === SelectionState.selected} onClick={onClick}>
       <ItemContentWrapper>{children}</ItemContentWrapper>
       {optionsContent && onOptionsClick && (
         <Popover

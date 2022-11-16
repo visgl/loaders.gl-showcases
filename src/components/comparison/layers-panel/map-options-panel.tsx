@@ -4,7 +4,7 @@ import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
 import { PlusButton } from "../../plus-button/plus-button";
 import { ButtonSize } from "./layers-panel";
 import { DeleteConfirmation } from "./delete-confirmation";
-import { BaseMap } from "../../../types";
+import { BaseMap, SelectionState } from "../../../types";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 
 type MapOptionPanelProps = {
@@ -76,7 +76,7 @@ export const MapOptionPanel = ({
               <BaseMapListItem
                 id={baseMap.id}
                 title={baseMap.name}
-                selected={isMapSelected}
+                selected={isMapSelected ? SelectionState.selected : SelectionState.unselected}
                 onOptionsClick={() => {
                   setShowMapSettings(true);
                   setSettingsMapId(baseMap.id);

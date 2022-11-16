@@ -10,6 +10,7 @@ import {
 
 import { color_brand_primary, color_canvas_primary_inverted } from "../../constants/colors";
 import { useForceUpdate } from "../../utils/hooks/force-update-hook";
+import { SelectionState } from "../../types";
 
 const BuildingExplorerContainer = styled.div<{
   debugMode: boolean;
@@ -159,7 +160,7 @@ export const BuildingExplorer = ({
             <label>
               <Checkbox
                 id={`CheckBox${sublayer.id}`}
-                checked={sublayer.visibility}
+                checked={sublayer.visibility ? SelectionState.selected : SelectionState.unselected}
                 onChange={() => toggleSublayer(sublayer)}
               />
               <SublayerName>{sublayer.name}</SublayerName>
