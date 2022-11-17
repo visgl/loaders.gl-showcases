@@ -159,6 +159,7 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 type BookmarksPanelProps = {
   id: string;
   bookmarks: Bookmark[];
+  selectedBookmarkId?: string;
   onClose: () => void;
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
@@ -175,6 +176,7 @@ const confirmText = "Are you sure you  want to clear all  bookmarks?";
 export const BookmarksPanel = ({
   id,
   bookmarks,
+  selectedBookmarkId = "",
   onClose,
   onAddBookmark,
   onSelectBookmark,
@@ -188,7 +190,6 @@ export const BookmarksPanel = ({
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
-  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -243,15 +244,6 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
     onBookmarksUploaded(bookmarks);
   }
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
-
-    if (bookmark) {
-      setSelectedBookmarkId(bookmark.id);
-    }
-
-    onSelectBookmark(bookmarkId);
-  };
 
   const renderPopoverContent = () => {
     if (popoverType === PopoverType.uploadWarning) {
@@ -368,7 +360,7 @@ export const BookmarksPanel = ({
               selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
               onDeleteBookmark={onDeleteBookmark}
-              onSelectBookmark={onSelectBookmarkHandler}
+              onSelectBookmark={onSelectBookmark}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>

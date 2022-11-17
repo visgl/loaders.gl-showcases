@@ -146,6 +146,7 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   showBookmarks: boolean;
+  loadNumber: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
@@ -179,6 +180,7 @@ export const ComparisonSide = ({
   loadingTime,
   loadTileset = true,
   showBookmarks,
+  loadNumber,
   hasBeenCompared,
   onViewStateChange,
   pointToTileset,
@@ -209,7 +211,6 @@ export const ComparisonSide = ({
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
-  const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
@@ -224,6 +225,10 @@ export const ComparisonSide = ({
     setIsCompressedTextures(true);
     setActiveLayers([]);
   }, [mode]);
+
+  useEffect(() => {
+    tilesetRef.current = null;
+  }, [activeLayersIds]);
 
   useEffect(() => {
     if (staticLayers) {
@@ -252,13 +257,7 @@ export const ComparisonSide = ({
       );
       setActiveLayers(activeLayers);
     }
-  }, [staticLayers]);
-
-  useEffect(() => {
-    if (compareButtonMode === CompareButtonMode.Comparing) {
-      setLoadNumber((prev) => prev + 1);
-    }
-  }, [compareButtonMode]);
+  }, [staticLayers, activeLayersIds]);
 
   useEffect(() => {
     if (hasBeenCompared) {
