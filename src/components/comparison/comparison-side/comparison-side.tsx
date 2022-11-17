@@ -367,7 +367,9 @@ export const ComparisonSide = ({
   };
 
   const onTraversalCompleteHandler = (selectedTiles) => {
+    // A parent tileset of selected tiles
     const aTileset = selectedTiles?.[0]?.tileset;
+    // Make sure that the actual tileset has been traversed traversed
     if (aTileset === tilesetRef.current && !aTileset.isLoaded()) {
       onLoadingStateChange(true);
     }
@@ -379,7 +381,7 @@ export const ComparisonSide = ({
     onLoadingStateChange(true);
     setTilesetStats(newTileset.stats);
     setExamples((prevExamples) =>
-      findExampleAndUpdateWithTileset(newTileset, prevExamples)
+      findExampleAndUpdateWithViewState(newTileset, prevExamples)
     );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
@@ -397,7 +399,7 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const findExampleAndUpdateWithTileset = (
+  const findExampleAndUpdateWithViewState = (
     tileset: Tileset3D,
     examples: LayerExample[]
   ): LayerExample[] => {
@@ -414,7 +416,7 @@ export const ComparisonSide = ({
       }
 
       if (example.layers) {
-        example.layers = findExampleAndUpdateWithTileset(
+        example.layers = findExampleAndUpdateWithViewState(
           tileset,
           example.layers
         );
@@ -452,9 +454,12 @@ export const ComparisonSide = ({
   };
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
-    setExamples((prevValues) => [...prevValues, newLayer]);
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
+    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
     setActiveLayers(flattenedLayers);
+    onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
   };
 
   const handleSelectGroupLayer = (
