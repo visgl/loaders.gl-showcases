@@ -380,7 +380,7 @@ export const ComparisonSide = ({
     onLoadingStateChange(true);
     setTilesetStats(newTileset.stats);
     setExamples((prevExamples) =>
-      findExampleAndUpdateWithTileset(newTileset, prevExamples)
+      findExampleAndUpdateWithViewState(newTileset, prevExamples)
     );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
@@ -398,7 +398,7 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const findExampleAndUpdateWithTileset = (
+  const findExampleAndUpdateWithViewState = (
     tileset: Tileset3D,
     examples: LayerExample[]
   ): LayerExample[] => {
@@ -415,7 +415,7 @@ export const ComparisonSide = ({
       }
 
       if (example.layers) {
-        example.layers = findExampleAndUpdateWithTileset(
+        example.layers = findExampleAndUpdateWithViewState(
           tileset,
           example.layers
         );
