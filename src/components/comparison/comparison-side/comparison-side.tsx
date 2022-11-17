@@ -370,6 +370,7 @@ export const ComparisonSide = ({
   const onTraversalCompleteHandler = (selectedTiles) => {
     // A parent tileset of selected tiles
     const aTileset = selectedTiles?.[0]?.tileset;
+    // Make sure that the actual tileset has been traversed traversed
     if (aTileset === tilesetRef.current && !aTileset.isLoaded()) {
       onLoadingStateChange(true);
     }
