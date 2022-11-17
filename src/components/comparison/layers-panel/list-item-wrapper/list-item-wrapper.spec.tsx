@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { ListItemWrapper } from "./list-item-wrapper";
-import { ExpandState } from "../../../../types";
+import { SelectionState, ExpandState } from "../../../../types";
 import { renderWithTheme } from "../../../../utils/testing-utils/render-with-theme";
 
 describe("List Item Wrapper", () => {
@@ -12,7 +12,7 @@ describe("List Item Wrapper", () => {
     renderWithTheme(
       <ListItemWrapper
         id="test-id"
-        selected={true}
+        selected={SelectionState.selected}
         expandState={ExpandState.expanded}
         onOptionsClick={onOptionsClick}
         onExpandClick={onExpandClick}

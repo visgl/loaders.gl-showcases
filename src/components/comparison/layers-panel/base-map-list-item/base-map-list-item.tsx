@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { SelectionState } from "../../../../types";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 
@@ -6,7 +7,7 @@ type BaseMapsItemProps = {
   id: string;
   title: string;
   optionsContent?: JSX.Element;
-  selected: boolean;
+  selected: SelectionState;
   isOptionsPanelOpen: boolean;
   onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
