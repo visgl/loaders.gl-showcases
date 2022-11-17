@@ -114,6 +114,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
+  const [loadNumber, setLoadNumber] = useState<number>(0);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
 
@@ -135,14 +137,28 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   useEffect(() => {
     const loadedHandler = () => {
-      setCompareButtonMode(CompareButtonMode.Start);
-      setHasBeenCompared(true);
+      const selectedBookmarkIndex = bookmarks.findIndex(
+        (bookmark) => bookmark.id === selectedBookmarkId
+      );
+      if (
+        !bookmarks.length ||
+        selectedBookmarkIndex === -1 ||
+        selectedBookmarkIndex === bookmarks.length - 1
+      ) {
+        setCompareButtonMode(CompareButtonMode.Start);
+        setHasBeenCompared(true);
+      } else {
+        loadManagerRef.current.startLoading();
+        onSelectBookmarkHandler(bookmarks[selectedBookmarkIndex + 1].id);
+        setLoadNumber((prev) => prev + 1);
+        setLeftSideLoaded(false);
+      }
     };
     loadManagerRef.current.addEventListener("loaded", loadedHandler);
     return () => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
-  }, []);
+  }, [selectedBookmarkId, bookmarks]);
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -220,6 +236,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       if (prev === CompareButtonMode.Start) {
         loadManagerRef.current.startLoading();
         setHasBeenCompared(false);
+        setLoadNumber((prev) => prev + 1);
+        if (bookmarks.length) {
+          onSelectBookmarkHandler(bookmarks[0].id);
+        }
         return CompareButtonMode.Comparing;
       }
       loadManagerRef.current.stopLoading();
@@ -333,11 +353,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const addBookmarkHandler = () => {
+    const newBookmarkId = uuidv4();
+    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
         {
-          id: uuidv4(),
+          id: newBookmarkId,
           imageUrl,
           viewState,
           layersLeftSide,
@@ -354,7 +376,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (!bookmark) {
       return;
     }
-    setPreventTransitions(true)
+    setSelectedBookmarkId(bookmark.id);
+    setPreventTransitions(true);
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
@@ -406,6 +429,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         activeLayersIds={activeLayersIdsLeftSide}
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
+        loadNumber={loadNumber}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>
@@ -436,6 +460,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <BookmarksPanel
           id="comparison-bookmarks-panel"
           bookmarks={bookmarks}
+          selectedBookmarkId={selectedBookmarkId}
           onClose={onCloseBookmarkPanel}
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
@@ -464,9 +489,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
-        activeLayersIds={mode === ComparisonMode.withinLayer ? activeLayersIdsLeftSide : activeLayersIdsRightSide}
+        activeLayersIds={activeLayersIdsRightSide}
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
+        loadNumber={loadNumber}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>

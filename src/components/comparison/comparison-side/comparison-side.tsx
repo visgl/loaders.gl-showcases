@@ -146,6 +146,7 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   showBookmarks: boolean;
+  loadNumber: number;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
@@ -179,6 +180,7 @@ export const ComparisonSide = ({
   loadingTime,
   loadTileset = true,
   showBookmarks,
+  loadNumber,
   hasBeenCompared,
   onViewStateChange,
   pointToTileset,
@@ -209,7 +211,6 @@ export const ComparisonSide = ({
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
-  const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
@@ -224,6 +225,10 @@ export const ComparisonSide = ({
     setIsCompressedTextures(true);
     setActiveLayers([]);
   }, [mode]);
+
+  useEffect(() => {
+    tilesetRef.current = null;
+  }, [activeLayersIds]);
 
   useEffect(() => {
     if (staticLayers) {
@@ -253,12 +258,6 @@ export const ComparisonSide = ({
       setActiveLayers(activeLayers);
     }
   }, [staticLayers, activeLayersIds]);
-
-  useEffect(() => {
-    if (compareButtonMode === CompareButtonMode.Comparing) {
-      setLoadNumber((prev) => prev + 1);
-    }
-  }, [compareButtonMode]);
 
   useEffect(() => {
     if (hasBeenCompared) {
@@ -368,9 +367,7 @@ export const ComparisonSide = ({
   };
 
   const onTraversalCompleteHandler = (selectedTiles) => {
-    // A parent tileset of selected tiles
     const aTileset = selectedTiles?.[0]?.tileset;
-    // Make sure that the actual tileset has been traversed traversed
     if (aTileset === tilesetRef.current && !aTileset.isLoaded()) {
       onLoadingStateChange(true);
     }
@@ -382,7 +379,7 @@ export const ComparisonSide = ({
     onLoadingStateChange(true);
     setTilesetStats(newTileset.stats);
     setExamples((prevExamples) =>
-      findExampleAndUpdateWithViewState(newTileset, prevExamples)
+      findExampleAndUpdateWithTileset(newTileset, prevExamples)
     );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
@@ -400,7 +397,7 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const findExampleAndUpdateWithViewState = (
+  const findExampleAndUpdateWithTileset = (
     tileset: Tileset3D,
     examples: LayerExample[]
   ): LayerExample[] => {
@@ -417,7 +414,7 @@ export const ComparisonSide = ({
       }
 
       if (example.layers) {
-        example.layers = findExampleAndUpdateWithViewState(
+        example.layers = findExampleAndUpdateWithTileset(
           tileset,
           example.layers
         );
@@ -455,12 +452,9 @@ export const ComparisonSide = ({
   };
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
-    const newExamples = [...examples, newLayer];
-    setExamples(newExamples);
+    setExamples((prevValues) => [...prevValues, newLayer]);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
-    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
     setActiveLayers(flattenedLayers);
-    onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
   };
 
   const handleSelectGroupLayer = (

@@ -112,6 +112,7 @@ describe("ComparisonSide", () => {
         loadingTime={1123}
         hasBeenCompared={false}
         showBookmarks={false}
+        loadNumber={0}
         preventTransitions={false}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
@@ -329,7 +330,6 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
-      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerInsert for group layers", () => {
@@ -342,7 +342,7 @@ describe("ComparisonSide", () => {
         onLayerInsert({
           id: "new-layer",
           name: "New Layer",
-          url: "",
+          url: "https://new.layer.url",
           layers: [
             {
               id: "1-new-layer",
@@ -357,7 +357,6 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
-      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerSelect for unit layer", () => {
@@ -952,7 +951,7 @@ describe("ComparisonSide", () => {
       act(() => onGeometryChange());
 
       const { useDracoGeometry: newUseDracoGeometry } =
-        DeckGlWrapperMock.mock.lastCall[0];
+      DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseDracoGeometry).toBeFalsy();
     });
 
@@ -964,7 +963,7 @@ describe("ComparisonSide", () => {
       act(() => onTexturesChange());
 
       const { useCompressedTextures: newUseCompressedTextures } =
-        DeckGlWrapperMock.mock.lastCall[0];
+      DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseCompressedTextures).toBeFalsy();
     });
 
