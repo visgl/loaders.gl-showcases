@@ -254,7 +254,7 @@ export const ComparisonSide = ({
       );
       setActiveLayers(activeLayers);
     }
-  }, [staticLayers]);
+  }, [staticLayers, activeLayersIds]);
 
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
@@ -453,9 +453,12 @@ export const ComparisonSide = ({
   };
 
   const onLayerInsertHandler = (newLayer: LayerExample) => {
-    setExamples((prevValues) => [...prevValues, newLayer]);
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
+    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
     setActiveLayers(flattenedLayers);
+    onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
   };
 
   const handleSelectGroupLayer = (
