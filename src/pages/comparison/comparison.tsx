@@ -23,7 +23,10 @@ import { ComparisonSide } from "../../components/comparison/comparison-side/comp
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { createComparisonBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -96,11 +99,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
   );
+  // This ref will have always updated compareButtonMode state. It is used in callbacks
+  const compareButtonModeRef = useRef<CompareButtonMode>(
+    CompareButtonMode.Start
+  );
+  compareButtonModeRef.current = compareButtonMode;
+
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
     true,
     true,
   ]);
-  const [compared, setComapred] = useState<boolean>(false);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
@@ -118,9 +126,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   useEffect(() => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
-      setComapred(true);
       setLeftSideLoaded(false);
       setPreventTransitions(true);
+    } else {
+      setDisableButton([true, true]);
     }
   }, [compareButtonMode]);
 
@@ -255,11 +264,17 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const disableButtonHandlerLeft = (state = true) => {
-    setDisableButton((prevValue) => [state, prevValue[1]]);
+    setDisableButton((prevValue) => [
+      compareButtonModeRef.current === CompareButtonMode.Start ? state : false,
+      prevValue[1],
+    ]);
   };
 
   const disableButtonHandlerRight = (state = true) => {
-    setDisableButton((prevValue) => [prevValue[0], state]);
+    setDisableButton((prevValue) => [
+      prevValue[0],
+      compareButtonModeRef.current === CompareButtonMode.Start ? state : false,
+    ]);
   };
 
   const onChangeLayersHandler = (
@@ -399,12 +414,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        onLayerSelected={() => disableButtonHandlerLeft(false)}
-        onLoadingStateChange={(state) =>
-          disableButtonHandlerLeft(
-            compareButtonMode === CompareButtonMode.Start ? state : false
-          )
-        }
+        onLoadingStateChange={disableButtonHandlerLeft}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
@@ -415,7 +425,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <CompareButton
         compareButtonMode={compareButtonMode}
         downloadStats={
-          compareButtonMode === CompareButtonMode.Start && compared
+          compareButtonMode === CompareButtonMode.Start && hasBeenCompared
         }
         disableButton={disableButton.includes(true)}
         disableDownloadButton={!hasBeenCompared}
@@ -465,12 +475,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBaseMap={onInsertBaseMapHandler}
         onSelectBaseMap={onSelectBaseMapHandler}
         onDeleteBaseMap={onDeleteBaseMapHandler}
-        onLayerSelected={() => disableButtonHandlerRight(false)}
-        onLoadingStateChange={(state) =>
-          disableButtonHandlerRight(
-            compareButtonMode === CompareButtonMode.Start ? state : false
-          )
-        }
+        onLoadingStateChange={disableButtonHandlerRight}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
