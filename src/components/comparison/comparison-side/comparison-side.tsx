@@ -227,8 +227,10 @@ export const ComparisonSide = ({
   }, [mode]);
 
   useEffect(() => {
-    tilesetRef.current = null;
-  }, [activeLayersIds]);
+    if (compareButtonMode === CompareButtonMode.Comparing) {
+      tilesetRef.current = null;
+    }
+  }, [activeLayersIds, compareButtonMode]);
 
   useEffect(() => {
     if (staticLayers) {
