@@ -95,6 +95,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
     string[]
   >([]);
+  const [bookmarksStats, setBookmarksStats] = useState<any>([]);
 
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
@@ -119,6 +120,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const layout = useAppLayout();
 
+  const { leftLoadingTime, rightLoadingTime, leftStats, rightStats } =
+    loadManagerRef.current;
+
   useEffect(() => {
     setLayersLeftSide([]);
     setLayersRightSide([]);
@@ -130,6 +134,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setLeftSideLoaded(false);
       setPreventTransitions(true);
+      setBookmarksStats([]);
     } else {
       setDisableButton([true, true]);
     }
@@ -140,6 +145,21 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       const selectedBookmarkIndex = bookmarks.findIndex(
         (bookmark) => bookmark.id === selectedBookmarkId
       );
+
+      const data = {
+        viewState: viewState.main,
+        datasets: [
+          {
+            ...loadManagerRef.current.leftStats,
+            ellapsedTime: loadManagerRef.current.leftLoadingTime,
+          },
+          {
+            ...loadManagerRef.current.rightStats,
+            ellapsedTime: loadManagerRef.current.rightLoadingTime,
+          },
+        ],
+      };
+
       if (
         !bookmarks.length ||
         selectedBookmarkIndex === -1 ||
@@ -147,11 +167,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       ) {
         setCompareButtonMode(CompareButtonMode.Start);
         setHasBeenCompared(true);
+        setBookmarksStats((prev) => [...prev, data]);
       } else {
         loadManagerRef.current.startLoading();
         onSelectBookmarkHandler(bookmarks[selectedBookmarkIndex + 1].id);
         setLoadNumber((prev) => prev + 1);
         setLeftSideLoaded(false);
+        setBookmarksStats((prev) => [...prev, data]);
       }
     };
     loadManagerRef.current.addEventListener("loaded", loadedHandler);
@@ -159,6 +181,41 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
   }, [selectedBookmarkId, bookmarks]);
+
+  console.log(bookmarksStats);
+
+  // useEffect(() => {
+  //   if (compareButtonMode === CompareButtonMode.Comparing) {
+  //     const data = {
+  //       viewState: viewState.main,
+  //       datasets: [
+  //         {
+  //           ...loadManagerRef.current.leftStats,
+  //           ellapsedTime: loadManagerRef.current.leftLoadingTime,
+  //         },
+  //         {
+  //           ...loadManagerRef.current.rightStats,
+  //           ellapsedTime: loadManagerRef.current.rightLoadingTime,
+  //         },
+  //       ],
+  //     };
+  //     setBookmarksStats((prev) => [...prev, data]);
+  //   }
+  // }, [compareButtonMode, selectedBookmarkId]);
+
+  // const data = {
+  //   viewState: viewState.main,
+  //   datasets: [
+  //     {
+  //       ...loadManagerRef.current.leftStats,
+  //       ellapsedTime: loadManagerRef.current.leftLoadingTime,
+  //     },
+  //     {
+  //       ...loadManagerRef.current.rightStats,
+  //       ellapsedTime: loadManagerRef.current.rightLoadingTime,
+  //     },
+  //   ],
+  // };
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -242,6 +299,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }
         return CompareButtonMode.Comparing;
       }
+      setBookmarksStats([]);
       loadManagerRef.current.stopLoading();
       return CompareButtonMode.Start;
     });
@@ -259,20 +317,23 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const downloadClickHandler = () => {
-    const data = {
-      viewState: viewState.main,
-      datasets: [
-        {
-          ...loadManagerRef.current.leftStats,
-          ellapsedTime: loadManagerRef.current.leftLoadingTime,
-        },
-        {
-          ...loadManagerRef.current.rightStats,
-          ellapsedTime: loadManagerRef.current.rightLoadingTime,
-        },
-      ],
-    };
-    downloadJsonFile(data, "comparison-stats.json");
+    if (!bookmarks.length) {
+      const data = {
+        viewState: viewState.main,
+        datasets: [
+          {
+            ...loadManagerRef.current.leftStats,
+            ellapsedTime: loadManagerRef.current.leftLoadingTime,
+          },
+          {
+            ...loadManagerRef.current.rightStats,
+            ellapsedTime: loadManagerRef.current.rightLoadingTime,
+          },
+        ],
+      };
+      downloadJsonFile(data, "comparison-stats.json");
+    }
+    downloadJsonFile(bookmarksStats, "bookmarks-stats.json");
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
@@ -456,11 +517,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onCompareModeToggle={toggleCompareButtonMode}
         onDownloadClick={downloadClickHandler}
       />
-      {showBookmarksPanel && (
+      {showBookmarksPanel && compareButtonMode === CompareButtonMode.Start && (
         <BookmarksPanel
           id="comparison-bookmarks-panel"
           bookmarks={bookmarks}
           selectedBookmarkId={selectedBookmarkId}
+          disableBookmarksAdding={
+            !layersLeftSide.length || !layersRightSide.length
+          }
           onClose={onCloseBookmarkPanel}
           onAddBookmark={addBookmarkHandler}
           onSelectBookmark={onSelectBookmarkHandler}
@@ -489,7 +553,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
-        activeLayersIds={mode === ComparisonMode.withinLayer ? activeLayersIdsLeftSide : activeLayersIdsRightSide}
+        activeLayersIds={
+          mode === ComparisonMode.withinLayer
+            ? activeLayersIdsLeftSide
+            : activeLayersIdsRightSide
+        }
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
         loadNumber={loadNumber}

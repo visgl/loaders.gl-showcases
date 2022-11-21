@@ -22,7 +22,10 @@ import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 enum PopoverType {
   options,
@@ -39,7 +42,7 @@ type LayoutProps = {
 const Container = styled.div<LayoutProps>`
   background: ${({ theme }) => theme.colors.mainCanvasColor};
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
@@ -160,6 +163,7 @@ type BookmarksPanelProps = {
   id: string;
   bookmarks: Bookmark[];
   selectedBookmarkId?: string;
+  disableBookmarksAdding: boolean;
   onClose: () => void;
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
@@ -177,6 +181,7 @@ export const BookmarksPanel = ({
   id,
   bookmarks,
   selectedBookmarkId = "",
+  disableBookmarksAdding,
   onClose,
   onAddBookmark,
   onSelectBookmark,
@@ -243,7 +248,7 @@ export const BookmarksPanel = ({
   const onBookmarksUploadedHandler = (bookmarks) => {
     setPopoverType(PopoverType.none);
     onBookmarksUploaded(bookmarks);
-  }
+  };
 
   const renderPopoverContent = () => {
     if (popoverType === PopoverType.uploadWarning) {
@@ -346,8 +351,8 @@ export const BookmarksPanel = ({
         <ItemsList layout={layout}>
           <ButtonWrapper layout={layout}>
             <BookmarkInnerButton
-              disabled={disableAddButton}
-              blurButton={disableAddButton}
+              disabled={disableAddButton || disableBookmarksAdding}
+              blurButton={disableAddButton || disableBookmarksAdding}
               onInnerClick={onAddBookmark}
             >
               <PlusIcon fill={theme.colors.buttonIconColor} />
