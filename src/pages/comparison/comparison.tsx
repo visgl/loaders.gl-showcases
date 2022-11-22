@@ -297,8 +297,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     downloadJsonFile(bookmarksStats, "bookmarks-stats.json");
   };
 
-  console.log(bookmarks.length)
-
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
     setBookmarks(bookmarks);
     setSelectedBookmarkId(bookmarks[0].id);
