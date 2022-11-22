@@ -14,6 +14,7 @@ import {
   StatsMap,
   Bookmark,
   LayerViewState,
+  StatsData,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -95,7 +96,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
     string[]
   >([]);
-  const [bookmarksStats, setBookmarksStats] = useState<any>([]);
+  const [bookmarksStats, setBookmarksStats] = useState<Array<StatsData>>([]);
 
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
@@ -120,9 +121,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const layout = useAppLayout();
 
-  const { leftLoadingTime, rightLoadingTime, leftStats, rightStats } =
-    loadManagerRef.current;
-
   useEffect(() => {
     setLayersLeftSide([]);
     setLayersRightSide([]);
@@ -135,8 +133,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       setLeftSideLoaded(false);
       setPreventTransitions(true);
       setBookmarksStats([]);
-    } else {
-      setDisableButton([true, true]);
     }
   }, [compareButtonMode]);
 
@@ -146,7 +142,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         (bookmark) => bookmark.id === selectedBookmarkId
       );
 
-      const data = {
+      const data: StatsData = {
         viewState: viewState.main,
         datasets: [
           {
@@ -180,42 +176,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     return () => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
-  }, [selectedBookmarkId, bookmarks]);
-
-  console.log(bookmarksStats);
-
-  // useEffect(() => {
-  //   if (compareButtonMode === CompareButtonMode.Comparing) {
-  //     const data = {
-  //       viewState: viewState.main,
-  //       datasets: [
-  //         {
-  //           ...loadManagerRef.current.leftStats,
-  //           ellapsedTime: loadManagerRef.current.leftLoadingTime,
-  //         },
-  //         {
-  //           ...loadManagerRef.current.rightStats,
-  //           ellapsedTime: loadManagerRef.current.rightLoadingTime,
-  //         },
-  //       ],
-  //     };
-  //     setBookmarksStats((prev) => [...prev, data]);
-  //   }
-  // }, [compareButtonMode, selectedBookmarkId]);
-
-  // const data = {
-  //   viewState: viewState.main,
-  //   datasets: [
-  //     {
-  //       ...loadManagerRef.current.leftStats,
-  //       ellapsedTime: loadManagerRef.current.leftLoadingTime,
-  //     },
-  //     {
-  //       ...loadManagerRef.current.rightStats,
-  //       ellapsedTime: loadManagerRef.current.rightLoadingTime,
-  //     },
-  //   ],
-  // };
+  }, [selectedBookmarkId, bookmarks, viewState.main]);
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
@@ -299,7 +260,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }
         return CompareButtonMode.Comparing;
       }
-      setBookmarksStats([]);
       loadManagerRef.current.stopLoading();
       return CompareButtonMode.Start;
     });
@@ -318,7 +278,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const downloadClickHandler = () => {
     if (!bookmarks.length) {
-      const data = {
+      const data: StatsData = {
         viewState: viewState.main,
         datasets: [
           {
@@ -332,12 +292,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ],
       };
       downloadJsonFile(data, "comparison-stats.json");
+      return;
     }
     downloadJsonFile(bookmarksStats, "bookmarks-stats.json");
   };
 
+  console.log(bookmarks.length)
+
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
     setBookmarks(bookmarks);
+    setSelectedBookmarkId(bookmarks[0].id);
   };
 
   const onDownloadBookmarksHandler = () => {

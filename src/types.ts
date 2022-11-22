@@ -186,11 +186,11 @@ export type HelpShortcutsData = {
 };
 
 export type StatsMap = {
-  url: string;
-  tilesetStats: Stats;
-  memoryStats: Stats | null;
-  isCompressedGeometry: boolean;
-  isCompressedTextures: boolean;
+  url?: string;
+  tilesetStats?: Stats;
+  memoryStats?: Stats | null;
+  isCompressedGeometry?: boolean;
+  isCompressedTextures?: boolean;
 };
 
 export type FeatureAttributes = {
@@ -234,5 +234,14 @@ export type Bookmark = {
 export enum SelectionState {
   selected,
   unselected,
-  indeterminate
+  indeterminate,
 }
+
+type Dataset = StatsMap & {
+  ellapsedTime: number;
+};
+
+export type StatsData = {
+  viewState: ViewStateSet;
+  datasets: Dataset[];
+};
