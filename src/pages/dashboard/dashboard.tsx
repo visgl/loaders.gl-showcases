@@ -5,7 +5,7 @@ import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { MapView, LinearInterpolator } from "@deck.gl/core";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Layout } from "../../utils/enums";
 import ViewerImage from "../../../public/images/viewer-image.svg";
 import DebugImage from "../../../public/images/debug-image.svg";
@@ -42,7 +42,7 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
   minZoom: 2,
   maxZoom: 30,
-  zoom: 18,
+  zoom: 17,
 };
 
 const VIEW = new MapView({
@@ -56,8 +56,25 @@ const VIEW = new MapView({
   farZMultiplier: 2.02,
 });
 
+const DashboardContainer = styled.div<LayoutProps>`
+  ${getCurrentLayoutProperty({
+    desktop: "overflow: hidden",
+    tablet: "overflow: scroll",
+    mobile: "overflow: scroll",
+  })};
+
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: url(${Background});
+  background-attachment: fixed;
+  background-size: cover;
+`;
+
 const Title = styled.div<LayoutProps>`
-  position: absolute;
+  position: relative;
 
   ${getCurrentLayoutProperty({
     desktop: "left: 80px",
@@ -90,9 +107,9 @@ const Title = styled.div<LayoutProps>`
   })};
 
   ${getCurrentLayoutProperty({
-    desktop: "top: calc(50% - 219px / 2 - 135.5px)",
-    tablet: "top: calc(50% - 450px)",
-    mobile: "top: calc(50% - 250px)",
+    desktop: "top: calc(50% - 50px)",
+    tablet: "top: calc(50% - 100px)",
+    mobile: "top: calc(50% - 60px)",
   })};
 
   font-weight: 700;
@@ -106,20 +123,9 @@ const GreenText = styled.span`
   color: ${color_brand_secondary};
 `;
 
-const Container = styled.div<LayoutProps>`
+const Wrapper = styled.div`
   width: 100%;
-  height: 50%;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  background: url(${Background});
-
-  ${getCurrentLayoutProperty({
-    desktop: "overflow: hidden",
-    tablet: "overflow: scroll",
-    mobile: "overflow: scroll",
-  })};
+  height: 50vh;
 `;
 
 const MacImage = styled.img`
@@ -132,7 +138,7 @@ const MacImage = styled.img`
 `;
 
 const AppShowcaseMobile = styled.img<LayoutProps>`
-  position: absolute;
+  position: relative;
 
   ${getCurrentLayoutProperty({
     desktop: "",
@@ -154,8 +160,8 @@ const AppShowcaseMobile = styled.img<LayoutProps>`
 
   ${getCurrentLayoutProperty({
     desktop: "",
-    tablet: "top: calc(50% - 200px)",
-    mobile: "top: calc(50% - 50px)",
+    tablet: "top: -100px",
+    mobile: "top: -50px",
   })};
 
   z-index: 3;
@@ -165,34 +171,34 @@ const IphoneImage = styled.img`
   position: absolute;
   z-index: 4;
   width: 201px;
-  right: 10px;
+  right: calc(50% - 875px);
   top: calc(50% - 615px / 2 + 330.5px);
 
   @media (max-width: 1440px) {
-   right: -20px;
+    right: -20px;
   }
 
   @media (max-width: 1250px) {
-   right: -120px;
+    right: -120px;
   }
 `;
 
-const ToolsContainer = styled.div<LayoutProps>`
+const ToolsContainer = styled.div<{ isDesktop: boolean }>`
   display: flex;
   height: 100%;
   flex-direction: column;
 
-  ${getCurrentLayoutProperty({
-    desktop: "margin: 40px 0 40px 80px",
-    tablet: "margin: 270px 48px 0 48px",
-    mobile: "margin: 180px 0 0 0",
-  })};
+  ${({ isDesktop }) =>
+    isDesktop &&
+    css`
+      margin: 40px 0 40px 80px;
+    `}
 
-  ${getCurrentLayoutProperty({
-    desktop: "align-items: stretch",
-    tablet: "align-items: center",
-    mobile: "align-items: center",
-  })};
+  ${({ isDesktop }) =>
+    !isDesktop &&
+    css`
+      align-items: center;
+    `}
 
   gap: 40px;
 `;
@@ -289,62 +295,70 @@ export const Dashboard = () => {
   });
 
   return (
-    <>
+    <DashboardContainer id="dashboard-container" layout={layout}>
       <DeckGL
         id={"dashboard-app"}
         controller={false}
         views={[VIEW]}
         layers={[tile3DLayer]}
         initialViewState={viewState}
+        style={{ position: "relative", height: "50%" }}
       >
         <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+        <Title id="dashboard-title" layout={layout}>
+          Explore and Debug I3S Data with one
+          <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
+        </Title>
       </DeckGL>
-      <Title layout={layout}>
-        Explore and Debug I3S Data with one
-        <GreenText> Simple and Easy-to-Use Tool</GreenText>
-      </Title>
-      {layout !== Layout.Desktop ? (
-        <AppShowcaseMobile layout={layout} src={AppShowcase} />
-      ) : (
-        <>
-          <MacImage src={Mac}/>
-          <IphoneImage src={Iphone} />
-        </>
-      )}
-      <Container layout={layout}>
-        <ToolsContainer layout={layout}>
-          <ToolsItem layout={layout}>
+      <Wrapper id="tools-wrapper">
+        {layout !== Layout.Desktop ? (
+          <AppShowcaseMobile
+            id="app-showcase"
+            layout={layout}
+            src={AppShowcase}
+          />
+        ) : (
+          <>
+            <MacImage id="mac-image" src={Mac} />
+            <IphoneImage id="iphone-image" src={Iphone} />
+          </>
+        )}
+        <ToolsContainer
+          id="tools-description-container"
+          isDesktop={layout === Layout.Desktop}
+        >
+          <ToolsItem id="tools-item-viewer" layout={layout}>
             <ViewerImage />
             <ToolItemDescription layout={layout}>
               Visualize multiple I3S datasets and 3d scenes at once. Gain
               insights into data correctness and performance.
             </ToolItemDescription>
-            <ArrowContainer to="/viewer">
+            <ArrowContainer id="viewer-link" to="/viewer">
               <Arrow fill={color_brand_tertiary} />
             </ArrowContainer>
           </ToolsItem>
-          <ToolsItem layout={layout}>
+          <ToolsItem id="tools-item-debug" layout={layout}>
             <DebugImage />
             <ToolItemDescription layout={layout}>
               Validate and explore each tile individually. Catch visualization
               errors and debug data easily, directly in your browser.
             </ToolItemDescription>
-            <ArrowContainer to="/debug">
+            <ArrowContainer id="debug-link" to="/debug">
               <Arrow fill={color_brand_tertiary} />
             </ArrowContainer>
           </ToolsItem>
-          <ToolsItem layout={layout}>
+          <ToolsItem id="tools-item-comparison" layout={layout}>
             <ComparisonImage />
             <ToolItemDescription layout={layout}>
               Compare different, or one dataset before and after data
               conversion. Look for conversion errors and memory anomalies.
             </ToolItemDescription>
-            <ArrowContainer to="/compare-across-layers">
+            <ArrowContainer id="comparison-link" to="/compare-across-layers">
               <Arrow fill={color_brand_tertiary} />
             </ArrowContainer>
           </ToolsItem>
         </ToolsContainer>
-      </Container>
-    </>
+      </Wrapper>
+    </DashboardContainer>
   );
 };

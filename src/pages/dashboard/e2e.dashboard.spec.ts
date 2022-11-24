@@ -1,6 +1,5 @@
 import puppeteer from "puppeteer";
 
-
 describe("Dashboard Default View", () => {
   let browser;
   let page;
@@ -34,7 +33,10 @@ describe("Dashboard Default View", () => {
     ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
 
     await page.waitForSelector("#compare-default-button");
-    const text = await page.$eval("#compare-default-button", (e) => e.textContent);
+    const text = await page.$eval(
+      "#compare-default-button",
+      (e) => e.textContent
+    );
     expect(text).toContain("Compare");
   });
 
@@ -50,7 +52,9 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/viewer']");
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/viewer?tileset=san-francisco-v1.7");
+    expect(currentUrl).toBe(
+      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+    );
     const controlPanel = await page.$$("#control-panel");
     expect(controlPanel).toBeDefined();
   });
@@ -60,7 +64,9 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/debug']");
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/debug?tileset=san-francisco-v1.7");
+    expect(currentUrl).toBe(
+      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+    );
     const toolBar = await page.$$("#tool-bar");
     expect(toolBar).toBeDefined();
   });
@@ -129,49 +135,198 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-container");
 
     // Check default theme colors of header elements
-    expect(await page.$eval("#header-container", el => getComputedStyle(el).getPropertyValue('background-color'))).toEqual('rgb(35, 36, 48)');
+    expect(
+      await page.$eval("#header-container", (el) =>
+        getComputedStyle(el).getPropertyValue("background-color")
+      )
+    ).toEqual("rgb(35, 36, 48)");
 
     const linksParentDefault = await page.$("#header-links-default");
     expect(
-      await linksParentDefault.$$eval("a", (nodes) => nodes.map((n) => getComputedStyle(n).getPropertyValue('color')))
-    ).toEqual(["rgb(96, 194, 164)", "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(255, 255, 255)"]);
+      await linksParentDefault.$$eval("a", (nodes) =>
+        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+      )
+    ).toEqual([
+      "rgb(96, 194, 164)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+    ]);
 
     expect(
-      await page.$eval("#header-logo", (element) => getComputedStyle(element).getPropertyValue('color'))
+      await page.$eval("#header-logo", (element) =>
+        getComputedStyle(element).getPropertyValue("color")
+      )
     ).toEqual("rgb(255, 255, 255)");
 
     // Check light theme colors of header elements
     await page.click("#toggle-light-default");
     await page.waitForSelector("#header-container");
 
-    const lightColor = await page.$eval("#header-container", el => getComputedStyle(el).getPropertyValue('background-color'));
-    expect(lightColor).toEqual('rgb(255, 255, 255)');
+    const lightColor = await page.$eval("#header-container", (el) =>
+      getComputedStyle(el).getPropertyValue("background-color")
+    );
+    expect(lightColor).toEqual("rgb(255, 255, 255)");
 
     const linksParentLight = await page.$("#header-links-default");
     expect(
-      await linksParentLight.$$eval("a", (nodes) => nodes.map((n) => getComputedStyle(n).getPropertyValue('color')))
-    ).toEqual(["rgb(96, 194, 164)", "rgb(35, 36, 48)", "rgb(35, 36, 48)", "rgb(35, 36, 48)"]);
+      await linksParentLight.$$eval("a", (nodes) =>
+        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+      )
+    ).toEqual([
+      "rgb(96, 194, 164)",
+      "rgb(35, 36, 48)",
+      "rgb(35, 36, 48)",
+      "rgb(35, 36, 48)",
+    ]);
 
     expect(
-      await page.$eval("#header-logo", (element) => getComputedStyle(element).getPropertyValue('color'))
+      await page.$eval("#header-logo", (element) =>
+        getComputedStyle(element).getPropertyValue("color")
+      )
     ).toEqual("rgb(35, 36, 48)");
 
     // Check dark theme colors of header elements
     await page.click("#toggle-dark-default");
     await page.waitForSelector("#header-container");
 
-    const darkColor = await page.$eval("#header-container", el => getComputedStyle(el).getPropertyValue('background-color'));
-    expect(darkColor).toEqual('rgb(35, 36, 48)');
+    const darkColor = await page.$eval("#header-container", (el) =>
+      getComputedStyle(el).getPropertyValue("background-color")
+    );
+    expect(darkColor).toEqual("rgb(35, 36, 48)");
 
     const linksParentDark = await page.$("#header-links-default");
     expect(
-      await linksParentDark.$$eval("a", (nodes) => nodes.map((n) => getComputedStyle(n).getPropertyValue('color')))
-    ).toEqual(["rgb(96, 194, 164)", "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(255, 255, 255)"]);
+      await linksParentDark.$$eval("a", (nodes) =>
+        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+      )
+    ).toEqual([
+      "rgb(96, 194, 164)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+    ]);
 
     expect(
-      await page.$eval("#header-logo", (element) => getComputedStyle(element).getPropertyValue('color'))
+      await page.$eval("#header-logo", (element) =>
+        getComputedStyle(element).getPropertyValue("color")
+      )
     ).toEqual("rgb(255, 255, 255)");
   }, 60000);
+
+  it("Should contain dashboard container", async () => {
+    await page.waitForSelector("#dashboard-container");
+
+    expect(
+      await page.$eval("#dashboard-container", (e) =>
+        getComputedStyle(e).getPropertyValue("background-image")
+      )
+    ).toEqual('url("http://localhost:3000/tools-background.png")');
+  });
+
+  it("Should contain title", async () => {
+    await page.waitForSelector("#dashboard-title");
+    const text = await page.$eval("#dashboard-title", (e) => e.textContent);
+    expect(text).toContain(
+      "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
+    );
+
+    await page.waitForSelector("#green-text");
+    expect(
+      await page.$eval("#green-text", (e) =>
+        getComputedStyle(e).getPropertyValue("color")
+      )
+    ).toEqual("rgb(96, 194, 164)");
+  });
+
+  it("Should contain tools container", async () => {
+    await page.waitForSelector("#tools-description-container");
+
+    const toolsDescriptionContainer = await page.$$("#tools-wrapper");
+    const appShowcase = await page.$("#app-showcase");
+    expect(toolsDescriptionContainer).toBeDefined();
+    expect(appShowcase).toBeNull();
+  });
+
+  it("Should contain tools description container", async () => {
+    await page.waitForSelector("#tools-description-container");
+
+    const toolsDescription = await page.$$("#tools-description-container");
+    expect(toolsDescription).toBeDefined();
+  });
+
+  it("Should contain mac image", async () => {
+    await page.waitForSelector("#mac-image");
+
+    const macImage = await page.$$("#mac-image");
+    expect(macImage).toBeDefined();
+  });
+
+  it("Should contain iphone image", async () => {
+    await page.waitForSelector("#iphone-image");
+
+    const iphoneImage = await page.$$("#iphone-image");
+    expect(iphoneImage).toBeDefined();
+  });
+
+  it("Should contain tool items", async () => {
+    await page.waitForSelector("#tools-item-viewer");
+    await page.waitForSelector("#tools-item-debug");
+    await page.waitForSelector("#tools-item-comparison");
+
+    const viwerText = await page.$eval(
+      "#tools-item-viewer",
+      (e) => e.textContent
+    );
+    const debugText = await page.$eval(
+      "#tools-item-debug",
+      (e) => e.textContent
+    );
+    const comparisonText = await page.$eval(
+      "#tools-item-comparison",
+      (e) => e.textContent
+    );
+
+    expect(viwerText).toContain(
+      "Visualize multiple I3S datasets and 3d scenes at once. Gain insights into data correctness and performance."
+    );
+    expect(debugText).toContain(
+      "Validate and explore each tile individually. Catch visualization errors and debug data easily, directly in your browser."
+    );
+    expect(comparisonText).toContain(
+      "Compare different, or one dataset before and after data conversion. Look for conversion errors and memory anomalies."
+    );
+  });
+
+  it("Should go to viewer page from tools description", async () => {
+    await page.waitForSelector("#viewer-link");
+    await page.click("#viewer-link");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(
+      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+    );
+  });
+
+  it("Should go to debug page from tools description", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#debug-link");
+    await page.click("#debug-link");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(
+      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+    );
+  });
+
+  it("Should go to the Comparison Across Layers Page", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector("#comparison-link");
+    await page.click("#comparison-link");
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
+  });
 });
 
 describe("Dashboard Tablet or Mobile view", () => {
@@ -185,6 +340,13 @@ describe("Dashboard Tablet or Mobile view", () => {
   });
 
   afterAll(() => browser.close());
+
+  it("Should contain app showcase image", async () => {
+    await page.waitForSelector("#app-showcase");
+
+    const qppShowCaseImage = await page.$$("#app-showcase");
+    expect(qppShowCaseImage).toBeDefined();
+  });
 
   it("Should automatically redirect from '/' path", async () => {
     const currentUrl = page.url();
@@ -219,11 +381,17 @@ describe("Dashboard Tablet or Mobile view", () => {
     ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
 
     await page.waitForSelector("#compare-tablet-or-mobile-button");
-    const compareText = await page.$eval("#compare-tablet-or-mobile-button", (e) => e.textContent);
+    const compareText = await page.$eval(
+      "#compare-tablet-or-mobile-button",
+      (e) => e.textContent
+    );
     expect(compareText).toContain("Compare");
 
     await page.waitForSelector("#help-button-tablet-or-mobile");
-    const helpText = await page.$eval("#help-button-tablet-or-mobile", (e) => e.textContent);
+    const helpText = await page.$eval(
+      "#help-button-tablet-or-mobile",
+      (e) => e.textContent
+    );
     expect(helpText).toContain("Help");
 
     await page.click("#close-header-menu");
@@ -245,7 +413,9 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("a[href='/viewer']");
 
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/viewer?tileset=san-francisco-v1.7");
+    expect(currentUrl).toBe(
+      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+    );
     const controlPanel = await page.$$("#control-panel");
     expect(controlPanel).toBeDefined();
     expect(!(await page.$("#tablet-or-mobile-menu")));
@@ -260,7 +430,9 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForTimeout(5000);
 
     const currentUrl = page.url();
-    expect(currentUrl).toBe("http://localhost:3000/debug?tileset=san-francisco-v1.7");
+    expect(currentUrl).toBe(
+      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+    );
     const toolBar = await page.$$("#tool-bar");
     expect(toolBar).toBeDefined();
     expect(!(await page.$("#tablet-or-mobile-menu")));
@@ -305,8 +477,12 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(await page.$$("#across-layers-item")).toBeDefined();
     expect(await page.$$("#within-layer-item")).toBeDefined();
 
-    expect(await page.$eval("#across-layers-item", (e) => e.textContent)).toContain("Across Layers");
-    expect(await page.$eval("#within-layer-item", (e) => e.textContent)).toContain("Within a Layer");
+    expect(
+      await page.$eval("#across-layers-item", (e) => e.textContent)
+    ).toContain("Across Layers");
+    expect(
+      await page.$eval("#within-layer-item", (e) => e.textContent)
+    ).toContain("Within a Layer");
 
     await page.click("#compare-tablet-or-mobile-button");
 
