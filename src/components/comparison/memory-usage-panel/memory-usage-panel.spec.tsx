@@ -82,6 +82,38 @@ describe("MemoryUsagePanel", () => {
     expect(componentElement.lastChild.childNodes.length).toBe(2);
   });
 
+  it("Should render content formats", () => {
+    renderWithTheme(
+      <MemoryUsagePanel
+        id="test-memory-usage-panel"
+        memoryStats={memoryStats}
+        tilesetStats={null}
+        contentFormats={{ draco: true, meshopt: false, dds: false, ktx2: true }}
+        loadingTime={1123}
+        updateNumber={1}
+        onClose={onClose}
+      />,
+      rerenderFunc
+    );
+    expect(componentElement.childNodes.length).toBe(5);
+
+    const formatsTitle = componentElement.childNodes[2].firstChild.firstChild;
+    expect(formatsTitle.innerHTML).toBe("Content Formats");
+
+    const formatsContainer = componentElement.childNodes[2].firstChild;
+    const formats: { [key: string]: string } = {};
+    for (let i = 1; i <= 4; i++) {
+      const element = formatsContainer.childNodes[i];
+      formats[element.firstChild.innerHTML] = element.childNodes[1].innerHTML;
+    }
+    expect(formats).toEqual({
+      DDS: "No",
+      Draco: "Yes",
+      KTX2: "Yes",
+      Meshopt: "No",
+    });
+  });
+
   it("Should collapse/expand", () => {
     const expandIcon = screen.getByText("Layer Used").nextElementSibling;
 

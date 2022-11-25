@@ -25,7 +25,6 @@ export const TileTooltip = ({ tile }: { tile: Tile3D }) => {
     id,
     type,
     header: { children },
-    // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
     _distanceToCamera,
     content: { vertexCount } = {},
   } = tile;

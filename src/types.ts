@@ -185,10 +185,18 @@ export type HelpShortcutsData = {
   [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
 };
 
+export type ContentFormats = {
+  draco: boolean;
+  meshopt: boolean;
+  dds: boolean;
+  ktx2: boolean;
+};
+
 export type StatsMap = {
   url: string;
   tilesetStats: Stats;
   memoryStats: Stats | null;
+  contentFormats: ContentFormats;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
 };
@@ -234,5 +242,5 @@ export type Bookmark = {
 export enum SelectionState {
   selected,
   unselected,
-  indeterminate
+  indeterminate,
 }

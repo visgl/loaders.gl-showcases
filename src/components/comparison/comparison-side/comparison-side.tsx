@@ -393,6 +393,7 @@ export const ComparisonSide = ({
           url: newTileset.url,
           tilesetStats: newTileset.stats,
           memoryStats,
+          contentFormats: newTileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -436,6 +437,7 @@ export const ComparisonSide = ({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          contentFormats: tile.tileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -458,7 +460,7 @@ export const ComparisonSide = ({
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
-    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
+    const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
     setActiveLayers(flattenedLayers);
     onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
   };
@@ -680,6 +682,7 @@ export const ComparisonSide = ({
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
                 tilesetStats={tilesetStats}
+                contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
                 onClose={() =>

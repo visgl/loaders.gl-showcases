@@ -11,11 +11,19 @@ import {
 } from "../common";
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
-import { ExpandState, CollapseDirection } from "../../../types";
+import { ExpandState, CollapseDirection, ContentFormats } from "../../../types";
 import LinkIcon from "../../../../public/icons/link.svg";
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { useAppLayout } from "../../../utils/hooks/layout";
 import { formatMemory } from "../../../utils/format/format-memory";
+import { formatBoolean } from "../../../utils/format/format-utils";
+
+const contentFormatsMap = {
+  draco: "Draco",
+  meshopt: "Meshopt",
+  dds: "DDS",
+  ktx2: "KTX2",
+};
 
 const StatSection = styled.div`
   display: flex;
@@ -47,6 +55,7 @@ type MemoryUsageProps = {
   id: string;
   memoryStats: Stats | null;
   tilesetStats?: Stats | null;
+  contentFormats?: ContentFormats | null;
   loadingTime: number;
   updateNumber: number;
   onClose: () => void;
@@ -56,6 +65,7 @@ export const MemoryUsagePanel = ({
   id,
   memoryStats,
   tilesetStats,
+  contentFormats,
   loadingTime,
   onClose,
 }: MemoryUsageProps) => {
@@ -71,10 +81,27 @@ export const MemoryUsagePanel = ({
       </PanelHeader>
       <HorizontalLine top={10} />
       <Content>
+        {contentFormats && (
+          <StatSection>
+            <Title bottom={12}>Content Formats</Title>
+            {Object.entries(contentFormats).map(([formatName, isPresented]) => (
+              <StatContainer key={formatName}>
+                <StatTitle>{contentFormatsMap[formatName]}</StatTitle>
+                <Title>{formatBoolean(isPresented)}</Title>
+              </StatContainer>
+            ))}
+          </StatSection>
+        )}
+      </Content>
+
+      <HorizontalLine top={0} />
+
+      <Content>
         <StatTimeContainer>
           <StatTitle>Loading time: </StatTitle>
           <Title left={6}>{`${loadingTime} ms`}</Title>
         </StatTimeContainer>
+
         {memoryStats && (
           <StatSection>
             <Title bottom={12}>Memory Usage</Title>
