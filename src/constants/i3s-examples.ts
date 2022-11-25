@@ -3,6 +3,9 @@ import { LayerExample, TilesetType } from "../types";
 export const TRANSITION_DURATION = 4000;
 export const CUSTOM_EXAMPLE_VALUE = "custom-example";
 
+// Example of WebScene Url
+// https://www.arcgis.com/sharing/rest/content/items/19dcff93eeb64f208d09d328656dd492/data
+
 export const INITIAL_EXAMPLE: LayerExample = {
   id: "san-francisco-v1.7",
   name: "San Francisco v1.7",

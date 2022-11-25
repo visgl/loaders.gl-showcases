@@ -420,6 +420,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
+        onInsertBookmarks={setBookmarks}
       />
       <Devider layout={layout} />
       <CompareButton

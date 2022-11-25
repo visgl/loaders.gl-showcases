@@ -9,7 +9,6 @@ import { MapOptionPanel } from "./map-options-panel";
 import { InsertPanel } from "../../insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
-
 import { load } from "@loaders.gl/core";
 
 jest.mock("@loaders.gl/core", () => ({
@@ -35,6 +34,10 @@ jest.mock("../../close-button/close-button", () => ({
       <CloseButtonMock onClick={onClick}>Close</CloseButtonMock>
     );
   },
+}));
+
+jest.mock("../../../utils/bookmarks-utils", () => ({
+  convertArcGisSlidesToBookmars: jest.fn()
 }));
 
 const LayersControlPanelMock =
