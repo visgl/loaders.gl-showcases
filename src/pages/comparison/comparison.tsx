@@ -27,6 +27,7 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
+import { ActiveSublayer } from "../../utils/active-sublayer";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -114,6 +115,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
+  const [sublayersLeftSide, setSublayersLeftSide] = useState<
+    null | ActiveSublayer[]
+  >(null);
 
   const layout = useAppLayout();
 
@@ -354,7 +358,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (!bookmark) {
       return;
     }
-    setPreventTransitions(true)
+    setPreventTransitions(true);
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
@@ -420,6 +424,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
+        onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
       <Devider layout={layout} />
       <CompareButton
@@ -464,9 +469,16 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
-        activeLayersIds={mode === ComparisonMode.withinLayer ? activeLayersIdsLeftSide : activeLayersIdsRightSide}
+        activeLayersIds={
+          mode === ComparisonMode.withinLayer
+            ? activeLayersIdsLeftSide
+            : activeLayersIdsRightSide
+        }
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
+        forcedSublayers={
+          mode === ComparisonMode.withinLayer ? sublayersLeftSide : null
+        }
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>

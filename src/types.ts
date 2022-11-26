@@ -124,14 +124,26 @@ export type AppThemes = {
   [Theme.Light]: DefaultTheme;
 };
 
+/** I3S Layer, I3S WebScene or 3DTiles Tileset */
 export type LayerExample = {
+  /** Layer's unique id */
   id: string;
+  /** Layer's human readable name */
   name: string;
+  /** Layer's URL */
   url: string;
+  /** Layers's authorization token */
   token?: string;
+  /** Is layer custom (added by user during application usage) 
+   * true - layer has been added by user with "Insert layer" or "Insert scene"
+   * false - layer is part of preset examples (`src/constants/i3s-examples.ts`)
+  */
   custom?: boolean;
+  /** Child layers. Used for webscene dataset */
   layers?: LayerExample[];
+  /** Initial viewState of the layer */
   viewState?: LayerViewState;
+  /** Type of the tileset (I3S/3DTiles) */
   type?: TilesetType;
 };
 
