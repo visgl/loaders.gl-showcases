@@ -74,20 +74,12 @@ const Button = styled.button<LayoutProps & { disableButton: boolean }>`
   }
 `;
 
-const Tooltip = styled.div<LayoutProps>`
+const Tooltip = styled.div<{ isMobile: boolean }>`
   position: absolute;
-  ${getCurrentLayoutProperty({
-    desktop: "top: 60px",
-    tablet: "top: 90%",
-    mobile: "top: 90%",
-  })};
-  left: ${getCurrentLayoutProperty({
-    desktop: "calc(50% - 200px)",
-    tablet: "calc(50% - 90px)",
-    mobile: "calc(50% - 90px)",
-  })};
-  background-color: ${({ theme }) => theme.colors.mainColor};
-  border-radius: 12px;
+  top: 70px;
+  left: calc(50% - 200px);
+  background-color: ${({ theme }) => theme.colors.mainHiglightColor};
+  border-radius: 8px;
   padding: 8px;
   z-index: 1;
   font-weight: 500;
@@ -95,11 +87,27 @@ const Tooltip = styled.div<LayoutProps>`
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
-  white-space: ${getCurrentLayoutProperty({
-    desktop: "nowrap",
-    tablet: "normal",
-    mobile: "normal",
-  })};
+  white-space: nowrap;
+
+  ${({ isMobile }) =>
+    isMobile &&
+    css`
+      height: 38px;
+      width: 250px;
+      left: calc(50% - 130px);
+      top: 65px;
+      white-space: normal;
+      text-align: center;
+    `}
+
+  &:before {
+    content: "";
+    position: absolute;
+    bottom: 95%;
+    left: calc(50% - 15px);
+    border: 9px solid transparent;
+    border-bottom-color: ${({ theme }) => theme.colors.mainHiglightColor};
+  }
 `;
 
 const ButtonTitle = styled(Title)`
@@ -128,9 +136,9 @@ export const CompareButton = ({
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
   const layout = useAppLayout();
+  const isMobileLayout = layout !== Layout.Desktop;
 
-  const showTooltip =
-    (isHovering || layout !== Layout.Desktop) && disableButton;
+  const showTooltip = (isHovering || isMobileLayout) && disableButton;
 
   const onPointerEnter = () => {
     setIsHovering(true);
@@ -178,7 +186,7 @@ export const CompareButton = ({
         </Button>
       )}
       {showTooltip && (
-        <Tooltip layout={layout}>
+        <Tooltip isMobile={isMobileLayout}>
           You can start comparison when all tiles are fully loaded
         </Tooltip>
       )}
