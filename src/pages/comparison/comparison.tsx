@@ -96,7 +96,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
     string[]
   >([]);
-  const [bookmarksStats, setBookmarksStats] = useState<Array<StatsData>>([]);
+  const [comparisonStats, setComparisonStats] = useState<StatsData[]>([]);
 
   const [compareButtonMode, setCompareButtonMode] = useState(
     CompareButtonMode.Start
@@ -132,7 +132,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setLeftSideLoaded(false);
       setPreventTransitions(true);
-      setBookmarksStats([]);
+      setComparisonStats([]);
     }
   }, [compareButtonMode]);
 
@@ -156,6 +156,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ],
       };
 
+      setComparisonStats((prev) => [...prev, data]);
+
       if (
         !bookmarks.length ||
         selectedBookmarkIndex === -1 ||
@@ -163,13 +165,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       ) {
         setCompareButtonMode(CompareButtonMode.Start);
         setHasBeenCompared(true);
-        setBookmarksStats((prev) => [...prev, data]);
       } else {
         loadManagerRef.current.startLoading();
         onSelectBookmarkHandler(bookmarks[selectedBookmarkIndex + 1].id);
         setLoadNumber((prev) => prev + 1);
         setLeftSideLoaded(false);
-        setBookmarksStats((prev) => [...prev, data]);
       }
     };
     loadManagerRef.current.addEventListener("loaded", loadedHandler);
@@ -277,29 +277,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const downloadClickHandler = () => {
-    if (!bookmarks.length) {
-      const data: StatsData = {
-        viewState: viewState.main,
-        datasets: [
-          {
-            ...loadManagerRef.current.leftStats,
-            ellapsedTime: loadManagerRef.current.leftLoadingTime,
-          },
-          {
-            ...loadManagerRef.current.rightStats,
-            ellapsedTime: loadManagerRef.current.rightLoadingTime,
-          },
-        ],
-      };
-      downloadJsonFile(data, "comparison-stats.json");
-      return;
-    }
-    downloadJsonFile(bookmarksStats, "bookmarks-stats.json");
+    downloadJsonFile(comparisonStats, "bookmarks-stats.json");
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
     setBookmarks(bookmarks);
-    setSelectedBookmarkId(bookmarks[0].id);
+    onSelectBookmarkHandler(bookmarks[0].id);
   };
 
   const onDownloadBookmarksHandler = () => {
