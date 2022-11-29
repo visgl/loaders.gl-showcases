@@ -128,8 +128,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (compareButtonMode === CompareButtonMode.Comparing) {
       setLeftSideLoaded(false);
       setPreventTransitions(true);
-    } else {
-      setDisableButton([true, true]);
     }
   }, [compareButtonMode]);
 
