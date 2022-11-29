@@ -146,6 +146,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const onViewStateChange = (viewStateSet: ViewStateSet) => {
     setViewState(viewStateSet);
+    if (hasBeenCompared) {
+      loadManagerRef.current.leftLoadingTime = 0;
+      loadManagerRef.current.rightLoadingTime = 0;
+    }
   };
 
   const pointToTileset = (layerViewState?: LayerViewState) => {
@@ -354,7 +358,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     if (!bookmark) {
       return;
     }
-    setPreventTransitions(true)
+    setPreventTransitions(true);
     setViewState(bookmark.viewState);
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
@@ -464,7 +468,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
         }
-        activeLayersIds={mode === ComparisonMode.withinLayer ? activeLayersIdsLeftSide : activeLayersIdsRightSide}
+        activeLayersIds={
+          mode === ComparisonMode.withinLayer
+            ? activeLayersIdsLeftSide
+            : activeLayersIdsRightSide
+        }
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
         onViewStateChange={onViewStateChange}
