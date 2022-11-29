@@ -469,21 +469,9 @@ export const ComparisonSide = ({
      * There is no sense to use webscene bookmarks in across layers mode.
      */
     if (bookmarks?.length && mode === ComparisonMode.withinLayer) {
-      updateBookmarksWithExamples(newExamples, bookmarks);
       onInsertBookmarks && onInsertBookmarks(bookmarks);
     }
   };
-
-  /**
-   * We should keep application layers structure in bookmarks. 
-   * @param newExamples 
-   * @param bookmarks 
-   */
-  const updateBookmarksWithExamples = (newExamples: LayerExample[], bookmarks: Bookmark[]) => {
-    for (const bookmark of bookmarks) {
-      bookmark.layersLeftSide = newExamples
-    }
-  }
 
   const handleSelectGroupLayer = (
     layer: LayerExample,

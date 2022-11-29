@@ -1,4 +1,4 @@
-import type { ArcGisWebScene, /*ArcGisCamera*/ } from "@loaders.gl/i3s/src/types";
+import type { ArcGisWebScene } from "@loaders.gl/i3s/src/types";
 import { Proj4Projection } from '@math.gl/proj4';
 import { WebMercatorViewport } from '@deck.gl/core';
 
@@ -11,14 +11,18 @@ const PSEUDO_MERCATOR_CRS_WKIDS = [102100, 3857];
 /**
  * Convert ArcGis Slides to the app internal bookmarks
  * Spec - https://developers.arcgis.com/javascript/latest/api-reference/esri-webscene-Presentation.html
- * TODO Add support for webscene basemaps
+ * @todo Add support for webscene basemaps
  * @param webScene 
  * @param layers 
  * @returns 
  */
-export const convertArcGisSlidesToBookmars = (webScene: ArcGisWebScene, layers: LayerExample[]): Bookmark[] => {
+export const convertArcGisSlidesToBookmars = (
+  webScene: ArcGisWebScene,
+  webSceneLayerExamples: LayerExample[],
+  layersLeftSide: LayerExample[]
+): Bookmark[] => {
   const bookmarks: Bookmark[] = [];
-  const addedLayersIds = flattenLayerIds(layers);
+  const addedLayersIds = flattenLayerIds(webSceneLayerExamples);
 
   try {
     const cameraSlides = webScene?.presentation?.slides || [];
@@ -36,7 +40,10 @@ export const convertArcGisSlidesToBookmars = (webScene: ArcGisWebScene, layers: 
             main: mainViewState,
             minimap: {}
           },
-          layersLeftSide: [],
+          /**
+           * Use only left side layers, because webscene bookmarks is only supported for within layer comparison mode.
+           */
+          layersLeftSide,
           activeLayersIdsLeftSide: supportedVisibleLayersIds,
           layersRightSide: [],
           activeLayersIdsRightSide: [],
@@ -46,17 +53,17 @@ export const convertArcGisSlidesToBookmars = (webScene: ArcGisWebScene, layers: 
       }
     }
   } catch (error) {
-    console.log("Can't load bookmarks from webscene: ", error);
+    console.error("Can't load bookmarks from webscene: ", error);
   }
 
   return bookmarks;
 }
 
 /**
- * Do conversion from ArcGIS spatial reference coordinates of camera to bookmark wiew state with WGS84 CRS.
+ * Do conversion from ArcGIS spatial reference coordinates of camera to bookmark view state with WGS84 CRS.
  * It can be any CRS system in ArcGIS, but we support conversion only EPSG:3857 for now.
  * Spec - https://developers.arcgis.com/web-scene-specification/objects/spatialReference
- * TODO Add camera type from loaders.gl when types will be published.
+ * @todo Add camera type from loaders.gl when types will be published.
  * @param camera 
  * @returns 
  */

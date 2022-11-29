@@ -256,16 +256,18 @@ export const LayersPanel = ({
 
     try {
       const webScene: ArcGisWebSceneData = await load(scene.url, ArcGisWebSceneLoader);
-      const layers = prepareLayerExamples(webScene.layers);
-      const bookmarks = convertArcGisSlidesToBookmars(webScene.header, layers);
+      const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
         ...scene,
         id: scene.url,
         custom: true,
-        layers,
+        layers: webSceneLayerExamples,
         type: getTilesetType(scene.url),
       };
+
+      const newLayersExamples = [...layers, newLayer];
+      const bookmarks = convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples);
 
       // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
       onLayerInsert(newLayer, bookmarks);

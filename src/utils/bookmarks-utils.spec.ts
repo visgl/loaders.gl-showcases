@@ -75,8 +75,9 @@ describe("Bookmarks utils", () => {
     };
 
     const layers = [];
+    const layersLeftSide = [];
     // @ts-expect-error - should follow types for webscene
-    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers);
+    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers, layersLeftSide);
 
     expect(bookmarks).toEqual([]);
   });
@@ -112,8 +113,9 @@ describe("Bookmarks utils", () => {
     };
 
     const layers = [];
+    const layersLeftSide = [];
     // @ts-expect-error - should follow types for webscene
-    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers);
+    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers, layersLeftSide);
 
     expect(bookmarks).toEqual([]);
   });
@@ -149,8 +151,9 @@ describe("Bookmarks utils", () => {
     };
 
     const layers = [];
+    const layersLeftSide = [];
     // @ts-expect-error - should follow types for webscene
-    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers);
+    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers, layersLeftSide);
 
     expect(bookmarks).toEqual([]);
   });
@@ -205,7 +208,14 @@ describe("Bookmarks utils", () => {
         "activeLayersIdsRightSide": [],
         "id": "slide-1",
         "imageUrl": "test-thumbnail-url",
-        "layersLeftSide": [],
+        "layersLeftSide": [
+          {
+            "id": 'layer-left-side-id',
+            "type": 'I3S',
+            "name": 'layerLeftSide',
+            "url": 'test-url'
+          }
+        ],
         "layersRightSide": [],
         "viewState": {
           "main": {
@@ -221,8 +231,16 @@ describe("Bookmarks utils", () => {
     ];
 
     const layers = [];
+    const layersLeftSide = [
+      {
+        id: 'layer-left-side-id',
+        type: 'I3S',
+        name: 'layerLeftSide',
+        url: 'test-url'
+      }
+    ];
     // @ts-expect-error - should follow types for webscene
-    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers);
+    const bookmarks = convertArcGisSlidesToBookmars(webScene, layers, layersLeftSide);
 
     expect(bookmarks).toEqual(expectedBookmarks);
   });
