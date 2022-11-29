@@ -142,21 +142,25 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         (bookmark) => bookmark.id === selectedBookmarkId
       );
 
-      const data: StatsData = {
-        viewState: viewState.main,
-        datasets: [
-          {
-            ...loadManagerRef.current.leftStats,
-            ellapsedTime: loadManagerRef.current.leftLoadingTime,
-          },
-          {
-            ...loadManagerRef.current.rightStats,
-            ellapsedTime: loadManagerRef.current.rightLoadingTime,
-          },
-        ],
-      };
-
-      setComparisonStats((prev) => [...prev, data]);
+      if (
+        loadManagerRef.current.leftStats &&
+        loadManagerRef.current.rightStats
+      ) {
+        const data: StatsData = {
+          viewState: viewState.main,
+          datasets: [
+            {
+              ...loadManagerRef.current.leftStats,
+              ellapsedTime: loadManagerRef.current.leftLoadingTime,
+            },
+            {
+              ...loadManagerRef.current.rightStats,
+              ellapsedTime: loadManagerRef.current.rightLoadingTime,
+            },
+          ],
+        };
+        setComparisonStats((prev) => [...prev, data]);
+      }
 
       if (
         !bookmarks.length ||

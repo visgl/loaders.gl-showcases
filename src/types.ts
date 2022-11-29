@@ -237,7 +237,7 @@ export enum SelectionState {
   indeterminate,
 }
 
-type Dataset = StatsMap | {
+type Dataset = StatsMap & {
   ellapsedTime: number;
 };
 
