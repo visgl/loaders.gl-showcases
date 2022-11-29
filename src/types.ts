@@ -256,3 +256,12 @@ export enum SelectionState {
   unselected,
   indeterminate,
 }
+
+type Dataset = StatsMap & {
+  ellapsedTime: number;
+};
+
+export type StatsData = {
+  viewState: ViewStateSet;
+  datasets: Dataset[];
+};
