@@ -28,6 +28,7 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
+import { ActiveSublayer } from "../../utils/active-sublayer";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -116,6 +117,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
+  const [sublayersLeftSide, setSublayersLeftSide] = useState<
+    null | ActiveSublayer[]
+  >(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
@@ -454,6 +458,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
+        onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
       <Devider layout={layout} />
       <CompareButton
@@ -509,6 +514,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         }
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
+        forcedSublayers={
+          mode === ComparisonMode.withinLayer ? sublayersLeftSide : null
+        }
         loadNumber={loadNumber}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}

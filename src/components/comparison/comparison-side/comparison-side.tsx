@@ -147,6 +147,7 @@ type ComparisonSideProps = {
   hasBeenCompared: boolean;
   showBookmarks: boolean;
   loadNumber: number;
+  forcedSublayers?: ActiveSublayer[] | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
@@ -157,6 +158,7 @@ type ComparisonSideProps = {
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
+  onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -182,6 +184,7 @@ export const ComparisonSide = ({
   showBookmarks,
   loadNumber,
   hasBeenCompared,
+  forcedSublayers,
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
@@ -192,6 +195,7 @@ export const ComparisonSide = ({
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
+  onUpdateSublayers,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
@@ -268,8 +272,26 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    if (!forcedSublayers) {
+      return;
+    }
+
+    const updateVisibilityAll = (nestedSublayers: ActiveSublayer[]) => {
+      for (const sublayer of nestedSublayers) {
+        onUpdateSublayerVisibilityHandler(sublayer);
+        if (sublayer.sublayers) {
+          updateVisibilityAll(sublayer.sublayers);
+        }
+      }
+    };
+
+    updateVisibilityAll(forcedSublayers);
+    setSublayers(forcedSublayers);
+  }, [forcedSublayers]);
+
+  useEffect(() => {
     fetchSublayersCounter.current++;
-    if (!activeLayers.length || !loadTileset) {
+    if (!activeLayers.length) {
       setFlattenedSublayers([]);
       return;
     }
@@ -321,7 +343,7 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-  }, [activeLayers, loadTileset]);
+  }, [activeLayers]);
 
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
@@ -358,6 +380,9 @@ export const ComparisonSide = ({
   };
 
   const getLayers3d = () => {
+    if (!loadTileset) {
+      return [];
+    }
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -394,6 +419,7 @@ export const ComparisonSide = ({
           url: newTileset.url,
           tilesetStats: newTileset.stats,
           memoryStats,
+          contentFormats: newTileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -437,6 +463,7 @@ export const ComparisonSide = ({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          contentFormats: tile.tileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -459,7 +486,7 @@ export const ComparisonSide = ({
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
-    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
+    const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
     setActiveLayers(flattenedLayers);
     onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
   };
@@ -568,13 +595,14 @@ export const ComparisonSide = ({
   };
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
+    onUpdateSublayers?.([...sublayers]);
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        setSublayers([...sublayers]);
+        setFlattenedSublayers([...flattenedSublayers]);
       }
     }
   };
@@ -681,6 +709,7 @@ export const ComparisonSide = ({
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
                 tilesetStats={tilesetStats}
+                contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
                 onClose={() =>
