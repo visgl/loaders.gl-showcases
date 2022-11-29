@@ -146,6 +146,7 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   showBookmarks: boolean;
+  forcedSublayers?: ActiveSublayer[] | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
@@ -156,6 +157,7 @@ type ComparisonSideProps = {
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
+  onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -180,6 +182,7 @@ export const ComparisonSide = ({
   loadTileset = true,
   showBookmarks,
   hasBeenCompared,
+  forcedSublayers,
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
@@ -190,6 +193,7 @@ export const ComparisonSide = ({
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
+  onUpdateSublayers,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
@@ -255,10 +259,10 @@ export const ComparisonSide = ({
   }, [staticLayers, activeLayersIds]);
 
   useEffect(() => {
-    if (compareButtonMode === CompareButtonMode.Comparing) {
+    if (compareButtonMode === CompareButtonMode.Comparing && loadTileset) {
       setLoadNumber((prev) => prev + 1);
     }
-  }, [compareButtonMode]);
+  }, [compareButtonMode, loadTileset]);
 
   useEffect(() => {
     if (hasBeenCompared) {
@@ -267,8 +271,26 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    if (!forcedSublayers) {
+      return;
+    }
+
+    const updateVisibilityAll = (nestedSublayers: ActiveSublayer[]) => {
+      for (const sublayer of nestedSublayers) {
+        onUpdateSublayerVisibilityHandler(sublayer);
+        if (sublayer.sublayers) {
+          updateVisibilityAll(sublayer.sublayers);
+        }
+      }
+    };
+
+    updateVisibilityAll(forcedSublayers);
+    setSublayers(forcedSublayers);
+  }, [forcedSublayers]);
+
+  useEffect(() => {
     fetchSublayersCounter.current++;
-    if (!activeLayers.length || !loadTileset) {
+    if (!activeLayers.length) {
       setFlattenedSublayers([]);
       return;
     }
@@ -320,7 +342,7 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-  }, [activeLayers, loadTileset]);
+  }, [activeLayers]);
 
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
@@ -357,6 +379,9 @@ export const ComparisonSide = ({
   };
 
   const getLayers3d = () => {
+    if (!loadTileset) {
+      return [];
+    }
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -569,13 +594,14 @@ export const ComparisonSide = ({
   };
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
+    onUpdateSublayers?.([...sublayers]);
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        setSublayers([...sublayers]);
+        setFlattenedSublayers([...flattenedSublayers]);
       }
     }
   };
