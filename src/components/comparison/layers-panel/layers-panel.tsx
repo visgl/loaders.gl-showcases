@@ -1,4 +1,4 @@
-import type { OperationalLayer } from "@loaders.gl/i3s/src/types";
+import type { ArcGisWebSceneData, OperationalLayer } from "@loaders.gl/i3s/src/types";
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
@@ -9,6 +9,7 @@ import {
   ListItemType,
   BaseMap,
   LayerViewState,
+  Bookmark,
 } from "../../../types";
 import { CloseButton } from "../../close-button/close-button";
 import { InsertPanel } from "../../insert-panel/insert-panel";
@@ -29,6 +30,7 @@ import { ArcGisWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
 import { useAppLayout } from "../../../utils/hooks/layout";
 import { getTilesetType } from "../../../utils/url-utils";
+import { convertArcGisSlidesToBookmars } from "../../../utils/bookmarks-utils";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -59,7 +61,7 @@ type LayersPanelProps = {
   insertBaseMap: (baseMap: BaseMap) => void;
   selectBaseMap: (id: string) => void;
   deleteBaseMap: (id: string) => void;
-  onLayerInsert: (layer: LayerExample) => void;
+  onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
   onUpdateSublayerVisibility: (Sublayer) => void;
@@ -253,19 +255,22 @@ export const LayersPanel = ({
     }
 
     try {
-      const webScene = await load(scene.url, ArcGisWebSceneLoader);
-      const layers = prepareLayerExamples(webScene.layers);
+      const webScene: ArcGisWebSceneData = await load(scene.url, ArcGisWebSceneLoader);
+      const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
         ...scene,
         id: scene.url,
         custom: true,
-        layers,
+        layers: webSceneLayerExamples,
         type: getTilesetType(scene.url),
       };
 
+      const newLayersExamples = [...layers, newLayer];
+      const bookmarks = convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples);
+
       // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
-      onLayerInsert(newLayer);
+      onLayerInsert(newLayer, bookmarks);
     } catch (error) {
       if (error instanceof Error) {
         switch (error.message) {

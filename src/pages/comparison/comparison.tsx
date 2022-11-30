@@ -458,6 +458,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
+        onInsertBookmarks={setBookmarks}
         onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
       <Devider layout={layout} />

@@ -21,6 +21,7 @@ import {
   StatsMap,
   TilesetType,
   LayerViewState,
+  Bookmark,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -151,6 +152,7 @@ type ComparisonSideProps = {
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
+  onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
@@ -195,7 +197,8 @@ export const ComparisonSide = ({
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
-  onUpdateSublayers,
+  onInsertBookmarks,
+  onUpdateSublayers
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
@@ -482,13 +485,20 @@ export const ComparisonSide = ({
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
+  const onLayerInsertHandler = (newLayer: LayerExample, bookmarks?: Bookmark[]) => {
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
     const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
     setActiveLayers(flattenedLayers);
     onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
+
+    /**
+     * There is no sense to use webscene bookmarks in across layers mode.
+     */
+    if (bookmarks?.length && mode === ComparisonMode.withinLayer) {
+      onInsertBookmarks && onInsertBookmarks(bookmarks);
+    }
   };
 
   const handleSelectGroupLayer = (
