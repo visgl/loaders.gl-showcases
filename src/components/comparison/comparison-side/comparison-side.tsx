@@ -36,6 +36,7 @@ import {
 import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { handleSelectAllLeafsInGroup } from "../../../utils/layer-utils";
+import { initStats, sumTilesetsStats } from "../../../utils/stats";
 
 type LayoutProps = {
   layout: string;
@@ -207,7 +208,8 @@ export const ComparisonSide = ({
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
-  const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
+  const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
+  const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -322,6 +324,37 @@ export const ComparisonSide = ({
     setSublayers([]);
   }, [activeLayers, loadTileset]);
 
+
+  /**
+   * Init statistics for loaded tilesets every time if loaded tilesets have been changed.
+   */
+  useEffect(() => {
+    const loadedTilesetsCount = loadedTilesets.length;
+    const activeLayersCount = activeLayers.length;
+
+    if (loadedTilesetsCount && activeLayersCount) {
+      const isBSL = loadedTilesetsCount > activeLayersCount;
+      const statsName = isBSL ?
+        // Use Building Scene Url for stats id.
+        activeLayers[0].url
+        :
+        // Use loaded tilesets urls to create stats id.
+        loadedTilesets.map(loadedTileset => loadedTileset.url).join('<-tileset->');
+      const tilesetsStats = initStats(statsName);
+      setTilesetsStats(tilesetsStats);
+    }
+
+  }, [loadedTilesets]);
+
+  /**
+   * Detect which tilesets are actually shown by comparing with active layers.
+   * Set loaded tilesets based on that.
+   */
+  useEffect(() => {
+    const activeLayersUrls = activeLayers.map(activeLayer => activeLayer.url);
+    setLoadedTilesets(prevTilesets => prevTilesets.filter(tileset => activeLayersUrls.includes(tileset.url)));
+  }, [activeLayers]);
+
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
     url: string;
@@ -380,7 +413,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     newTileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     onLoadingStateChange(true);
-    setTilesetStats(newTileset.stats);
+    setLoadedTilesets(prevTilesets => [...prevTilesets, newTileset]);
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(newTileset, prevExamples)
     );
@@ -595,6 +628,11 @@ export const ComparisonSide = ({
       ? LeftSidePanelWrapper
       : RightSidePanelWrapper;
 
+  const handleOnAfterRender = () => {
+    sumTilesetsStats(loadedTilesets, tilesetsStats);
+    onAfterDeckGlRender && onAfterDeckGlRender();
+  }
+
   return (
     <Container layout={layout}>
       <DeckGlWrapper
@@ -619,7 +657,7 @@ export const ComparisonSide = ({
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
-        onAfterRender={onAfterDeckGlRender}
+        onAfterRender={handleOnAfterRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
@@ -681,7 +719,8 @@ export const ComparisonSide = ({
               <MemoryUsagePanel
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
-                tilesetStats={tilesetStats}
+                activeLayers={activeLayers}
+                tilesetStats={tilesetsStats}
                 contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
