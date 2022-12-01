@@ -150,15 +150,22 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         loadManagerRef.current.leftStats &&
         loadManagerRef.current.rightStats
       ) {
+        const leftSideStats = JSON.parse(
+          JSON.stringify(loadManagerRef.current.leftStats)
+        );
+        const rightSideStats = JSON.parse(
+          JSON.stringify(loadManagerRef.current.rightStats)
+        );
+
         const data: StatsData = {
           viewState: viewState.main,
           datasets: [
             {
-              ...loadManagerRef.current.leftStats,
+              ...leftSideStats,
               ellapsedTime: loadManagerRef.current.leftLoadingTime,
             },
             {
-              ...loadManagerRef.current.rightStats,
+              ...rightSideStats,
               ellapsedTime: loadManagerRef.current.rightLoadingTime,
             },
           ],
