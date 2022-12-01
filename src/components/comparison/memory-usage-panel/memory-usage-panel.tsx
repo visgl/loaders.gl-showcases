@@ -34,6 +34,10 @@ const StatSection = styled.div`
 
 const StatTitle = styled(Title)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
+  overflow: hidden; 
+  white-space: nowrap;
+  max-width: 90%;
+  text-overflow: ellipsis;
   font-weight: 400;
 `;
 
@@ -131,10 +135,9 @@ export const MemoryUsagePanel = ({
                 {
                   tilesetStats.id.split('<-tileset->').map(tilesetUrl => {
                     const activeLayer = activeLayers.find(layer => layer.url === tilesetUrl);
-                    const activeLayerName = activeLayer?.name || `${tilesetUrl.substring(0, 37)}...`;
-                    const isEmptyName = activeLayerName === '...';
+                    const activeLayerName = activeLayer?.name || tilesetUrl;
 
-                    return !isEmptyName ? (
+                    return activeLayerName && (
                       <StatContainer bottom={12} key={tilesetUrl}>
                         <StatTitle>{activeLayerName}</StatTitle>
                         <LinkIcon
@@ -145,7 +148,7 @@ export const MemoryUsagePanel = ({
                           }}
                         />
                       </StatContainer>
-                    ) : null;
+                    );
                   })
                 }
                 {Object.values(tilesetStats.stats).map((stat: Stat) => (

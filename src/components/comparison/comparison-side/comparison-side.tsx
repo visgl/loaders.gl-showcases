@@ -334,12 +334,12 @@ export const ComparisonSide = ({
 
     if (loadedTilesetsCount && activeLayersCount) {
       const isBSL = loadedTilesetsCount > activeLayersCount;
-      const statsName = isBSL ?
-        // Use Building Scene Url for stats id.
-        activeLayers[0].url
-        :
-        // Use loaded tilesets urls to create stats id.
-        loadedTilesets.map(loadedTileset => loadedTileset.url).join('<-tileset->');
+      let statsName =  activeLayers[0].url;
+
+      if (!isBSL) {
+        statsName = loadedTilesets.map(loadedTileset => loadedTileset.url).join('<-tileset->');
+      }
+
       const tilesetsStats = initStats(statsName);
       setTilesetsStats(tilesetsStats);
     }
