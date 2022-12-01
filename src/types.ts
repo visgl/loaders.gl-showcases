@@ -84,6 +84,11 @@ export enum TilesetType {
   CesiumIon = "CesiumIon",
 }
 
+export enum ButtonSize {
+  Small,
+  Big,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -124,14 +129,26 @@ export type AppThemes = {
   [Theme.Light]: DefaultTheme;
 };
 
+/** I3S Layer, I3S WebScene or 3DTiles Tileset */
 export type LayerExample = {
+  /** Layer's unique id */
   id: string;
+  /** Layer's human readable name */
   name: string;
+  /** Layer's URL */
   url: string;
+  /** Layers's authorization token */
   token?: string;
+  /** Is layer custom (added by user during application usage)
+   * true - layer has been added by user with "Insert layer" or "Insert scene"
+   * false - layer is part of preset examples (`src/constants/i3s-examples.ts`)
+   */
   custom?: boolean;
+  /** Child layers. Used for webscene dataset */
   layers?: LayerExample[];
+  /** Initial viewState of the layer */
   viewState?: LayerViewState;
+  /** Type of the tileset (I3S/3DTiles) */
   type?: TilesetType;
 };
 
@@ -185,10 +202,18 @@ export type HelpShortcutsData = {
   [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
 };
 
+export type ContentFormats = {
+  draco: boolean;
+  meshopt: boolean;
+  dds: boolean;
+  ktx2: boolean;
+};
+
 export type StatsMap = {
   url: string;
   tilesetStats: Stats;
   memoryStats: Stats | null;
+  contentFormats: ContentFormats;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
 };
@@ -234,5 +259,18 @@ export type Bookmark = {
 export enum SelectionState {
   selected,
   unselected,
-  indeterminate
+  indeterminate,
 }
+
+type Dataset = StatsMap & {
+  ellapsedTime: number;
+};
+
+export type StatsData = {
+  viewState: ViewStateSet;
+  datasets: Dataset[];
+};
+
+export type LayoutProps = {
+  layout: string;
+};

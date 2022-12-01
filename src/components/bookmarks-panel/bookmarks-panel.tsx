@@ -3,11 +3,11 @@ import styled, { css, useTheme } from "styled-components";
 import { Layout } from "../../utils/enums";
 import {
   PanelHeader,
-  HorizontalLine,
+  PanelHorizontalLine,
   Panels,
   Title,
   OptionsIcon,
-} from "../comparison/common";
+} from "../common";
 import { CloseButton } from "../close-button/close-button";
 import { Slider } from "./slider";
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -22,7 +22,10 @@ import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 enum PopoverType {
   options,
@@ -39,7 +42,7 @@ type LayoutProps = {
 const Container = styled.div<LayoutProps>`
   background: ${({ theme }) => theme.colors.mainCanvasColor};
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
@@ -159,6 +162,8 @@ const Overlay = styled.div<{ showOverlayCondition: boolean }>`
 type BookmarksPanelProps = {
   id: string;
   bookmarks: Bookmark[];
+  selectedBookmarkId?: string;
+  disableBookmarksAdding: boolean;
   onClose: () => void;
   onAddBookmark: () => void;
   onSelectBookmark: (id: string) => void;
@@ -175,6 +180,8 @@ const confirmText = "Are you sure you  want to clear all  bookmarks?";
 export const BookmarksPanel = ({
   id,
   bookmarks,
+  selectedBookmarkId = "",
+  disableBookmarksAdding,
   onClose,
   onAddBookmark,
   onSelectBookmark,
@@ -188,7 +195,6 @@ export const BookmarksPanel = ({
   const [editingMode, setEditingMode] = useState<boolean>(false);
   const [clearBookmarks, setClearBookmarksMode] = useState<boolean>(false);
   const [popoverType, setPopoverType] = useState<number>(PopoverType.none);
-  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
 
   const layout = useAppLayout();
   const theme = useTheme();
@@ -242,15 +248,6 @@ export const BookmarksPanel = ({
   const onBookmarksUploadedHandler = (bookmarks) => {
     setPopoverType(PopoverType.none);
     onBookmarksUploaded(bookmarks);
-  }
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
-
-    if (bookmark) {
-      setSelectedBookmarkId(bookmark.id);
-    }
-
-    onSelectBookmark(bookmarkId);
   };
 
   const renderPopoverContent = () => {
@@ -347,15 +344,15 @@ export const BookmarksPanel = ({
                 onClick={onClose}
               />
             </BookmarkPanelHeader>
-            <HorizontalLine top={10} />
+            <PanelHorizontalLine top={10} />
           </>
         )}
 
         <ItemsList layout={layout}>
           <ButtonWrapper layout={layout}>
             <BookmarkInnerButton
-              disabled={disableAddButton}
-              blurButton={disableAddButton}
+              disabled={disableAddButton || disableBookmarksAdding}
+              blurButton={disableAddButton || disableBookmarksAdding}
               onInnerClick={onAddBookmark}
             >
               <PlusIcon fill={theme.colors.buttonIconColor} />
@@ -368,7 +365,7 @@ export const BookmarksPanel = ({
               selectedBookmarkId={selectedBookmarkId}
               editingMode={editingMode}
               onDeleteBookmark={onDeleteBookmark}
-              onSelectBookmark={onSelectBookmarkHandler}
+              onSelectBookmark={onSelectBookmark}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>

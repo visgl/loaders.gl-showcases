@@ -21,11 +21,12 @@ import {
   StatsMap,
   TilesetType,
   LayerViewState,
+  Bookmark,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
-import { LayersPanel } from "../layers-panel/layers-panel";
+import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
@@ -146,9 +147,12 @@ type ComparisonSideProps = {
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   showBookmarks: boolean;
+  loadNumber: number;
+  forcedSublayers?: ActiveSublayer[] | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
+  onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
@@ -156,6 +160,7 @@ type ComparisonSideProps = {
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
+  onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -179,7 +184,9 @@ export const ComparisonSide = ({
   loadingTime,
   loadTileset = true,
   showBookmarks,
+  loadNumber,
   hasBeenCompared,
+  forcedSublayers,
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
@@ -190,6 +197,8 @@ export const ComparisonSide = ({
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
+  onInsertBookmarks,
+  onUpdateSublayers
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
@@ -209,7 +218,6 @@ export const ComparisonSide = ({
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
-  const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
@@ -224,6 +232,12 @@ export const ComparisonSide = ({
     setIsCompressedTextures(true);
     setActiveLayers([]);
   }, [mode]);
+
+  useEffect(() => {
+    if (compareButtonMode === CompareButtonMode.Comparing) {
+      tilesetRef.current = null;
+    }
+  }, [activeLayersIds, compareButtonMode]);
 
   useEffect(() => {
     if (staticLayers) {
@@ -255,20 +269,32 @@ export const ComparisonSide = ({
   }, [staticLayers, activeLayersIds]);
 
   useEffect(() => {
-    if (compareButtonMode === CompareButtonMode.Comparing) {
-      setLoadNumber((prev) => prev + 1);
-    }
-  }, [compareButtonMode]);
-
-  useEffect(() => {
     if (hasBeenCompared) {
       setActiveButton(ActiveButton.memory);
     }
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    if (!forcedSublayers) {
+      return;
+    }
+
+    const updateVisibilityAll = (nestedSublayers: ActiveSublayer[]) => {
+      for (const sublayer of nestedSublayers) {
+        onUpdateSublayerVisibilityHandler(sublayer);
+        if (sublayer.sublayers) {
+          updateVisibilityAll(sublayer.sublayers);
+        }
+      }
+    };
+
+    updateVisibilityAll(forcedSublayers);
+    setSublayers(forcedSublayers);
+  }, [forcedSublayers]);
+
+  useEffect(() => {
     fetchSublayersCounter.current++;
-    if (!activeLayers.length || !loadTileset) {
+    if (!activeLayers.length) {
       setFlattenedSublayers([]);
       return;
     }
@@ -320,7 +346,7 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-  }, [activeLayers, loadTileset]);
+  }, [activeLayers]);
 
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
@@ -357,6 +383,9 @@ export const ComparisonSide = ({
   };
 
   const getLayers3d = () => {
+    if (!loadTileset) {
+      return [];
+    }
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -393,6 +422,7 @@ export const ComparisonSide = ({
           url: newTileset.url,
           tilesetStats: newTileset.stats,
           memoryStats,
+          contentFormats: newTileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -436,6 +466,7 @@ export const ComparisonSide = ({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          contentFormats: tile.tileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -454,13 +485,20 @@ export const ComparisonSide = ({
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
+  const onLayerInsertHandler = (newLayer: LayerExample, bookmarks?: Bookmark[]) => {
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
-    const newActiveLayersIds = flattenedLayers.map(layer => layer.id)
+    const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
     setActiveLayers(flattenedLayers);
     onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
+
+    /**
+     * There is no sense to use webscene bookmarks in across layers mode.
+     */
+    if (bookmarks?.length && mode === ComparisonMode.withinLayer) {
+      onInsertBookmarks && onInsertBookmarks(bookmarks);
+    }
   };
 
   const handleSelectGroupLayer = (
@@ -567,13 +605,14 @@ export const ComparisonSide = ({
   };
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
+    onUpdateSublayers?.([...sublayers]);
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        setSublayers([...sublayers]);
+        setFlattenedSublayers([...flattenedSublayers]);
       }
     }
   };
@@ -680,6 +719,7 @@ export const ComparisonSide = ({
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
                 tilesetStats={tilesetStats}
+                contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
                 onClose={() =>
