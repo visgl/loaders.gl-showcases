@@ -5,7 +5,6 @@ import {
   color_brand_tertiary,
   color_accent_primary,
 } from "../../constants/colors";
-import { LayoutProps } from "../comparison/common";
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
@@ -13,6 +12,7 @@ import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { Layout } from "../../utils/enums";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import { LayoutProps } from "../../types";
 
 type BookmarkListProps = {
   url: string;

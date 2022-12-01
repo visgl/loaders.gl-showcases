@@ -1,5 +1,5 @@
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState, DragMode } from "../../types";
+import { CollapseDirection, ExpandState, DragMode, LayoutProps } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -12,7 +12,6 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { useExpand } from "../../utils/hooks/use-expand";
-import { LayoutProps } from "../comparison/common";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 const Container = styled.div<LayoutProps>`

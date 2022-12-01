@@ -3,11 +3,11 @@ import styled, { css, useTheme } from "styled-components";
 import { Layout } from "../../utils/enums";
 import {
   PanelHeader,
-  HorizontalLine,
+  PanelHorizontalLine,
   Panels,
   Title,
   OptionsIcon,
-} from "../comparison/common";
+} from "../common";
 import { CloseButton } from "../close-button/close-button";
 import { Slider } from "./slider";
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -344,7 +344,7 @@ export const BookmarksPanel = ({
                 onClick={onClose}
               />
             </BookmarkPanelHeader>
-            <HorizontalLine top={10} />
+            <PanelHorizontalLine top={10} />
           </>
         )}
 

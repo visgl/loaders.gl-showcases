@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { ActionButton } from "../action-button/action-button";
-import { LayoutProps } from "../comparison/common";
-import { ActionButtonVariant } from "../../types";
+import { ActionButtonVariant, LayoutProps } from "../../types";
 import WarningIcon from "../../../public/icons/warning.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
