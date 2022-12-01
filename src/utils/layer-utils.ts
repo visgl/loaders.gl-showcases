@@ -14,3 +14,20 @@ export const handleSelectAllLeafsInGroup = (
 
   return leafs;
 };
+
+/**
+* Traverses through Layers tree to get all ids.
+* @param layers 
+* @param flattenedLayersIds
+*/
+export const flattenLayerIds = (layers: LayerExample[], flattenedLayersIds: string[] = []): string[] => {
+ for (const layer of layers) {
+   if (layer?.layers?.length) {
+     flattenLayerIds(layer.layers, flattenedLayersIds);
+   }
+
+   flattenedLayersIds.push(layer.id);
+ }
+
+ return flattenedLayersIds;
+}

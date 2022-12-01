@@ -12,7 +12,7 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
-import { LayersPanel } from "../layers-panel/layers-panel";
+import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonSide } from "./comparison-side";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
@@ -20,7 +20,7 @@ import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
-jest.mock("../layers-panel/layers-panel");
+jest.mock("../../layers-panel/layers-panel");
 jest.mock("../comparison-params-panel/comparison-params-panel");
 jest.mock("../memory-usage-panel/memory-usage-panel");
 jest.mock("../../../utils/url-utils");
@@ -112,6 +112,7 @@ describe("ComparisonSide", () => {
         loadingTime={1123}
         hasBeenCompared={false}
         showBookmarks={false}
+        loadNumber={0}
         preventTransitions={false}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}

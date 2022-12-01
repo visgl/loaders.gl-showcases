@@ -1,14 +1,13 @@
 import { Stats, Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
 import {
-  Container,
+  PanelContainer,
   PanelHeader,
-  Content,
-  HorizontalLine,
+  PanelContent,
+  PanelHorizontalLine,
   Panels,
   Title,
-  ItemContainer,
-} from "../common";
+} from "../../common";
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { ExpandState, CollapseDirection, ContentFormats, LayerExample } from "../../../types";
@@ -41,7 +40,10 @@ const StatTitle = styled(Title)`
   font-weight: 400;
 `;
 
-const StatContainer = styled(ItemContainer) <{ bottom?: number }>`
+const StatContainer = styled.div<{ bottom?: number }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0 0 8px 0;
   margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
 `;
@@ -80,13 +82,13 @@ export const MemoryUsagePanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container id={id} layout={layout}>
+    <PanelContainer id={id} layout={layout}>
       <PanelHeader panel={Panels.MemoryUsage}>
         <Title left={16}>Memory</Title>
         <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
-      <HorizontalLine top={10} />
-      <Content>
+      <PanelHorizontalLine top={10} />
+      <PanelContent>
         {contentFormats && (
           <StatSection>
             <Title bottom={12}>Content Formats</Title>
@@ -98,11 +100,11 @@ export const MemoryUsagePanel = ({
             ))}
           </StatSection>
         )}
-      </Content>
+      </PanelContent>
 
-      <HorizontalLine top={0} />
+      <PanelHorizontalLine top={0} />
 
-      <Content>
+      <PanelContent>
         <StatTimeContainer>
           <StatTitle>Loading time: </StatTitle>
           <Title left={6}>{`${loadingTime} ms`}</Title>
@@ -165,7 +167,7 @@ export const MemoryUsagePanel = ({
             )}
           </StatSection>
         )}
-      </Content>
-    </Container>
+      </PanelContent>
+    </PanelContainer>
   );
 };

@@ -10,7 +10,7 @@ import {
   MenuItem,
   MenuSettingsIcon,
   MenuDevider,
-} from "../comparison/common";
+} from "../common";
 import { Layout } from "../../utils/enums";
 import { useAppLayout } from "../../utils/hooks/layout";
 
