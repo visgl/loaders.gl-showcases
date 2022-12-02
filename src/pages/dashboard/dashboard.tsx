@@ -10,11 +10,11 @@ import { Layout } from "../../utils/enums";
 import ViewerImage from "../../../public/images/viewer-image.svg";
 import DebugImage from "../../../public/images/debug-image.svg";
 import ComparisonImage from "../../../public/images/comparison-image.svg";
-import Mac from "../../../public/images/mac.png";
-import Iphone from "../../../public/images/iPhone.png";
+import Mac from "../../../public/images/mac.webp";
+import Iphone from "../../../public/images/iphone.webp";
 import Arrow from "../../../public/icons/arrow-left.svg";
-import AppShowcase from "../../../public/images/app-showcase.png";
-import Background from "../../../public/images/tools-background.png";
+import AppShowcase from "../../../public/images/app-showcase.webp";
+import Background from "../../../public/images/tools-background.webp";
 import {
   color_canvas_primary_inverted,
   color_brand_secondary,
