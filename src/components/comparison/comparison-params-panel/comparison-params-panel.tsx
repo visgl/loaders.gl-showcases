@@ -1,14 +1,22 @@
 import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
 import {
-  Container,
+  PanelContainer,
   PanelHeader,
-  HorizontalLine,
+  PanelHorizontalLine,
   Panels,
   Title,
-  ItemContainer,
-} from "../common";
+} from "../../common";
 import { CloseButton } from "../../close-button/close-button";
 import { useAppLayout } from "../../../utils/hooks/layout";
+import styled from "styled-components";
+
+const ItemContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 10px 0px;
+  margin-bottom: 8px;
+`;
 
 type ComparisonParamsProps = {
   id: string;
@@ -30,7 +38,7 @@ export const ComparisonParamsPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container id={id} layout={layout}>
+    <PanelContainer id={id} layout={layout}>
       <PanelHeader panel={Panels.ComparisonParams}>
         <Title left={16}>Comparison parameters</Title>
         <CloseButton
@@ -38,7 +46,7 @@ export const ComparisonParamsPanel = ({
           onClick={onClose}
         />
       </PanelHeader>
-      <HorizontalLine top={20} />
+      <PanelHorizontalLine top={20} />
       <ItemContainer>
         <Title left={16}> Draco compressed geometry</Title>
         <ToggleSwitch
@@ -55,6 +63,6 @@ export const ComparisonParamsPanel = ({
           onChange={onTexturesChange}
         />
       </ItemContainer>
-    </Container>
+    </PanelContainer>
   );
 };

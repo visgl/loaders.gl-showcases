@@ -41,6 +41,7 @@ import {
   getNormalSourcePosition,
   getNormalTargetPosition,
 } from "../../utils/debug/normals-utils";
+import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -422,57 +423,26 @@ export const DeckGlWrapper = ({
     if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter || [];
-      let pLongitue = longitude;
-      let pLatitude = latitude;
       const viewport = new VIEWS[0].ViewportType(viewState.main);
       const {
         main: { pitch, bearing },
       } = viewState;
 
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
-      /**
-       * See image in the PR https://github.com/visgl/loaders.gl/pull/2046
-       * For elevated tilesets cartographic center position of a tileset is not correct
-       * to use it as viewState position because these positions are different.
-       * We need to calculate projection of camera direction onto the ellipsoid surface.
-       * We use this projection as offset to add it to the tileset cartographic center position.
-       */
-      const projection = zmin * Math.tan((pitch * Math.PI) / 180);
-      /**
-       * Convert to world coordinate system to shift the position on some distance in meters
-       */
-      const projectedPostion = viewport.projectPosition([longitude, latitude]);
-      /**
-       * Shift longitude
-       */
-      projectedPostion[0] +=
-        projection *
-        Math.sin((bearing * Math.PI) / 180) *
-        viewport.distanceScales.unitsPerMeter[0];
-      /**
-       * Shift latitude
-       */
-      projectedPostion[1] +=
-        projection *
-        Math.cos((bearing * Math.PI) / 180) *
-        viewport.distanceScales.unitsPerMeter[1];
-      /**
-       * Convert resulting coordinates to catrographic
-       */
-      [pLongitue, pLatitude] = viewport.unprojectPosition(projectedPostion);
-
+      const [pLongitude, pLatitude] = getLonLatWithElevationOffset(zmin, pitch, bearing, longitude, latitude, viewport);
+    
       const newViewState = {
         main: {
           ...viewState.main,
           zoom: zoom + 2,
-          longitude: pLongitue,
+          longitude: pLongitude,
           latitude: pLatitude,
           transitionDuration: TRANSITION_DURAITON,
           transitionInterpolator: new FlyToInterpolator(),
         },
         minimap: {
           ...viewState.minimap,
-          longitude: pLongitue,
+          longitude: pLongitude,
           latitude: pLatitude,
         },
       };

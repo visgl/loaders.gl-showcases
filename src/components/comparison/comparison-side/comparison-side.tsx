@@ -21,11 +21,12 @@ import {
   StatsMap,
   TilesetType,
   LayerViewState,
+  Bookmark,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
-import { LayersPanel } from "../layers-panel/layers-panel";
+import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
 import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
@@ -36,6 +37,7 @@ import {
 import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { handleSelectAllLeafsInGroup } from "../../../utils/layer-utils";
+import { initStats, sumTilesetsStats } from "../../../utils/stats";
 
 type LayoutProps = {
   layout: string;
@@ -139,23 +141,27 @@ type ComparisonSideProps = {
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
   activeLayersIds: string[];
+  preventTransitions: boolean;
   compareButtonMode: CompareButtonMode;
   dragMode: DragMode;
   loadingTime: number;
   loadTileset?: boolean;
   hasBeenCompared: boolean;
   showBookmarks: boolean;
+  loadNumber: number;
+  forcedSublayers?: ActiveSublayer[] | null;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
+  onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
   onInsertBaseMap: (baseMap: BaseMap) => void;
   onSelectBaseMap: (baseMapId: string) => void;
   onDeleteBaseMap: (baseMapId: string) => void;
-  onLayerSelected: () => void;
   onLoadingStateChange: (isLoading: boolean) => void;
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
+  onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
 };
 
 type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
@@ -173,23 +179,27 @@ export const ComparisonSide = ({
   showComparisonSettings,
   staticLayers,
   activeLayersIds,
+  preventTransitions,
   compareButtonMode,
   dragMode,
   loadingTime,
   loadTileset = true,
   showBookmarks,
+  loadNumber,
   hasBeenCompared,
+  forcedSublayers,
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
   onInsertBaseMap,
   onSelectBaseMap,
   onDeleteBaseMap,
-  onLayerSelected,
   onLoadingStateChange,
   onTilesetLoaded,
   onShowBookmarksChange,
   onAfterDeckGlRender,
+  onInsertBookmarks,
+  onUpdateSublayers
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
@@ -207,13 +217,12 @@ export const ComparisonSide = ({
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
-  const [tilesetStats, setTilesetStats] = useState<Stats | null>(null);
+  const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
+  const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
-  const [loadNumber, setLoadNumber] = useState<number>(0);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
-  const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -225,6 +234,12 @@ export const ComparisonSide = ({
     setIsCompressedTextures(true);
     setActiveLayers([]);
   }, [mode]);
+
+  useEffect(() => {
+    if (compareButtonMode === CompareButtonMode.Comparing) {
+      tilesetRef.current = null;
+    }
+  }, [activeLayersIds, compareButtonMode]);
 
   useEffect(() => {
     if (staticLayers) {
@@ -253,13 +268,7 @@ export const ComparisonSide = ({
       );
       setActiveLayers(activeLayers);
     }
-  }, [staticLayers]);
-
-  useEffect(() => {
-    if (compareButtonMode === CompareButtonMode.Comparing) {
-      setLoadNumber((prev) => prev + 1);
-    }
-  }, [compareButtonMode]);
+  }, [staticLayers, activeLayersIds]);
 
   useEffect(() => {
     if (hasBeenCompared) {
@@ -268,8 +277,26 @@ export const ComparisonSide = ({
   }, [hasBeenCompared]);
 
   useEffect(() => {
+    if (!forcedSublayers) {
+      return;
+    }
+
+    const updateVisibilityAll = (nestedSublayers: ActiveSublayer[]) => {
+      for (const sublayer of nestedSublayers) {
+        onUpdateSublayerVisibilityHandler(sublayer);
+        if (sublayer.sublayers) {
+          updateVisibilityAll(sublayer.sublayers);
+        }
+      }
+    };
+
+    updateVisibilityAll(forcedSublayers);
+    setSublayers(forcedSublayers);
+  }, [forcedSublayers]);
+
+  useEffect(() => {
     fetchSublayersCounter.current++;
-    if (!activeLayers.length || !loadTileset) {
+    if (!activeLayers.length) {
       setFlattenedSublayers([]);
       return;
     }
@@ -321,8 +348,38 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-    onLayerSelected();
-  }, [activeLayers, loadTileset]);
+  }, [activeLayers]);
+
+
+  /**
+   * Init statistics for loaded tilesets every time if loaded tilesets have been changed.
+   */
+  useEffect(() => {
+    const loadedTilesetsCount = loadedTilesets.length;
+    const activeLayersCount = activeLayers.length;
+
+    if (loadedTilesetsCount && activeLayersCount) {
+      const isBSL = loadedTilesetsCount > activeLayersCount;
+      let statsName =  activeLayers[0].url;
+
+      if (!isBSL) {
+        statsName = loadedTilesets.map(loadedTileset => loadedTileset.url).join('<-tileset->');
+      }
+
+      const tilesetsStats = initStats(statsName);
+      setTilesetsStats(tilesetsStats);
+    }
+
+  }, [loadedTilesets]);
+
+  /**
+   * Detect which tilesets are actually shown by comparing with active layers.
+   * Set loaded tilesets based on that.
+   */
+  useEffect(() => {
+    const activeLayersUrls = activeLayers.map(activeLayer => activeLayer.url);
+    setLoadedTilesets(prevTilesets => prevTilesets.filter(tileset => activeLayersUrls.includes(tileset.url)));
+  }, [activeLayers]);
 
   const getFlattenedSublayers = async (tilesetData: {
     id: string;
@@ -359,6 +416,9 @@ export const ComparisonSide = ({
   };
 
   const getLayers3d = () => {
+    if (!loadTileset) {
+      return [];
+    }
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
       .map((sublayer) => ({
@@ -370,26 +430,32 @@ export const ComparisonSide = ({
   };
 
   const onTraversalCompleteHandler = (selectedTiles) => {
-    onLoadingStateChange(true);
+    // A parent tileset of selected tiles
+    const aTileset = selectedTiles?.[0]?.tileset;
+    // Make sure that the actual tileset has been traversed traversed
+    if (aTileset === tilesetRef.current && !aTileset.isLoaded()) {
+      onLoadingStateChange(true);
+    }
     return selectedTiles;
   };
 
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     newTileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     onLoadingStateChange(true);
-    setTilesetStats(newTileset.stats);
+    setLoadedTilesets(prevTilesets => [...prevTilesets, newTileset]);
     setExamples((prevExamples) =>
-      findExampleAndUpdateWithTileset(newTileset, prevExamples)
+      findExampleAndUpdateWithViewState(newTileset, prevExamples)
     );
     tilesetRef.current = newTileset;
     setUpdateStatsNumber((prev) => prev + 1);
     setTimeout(() => {
-      if (newTileset.isLoaded()) {
+      if (tilesetRef.current === newTileset && newTileset.isLoaded()) {
         onLoadingStateChange(false);
         onTilesetLoaded({
           url: newTileset.url,
           tilesetStats: newTileset.stats,
           memoryStats,
+          contentFormats: newTileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -397,7 +463,7 @@ export const ComparisonSide = ({
     }, IS_LOADED_DELAY);
   };
 
-  const findExampleAndUpdateWithTileset = (
+  const findExampleAndUpdateWithViewState = (
     tileset: Tileset3D,
     examples: LayerExample[]
   ): LayerExample[] => {
@@ -414,7 +480,7 @@ export const ComparisonSide = ({
       }
 
       if (example.layers) {
-        example.layers = findExampleAndUpdateWithTileset(
+        example.layers = findExampleAndUpdateWithViewState(
           tileset,
           example.layers
         );
@@ -433,6 +499,7 @@ export const ComparisonSide = ({
           url: tile.tileset.url,
           tilesetStats: tile.tileset.stats,
           memoryStats,
+          contentFormats: tile.tileset.contentFormats,
           isCompressedGeometry,
           isCompressedTextures,
         });
@@ -451,10 +518,20 @@ export const ComparisonSide = ({
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
-    setExamples((prevValues) => [...prevValues, newLayer]);
+  const onLayerInsertHandler = (newLayer: LayerExample, bookmarks?: Bookmark[]) => {
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
     const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
+    const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
     setActiveLayers(flattenedLayers);
+    onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
+
+    /**
+     * There is no sense to use webscene bookmarks in across layers mode.
+     */
+    if (bookmarks?.length && mode === ComparisonMode.withinLayer) {
+      onInsertBookmarks && onInsertBookmarks(bookmarks);
+    }
   };
 
   const handleSelectGroupLayer = (
@@ -536,7 +613,6 @@ export const ComparisonSide = ({
     }
 
     setActiveLayers(newActiveLayers);
-    setPreventTransitions(false);
     const activeLayersIds = newActiveLayers.map((layer) => layer.id);
     onChangeLayers && onChangeLayers(examples, activeLayersIds);
   };
@@ -562,19 +638,19 @@ export const ComparisonSide = ({
   };
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
+    onUpdateSublayers?.([...sublayers]);
     if (sublayer.layerType === "3DObject") {
       const flattenedSublayer = flattenedSublayers.find(
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (flattenedSublayer) {
         flattenedSublayer.visibility = sublayer.visibility;
-        setSublayers([...sublayers]);
+        setFlattenedSublayers([...flattenedSublayers]);
       }
     }
   };
 
   const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    setPreventTransitions(true);
     onViewStateChange(viewStateSet);
   };
 
@@ -588,6 +664,11 @@ export const ComparisonSide = ({
     side === ComparisonSideMode.left
       ? LeftSidePanelWrapper
       : RightSidePanelWrapper;
+
+  const handleOnAfterRender = () => {
+    sumTilesetsStats(loadedTilesets, tilesetsStats);
+    onAfterDeckGlRender && onAfterDeckGlRender();
+  }
 
   return (
     <Container layout={layout}>
@@ -613,7 +694,7 @@ export const ComparisonSide = ({
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
-        onAfterRender={onAfterDeckGlRender}
+        onAfterRender={handleOnAfterRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
@@ -675,7 +756,9 @@ export const ComparisonSide = ({
               <MemoryUsagePanel
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
-                tilesetStats={tilesetStats}
+                activeLayers={activeLayers}
+                tilesetStats={tilesetsStats}
+                contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
                 onClose={() =>

@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
+import { LayoutProps } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
-import { LayoutProps } from "../comparison/common";
 
 export const InnerButton = styled.button<
   {

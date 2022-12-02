@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Checkbox } from "../";
 import { color_canvas_primary_inverted } from "../../constants/colors";
+import { SelectionState } from "../../types";
 import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
@@ -322,7 +323,7 @@ export const TileValidator = ({
           >
             <Checkbox
               id="normals-checkbox"
-              checked={showNormals}
+              checked={showNormals ? SelectionState.selected : SelectionState.unselected}
               onChange={() => handleShowNormals(tile)}
             ></Checkbox>
             <CheckboxTitle>Show Normals</CheckboxTitle>

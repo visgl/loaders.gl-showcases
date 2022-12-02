@@ -53,6 +53,7 @@ const callRender = (renderFunc, props = {}) => {
     <BookmarksPanel
       id="test-bookmarks"
       bookmarks={TEST_BOOKMARKS}
+      disableBookmarksAdding={false}
       onSelectBookmark={onSelectBookmark}
       onClose={onClose}
       onCollapsed={onCollapsed}

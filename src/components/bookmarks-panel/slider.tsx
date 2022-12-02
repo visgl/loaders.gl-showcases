@@ -1,9 +1,8 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import styled, { css } from "styled-components";
 import ChevronIcon from "../../../public/icons/chevron.svg";
-import { LayoutProps } from "../comparison/common";
 import { BookmarksListItem } from "./bookmark-list-item";
-import { Bookmark } from "../../types";
+import { Bookmark, LayoutProps } from "../../types";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 const BookmarksList = styled.div<LayoutProps>`

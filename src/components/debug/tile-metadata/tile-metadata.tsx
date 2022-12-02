@@ -36,7 +36,6 @@ export const TileMetadata = ({ tile }: { tile: Tile3D }) => {
     id,
     type,
     header: { children: tileChildren },
-    // @ts-expect-error - Property '_distanceToCamera' is private and only accessible within class 'TileHeader'.
     _distanceToCamera,
     content: { vertexCount, texture, material },
     refine,

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { CompareButtonMode } from "../../../types";
-import { Title } from "../common";
+import { Title } from "../../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
 import DownloadIcon from "../../../../public/icons/download.svg";

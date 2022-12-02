@@ -12,7 +12,7 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
-import { LayersPanel } from "../layers-panel/layers-panel";
+import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonSide } from "./comparison-side";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
@@ -20,7 +20,7 @@ import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
-jest.mock("../layers-panel/layers-panel");
+jest.mock("../../layers-panel/layers-panel");
 jest.mock("../comparison-params-panel/comparison-params-panel");
 jest.mock("../memory-usage-panel/memory-usage-panel");
 jest.mock("../../../utils/url-utils");
@@ -80,7 +80,6 @@ const onChangeLayersMock = jest.fn();
 const onInsertBaseMapMock = jest.fn();
 const onSelectBaseMapMock = jest.fn();
 const onDeleteBaseMapMock = jest.fn();
-const onLayerSelected = jest.fn();
 const onTilesetLoaded = jest.fn();
 const onLoadingStateChange = jest.fn();
 const onShowBookmarksChange = jest.fn();
@@ -113,6 +112,8 @@ describe("ComparisonSide", () => {
         loadingTime={1123}
         hasBeenCompared={false}
         showBookmarks={false}
+        loadNumber={0}
+        preventTransitions={false}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
@@ -121,7 +122,6 @@ describe("ComparisonSide", () => {
         onInsertBaseMap={onInsertBaseMapMock}
         onSelectBaseMap={onSelectBaseMapMock}
         onDeleteBaseMap={onDeleteBaseMapMock}
-        onLayerSelected={onLayerSelected}
         onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
         {...props}
@@ -330,6 +330,7 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
+      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerInsert for group layers", () => {
@@ -342,7 +343,7 @@ describe("ComparisonSide", () => {
         onLayerInsert({
           id: "new-layer",
           name: "New Layer",
-          url: "https://new.layer.url",
+          url: "",
           layers: [
             {
               id: "1-new-layer",
@@ -357,6 +358,7 @@ describe("ComparisonSide", () => {
       expect(loadMock.mock.calls.length).toBe(1);
       const tilesetUrl = loadMock.mock.lastCall[0];
       expect(tilesetUrl).toBe("https://new.layer.url/layers/0");
+      expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
     it("Should call onLayerSelect for unit layer", () => {
@@ -951,7 +953,7 @@ describe("ComparisonSide", () => {
       act(() => onGeometryChange());
 
       const { useDracoGeometry: newUseDracoGeometry } =
-      DeckGlWrapperMock.mock.lastCall[0];
+        DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseDracoGeometry).toBeFalsy();
     });
 
@@ -963,7 +965,7 @@ describe("ComparisonSide", () => {
       act(() => onTexturesChange());
 
       const { useCompressedTextures: newUseCompressedTextures } =
-      DeckGlWrapperMock.mock.lastCall[0];
+        DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseCompressedTextures).toBeFalsy();
     });
 
