@@ -1,5 +1,6 @@
+import { useState } from "react";
 import styled, { css } from "styled-components";
-import { CompareButtonMode, Layout } from "../../../types";
+import { CompareButtonMode, Layout, LayoutProps } from "../../../types";
 import { Title } from "../../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
@@ -8,11 +9,6 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../../utils/hooks/layout";
-import { useState } from "react";
-
-type LayoutProps = {
-  layout: string;
-};
 
 const Container = styled.div<LayoutProps & { disableButton: boolean }>`
   position: absolute;
@@ -46,28 +42,29 @@ const Container = styled.div<LayoutProps & { disableButton: boolean }>`
     `}
 `;
 
-const Button = styled.button<LayoutProps & { disableButton: boolean }>`
+const Button = styled.button<
+  LayoutProps & { disabled: boolean; isMobile?: boolean }
+>`
   display: flex;
   color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
   padding: 12px;
   align-items: center;
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.mainColor};
-  background-position: center;
   border: none;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  ${({ disabled, isMobile }) => {
+    if (disabled) {
+      return isMobile
+        ? css`
+            opacity: 0.8;
+          `
+        : css`
+            opacity: 0.4;
+          `;
+    }
+  }}
   fill: ${({ theme }) => theme.colors.buttonIconColor};
-  cursor: inherit;
-
-  ${({ disableButton }) =>
-    disableButton &&
-    css`
-      ${getCurrentLayoutProperty({
-        desktop: "opacity: 0.4",
-        tablet: "opacity: 0.8",
-        mobile: "opacity: 0.8",
-      })};
-    `}
-
   :not([disabled])&:hover {
     fill: ${({ theme }) => theme.colors.buttonDimIconColor};
     background-color: ${({ theme }) => theme.colors.buttonDimColor};
@@ -153,14 +150,14 @@ export const CompareButton = ({
       id="compare-button"
       layout={layout}
       disableButton={disableButton}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
     >
       <Button
         layout={layout}
+        isMobile={isMobileLayout}
         disabled={disableButton}
         onClick={onCompareModeToggle}
-        disableButton={disableButton}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
       >
         {compareButtonMode === CompareButtonMode.Start && (
           <>
@@ -179,7 +176,6 @@ export const CompareButton = ({
         <Button
           layout={layout}
           disabled={disableDownloadButton}
-          disableButton={disableButton}
           onClick={onDownloadClick}
         >
           <DownloadIcon />
