@@ -27,7 +27,7 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
-import { LayoutProps } from "../../components/comparison/common";
+import { LayoutProps } from "../../types";
 
 const TILESET_URL = `https://tiles.arcgis.com/tiles/UE5k7ygNe76vVJgy/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
