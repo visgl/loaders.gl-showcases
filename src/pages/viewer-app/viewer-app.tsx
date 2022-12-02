@@ -435,7 +435,6 @@ export const ViewerApp = () => {
     setExamples(newExamples);
     const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
     setActiveLayers(newActiveLayers);
-    setExamples(newExamples);
   };
 
   const onLayerSelectHandler = (
