@@ -18,39 +18,6 @@ describe("DebugApp", () => {
     await page.waitForSelector("#view-minimap");
   });
 
-  it("Select Map tab works", async () => {
-    const controlOptions = [
-        "san-francisco-v1.7",
-        "new-york",
-        "san-francisco-v1.6",
-        "turanga-library"
-      ];
-
-    await page.waitForSelector("#control-panel");
-    await page.select("#base-map", "Light");
-
-    for await (const item of controlOptions) {
-      const tileset = await page.select("#tilesets", item);    
-        expect(tileset).toEqual([item])
-        if (tileset.includes("turanga-library")) {
-        await page.waitForSelector("#building-explorer");
-        await page.click("#BuildingExplorerToggle~span");
-        await page.click("#CheckBox220-icon");
-        await page.click("#CheckBox230-icon");
-        await page.click("#CheckBox210-icon");
-      }
-    }
-    
-    await page.click("#BuildingExplorerToggle~span");
-    await page.click("#terrain-layer-switch~span");
-    await page.click("#select-map");
-  }, 30000);
-
-  it("Map Info tab works", async () => {
-    await page.click("#map-info");
-    await page.waitForSelector("#map-info-panel", {visible: true});
-  });
-
   it("Memory Usage tab works", async () => {
     await page.click("#memory-usage");
     await page.waitForSelector("#stats-widget", {visible: true});

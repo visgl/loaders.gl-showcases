@@ -43,6 +43,7 @@ import {
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
+  MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
 } from "../../components/common";
@@ -50,6 +51,7 @@ import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-pan
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
   handleSelectAllLeafsInGroup,
+  initActiveLayer,
   selectNestedLayers,
 } from "../../utils/layer-utils";
 import { ActiveSublayer } from "../../utils/active-sublayer";
@@ -104,30 +106,6 @@ const StatsWidgetContainer = styled.div<{
   max-height: calc(100% - 280px);
   overflow: auto;
 `;
-
-const MapArea = styled.div`
-  margin-top: 60px;
-  height: calc(100% - 60px);
-  display: flex;
-  position: relative;
-`;
-
-const initActiveLayer = (): LayerExample => {
-  const tilesetParam = parseTilesetFromUrl();
-
-  if (tilesetParam?.startsWith("http")) {
-    return {
-      id: tilesetParam,
-      name: tilesetParam,
-      custom: true,
-      url: tilesetParam,
-    };
-  }
-
-  const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
-
-  return namedExample || INITIAL_EXAMPLE;
-};
 
 export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);

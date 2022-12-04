@@ -1,4 +1,6 @@
+import { EXAMPLES, INITIAL_EXAMPLE } from "../constants/i3s-examples";
 import { LayerExample } from "../types";
+import { parseTilesetFromUrl } from "./url-utils";
 
 export const handleSelectAllLeafsInGroup = (
   layer: LayerExample,
@@ -33,6 +35,23 @@ export const flattenLayerIds = (
   }
 
   return flattenedLayersIds;
+};
+
+export const initActiveLayer = (): LayerExample => {
+  const tilesetParam = parseTilesetFromUrl();
+
+  if (tilesetParam?.startsWith("http")) {
+    return {
+      id: tilesetParam,
+      name: tilesetParam,
+      custom: true,
+      url: tilesetParam,
+    };
+  }
+
+  const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
+
+  return namedExample || INITIAL_EXAMPLE;
 };
 
 export const selectNestedLayers = (

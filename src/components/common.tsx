@@ -11,6 +11,13 @@ export enum Panels {
   Bookmarks,
 }
 
+export const MapArea = styled.div`
+  margin-top: 60px;
+  height: calc(100% - 60px);
+  display: flex;
+  position: relative;
+`;
+
 export const PanelContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
