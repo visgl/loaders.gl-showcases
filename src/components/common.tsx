@@ -22,7 +22,7 @@ export const PanelContainer = styled.div<LayoutProps>`
   position: relative;
 
   max-height: ${getCurrentLayoutProperty({
-    desktop: "calc(100vh - 82px)",
+    desktop: "calc(100vh - 115px)",
     tablet: "382px",
     mobile: "calc(50vh - 110px)",
   })};
@@ -60,6 +60,81 @@ export const PanelHorizontalLine = styled.div<{
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
   opacity: 0.12;
+`;
+
+export const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+
+  left: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "24px",
+    mobile: "8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    desktop: "right 24px",
+    tablet: "left 24px",
+    mobile: "left 8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const LeftSidePanelWrapper = styled.div<LayoutProps>`
+  position: absolute;
+  z-index: 2;
+
+  left: ${getCurrentLayoutProperty({
+    desktop: "100px",
+    tablet: "100px",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "calc(50% - 180px)",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    desktop: "right 100px;",
+    tablet: "left: 100px;",
+    /**
+     * Make mobile panel centered horisontally
+     * 180px is half the width of the mobile layers panel
+     *  */
+    mobile: "left: calc(50% - 180px);",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
 `;
 
 export const OptionsIcon = styled.div<{ panel: number }>`

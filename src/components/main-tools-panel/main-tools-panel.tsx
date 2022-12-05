@@ -11,16 +11,6 @@ import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { ActiveButton, Layout } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-type MainToolsPanelProps = {
-  id: string;
-  activeButton: ActiveButton;
-  showLayerOptions?: boolean;
-  showComparisonSettings?: boolean;
-  showBookmarks: boolean;
-  onChange?: (active: ActiveButton) => void;
-  onShowBookmarksChange: () => void;
-};
-
 type ContainerProps = {
   id: string;
 };
@@ -64,12 +54,24 @@ const Button = styled.button<ButtonProps>`
   }
 `;
 
+type MainToolsPanelProps = {
+  id: string;
+  activeButton: ActiveButton;
+  showLayerOptions?: boolean;
+  showComparisonSettings?: boolean;
+  showBookmarks?: boolean;
+  bookmarksActive?: boolean;
+  onChange?: (active: ActiveButton) => void;
+  onShowBookmarksChange?: () => void;
+};
+
 export const MainToolsPanel = ({
   id,
   activeButton,
   showLayerOptions = true,
-  showComparisonSettings = true,
-  showBookmarks,
+  showComparisonSettings = false,
+  showBookmarks = false,
+  bookmarksActive = false,
   onChange = () => ({}),
   onShowBookmarksChange,
 }: MainToolsPanelProps) => {
@@ -102,13 +104,15 @@ export const MainToolsPanel = ({
       >
         <MemoryIcon />
       </Button>
-      <Button
-        layout={layout}
-        active={showBookmarks}
-        onClick={onShowBookmarksChange}
-      >
-        <BookmarksIcon />
-      </Button>
+      {showBookmarks && (
+        <Button
+          layout={layout}
+          active={bookmarksActive}
+          onClick={onShowBookmarksChange}
+        >
+          <BookmarksIcon />
+        </Button>
+      )}
     </Container>
   );
 };
