@@ -176,11 +176,13 @@ export const ViewerApp = () => {
         "Renderbuffer Memory": "memory",
         "Texture Memory": "memory",
       },
+      // @ts-expect-error - Type 'MutableRefObject<null>' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, dir, and 275 more.
       container: statsWidgetContainer,
     });
 
     setMemWidget(memWidget);
 
+    // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
     const tilesetStatsWidget = new StatsWidget(null, {
       container: statsWidgetContainer,
       formatters: {
