@@ -15,7 +15,7 @@ describe("DebugApp", () => {
   it("Contains tool bar and minimap", async () => {
     await page.waitForSelector("#tool-bar");
     await page.waitForSelector("#view-minimap");
-  });
+  }, 30000);
 
   it("Select Map tab works", async () => {
     const controlOptions = [
