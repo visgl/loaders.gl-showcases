@@ -40,6 +40,8 @@ const NOT_SUPPORTED_LAYERS_ERROR =
 const NOT_SUPPORTED_CRS_ERROR =
   "There is no supported CRS system. Only WGS84 is supported.";
 
+const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE = 'Webscene slides cannot be loaded in Across Layers mode';
+
 enum Tabs {
   Layers,
   MapOptions,
@@ -53,6 +55,7 @@ type LayersPanelProps = {
   type: ListItemType;
   baseMaps: BaseMap[];
   selectedBaseMapId: string;
+  isAddingBookmarksAllowed?: boolean;
   insertBaseMap: (baseMap: BaseMap) => void;
   selectBaseMap: (id: string) => void;
   deleteBaseMap: (id: string) => void;
@@ -158,6 +161,7 @@ export const LayersPanel = ({
   onLayerDelete,
   baseMaps,
   selectedBaseMapId,
+  isAddingBookmarksAllowed = true,
   insertBaseMap,
   selectBaseMap,
   deleteBaseMap,
@@ -180,6 +184,7 @@ export const LayersPanel = ({
   const [showNoSupportedCRSInSceneError, setShowNoSupportedCRSInSceneError] =
     useState(false);
   const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
+  const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
 
   useClickOutside([warningNode], () => setShowExistedError(false));
 
@@ -262,7 +267,12 @@ export const LayersPanel = ({
       };
 
       const newLayersExamples = [...layers, newLayer];
-      const bookmarks = convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples);
+      const isWebsceneHasSlides = !!webScene.header?.presentation?.slides?.length;
+      const bookmarks = isAddingBookmarksAllowed ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples) : [];
+
+      if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
+        setShowAddingSlidesWarning(true);
+      }
 
       // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
       onLayerInsert(newLayer, bookmarks);
@@ -379,6 +389,15 @@ export const LayersPanel = ({
               <WarningPanel
                 title={NOT_SUPPORTED_CRS_ERROR}
                 onConfirm={() => setShowNoSupportedCRSInSceneError(false)}
+              />
+            </PanelWrapper>
+          )}
+
+          {showAddingSlidesWarning && (
+            <PanelWrapper ref={(element) => setWarningNode(element)}>
+              <WarningPanel
+                title={DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE}
+                onConfirm={() => setShowAddingSlidesWarning(false)}
               />
             </PanelWrapper>
           )}
