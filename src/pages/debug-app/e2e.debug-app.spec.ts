@@ -8,7 +8,6 @@ describe("DebugApp", () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.goto("http://localhost:3000/debug");
-    await page.waitForSelector("#view-minimap");
   });
 
   afterAll(() => browser.close());
