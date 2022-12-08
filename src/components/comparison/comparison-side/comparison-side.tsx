@@ -1,5 +1,4 @@
-import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
@@ -22,6 +21,7 @@ import {
   TilesetType,
   LayerViewState,
   Bookmark,
+  BuildingSceneSublayerExtended,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -36,7 +36,16 @@ import {
 } from "../../../utils/hooks/layout";
 import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
-import { handleSelectAllLeafsInGroup } from "../../../utils/layer-utils";
+import {
+  handleSelectAllLeafsInGroup,
+  selectNestedLayers,
+} from "../../../utils/layer-utils";
+import {
+  LeftSidePanelWrapper,
+  LeftSideToolsPanelWrapper,
+  RightSidePanelWrapper,
+  RightSideToolsPanelWrapper,
+} from "../../common";
 import { initStats, sumTilesetsStats } from "../../../utils/stats";
 
 type LayoutProps = {
@@ -51,81 +60,6 @@ const Container = styled.div<LayoutProps>`
   })};
   height: 100%;
   position: relative;
-`;
-
-const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
-  position: absolute;
-
-  left: ${getCurrentLayoutProperty({
-    desktop: "24px",
-    tablet: "24px",
-    mobile: "8px",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "top: 24px;",
-    tablet: "top: 16px;",
-    mobile: "bottom: 8px;",
-  })};
-`;
-
-const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
-  left: auto;
-  top: auto;
-
-  ${getCurrentLayoutProperty({
-    desktop: "right 24px",
-    tablet: "left 24px",
-    mobile: "left 8px",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "top: 24px;",
-    tablet: "top: 16px;",
-    mobile: "bottom: 8px;",
-  })};
-`;
-
-const LeftSidePanelWrapper = styled.div<LayoutProps>`
-  position: absolute;
-  z-index: 2;
-
-  left: ${getCurrentLayoutProperty({
-    desktop: "100px",
-    tablet: "100px",
-    /**
-     * Make mobile panel centered horisontally
-     * 180px is half the width of the mobile layers panel
-     *  */
-    mobile: "calc(50% - 180px)",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "top: 24px;",
-    tablet: "top: 16px;",
-    mobile: "bottom: 8px;",
-  })};
-`;
-
-const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
-  left: auto;
-  top: auto;
-
-  ${getCurrentLayoutProperty({
-    desktop: "right 100px;",
-    tablet: "left: 100px;",
-    /**
-     * Make mobile panel centered horisontally
-     * 180px is half the width of the mobile layers panel
-     *  */
-    mobile: "left: calc(50% - 180px);",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "top: 24px;",
-    tablet: "top: 16px;",
-    mobile: "bottom: 8px;",
-  })};
 `;
 
 /** Delay to await asynchronous traversal of the tileset **/
@@ -164,11 +98,6 @@ type ComparisonSideProps = {
   onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
 };
 
-type BuildingSceneSublayerWithToken = BuildingSceneSublayer & {
-  token?: string;
-  type?: TilesetType;
-};
-
 export const ComparisonSide = ({
   mode,
   side,
@@ -199,13 +128,13 @@ export const ComparisonSide = ({
   onShowBookmarksChange,
   onAfterDeckGlRender,
   onInsertBookmarks,
-  onUpdateSublayers
+  onUpdateSublayers,
 }: ComparisonSideProps) => {
   const layout = useAppLayout();
 
   const tilesetRef = useRef<Tileset3D | null>(null);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayerWithToken[]
+    BuildingSceneSublayerExtended[]
   >([]);
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
@@ -223,6 +152,11 @@ export const ComparisonSide = ({
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const fetchSublayersCounter = useRef<number>(0);
+
+  const selectedLayerIds = useMemo(
+    () => activeLayers.map((layer) => layer.id),
+    [activeLayers]
+  );
 
   useEffect(() => {
     if (showLayerOptions) {
@@ -350,7 +284,6 @@ export const ComparisonSide = ({
     setSublayers([]);
   }, [activeLayers]);
 
-
   /**
    * Init statistics for loaded tilesets every time if loaded tilesets have been changed.
    */
@@ -360,16 +293,17 @@ export const ComparisonSide = ({
 
     if (loadedTilesetsCount && activeLayersCount) {
       const isBSL = loadedTilesetsCount > activeLayersCount;
-      let statsName =  activeLayers[0].url;
+      let statsName = activeLayers[0].url;
 
       if (!isBSL) {
-        statsName = loadedTilesets.map(loadedTileset => loadedTileset.url).join('<-tileset->');
+        statsName = loadedTilesets
+          .map((loadedTileset) => loadedTileset.url)
+          .join("<-tileset->");
       }
 
       const tilesetsStats = initStats(statsName);
       setTilesetsStats(tilesetsStats);
     }
-
   }, [loadedTilesets]);
 
   /**
@@ -377,8 +311,10 @@ export const ComparisonSide = ({
    * Set loaded tilesets based on that.
    */
   useEffect(() => {
-    const activeLayersUrls = activeLayers.map(activeLayer => activeLayer.url);
-    setLoadedTilesets(prevTilesets => prevTilesets.filter(tileset => activeLayersUrls.includes(tileset.url)));
+    const activeLayersUrls = activeLayers.map((activeLayer) => activeLayer.url);
+    setLoadedTilesets((prevTilesets) =>
+      prevTilesets.filter((tileset) => activeLayersUrls.includes(tileset.url))
+    );
   }, [activeLayers]);
 
   const getFlattenedSublayers = async (tilesetData: {
@@ -442,7 +378,7 @@ export const ComparisonSide = ({
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
     newTileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     onLoadingStateChange(true);
-    setLoadedTilesets(prevTilesets => [...prevTilesets, newTileset]);
+    setLoadedTilesets((prevTilesets) => [...prevTilesets, newTileset]);
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(newTileset, prevExamples)
     );
@@ -518,12 +454,15 @@ export const ComparisonSide = ({
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample, bookmarks?: Bookmark[]) => {
+  const onLayerInsertHandler = (
+    newLayer: LayerExample,
+    bookmarks?: Bookmark[]
+  ) => {
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
-    const flattenedLayers = handleSelectAllLeafsInGroup(newLayer);
-    const newActiveLayersIds = flattenedLayers.map((layer) => layer.id);
-    setActiveLayers(flattenedLayers);
+    const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
+    const newActiveLayersIds = newActiveLayers.map((layer) => layer.id);
+    setActiveLayers(newActiveLayers);
     onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
 
     /**
@@ -534,84 +473,15 @@ export const ComparisonSide = ({
     }
   };
 
-  const handleSelectGroupLayer = (
-    layer: LayerExample,
-    isMainGroup: boolean,
-    rootLayer?: LayerExample
-  ) => {
-    const allLeafsInRootLayer = rootLayer
-      ? handleSelectAllLeafsInGroup(rootLayer).map((layer) => layer.id)
-      : [];
-
-    const activeLayersInRootGroup = activeLayers.filter((activeLayer) =>
-      allLeafsInRootLayer.includes(activeLayer.id)
-    );
-
-    const leafsInGroupsTree = handleSelectAllLeafsInGroup(layer);
-    const selectedChildrenIds = leafsInGroupsTree.map((child) => child.id);
-    const isGroupAlreadySelected = activeLayers.some((activeLayer) =>
-      selectedChildrenIds.includes(activeLayer.id)
-    );
-
-    if (isGroupAlreadySelected && !isMainGroup) {
-      const result = activeLayers.filter(
-        (activeLayer) => !selectedChildrenIds.includes(activeLayer.id)
-      );
-      return result;
-    }
-
-    if (isMainGroup) {
-      return leafsInGroupsTree;
-    }
-
-    return [...activeLayersInRootGroup, ...leafsInGroupsTree];
-  };
-
-  const handleSelectLeafLayer = (
-    layer: LayerExample,
-    rootLayer?: LayerExample
-  ) => {
-    const isLayerAlreadySelected = activeLayers.some(
-      (activeLayer) => activeLayer.id === layer.id
-    );
-
-    if (isLayerAlreadySelected) {
-      return activeLayers.filter((activeLayer) => activeLayer.id !== layer.id);
-    }
-
-    const activeLayerIdsFromRoot = rootLayer
-      ? handleSelectAllLeafsInGroup(rootLayer).map((layer) => layer.id)
-      : [];
-    const activeLayersInRootGroup = activeLayers.filter((activeLayer) =>
-      activeLayerIdsFromRoot.includes(activeLayer.id)
-    );
-
-    return [...activeLayersInRootGroup, layer];
-  };
-
   const onLayerSelectHandler = (
     layer: LayerExample,
     rootLayer?: LayerExample
   ) => {
-    const isGroup = !!layer?.layers?.length;
-    const isUnitLayer = !rootLayer && !isGroup;
-    const isLeaf = rootLayer && !isGroup;
-    const isMainGroup = isGroup && !rootLayer;
-
-    let newActiveLayers: LayerExample[] = [];
-
-    switch (true) {
-      case isUnitLayer:
-        newActiveLayers = [layer];
-        break;
-      case isGroup:
-        newActiveLayers = handleSelectGroupLayer(layer, isMainGroup, rootLayer);
-        break;
-      case isLeaf:
-        newActiveLayers = handleSelectLeafLayer(layer, rootLayer);
-        break;
-    }
-
+    const newActiveLayers: LayerExample[] = selectNestedLayers(
+      layer,
+      activeLayers,
+      rootLayer
+    );
     setActiveLayers(newActiveLayers);
     const activeLayersIds = newActiveLayers.map((layer) => layer.id);
     onChangeLayers && onChangeLayers(examples, activeLayersIds);
@@ -650,12 +520,6 @@ export const ComparisonSide = ({
     }
   };
 
-  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    onViewStateChange(viewStateSet);
-  };
-
-  const selectedLayerIds = activeLayers.map((layer) => layer.id);
-
   const ToolsPanelWrapper =
     side === ComparisonSideMode.left
       ? LeftSideToolsPanelWrapper
@@ -668,7 +532,7 @@ export const ComparisonSide = ({
   const handleOnAfterRender = () => {
     sumTilesetsStats(loadedTilesets, tilesetsStats);
     onAfterDeckGlRender && onAfterDeckGlRender();
-  }
+  };
 
   return (
     <Container layout={layout}>
@@ -690,7 +554,7 @@ export const ComparisonSide = ({
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
-        onViewStateChange={onViewStateChangeHandler}
+        onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
@@ -702,7 +566,8 @@ export const ComparisonSide = ({
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
-              showBookmarks={showBookmarks}
+              bookmarksActive={showBookmarks}
+              showBookmarks
               showLayerOptions={showLayerOptions}
               showComparisonSettings={showComparisonSettings}
               onChange={onChangeMainToolsPanelHandler}
