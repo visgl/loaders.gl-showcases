@@ -274,3 +274,8 @@ export type StatsData = {
 export type LayoutProps = {
   layout: string;
 };
+
+export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
+  token?: string;
+  type?: TilesetType;
+};

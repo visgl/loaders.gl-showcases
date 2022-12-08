@@ -60,7 +60,7 @@ const Container = styled.div<LayoutProps>`
     tablet: "column",
     mobile: "column-reverse",
   })};
-  margin-top: 58px;
+  margin-top: 60px;
   height: calc(100% - 60px);
 `;
 

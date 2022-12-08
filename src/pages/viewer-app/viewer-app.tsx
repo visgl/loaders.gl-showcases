@@ -1,33 +1,19 @@
-import {
-  FeatureAttributes,
-  Sublayer,
-  LayerExample,
-  ColorsByAttribute,
-  TilesetType,
-} from "../../types";
-// TODO Add export type to index file in loaders.gl
-import { BuildingSceneSublayer } from "@loaders.gl/i3s/dist/types";
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import styled from "styled-components";
-
 import { load } from "@loaders.gl/core";
 import { lumaStats } from "@luma.gl/core";
 import {
   I3SBuildingSceneLayerLoader,
   loadFeatureAttributes,
-  SceneLayer3D,
   StatisticsInfo,
 } from "@loaders.gl/i3s";
 import { StatsWidget } from "@probe.gl/stats-widget";
 
-import { ControlPanel, BuildingExplorer } from "../../components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
-import { INITIAL_MAP_STYLE } from "../../constants/map-styles";
-import { CUSTOM_EXAMPLE_VALUE } from "../../constants/i3s-examples";
+import { BASE_MAPS } from "../../constants/map-styles";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
   color_brand_primary,
@@ -36,13 +22,53 @@ import {
 
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
-import { useForceUpdate } from "../../utils/hooks/force-update-hook";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import {
   parseTilesetFromUrl,
   parseTilesetUrlParams,
 } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
+import {
+  FeatureAttributes,
+  Sublayer,
+  LayerExample,
+  ColorsByAttribute,
+  TilesetType,
+  ActiveButton,
+  LayerViewState,
+  ViewStateSet,
+  ListItemType,
+  BaseMap,
+  BuildingSceneSublayerExtended,
+} from "../../types";
+import { useAppLayout } from "../../utils/hooks/layout";
+import {
+  RightSidePanelWrapper,
+  RightSideToolsPanelWrapper,
+} from "../../components/common";
+import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
+import { LayersPanel } from "../../components/layers-panel/layers-panel";
+import {
+  handleSelectAllLeafsInGroup,
+  selectNestedLayers,
+} from "../../utils/layer-utils";
+import { ActiveSublayer } from "../../utils/active-sublayer";
+import { useSearchParams } from "react-router-dom";
+
+const INITIAL_VIEW_STATE = {
+  main: {
+    longitude: 0,
+    latitude: 0,
+    pitch: 45,
+    maxPitch: 90,
+    bearing: 0,
+    minZoom: 2,
+    maxZoom: 24,
+    zoom: 2,
+    transitionDuration: 0,
+    transitionInterpolator: null,
+  },
+};
 
 const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
   display: flex;
@@ -79,20 +105,38 @@ const StatsWidgetContainer = styled.div<{
   overflow: auto;
 `;
 
-/**
- * TODO: Add types to component
- */
+const MapArea = styled.div`
+  margin-top: 60px;
+  height: calc(100% - 60px);
+  display: flex;
+  position: relative;
+`;
+
+const initActiveLayer = (): LayerExample => {
+  const tilesetParam = parseTilesetFromUrl();
+
+  if (tilesetParam?.startsWith("http")) {
+    return {
+      id: tilesetParam,
+      name: tilesetParam,
+      custom: true,
+      url: tilesetParam,
+    };
+  }
+
+  const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
+
+  return namedExample || INITIAL_EXAMPLE;
+};
+
 export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
-  const forceUpdate = useForceUpdate();
+  const layout = useAppLayout();
 
-  const [token, setToken] = useState(null);
-  const [selectedMapStyle, setSelectedMapStyle] = useState(INITIAL_MAP_STYLE);
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState<FeatureAttributes | null>(null);
   const [colorsByAttribute, setColorsByAttribute] =
     useState<ColorsByAttribute | null>(null);
-
   const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
     StatisticsInfo[] | null
   >(null);
@@ -100,44 +144,51 @@ export const ViewerApp = () => {
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] =
     useState<string>("");
   const [isAttributesLoading, setAttributesLoading] = useState(false);
-  const [showBuildingExplorer, setShowBuildingExplorer] = useState(false);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayer[]
+    BuildingSceneSublayerExtended[]
   >([]);
-  const [sublayers, setSublayers] = useState<Sublayer[]>([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
-  const [useTerrainLayer, setUseTerrainLayer] = useState(false);
-  const [metadata, setMetadata] = useState<{ layers: SceneLayer3D[] } | null>(
-    null
-  );
-
   const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
   const [tilesetStatsWidget, setTilesetStatsWidget] =
     useState<StatsWidget | null>(null);
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
-  const initMainTileset = (): LayerExample => {
-    const tilesetParam = parseTilesetFromUrl();
+  const [activeButton, setActiveButton] = useState<ActiveButton>(
+    ActiveButton.none
+  );
+  const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
+  const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
+  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const fetchSublayersCounter = useRef<number>(0);
+  const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
+  const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
+  const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
+  const [, setSearchParams] = useSearchParams();
 
-    if (tilesetParam?.startsWith("http")) {
-      return {
-        id: tilesetParam,
-        name: CUSTOM_EXAMPLE_VALUE,
-        url: tilesetParam,
-      };
-    }
-
-    const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
-
-    return namedExample || INITIAL_EXAMPLE;
-  };
-
-  const [mainTileset, setMainTileset] = useState(initMainTileset());
+  const selectedLayerIds = useMemo(
+    () => activeLayers.map((layer) => layer.id),
+    [activeLayers]
+  );
+  const layers3d = useMemo(() => {
+    return flattenedSublayers
+      .filter((sublayer) => sublayer.visibility)
+      .map((sublayer) => ({
+        id: sublayer.id,
+        url: sublayer.url,
+        token: sublayer.token,
+        type: sublayer.type || TilesetType.I3S,
+      }));
+  }, [flattenedSublayers]);
 
   /**
    * Initialize stats widgets
    */
   useEffect(() => {
+    const newActiveLayer = initActiveLayer();
+    if (newActiveLayer.custom) {
+      setExamples((prev) => [...prev, newActiveLayer]);
+    }
+    setActiveLayers([newActiveLayer]);
     const memoryUsage = lumaStats.get("Memory Usage");
     const memWidget = new StatsWidget(memoryUsage, {
       framesPerUpdate: 1,
@@ -167,57 +218,108 @@ export const ViewerApp = () => {
    * Hook for start using tilesets stats.
    */
   useEffect(() => {
-    const tilesetsStats = initStats(mainTileset.url);
+    const tilesetsStats = initStats(activeLayers[0]?.url);
 
     tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
 
-  /**
-   * Hook to call multiple changing function based on selected tileset.
-   */
   useEffect(() => {
-    async function fetchMetadata(metadataUrl) {
-      const metadata = await fetch(metadataUrl).then((resp) => resp.json());
-      setMetadata(metadata);
+    fetchSublayersCounter.current++;
+    if (!activeLayers.length) {
+      setFlattenedSublayers([]);
+      return;
+    }
+    setSearchParams({ tileset: activeLayers[0].id });
+
+    async function fetchFlattenedSublayers(
+      tilesetsData: {
+        id: string;
+        url: string;
+        token: string;
+        hasChildren: boolean;
+      }[],
+      layerUpdateNumber: number
+    ) {
+      const promises: Promise<any>[] = [];
+
+      for (const data of tilesetsData) {
+        if (!data.hasChildren) {
+          promises.push(getFlattenedSublayers(data));
+        }
+      }
+
+      Promise.all(promises).then((results) => {
+        if (layerUpdateNumber === fetchSublayersCounter.current) {
+          setFlattenedSublayers(results.flat());
+        }
+      });
     }
 
-    async function fetchFlattenedSublayers(tilesetUrl) {
-      const flattenedSublayers = await getFlattenedSublayers(tilesetUrl);
-      setFlattenedSublayers(flattenedSublayers);
+    const tilesetsData: {
+      id: string;
+      url: string;
+      token: string;
+      hasChildren: boolean;
+      type?: TilesetType;
+    }[] = [];
+
+    for (const layer of activeLayers) {
+      const params = parseTilesetUrlParams(layer.url, layer);
+      const { tilesetUrl, token } = params;
+
+      tilesetsData.push({
+        id: layer.id,
+        url: tilesetUrl,
+        token,
+        hasChildren: Boolean(layer.layers),
+        type: layer.type,
+      });
     }
 
-    const params = parseTilesetUrlParams(mainTileset.url, mainTileset);
-    const { tilesetUrl, token, metadataUrl } = params;
-
-    fetchMetadata(metadataUrl);
-    fetchFlattenedSublayers(tilesetUrl);
-
-    setToken(token);
+    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
     setLoadedTilesets([]);
-    setShowBuildingExplorer(false);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
-  }, [mainTileset]);
+  }, [activeLayers]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
    * @param {string} tilesetUrl
    * @returns {string[]} Sublayer urls or tileset url.
-   * TODO Add filtration mode for sublayers which were selected by user.
    */
-  const getFlattenedSublayers = async (tilesetUrl) => {
+  const getFlattenedSublayers = async (tilesetData: {
+    id: string;
+    url: string;
+    token: string;
+    type?: TilesetType;
+  }) => {
     try {
-      const tileset = await load(tilesetUrl, I3SBuildingSceneLayerLoader);
+      const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
       const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-      setSublayers(sublayersTree?.sublayers || []);
-      const sublayers = tileset?.sublayers.filter(
-        (sublayer) => sublayer.name !== "Overview"
+      const childSublayers = sublayersTree?.sublayers || [];
+      setSublayers(
+        childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
+      const sublayers = tileset?.sublayers
+        .filter((sublayer) => sublayer.name !== "Overview")
+        .map((item) => ({
+          ...item,
+          token: tilesetData.token,
+          type: tilesetData.type,
+        }));
       return sublayers;
     } catch (e) {
-      return [{ url: tilesetUrl, visibility: true }];
+      return [
+        {
+          id: tilesetData.id,
+          url: tilesetData.url,
+          visibility: true,
+          token: tilesetData.token,
+          type: tilesetData.type,
+        },
+      ];
     }
   };
 
@@ -233,14 +335,6 @@ export const ViewerApp = () => {
 
   const onTilesetLoad = (tileset: Tileset3D) => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
-  };
-
-  const onSelectMapStyle = (mapUrl: string) => {
-    setSelectedMapStyle(mapUrl);
-  };
-
-  const toggleTerrain = () => {
-    setUseTerrainLayer((prevValue) => !prevValue);
   };
 
   const isLayerPickable = () => {
@@ -264,13 +358,7 @@ export const ViewerApp = () => {
       handleClosePanel();
       return;
     }
-
-    const options = { i3s: {} };
-
-    if (token) {
-      options.i3s = { token };
-    }
-
+    const options = info.object.tileset?.loadOptions || { i3s: {} };
     setAttributesLoading(true);
     const selectedFeatureAttributes = await loadFeatureAttributes(
       info.object,
@@ -297,57 +385,9 @@ export const ViewerApp = () => {
       <StatsWidgetContainer
         id="stats-panel"
         hasSublayers={Boolean(sublayers.length)}
-        showBuildingExplorer={showBuildingExplorer}
+        showBuildingExplorer={false}
         // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
         ref={(_) => (statsWidgetContainer = _)}
-      />
-    );
-  };
-
-  const updateSublayerVisibility = (sublayer) => {
-    if (sublayer.layerType === "3DObject") {
-      const flattenedSublayer = flattenedSublayers.find(
-        (fSublayer) => fSublayer.id === sublayer.id
-      );
-      if (flattenedSublayer) {
-        flattenedSublayer.visibility = sublayer.visibility;
-        forceUpdate();
-
-        if (!sublayer.visibility) {
-          setLoadedTilesets((prevValues) =>
-            prevValues.filter(
-              (tileset) => tileset.basePath !== flattenedSublayer.url
-            )
-          );
-        }
-      }
-    }
-  };
-
-  const onToggleBuildingExplorer = () => {
-    setShowBuildingExplorer((prevValue) => !prevValue);
-  };
-
-  const renderControlPanel = () => {
-    return (
-      <ControlPanel
-        tileset={mainTileset}
-        onExampleChange={setMainTileset}
-        onMapStyleChange={onSelectMapStyle}
-        selectedMapStyle={selectedMapStyle}
-        useTerrainLayer={useTerrainLayer}
-        toggleTerrain={toggleTerrain}
-      ></ControlPanel>
-    );
-  };
-
-  const renderBuildingExplorer = () => {
-    return (
-      <BuildingExplorer
-        sublayers={sublayers}
-        onToggleBuildingExplorer={onToggleBuildingExplorer}
-        onUpdateSublayerVisibility={updateSublayerVisibility}
-        isShown={showBuildingExplorer}
       />
     );
   };
@@ -371,7 +411,7 @@ export const ViewerApp = () => {
         ""
       }
       onClose={handleClosePanel}
-      tilesetName={mainTileset.name}
+      tilesetName={activeLayers[0]?.name}
       attributes={selectedFeatureAttributes}
       statisticsInfo={tilesetStatisticsInfo}
       tilesetBasePath={selectedTilesetBasePath}
@@ -381,37 +421,121 @@ export const ViewerApp = () => {
   );
 
   const renderMemory = () => {
-    return (
-      <StatsWidgetWrapper showMemory={!showBuildingExplorer}>
-        {renderStats()}
-      </StatsWidgetWrapper>
+    return <StatsWidgetWrapper showMemory>{renderStats()}</StatsWidgetWrapper>;
+  };
+
+  const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+    setActiveButton((prevValue) =>
+      prevValue === active ? ActiveButton.none : active
     );
   };
 
-  const getLayers3d = () => {
-    return flattenedSublayers
-      .filter((sublayer) => sublayer.visibility)
-      .map((sublayer) => ({
-        id: sublayer.id,
-        url: sublayer.url,
-        token,
-        type: TilesetType.I3S,
-      }));
+  const onLayerInsertHandler = (newLayer: LayerExample) => {
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
+    const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
+    setActiveLayers(newActiveLayers);
+  };
+
+  const onLayerSelectHandler = (
+    layer: LayerExample,
+    rootLayer?: LayerExample
+  ) => {
+    const newActiveLayers: LayerExample[] = selectNestedLayers(
+      layer,
+      activeLayers,
+      rootLayer
+    );
+    setActiveLayers(newActiveLayers);
+  };
+
+  const onLayerDeleteHandler = (id: string) => {
+    const idsToDelete = [id];
+    const layerToDelete = examples.find((layer) => layer.id === id);
+    const childIds = layerToDelete
+      ? handleSelectAllLeafsInGroup(layerToDelete).map((layer) => layer.id)
+      : [];
+    if (childIds.length) {
+      idsToDelete.push(...childIds);
+    }
+
+    setExamples((prevValues) =>
+      prevValues.filter((example) => example.id !== id)
+    );
+    setActiveLayers((prevValues) =>
+      prevValues.filter((layer) => !idsToDelete.includes(layer.id))
+    );
+  };
+
+  const pointToTileset = (layerViewState?: LayerViewState) => {
+    if (layerViewState) {
+      const { zoom, longitude, latitude } = layerViewState;
+
+      setViewState({
+        main: {
+          ...viewState.main,
+          zoom: zoom + 2.5,
+          longitude,
+          latitude,
+          transitionDuration: 1000,
+        },
+      });
+    }
+  };
+
+  const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
+    if (sublayer.layerType === "3DObject") {
+      const flattenedSublayer = flattenedSublayers.find(
+        (fSublayer) => fSublayer.id === sublayer.id
+      );
+      if (flattenedSublayer) {
+        flattenedSublayer.visibility = sublayer.visibility;
+        setFlattenedSublayers([...flattenedSublayers]);
+      }
+    }
+  };
+
+  const onInsertBaseMapHandler = (baseMap: BaseMap) => {
+    setBaseMaps((prevValues) => [...prevValues, baseMap]);
+    setSelectedBaseMap(baseMap);
+  };
+
+  const onSelectBaseMapHandler = (baseMapId: string) => {
+    const baseMap = baseMaps.find((map) => map.id === baseMapId);
+
+    if (baseMap) {
+      setSelectedBaseMap(baseMap);
+    }
+  };
+
+  const onDeleteBaseMapHandler = (baseMapId: string) => {
+    setBaseMaps((prevValues) =>
+      prevValues.filter((baseMap) => baseMap.id !== baseMapId)
+    );
+
+    setSelectedBaseMap(BASE_MAPS[0]);
+  };
+
+  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
+    setViewState(viewStateSet);
   };
 
   return (
-    <>
-      {renderControlPanel()}
+    <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
-      {Boolean(sublayers?.length) && renderBuildingExplorer()}
       {renderMemory()}
       <DeckGlWrapper
-        showTerrain={useTerrainLayer}
-        mapStyle={selectedMapStyle}
+        parentViewState={{
+          ...viewState,
+          main: {
+            ...viewState.main,
+          },
+        }}
+        showTerrain={selectedBaseMap.id === "Terrain"}
+        mapStyle={selectedBaseMap.mapUrl}
         pickable={isLayerPickable()}
-        layers3d={getLayers3d()}
-        lastLayerSelectedId={mainTileset.url}
-        metadata={metadata}
+        layers3d={layers3d}
+        lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadedTilesets={loadedTilesets}
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
@@ -419,10 +543,41 @@ export const ViewerApp = () => {
         onAfterRender={() => updateStatWidgets()}
         getTooltip={getTooltip}
         onClick={handleClick}
+        onViewStateChange={onViewStateChangeHandler}
         onTilesetLoad={onTilesetLoad}
         onTileLoad={() => updateStatWidgets()}
         onTileUnload={() => updateStatWidgets()}
       />
-    </>
+      <RightSideToolsPanelWrapper layout={layout}>
+        <MainToolsPanel
+          id="viewer--tools-panel"
+          activeButton={activeButton}
+          showLayerOptions
+          onChange={onChangeMainToolsPanelHandler}
+        />
+      </RightSideToolsPanelWrapper>
+      {activeButton === ActiveButton.options && (
+        <RightSidePanelWrapper layout={layout}>
+          <LayersPanel
+            id="viewer--layers-panel"
+            layers={examples}
+            selectedLayerIds={selectedLayerIds}
+            onLayerInsert={onLayerInsertHandler}
+            onLayerSelect={onLayerSelectHandler}
+            onLayerDelete={(id) => onLayerDeleteHandler(id)}
+            onPointToLayer={(viewState) => pointToTileset(viewState)}
+            type={ListItemType.Radio}
+            sublayers={sublayers}
+            onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
+            baseMaps={baseMaps}
+            selectedBaseMapId={selectedBaseMap.id}
+            insertBaseMap={onInsertBaseMapHandler}
+            selectBaseMap={onSelectBaseMapHandler}
+            deleteBaseMap={onDeleteBaseMapHandler}
+          />
+        </RightSidePanelWrapper>
+      )}
+    </MapArea>
   );
 };
