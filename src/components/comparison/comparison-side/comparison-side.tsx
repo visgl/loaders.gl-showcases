@@ -468,7 +468,7 @@ export const ComparisonSide = ({
     /**
      * There is no sense to use webscene bookmarks in across layers mode.
      */
-    if (bookmarks?.length && mode === ComparisonMode.withinLayer) {
+    if (bookmarks?.length) {
       onInsertBookmarks && onInsertBookmarks(bookmarks);
     }
   };
@@ -592,6 +592,7 @@ export const ComparisonSide = ({
                 }
                 baseMaps={baseMaps}
                 selectedBaseMapId={selectedBaseMap.id}
+                isAddingBookmarksAllowed={mode === ComparisonMode.withinLayer}
                 insertBaseMap={onInsertBaseMap}
                 selectBaseMap={onSelectBaseMap}
                 deleteBaseMap={onDeleteBaseMap}
