@@ -1,17 +1,16 @@
 import { Stats, Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
 import {
-  Container,
+  PanelContainer,
   PanelHeader,
-  Content,
-  HorizontalLine,
+  PanelContent,
+  PanelHorizontalLine,
   Panels,
   Title,
-  ItemContainer,
-} from "../common";
+} from "../../common";
 import { CloseButton } from "../../close-button/close-button";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
-import { ExpandState, CollapseDirection, ContentFormats } from "../../../types";
+import { ExpandState, CollapseDirection, ContentFormats, LayerExample } from "../../../types";
 import LinkIcon from "../../../../public/icons/link.svg";
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { useAppLayout } from "../../../utils/hooks/layout";
@@ -34,10 +33,17 @@ const StatSection = styled.div`
 
 const StatTitle = styled(Title)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
+  overflow: hidden; 
+  white-space: nowrap;
+  max-width: 90%;
+  text-overflow: ellipsis;
   font-weight: 400;
 `;
 
-const StatContainer = styled(ItemContainer)<{ bottom?: number }>`
+const StatContainer = styled.div<{ bottom?: number }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0 0 8px 0;
   margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
 `;
@@ -54,6 +60,7 @@ const StatTimeContainer = styled.div`
 type MemoryUsageProps = {
   id: string;
   memoryStats: Stats | null;
+  activeLayers: LayerExample[];
   tilesetStats?: Stats | null;
   contentFormats?: ContentFormats | null;
   loadingTime: number;
@@ -64,6 +71,7 @@ type MemoryUsageProps = {
 export const MemoryUsagePanel = ({
   id,
   memoryStats,
+  activeLayers,
   tilesetStats,
   contentFormats,
   loadingTime,
@@ -74,13 +82,13 @@ export const MemoryUsagePanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container id={id} layout={layout}>
+    <PanelContainer id={id} layout={layout}>
       <PanelHeader panel={Panels.MemoryUsage}>
         <Title left={16}>Memory</Title>
         <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
-      <HorizontalLine top={10} />
-      <Content>
+      <PanelHorizontalLine top={10} />
+      <PanelContent>
         {contentFormats && (
           <StatSection>
             <Title bottom={12}>Content Formats</Title>
@@ -92,11 +100,11 @@ export const MemoryUsagePanel = ({
             ))}
           </StatSection>
         )}
-      </Content>
+      </PanelContent>
 
-      <HorizontalLine top={0} />
+      <PanelHorizontalLine top={0} />
 
-      <Content>
+      <PanelContent>
         <StatTimeContainer>
           <StatTitle>Loading time: </StatTitle>
           <Title left={6}>{`${loadingTime} ms`}</Title>
@@ -117,7 +125,7 @@ export const MemoryUsagePanel = ({
         {tilesetStats && (
           <StatSection>
             <StatContainer>
-              <Title>Layer Used</Title>
+              <Title>Layer(s) Used</Title>
               <ExpandIcon
                 expandState={expandState}
                 collapseDirection={CollapseDirection.bottom}
@@ -126,19 +134,25 @@ export const MemoryUsagePanel = ({
             </StatContainer>
             {expandState === ExpandState.expanded && (
               <>
-                <StatContainer bottom={12}>
-                  <StatTitle>{`${tilesetStats.id.substring(
-                    0,
-                    37
-                  )}...`}</StatTitle>
-                  <LinkIcon
-                    fill={theme.colors.fontColor}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      navigator.clipboard.writeText(tilesetStats.id);
-                    }}
-                  />
-                </StatContainer>
+                {
+                  tilesetStats.id.split('<-tileset->').map(tilesetUrl => {
+                    const activeLayer = activeLayers.find(layer => layer.url === tilesetUrl);
+                    const activeLayerName = activeLayer?.name || tilesetUrl;
+
+                    return activeLayerName && (
+                      <StatContainer bottom={12} key={tilesetUrl}>
+                        <StatTitle>{activeLayerName}</StatTitle>
+                        <LinkIcon
+                          fill={theme.colors.fontColor}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            navigator.clipboard.writeText(tilesetUrl);
+                          }}
+                        />
+                      </StatContainer>
+                    );
+                  })
+                }
                 {Object.values(tilesetStats.stats).map((stat: Stat) => (
                   <StatContainer key={stat.name}>
                     <StatTitle>{stat.name}</StatTitle>
@@ -153,7 +167,7 @@ export const MemoryUsagePanel = ({
             )}
           </StatSection>
         )}
-      </Content>
-    </Container>
+      </PanelContent>
+    </PanelContainer>
   );
 };

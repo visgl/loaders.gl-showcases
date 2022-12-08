@@ -60,7 +60,7 @@ const Container = styled.div<LayoutProps>`
     tablet: "column",
     mobile: "column-reverse",
   })};
-  margin-top: 58px;
+  margin-top: 60px;
   height: calc(100% - 60px);
 `;
 
@@ -469,6 +469,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
+        onInsertBookmarks={setBookmarks}
         onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
       <Devider layout={layout} />

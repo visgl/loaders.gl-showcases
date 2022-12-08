@@ -1,4 +1,4 @@
-import { LayoutProperties, Layout } from "../../types";
+import { LayoutProperties, Layout, LayoutProps } from "../../types";
 import { useMediaQuery } from "react-responsive";
 
 /**
@@ -27,7 +27,7 @@ export const useAppLayout = (): Layout => {
  */
 export const getCurrentLayoutProperty =
   (properties: LayoutProperties) =>
-  (props: any): string | number => {
+  (props?: LayoutProps): string | number => {
     const layoutObject = props?.layout || Layout.Desktop;
     return properties[layoutObject];
   };

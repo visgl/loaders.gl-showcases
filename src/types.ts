@@ -84,6 +84,11 @@ export enum TilesetType {
   CesiumIon = "CesiumIon",
 }
 
+export enum ButtonSize {
+  Small,
+  Big,
+}
+
 export type TileWarning = {
   type: string;
   title: string;
@@ -134,10 +139,10 @@ export type LayerExample = {
   url: string;
   /** Layers's authorization token */
   token?: string;
-  /** Is layer custom (added by user during application usage) 
+  /** Is layer custom (added by user during application usage)
    * true - layer has been added by user with "Insert layer" or "Insert scene"
    * false - layer is part of preset examples (`src/constants/i3s-examples.ts`)
-  */
+   */
   custom?: boolean;
   /** Child layers. Used for webscene dataset */
   layers?: LayerExample[];
@@ -264,4 +269,13 @@ type Dataset = StatsMap & {
 export type StatsData = {
   viewState: ViewStateSet;
   datasets: Dataset[];
+};
+
+export type LayoutProps = {
+  layout: string;
+};
+
+export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
+  token?: string;
+  type?: TilesetType;
 };
