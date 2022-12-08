@@ -12,7 +12,7 @@ import { StatsWidget } from "@probe.gl/stats-widget";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
+import { EXAMPLES } from "../../constants/i3s-examples";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
@@ -24,7 +24,6 @@ import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper"
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import {
-  parseTilesetFromUrl,
   parseTilesetUrlParams,
 } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
@@ -50,6 +49,7 @@ import {
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
+  findExampleAndUpdateWithViewState,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -313,6 +313,9 @@ export const ViewerApp = () => {
 
   const onTilesetLoad = (tileset: Tileset3D) => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
+    setExamples((prevExamples) =>
+      findExampleAndUpdateWithViewState(tileset, prevExamples)
+    );
   };
 
   const isLayerPickable = () => {

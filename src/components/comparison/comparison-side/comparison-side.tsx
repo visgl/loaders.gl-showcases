@@ -37,6 +37,7 @@ import {
 import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import {
+  findExampleAndUpdateWithViewState,
   handleSelectAllLeafsInGroup,
   selectNestedLayers,
 } from "../../../utils/layer-utils";
@@ -397,33 +398,6 @@ export const ComparisonSide = ({
         });
       }
     }, IS_LOADED_DELAY);
-  };
-
-  const findExampleAndUpdateWithViewState = (
-    tileset: Tileset3D,
-    examples: LayerExample[]
-  ): LayerExample[] => {
-    // Shallow copy of example objects to prevent mutation of the state object.
-    const examplesCopy = [...examples];
-
-    for (const example of examplesCopy) {
-      // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
-      if (tileset.url.includes(example.url) && !example.viewState) {
-        const { zoom, cartographicCenter } = tileset;
-        const [longitude, latitude] = cartographicCenter || [];
-        example.viewState = { zoom, latitude, longitude };
-        break;
-      }
-
-      if (example.layers) {
-        example.layers = findExampleAndUpdateWithViewState(
-          tileset,
-          example.layers
-        );
-      }
-    }
-
-    return examplesCopy;
   };
 
   const onTileLoad = (tile: Tile3D) => {

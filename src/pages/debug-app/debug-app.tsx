@@ -65,6 +65,7 @@ import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-pan
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
+  findExampleAndUpdateWithViewState,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -89,6 +90,13 @@ const INITIAL_VIEW_STATE = {
     zoom: 2,
     transitionDuration: 0,
     transitionInterpolator: null,
+  },
+  minimap: {
+    latitude: 0,
+    longitude: 0,
+    zoom: 9,
+    pitch: 0,
+    bearing: 0,
   },
 };
 
@@ -388,6 +396,9 @@ export const DebugApp = () => {
 
   const onTilesetLoad = (tileset: Tileset3D) => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
+    setExamples((prevExamples) =>
+      findExampleAndUpdateWithViewState(tileset, prevExamples)
+    );
   };
 
   const handleSetDebugOptions = (newDebugOptions) => {
@@ -661,6 +672,11 @@ export const DebugApp = () => {
           latitude,
           transitionDuration: 1000,
         },
+        minimap: {
+          ...viewState.minimap,
+          longitude,
+          latitude,
+        },
       });
     }
   };
@@ -726,6 +742,7 @@ export const DebugApp = () => {
       <DeckGlWrapper
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
+        parentViewState={viewState}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
