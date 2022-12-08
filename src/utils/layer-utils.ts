@@ -1,4 +1,7 @@
+import { Tileset3D } from "@loaders.gl/tiles";
+import { EXAMPLES, INITIAL_EXAMPLE } from "../constants/i3s-examples";
 import { LayerExample } from "../types";
+import { parseTilesetFromUrl } from "./url-utils";
 
 export const handleSelectAllLeafsInGroup = (
   layer: LayerExample,
@@ -35,6 +38,23 @@ export const flattenLayerIds = (
   return flattenedLayersIds;
 };
 
+export const initActiveLayer = (): LayerExample => {
+  const tilesetParam = parseTilesetFromUrl();
+
+  if (tilesetParam?.startsWith("http")) {
+    return {
+      id: tilesetParam,
+      name: tilesetParam,
+      custom: true,
+      url: tilesetParam,
+    };
+  }
+
+  const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
+
+  return namedExample || INITIAL_EXAMPLE;
+};
+
 export const selectNestedLayers = (
   layer: LayerExample,
   activeLayers: LayerExample[],
@@ -64,6 +84,33 @@ export const selectNestedLayers = (
       break;
   }
   return newActiveLayers;
+};
+
+export const findExampleAndUpdateWithViewState = (
+  tileset: Tileset3D,
+  examples: LayerExample[]
+): LayerExample[] => {
+  // Shallow copy of example objects to prevent mutation of the state object.
+  const examplesCopy = [...examples];
+
+  for (const example of examplesCopy) {
+    // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
+    if (tileset.url.includes(example.url) && !example.viewState) {
+      const { zoom, cartographicCenter } = tileset;
+      const [longitude, latitude] = cartographicCenter || [];
+      example.viewState = { zoom, latitude, longitude };
+      break;
+    }
+
+    if (example.layers) {
+      example.layers = findExampleAndUpdateWithViewState(
+        tileset,
+        example.layers
+      );
+    }
+  }
+
+  return examplesCopy;
 };
 
 const handleSelectGroupLayer = (

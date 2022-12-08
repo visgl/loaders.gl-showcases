@@ -12,7 +12,7 @@ import { StatsWidget } from "@probe.gl/stats-widget";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { INITIAL_EXAMPLE, EXAMPLES } from "../../constants/i3s-examples";
+import { EXAMPLES } from "../../constants/i3s-examples";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { Tileset3D } from "@loaders.gl/tiles";
 import {
@@ -24,7 +24,6 @@ import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper"
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import {
-  parseTilesetFromUrl,
   parseTilesetUrlParams,
 } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
@@ -43,13 +42,16 @@ import {
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
+  MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
+  findExampleAndUpdateWithViewState,
   handleSelectAllLeafsInGroup,
+  initActiveLayer,
   selectNestedLayers,
 } from "../../utils/layer-utils";
 import { ActiveSublayer } from "../../utils/active-sublayer";
@@ -104,30 +106,6 @@ const StatsWidgetContainer = styled.div<{
   max-height: calc(100% - 280px);
   overflow: auto;
 `;
-
-const MapArea = styled.div`
-  margin-top: 60px;
-  height: calc(100% - 60px);
-  display: flex;
-  position: relative;
-`;
-
-const initActiveLayer = (): LayerExample => {
-  const tilesetParam = parseTilesetFromUrl();
-
-  if (tilesetParam?.startsWith("http")) {
-    return {
-      id: tilesetParam,
-      name: tilesetParam,
-      custom: true,
-      url: tilesetParam,
-    };
-  }
-
-  const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
-
-  return namedExample || INITIAL_EXAMPLE;
-};
 
 export const ViewerApp = () => {
   let statsWidgetContainer = useRef(null);
@@ -335,6 +313,9 @@ export const ViewerApp = () => {
 
   const onTilesetLoad = (tileset: Tileset3D) => {
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
+    setExamples((prevExamples) =>
+      findExampleAndUpdateWithViewState(tileset, prevExamples)
+    );
   };
 
   const isLayerPickable = () => {
