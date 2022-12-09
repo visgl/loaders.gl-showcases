@@ -8,6 +8,8 @@ import GearIcon from "../../../public/icons/gear.svg";
 import SettingsIcon from "../../../public/icons/settings.svg";
 import MemoryIcon from "../../../public/icons/memory.svg";
 import BookmarksIcon from "../../../public/icons/bookmarks.svg";
+import DebugIcon from "../../../public/icons/debug.svg";
+import ValidatorIcon from "../../../public/icons/validator.svg";
 import { ActiveButton, Layout } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
@@ -46,11 +48,11 @@ const Button = styled.button<ButtonProps>`
 
   &:hover {
     fill: ${({ theme, active }) =>
-      active
-        ? color_canvas_primary_inverted
-        : theme.colors.mainToolsPanelDimIconColor};
+    active
+      ? color_canvas_primary_inverted
+      : theme.colors.mainToolsPanelDimIconColor};
     background-color: ${({ active }) =>
-      active ? dim_brand_tertinary : "transparent"};
+    active ? dim_brand_tertinary : "transparent"};
   }
 `;
 
@@ -60,6 +62,8 @@ type MainToolsPanelProps = {
   showLayerOptions?: boolean;
   showComparisonSettings?: boolean;
   showBookmarks?: boolean;
+  showDebug?: boolean;
+  showValidator?: boolean;
   bookmarksActive?: boolean;
   onChange?: (active: ActiveButton) => void;
   onShowBookmarksChange?: () => void;
@@ -71,6 +75,8 @@ export const MainToolsPanel = ({
   showLayerOptions = true,
   showComparisonSettings = false,
   showBookmarks = false,
+  showDebug = false,
+  showValidator = false,
   bookmarksActive = false,
   onChange = () => ({}),
   onShowBookmarksChange,
@@ -111,6 +117,24 @@ export const MainToolsPanel = ({
           onClick={onShowBookmarksChange}
         >
           <BookmarksIcon />
+        </Button>
+      )}
+      {showValidator && (
+        <Button
+          layout={layout}
+          active={activeButton === ActiveButton.validator}
+          onClick={() => onChange(ActiveButton.validator)}
+        >
+          <ValidatorIcon />
+        </Button>
+      )}
+      {showDebug && (
+        <Button
+          layout={layout}
+          active={activeButton === ActiveButton.debug}
+          onClick={() => onChange(ActiveButton.debug)}
+        >
+          <DebugIcon />
         </Button>
       )}
     </Container>

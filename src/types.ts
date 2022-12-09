@@ -36,7 +36,14 @@ export enum ActiveButton {
   settings,
   memory,
   bookmarks,
+  debug,
+  validator,
   none,
+}
+
+export enum BoundingVolumeType {
+  mbs = 'MBS',
+  obb = 'OBB'
 }
 
 export enum ActionButtonVariant {

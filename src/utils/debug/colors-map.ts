@@ -1,10 +1,14 @@
-export const COLORED_BY = {
-  ORIGINAL: 0,
-  RANDOM: 1,
-  DEPTH: 2,
-  CUSTOM: 3,
-  TILE: 4,
-};
+export enum TileColoredBy {
+  original = 'Original',
+  random = 'Random by tile',
+  depth = 'By depth',
+  custom = 'User selected',
+}
+
+export enum BoundingVolumeColoredBy {
+  original = 'Original',
+  tile = 'By tile',
+}
 
 export const DEPTH_COLOR_MAP = {
   1: [72, 149, 239],
@@ -41,13 +45,13 @@ export default class ColorMap {
    */
   getColor(tile, options) {
     switch (options.coloredBy) {
-      case COLORED_BY.RANDOM:
+      case TileColoredBy.random:
         return this._getRandomColor(tile.id);
-      case COLORED_BY.DEPTH:
+      case TileColoredBy.depth:
         return this._getColorByDepth(tile.id, tile.depth);
-      case COLORED_BY.TILE:
+      case BoundingVolumeColoredBy.tile:
         return this._getColorByTile(tile.id);
-      case COLORED_BY.CUSTOM:
+      case TileColoredBy.custom:
         return this._getCustomColor(tile.id, options);
       default:
         return this._getDefaultColor(tile.id)
