@@ -53,7 +53,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
   return (
     <PanelContainer layout={layout}>
       <PanelHeader panel={Panels.Debug}>
-        <Title left={16}>Debug Panel</Title>
+        <Title id='debug-panel-title' left={16}>Debug Panel</Title>
       </PanelHeader>
       <CloseButtonWrapper>
         <CloseButton id="layers-panel-close-button" onClick={onClose} />
@@ -61,68 +61,89 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
       <PanelHorizontalLine top={10} />
       <ToggleOptionsContainer>
         <ItemContainer>
-          <Title left={16}>Minimap</Title>
+          <Title left={16} id={'toggle-minimap-title'}>Minimap</Title>
           <ToggleSwitch
             id={'toggle-minimap'}
             checked={debugOptions.minimap}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'minimap' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'minimap' }
+            })}
           />
         </ItemContainer>
         {debugOptions.minimap && (
           <NestedItemContainer>
-            <Title left={16}>Use different Viewports</Title>
+            <Title left={16} id={'toggle-different-viewports-title'}>Use different Viewports</Title>
             <ToggleSwitch
               id={'toggle-minimap-viewport'}
               checked={debugOptions.minimapViewport}
-              onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'minimapViewport' } })}
+              onChange={() => onChangeOption({
+                type: DebugOptionsActionKind.toggle,
+                payload: { optionName: 'minimapViewport' }
+              })}
             />
           </NestedItemContainer>
         )}
         <ItemContainer>
-          <Title left={16}>Loading Tiles</Title>
+          <Title left={16} id={'toggle-loading-tiles-title'}>Loading Tiles</Title>
           <ToggleSwitch
             id={'toggle-loading-tiles'}
             checked={debugOptions.loadTiles}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'loadTiles' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'loadTiles' }
+            })}
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16}>Enable picking</Title>
+          <Title left={16} id={'toggle-picking-title'}>Enable picking</Title>
           <ToggleSwitch
             id={'toggle-enable-picking'}
             checked={debugOptions.pickable}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'pickable' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'pickable' }
+            })}
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16}>Wireframe mode</Title>
+          <Title left={16} id={'toggle-wireframe-title'}>Wireframe mode</Title>
           <ToggleSwitch
             id={'toggle-enable-wireframe'}
             checked={debugOptions.wireframe}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'wireframe' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'wireframe' }
+            })}
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16}>Texture UVs</Title>
+          <Title left={16} id={'toggle-texture-uv-title'}>Texture UVs</Title>
           <ToggleSwitch
             id={'toggle-enable-texture-uvs'}
             checked={debugOptions.showUVDebugTexture}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'showUVDebugTexture' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'showUVDebugTexture' }
+            })}
           />
         </ItemContainer>
-        <Title top={8} left={16} bottom={16}>Color</Title>
+        <Title top={8} left={16} bottom={16} id={'color-section-title'}>Color</Title>
         <RadioButtonWrapper>
           {
             Object.keys(TileColoredBy).map(value => {
               const selected = debugOptions.tileColorMode === TileColoredBy[value] ? SelectionState.selected : SelectionState.unselected;
               return (
                 <ListItem
-                  id={value}
+                  id={`color-section-radio-button-${value}`}
                   key={value}
                   title={TileColoredBy[value]}
                   type={ListItemType.Radio}
                   selected={selected}
-                  onChange={() => onChangeOption({ type: DebugOptionsActionKind.select, payload: { optionName: 'tileColorMode', value: TileColoredBy[value] } })}
+                  onChange={() => onChangeOption({
+                    type: DebugOptionsActionKind.select,
+                    payload: { optionName: 'tileColorMode', value: TileColoredBy[value] }
+                  })}
                 />
               )
             })
@@ -130,46 +151,57 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
         </RadioButtonWrapper>
         <PanelHorizontalLine top={10} />
         <ItemContainer>
-          <Title left={16}>Bounding Volumes</Title>
+          <Title left={16} id={'bounding-volumes-section-title'}>Bounding Volumes</Title>
           <ToggleSwitch
             id={'toggle-enable-bounding-volumes'}
             checked={debugOptions.boundingVolume}
-            onChange={() => onChangeOption({ type: DebugOptionsActionKind.toggle, payload: { optionName: 'boundingVolume' } })}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'boundingVolume' }
+            })}
           />
         </ItemContainer>
         {debugOptions.boundingVolume && (
           <>
-            <Title top={8} left={16} bottom={16}>Type</Title>
+            <Title top={8} left={16} bottom={16} id={'bounding-volume-type-title'}>Type</Title>
             <RadioButtonWrapper>
               {
                 Object.keys(BoundingVolumeType).map(value => {
-                  const selected = debugOptions.boundingVolumeType === BoundingVolumeType[value] ? SelectionState.selected : SelectionState.unselected;
+                  const selected = debugOptions.boundingVolumeType === BoundingVolumeType[value]
+                    ? SelectionState.selected
+                    : SelectionState.unselected;
                   return (
                     <ListItem
-                      id={value}
+                      id={`bounding-volume-type-button-${value}`}
                       key={value}
                       title={BoundingVolumeType[value]}
                       type={ListItemType.Radio}
                       selected={selected}
-                      onChange={() => onChangeOption({ type: DebugOptionsActionKind.select, payload: { optionName: 'boundingVolumeType', value: BoundingVolumeType[value] } })}
+                      onChange={() => onChangeOption({
+                        type: DebugOptionsActionKind.select,
+                        payload: { optionName: 'boundingVolumeType', value: BoundingVolumeType[value] }
+                      })}
                     />
                   )
                 })
               }
             </RadioButtonWrapper>
-            <Title top={8} left={16} bottom={16}>Color</Title>
+            <Title top={8} left={16} bottom={16} id={'bounding-volume-color-title'}>Color</Title>
             <RadioButtonWrapper>
               {
                 Object.keys(BoundingVolumeColoredBy).map(value => {
                   const selected = debugOptions.boundingVolumeColorMode === BoundingVolumeColoredBy[value] ? SelectionState.selected : SelectionState.unselected;
                   return (
                     <ListItem
-                      id={value}
+                      id={`bounding-volume-color-button-${value}`}
                       key={value}
                       title={BoundingVolumeColoredBy[value]}
                       type={ListItemType.Radio}
                       selected={selected}
-                      onChange={() => onChangeOption({ type: DebugOptionsActionKind.select, payload: { optionName: 'boundingVolumeColorMode', value: BoundingVolumeColoredBy[value] } })}
+                      onChange={() => onChangeOption({
+                        type: DebugOptionsActionKind.select,
+                        payload: { optionName: 'boundingVolumeColorMode', value: BoundingVolumeColoredBy[value] }
+                      })}
                     />
                   )
                 })

@@ -39,24 +39,38 @@ export default class ColorMap {
   }
 
   /**
-   * Returns color in RGB format depends on coloredBy param.
+   * Returns tile color in RGB format depends on coloredBy param.
    * @param {object} tile
    * @param {object} options
    */
-  getColor(tile, options) {
+  getTileColor(tile, options) {
     switch (options.coloredBy) {
       case TileColoredBy.random:
         return this._getRandomColor(tile.id);
       case TileColoredBy.depth:
         return this._getColorByDepth(tile.id, tile.depth);
-      case BoundingVolumeColoredBy.tile:
-        return this._getColorByTile(tile.id);
       case TileColoredBy.custom:
         return this._getCustomColor(tile.id, options);
       default:
         return this._getDefaultColor(tile.id)
     }
   }
+
+   /**
+   * Returns bounding volume color in RGB format depends on coloredBy param.
+   * @param {object} tile
+   * @param {object} options
+   */
+    getBoundingVolumeColor(tile, options) {
+      switch (options.coloredBy) {
+        case BoundingVolumeColoredBy.tile:
+          return this._getColorByTile(tile.id);
+        case BoundingVolumeColoredBy.original:
+          return this._getDefaultColor(tile.id);
+        default:
+          return this._getDefaultColor(tile.id)
+      }
+    }
 
   /**
    * Returns color in RGB format by tile id if it exists in colors map.

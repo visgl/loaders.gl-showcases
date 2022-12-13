@@ -761,7 +761,7 @@ export const DebugApp = () => {
       />
       <RightSideToolsPanelWrapper layout={layout}>
         <MainToolsPanel
-          id="debug--tools-panel"
+          id="debug-tools-panel"
           activeButton={activeButton}
           showLayerOptions
           showDebug

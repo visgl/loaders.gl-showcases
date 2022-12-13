@@ -498,7 +498,7 @@ export const DeckGlWrapper = ({
   };
 
   const getBoundingVolumeColor = (tile) => {
-    const color = colorMap.getColor(tile, {
+    const color = colorMap.getBoundingVolumeColor(tile, {
       coloredBy: boundingVolumeColorMode,
     });
 
@@ -506,7 +506,7 @@ export const DeckGlWrapper = ({
   };
 
   const getMeshColor = (tile) => {
-    const result = colorMap.getColor(tile, {
+    const result = colorMap.getTileColor(tile, {
       coloredBy: tileColorMode,
       selectedTileId: selectedTile?.id,
       coloredTilesMap,

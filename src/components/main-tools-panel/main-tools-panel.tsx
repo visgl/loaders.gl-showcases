@@ -87,6 +87,7 @@ export const MainToolsPanel = ({
     <Container id={id}>
       {showLayerOptions && (
         <Button
+          id={'layers-options-tab'}
           layout={layout}
           active={activeButton === ActiveButton.options}
           onClick={() => onChange(ActiveButton.options)}
@@ -104,6 +105,7 @@ export const MainToolsPanel = ({
         </Button>
       )}
       <Button
+        id={'memory-usage-tab'}
         layout={layout}
         active={activeButton === ActiveButton.memory}
         onClick={() => onChange(ActiveButton.memory)}
@@ -112,6 +114,7 @@ export const MainToolsPanel = ({
       </Button>
       {showBookmarks && (
         <Button
+          id={'bookmarks-tab'}
           layout={layout}
           active={bookmarksActive}
           onClick={onShowBookmarksChange}
@@ -121,6 +124,7 @@ export const MainToolsPanel = ({
       )}
       {showValidator && (
         <Button
+          id={'validator-tab'}
           layout={layout}
           active={activeButton === ActiveButton.validator}
           onClick={() => onChange(ActiveButton.validator)}
@@ -130,6 +134,7 @@ export const MainToolsPanel = ({
       )}
       {showDebug && (
         <Button
+          id={'debug-panel-tab'}
           layout={layout}
           active={activeButton === ActiveButton.debug}
           onClick={() => onChange(ActiveButton.debug)}
