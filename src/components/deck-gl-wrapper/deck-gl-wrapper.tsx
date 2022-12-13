@@ -26,9 +26,11 @@ import {
   LoadOptions,
   TilesetType,
   BoundingVolumeType,
+  TileColoredBy,
+  BoundingVolumeColoredBy,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
-import ColorMap, { BoundingVolumeColoredBy, TileColoredBy } from "../../utils/debug/colors-map";
+import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
   selectDebugTextureForTileset,

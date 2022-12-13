@@ -12,6 +12,11 @@ import {
   LayerViewState,
   ListItemType,
   BoundingVolumeType,
+  DebugOptions,
+  DebugOptionsAction,
+  DebugOptionsActionKind,
+  BoundingVolumeColoredBy,
+  TileColoredBy,
 } from "../../types";
 
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -44,10 +49,8 @@ import { TileDetailsPanel } from "../../components/tile-details-panel/tile-detai
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
-  TileColoredBy,
   getRGBValueFromColorObject,
-  makeRGBObjectFromColor,
-  BoundingVolumeColoredBy,
+  makeRGBObjectFromColor
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
@@ -140,30 +143,6 @@ const StatsWidgetContainer = styled.div`
 `;
 
 const colorMap = new ColorMap();
-
-export enum DebugOptionsActionKind {
-  toggle,
-  select,
-  reset
-}
-
-export type DebugOptions = {
-  minimap: boolean;
-  minimapViewport: boolean;
-  boundingVolume: boolean;
-  tileColorMode: TileColoredBy;
-  boundingVolumeColorMode: BoundingVolumeColoredBy;
-  boundingVolumeType: BoundingVolumeType;
-  pickable: boolean;
-  loadTiles: boolean;
-  showUVDebugTexture: boolean;
-  wireframe: boolean;
-}
-
-export type DebugOptionsAction = {
-  type: DebugOptionsActionKind;
-  payload?: { optionName: keyof DebugOptions, value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType };
-}
 
 const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
   // Show minimap

@@ -1,9 +1,16 @@
 import { ReactEventHandler } from "react";
 import styled from "styled-components";
 
-import { DebugOptionsAction, DebugOptionsActionKind, DebugOptions } from "../../pages/debug-app/debug-app";
-import { BoundingVolumeType, ListItemType, SelectionState } from "../../types";
-import { BoundingVolumeColoredBy, TileColoredBy } from "../../utils/debug/colors-map";
+import {
+  BoundingVolumeColoredBy,
+  BoundingVolumeType,
+  DebugOptions,
+  DebugOptionsAction,
+  DebugOptionsActionKind,
+  ListItemType,
+  SelectionState,
+  TileColoredBy
+} from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import { Panels, PanelContainer, PanelHeader, Title, PanelHorizontalLine } from "../common"
@@ -19,7 +26,7 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const ToggleOptionsContainer = styled.div`
+const ToggleOptionsContainer = styled.div`I
   display: flex;
   flex-direction: column;
   overflow-y: auto;

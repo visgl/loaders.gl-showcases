@@ -1,14 +1,4 @@
-export enum TileColoredBy {
-  original = 'Original',
-  random = 'Random by tile',
-  depth = 'By depth',
-  custom = 'User selected',
-}
-
-export enum BoundingVolumeColoredBy {
-  original = 'Original',
-  tile = 'By tile',
-}
+import { BoundingVolumeColoredBy, TileColoredBy } from "../../types";
 
 export const DEPTH_COLOR_MAP = {
   1: [72, 149, 239],
@@ -56,21 +46,21 @@ export default class ColorMap {
     }
   }
 
-   /**
-   * Returns bounding volume color in RGB format depends on coloredBy param.
-   * @param {object} tile
-   * @param {object} options
-   */
-    getBoundingVolumeColor(tile, options) {
-      switch (options.coloredBy) {
-        case BoundingVolumeColoredBy.tile:
-          return this._getColorByTile(tile.id);
-        case BoundingVolumeColoredBy.original:
-          return this._getDefaultColor(tile.id);
-        default:
-          return this._getDefaultColor(tile.id)
-      }
+  /**
+  * Returns bounding volume color in RGB format depends on coloredBy param.
+  * @param {object} tile
+  * @param {object} options
+  */
+  getBoundingVolumeColor(tile, options) {
+    switch (options.coloredBy) {
+      case BoundingVolumeColoredBy.tile:
+        return this._getColorByTile(tile.id);
+      case BoundingVolumeColoredBy.original:
+        return this._getDefaultColor(tile.id);
+      default:
+        return this._getDefaultColor(tile.id)
     }
+  }
 
   /**
    * Returns color in RGB format by tile id if it exists in colors map.
