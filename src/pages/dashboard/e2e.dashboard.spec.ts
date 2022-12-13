@@ -221,7 +221,7 @@ describe("Dashboard Default View", () => {
       await page.$eval("#dashboard-container", (e) =>
         getComputedStyle(e).getPropertyValue("background-image")
       )
-    ).toEqual('url("http://localhost:3000/tools-background.png")');
+    ).toEqual('url("http://localhost:3000/tools-background.webp")');
   });
 
   it("Should contain title", async () => {
