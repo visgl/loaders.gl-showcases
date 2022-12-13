@@ -1,7 +1,8 @@
 import userEvent from "@testing-library/user-event";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { BookmarksListItem } from "./bookmark-list-item";
+import { SliderListItem } from "./slider-list-item";
+import { SliderType } from "../../types";
 
 jest.mock("../../utils/hooks/layout");
 
@@ -12,9 +13,10 @@ const onDeleteBookmark = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
-    <BookmarksListItem
+    <SliderListItem
       id="list-item-test-id"
       selected={false}
+      sliderType={SliderType.Bookmarks}
       url={"screenshot"}
       editingMode={false}
       editingSelected={false}

@@ -4,94 +4,139 @@ import {
   color_canvas_secondary,
   color_brand_tertiary,
   color_accent_primary,
+  color_brand_primary,
 } from "../../constants/colors";
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
-import { BookmarkInnerButton } from "./bookmark-inner-button";
+import { BookmarkInnerButton } from "../bookmarks-panel/bookmark-inner-button";
 import { Layout } from "../../utils/enums";
-import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
-import { LayoutProps } from "../../types";
+import { ConfirmDeletingPanel } from "../bookmarks-panel/confirm-deleting-panel";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
+import { LayoutProps, SliderType } from "../../types";
 
-type BookmarkListProps = {
+type ListItemProps = {
   url: string;
-  editingMode: boolean;
+  sliderType: number;
+  editingMode?: boolean;
   deleteBookmark?: boolean;
   deleting: boolean;
   selected: boolean;
   isMobile: boolean;
-  editing: boolean;
+  editing?: boolean;
 };
 
-const BookmarkListItem = styled.div<LayoutProps & BookmarkListProps>`
+const ListItem = styled.div<LayoutProps & ListItemProps>`
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  background: url(${(props) => props.url}) no-repeat;
-  opacity: 1;
   cursor: pointer;
   fill: ${({ theme }) => theme.colors.fontColor};
-  gap: 10px;
 
-  min-width: ${getCurrentLayoutProperty({
-    desktop: "144px",
-    tablet: "106px",
-    mobile: "68px",
-  })};
+  ${({ sliderType }) => {
+    switch (sliderType) {
+      case SliderType.Floors:
+        return css`
+          width: 67px;
+        `;
+      case SliderType.Phase:
+        return css`
+          min-width: 44px;
+        `;
+      case SliderType.Bookmarks:
+        return getCurrentLayoutProperty({
+          desktop: "min-width: 144px",
+          tablet: "min-width: 106px",
+          mobile: "min-width: 68px",
+        });
+    }
+  }};
 
-  height: ${getCurrentLayoutProperty({
-    desktop: "81px",
-    tablet: "62px",
-    mobile: "44px",
-  })};
+  ${({ sliderType }) => {
+    switch (sliderType) {
+      case SliderType.Floors:
+        return css`
+          min-height: 44px;
+        `;
+      case SliderType.Phase:
+        return css`
+          height: 44px;
+        `;
+      case SliderType.Bookmarks:
+        return getCurrentLayoutProperty({
+          desktop: "height: 81px",
+          tablet: "height: 62px",
+          mobile: "height: 44px",
+        });
+    }
+  }};
 
-  border-radius: ${getCurrentLayoutProperty({
-    desktop: "12px",
-    tablet: "10px",
-    mobile: "8px",
-  })};
+  border-radius: ${({ sliderType }) =>
+    sliderType === SliderType.Bookmarks
+      ? getCurrentLayoutProperty({
+          desktop: "12px",
+          tablet: "10px",
+          mobile: "8px",
+        })
+      : "8px"};
 
-  ${({ selected }) =>
-    selected &&
-    css`
-      border: 2px solid ${color_brand_tertiary};
-    `}
+  ${({ sliderType }) => {
+    if (sliderType === SliderType.Bookmarks) {
+      return css<ListItemProps>`
+        background: url(${(props) => props.url}) no-repeat;
+        opacity: 1;
+        gap: 10px;
+        ${({ selected }) =>
+          selected &&
+          css`
+            border: 2px solid ${color_brand_tertiary};
+          `}
 
-  ${({ editingMode, isMobile }) =>
-    editingMode &&
-    isMobile &&
-    css`
-      border: 2px solid ${color_canvas_secondary};
-    `}
+        ${({ editingMode, isMobile }) =>
+          editingMode &&
+          isMobile &&
+          css`
+            border: 2px solid ${color_canvas_secondary};
+          `}
 
-    ${({ editing }) =>
-    editing &&
-    css`
-      border: 2px solid ${color_canvas_secondary};
-    `}
+          ${({ editing }) =>
+          editing &&
+          css`
+            border: 2px solid ${color_canvas_secondary};
+          `}
 
-    ${({ isMobile }) =>
-    !isMobile &&
-    css<BookmarkListProps>`
-      &:hover {
-        opacity: 0.6;
-        border: 2px solid
-          ${({ editingMode }) =>
-            editingMode ? color_canvas_secondary : color_brand_tertiary};
+          ${({ isMobile }) =>
+          !isMobile &&
+          css<ListItemProps>`
+            &:hover {
+              opacity: 0.6;
+              border: 2px solid
+                ${({ editingMode }) =>
+                  editingMode ? color_canvas_secondary : color_brand_tertiary};
 
-        &:nth-child(n) {
-          opacity: 1;
-        }
-      }
-    `}
+              &:nth-child(n) {
+                opacity: 1;
+              }
+            }
+          `}
 
-  ${({ deleting }) =>
-    deleting &&
-    css`
-      border: 2px solid ${color_accent_primary};
-    `}
+          ${({ deleting }) =>
+          deleting &&
+          css`
+            border: 2px solid ${color_accent_primary};
+          `}
+      `;
+    } else {
+      return css<ListItemProps>`
+        background: ${({ selected }) =>
+          selected ? color_brand_tertiary : color_brand_primary};
+      `;
+    }
+  }};
 `;
 
 const TrashIconContainer = styled.div<{ deleting: boolean }>`
@@ -103,29 +148,41 @@ const TrashIconContainer = styled.div<{ deleting: boolean }>`
   fill: ${({ deleting }) => deleting && color_accent_primary};
 `;
 
-type BookmarksListItemProps = {
+const SliderItemText = styled.div`
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: ${({ theme }) => theme.colors.fontColor};
+`;
+
+type SliderListItemProps = {
   id: string;
+  children?: React.ReactNode;
   selected: boolean;
   url: string;
-  editingMode: boolean;
-  editingSelected: boolean;
+  editingMode?: boolean;
+  editingSelected?: boolean;
+  sliderType: number;
+  sliderItemText?: string;
   onSelectBookmark: () => void;
   onDeleteBookmark: () => void;
 };
 
 const confirmText = "Are you sure you  want to delete the bookmark?";
 
-export const BookmarksListItem = forwardRef(
+export const SliderListItem = forwardRef(
   (
-    props: BookmarksListItemProps,
+    props: SliderListItemProps,
     ref: React.ForwardedRef<null | HTMLDivElement>
   ) => {
     const {
       id,
       selected,
       url,
+      sliderType,
       editingMode,
       editingSelected,
+      sliderItemText,
       onSelectBookmark,
       onDeleteBookmark,
     } = props;
@@ -200,11 +257,12 @@ export const BookmarksListItem = forwardRef(
 
     return (
       <>
-        <BookmarkListItem
+        <ListItem
           id={id}
           ref={ref}
           layout={layout}
           url={url}
+          sliderType={sliderType}
           editingMode={editingMode}
           isMobile={isMobileLayout}
           selected={selected}
@@ -219,7 +277,8 @@ export const BookmarksListItem = forwardRef(
             editingMode &&
             renderListItemContentDesktop()}
           {isMobileLayout && editingMode && renderListItemContentMobile()}
-        </BookmarkListItem>
+          {sliderItemText && <SliderItemText>{sliderItemText}</SliderItemText>}
+        </ListItem>
         {isDeletePanelOpen && (
           <ConfirmDeletingPanel
             title={confirmText}

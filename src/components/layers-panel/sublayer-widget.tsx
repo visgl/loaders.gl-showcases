@@ -8,7 +8,7 @@ const GroupContainer = styled.div<{ needIndentation: boolean }>`
     ${({ needIndentation = false }) =>
         needIndentation &&
         css`
-            margin-left: 44px;
+            margin-left: 28px;
         `}
 `;
 

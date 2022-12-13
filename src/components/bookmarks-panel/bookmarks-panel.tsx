@@ -9,7 +9,7 @@ import {
   OptionsIcon,
 } from "../common";
 import { CloseButton } from "../close-button/close-button";
-import { Slider } from "./slider";
+import { Slider } from "../slider/slider";
 import PlusIcon from "../../../public/icons/plus.svg";
 import ConfirmationIcon from "../../../public/icons/confirmation.svg";
 import CloseIcon from "../../../public/icons/close.svg";
@@ -19,7 +19,7 @@ import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
-import { Bookmark } from "../../types";
+import { Bookmark, SliderType } from "../../types";
 import { BookmarkInnerButton } from "./bookmark-inner-button";
 import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 import {
@@ -361,11 +361,12 @@ export const BookmarksPanel = ({
 
           {bookmarks.length > 0 ? (
             <Slider
-              bookmarks={bookmarks}
-              selectedBookmarkId={selectedBookmarkId}
+              data={bookmarks}
+              selectedItemId={selectedBookmarkId}
+              sliderType={SliderType.Bookmarks}
               editingMode={editingMode}
               onDeleteBookmark={onDeleteBookmark}
-              onSelectBookmark={onSelectBookmark}
+              onSelect={onSelectBookmark}
             />
           ) : (
             <Title>Bookmarks list is empty</Title>

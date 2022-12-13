@@ -10,6 +10,12 @@ export enum Theme {
   Light,
 }
 
+export enum SliderType {
+  Floors,
+  Phase,
+  Bookmarks,
+}
+
 export enum Layout {
   Desktop = "desktop",
   Tablet = "tablet",
