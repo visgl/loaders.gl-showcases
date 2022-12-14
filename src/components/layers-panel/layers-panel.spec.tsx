@@ -128,8 +128,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onLayerInsertClick();
@@ -150,8 +149,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onLayerInsertClick();
@@ -173,8 +171,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onLayerInsertClick();
@@ -206,8 +203,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onLayerInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
     act(() => {
       onLayerInsertClick();
     });
@@ -273,8 +269,7 @@ describe("Layers Panel", () => {
 
   it("Should show layer settings panel", () => {
     callRender(renderWithTheme);
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onLayerSettingsClick } = LayersControlPanel.mock.lastCall[0];
+    const { onLayerSettingsClick } = LayersControlPanelMock.mock.lastCall[0];
     // Call show layer settings
     act(() => {
       onLayerSettingsClick();
@@ -315,8 +310,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onSceneInsertClick();
@@ -364,8 +358,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onSceneInsertClick();
@@ -399,8 +392,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onSceneInsertClick();
@@ -451,8 +443,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onSceneInsertClick();
@@ -496,8 +487,7 @@ describe("Layers Panel", () => {
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
     });
-    // @ts-expect-error - Property 'mock' does not exist on type
-    const { onSceneInsertClick } = LayersControlPanel.mock.lastCall[0];
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
       onSceneInsertClick();
@@ -519,6 +509,68 @@ describe("Layers Panel", () => {
     });
 
     await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+
+    // Should close Insert Lyaer Panel
+    expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
+    expect(screen.getByText("Warning Panel")).toBeInTheDocument();
+
+    // Shold be able to close warning panel
+    const { onConfirm } = WarningPanelMock.mock.lastCall[0];
+    act(() => {
+      onConfirm();
+    });
+
+    expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
+  });
+
+  it("Should show 'Webscene slides cannot be loaded in Across Layers mode' warning", async () => {
+    loadMock.mockImplementation(() =>
+      Promise.resolve({
+        header: {
+          presentation: {
+            slides: [
+              {id: 'slide-1'},
+              {id: 'slide-2'}
+            ]
+          }
+        },
+        layers: [
+          {
+            id: "child-layer-id",
+            title: "child-test",
+            url: "https://child-test.url",
+          },
+        ],
+      })
+    );
+
+    callRender(renderWithTheme, {
+      layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      isAddingBookmarksAllowed: false
+    });
+
+    const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
+
+    act(() => {
+      onSceneInsertClick();
+    });
+
+    expect(screen.getByText("Insert Options Panel")).toBeInTheDocument();
+
+    const { onInsert } = InsertPanelMock.mock.lastCall[0];
+
+    // Click insert scene
+    act(() => {
+      onInsert({
+        id: "https://test.url",
+        name: "Scene",
+        url: "https://test-another.url",
+        token: "",
+        layers: [],
+      });
+    });
+
+    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();

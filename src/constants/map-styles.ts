@@ -17,8 +17,6 @@ export const BASE_MAPS: BaseMap[] = [
   { id: "Terrain", name: "Terrain", mapUrl: "" },
 ];
 
-export const INITIAL_MAP_STYLE = BASE_MAPS[0].mapUrl;
-
 export const CONTRAST_MAP_STYLES = {
   "https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json":
     "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
