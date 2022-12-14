@@ -59,7 +59,7 @@ describe("Dashboard Default View", () => {
     expect(controlPanel).toBeDefined();
   });
 
-  it.skip("Should go to the Debug page", async () => {
+  it("Should go to the Debug page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/debug']");
@@ -224,7 +224,7 @@ describe("Dashboard Default View", () => {
     ).toEqual('url("http://localhost:3000/tools-background.webp")');
   });
 
-  it.skip("Should contain title", async () => {
+  it("Should contain title", async () => {
     await page.waitForSelector("#dashboard-title");
     const text = await page.$eval("#dashboard-title", (e) => e.textContent);
     expect(text).toContain(
@@ -308,7 +308,7 @@ describe("Dashboard Default View", () => {
     );
   });
 
-  it.skip("Should go to debug page from tools description", async () => {
+  it("Should go to debug page from tools description", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
     await page.click("#debug-link");
