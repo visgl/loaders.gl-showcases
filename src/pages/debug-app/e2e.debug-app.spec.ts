@@ -51,7 +51,7 @@ describe("DebugApp", () => {
     expect(mainTitle).toBe('Debug Panel');
 
     // Check close button
-    const closeButton = await page.$('layers-panel-close-button');
+    const closeButton = await page.$('debug-panel-close-button');
     expect(closeButton).toBeDefined();
 
     // Check that different vieports toggle is presented and working

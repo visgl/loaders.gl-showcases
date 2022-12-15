@@ -26,7 +26,7 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const ToggleOptionsContainer = styled.div`I
+const ToggleOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -63,7 +63,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
         <Title id='debug-panel-title' left={16}>Debug Panel</Title>
       </PanelHeader>
       <CloseButtonWrapper>
-        <CloseButton id="layers-panel-close-button" onClick={onClose} />
+        <CloseButton id="debug-panel-close-button" onClick={onClose} />
       </CloseButtonWrapper>
       <PanelHorizontalLine top={10} />
       <ToggleOptionsContainer>
