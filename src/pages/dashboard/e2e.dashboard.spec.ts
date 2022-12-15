@@ -51,8 +51,8 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/viewer']");
+    await page.waitForTimeout(5000);
     const currentUrl = page.url();
-    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
     );
@@ -64,8 +64,8 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/debug']");
+    await page.waitForTimeout(5000);
     const currentUrl = page.url();
-    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1.7"
     );
@@ -228,7 +228,6 @@ describe("Dashboard Default View", () => {
 
   it("Should contain title", async () => {
     await page.waitForSelector("#dashboard-title");
-    await page.waitForTimeout(2000);
     const text = await page.$eval("#dashboard-title", (e) => e.textContent);
     expect(text).toContain(
       "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
@@ -240,7 +239,7 @@ describe("Dashboard Default View", () => {
         getComputedStyle(e).getPropertyValue("color")
       )
     ).toEqual("rgb(96, 194, 164)");
-  });
+  }, 30000);
 
   it("Should contain tools container", async () => {
     await page.waitForSelector("#tools-description-container");
@@ -315,9 +314,8 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
     await page.click("#debug-link");
-
+    await page.waitForTimeout(5000);
     const currentUrl = page.url();
-    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1.7"
     );
@@ -417,7 +415,6 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("a[href='/viewer']");
 
     const currentUrl = page.url();
-    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
     );
