@@ -52,6 +52,7 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/viewer']");
     const currentUrl = page.url();
+    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
     );
@@ -59,11 +60,12 @@ describe("Dashboard Default View", () => {
     expect(controlPanel).toBeDefined();
   });
 
-  it.skip("Should go to the Debug page", async () => {
+  it("Should go to the Debug page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
     await page.click("a[href='/debug']");
     const currentUrl = page.url();
+    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1.7"
     );
@@ -224,8 +226,9 @@ describe("Dashboard Default View", () => {
     ).toEqual('url("http://localhost:3000/tools-background.webp")');
   });
 
-  it.skip("Should contain title", async () => {
+  it("Should contain title", async () => {
     await page.waitForSelector("#dashboard-title");
+    await page.waitForTimeout(2000);
     const text = await page.$eval("#dashboard-title", (e) => e.textContent);
     expect(text).toContain(
       "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
@@ -308,12 +311,13 @@ describe("Dashboard Default View", () => {
     );
   });
 
-  it.skip("Should go to debug page from tools description", async () => {
+  it("Should go to debug page from tools description", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
     await page.click("#debug-link");
 
     const currentUrl = page.url();
+    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1.7"
     );
@@ -405,7 +409,7 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(dashboardCanvas).toBeDefined();
   });
 
-  it.skip("Should go to the Viewer page", async () => {
+  it("Should go to the Viewer page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
@@ -413,6 +417,7 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("a[href='/viewer']");
 
     const currentUrl = page.url();
+    await page.waitForTimeout(2000);
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
     );
