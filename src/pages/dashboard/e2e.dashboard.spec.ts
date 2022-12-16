@@ -239,7 +239,7 @@ describe("Dashboard Default View", () => {
         getComputedStyle(e).getPropertyValue("color")
       )
     ).toEqual("rgb(96, 194, 164)");
-  }, 30000);
+  }, 60000);
 
   it("Should contain tools container", async () => {
     await page.waitForSelector("#tools-description-container");
