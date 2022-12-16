@@ -228,12 +228,14 @@ describe("Dashboard Default View", () => {
 
   it("Should contain title", async () => {
     await page.waitForSelector("#dashboard-title");
+    await page.waitForTimeout(5000);
     const text = await page.$eval("#dashboard-title", (e) => e.textContent);
     expect(text).toContain(
       "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
     );
 
     await page.waitForSelector("#green-text");
+    await page.waitForTimeout(5000);
     expect(
       await page.$eval("#green-text", (e) =>
         getComputedStyle(e).getPropertyValue("color")
