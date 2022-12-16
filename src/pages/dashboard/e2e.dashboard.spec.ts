@@ -24,6 +24,21 @@ describe("Dashboard Default View", () => {
     expect(text).toContain("I3S Explorer");
   });
 
+  it("Should contain title", async () => {
+    await page.waitForSelector("#dashboard-title", { timeout: 60000 });
+    const text = await page.$eval("#dashboard-title", (e) => e.textContent);
+    expect(text).toContain(
+      "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
+    );
+
+    await page.waitForSelector("#green-text", { timeout: 60000 });
+    expect(
+      await page.$eval("#green-text", (e) =>
+        getComputedStyle(e).getPropertyValue("color")
+      )
+    ).toEqual("rgb(96, 194, 164)");
+  }, 60000);
+
   it("Contains page links", async () => {
     await page.waitForSelector("#header-links-default");
 
@@ -225,21 +240,6 @@ describe("Dashboard Default View", () => {
       )
     ).toEqual('url("http://localhost:3000/tools-background.webp")');
   });
-
-  it("Should contain title", async () => {
-    await page.waitForSelector("#dashboard-title", { timeout: 60000 });
-    const text = await page.$eval("#dashboard-title", (e) => e.textContent);
-    expect(text).toContain(
-      "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
-    );
-
-    await page.waitForSelector("#green-text", { timeout: 60000 });
-    expect(
-      await page.$eval("#green-text", (e) =>
-        getComputedStyle(e).getPropertyValue("color")
-      )
-    ).toEqual("rgb(96, 194, 164)");
-  }, 60000);
 
   it("Should contain tools container", async () => {
     await page.waitForSelector("#tools-description-container");
