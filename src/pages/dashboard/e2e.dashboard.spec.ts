@@ -328,7 +328,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
   afterAll(() => browser.close());
 
-  it("Should contain title", async () => {
+  it.skip("Should contain title", async () => {
     await page.waitForSelector("#dashboard-title");
     const text = await page.$eval("#dashboard-title", (e) => e.textContent);
     expect(text).toContain(
