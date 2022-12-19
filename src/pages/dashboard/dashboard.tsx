@@ -57,10 +57,10 @@ const VIEW = new MapView({
 });
 
 const DashboardContainer = styled.div<LayoutProps>`
-  ${getCurrentLayoutProperty({
-    desktop: "overflow: hidden",
-    tablet: "overflow: scroll",
-    mobile: "overflow: scroll",
+  overflow: ${getCurrentLayoutProperty({
+    desktop: "hidden",
+    tablet: "scroll",
+    mobile: "scroll",
   })};
 
   width: 100%;
@@ -76,40 +76,40 @@ const DashboardContainer = styled.div<LayoutProps>`
 const Title = styled.div<LayoutProps>`
   position: relative;
 
-  ${getCurrentLayoutProperty({
-    desktop: "left: 80px",
-    tablet: "left: 48px",
-    mobile: "left: 16px",
+  left: ${getCurrentLayoutProperty({
+    desktop: "80px",
+    tablet: "48px",
+    mobile: "16px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "width: 685px",
-    tablet: "width: 685px",
-    mobile: "width: 343px",
+  width: ${getCurrentLayoutProperty({
+    desktop: "685px",
+    tablet: "685px",
+    mobile: "343px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "height: 219px",
-    tablet: "height: 219px",
-    mobile: "height: 135px",
+  height: ${getCurrentLayoutProperty({
+    desktop: "219px",
+    tablet: "219px",
+    mobile: "135px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "font-size: 52px",
-    tablet: "font-size: 52px",
-    mobile: "font-size: 32px",
+  font-size: ${getCurrentLayoutProperty({
+    desktop: "52px",
+    tablet: "52px",
+    mobile: "32px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "line-height: 73px",
-    tablet: "line-height: 73px",
-    mobile: "line-height: 45px",
+  line-height: ${getCurrentLayoutProperty({
+    desktop: "73px",
+    tablet: "73px",
+    mobile: "45px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "top: calc(50% - 50px)",
-    tablet: "top: calc(50% - 100px)",
-    mobile: "top: calc(50% - 60px)",
+  top: ${getCurrentLayoutProperty({
+    desktop: "calc(50% - 50px)",
+    tablet: "calc(50% - 100px)",
+    mobile: "calc(50% - 60px)",
   })};
 
   font-weight: 700;
@@ -140,28 +140,28 @@ const MacImage = styled.img`
 const AppShowcaseMobile = styled.img<LayoutProps>`
   position: relative;
 
-  ${getCurrentLayoutProperty({
-    desktop: "",
-    tablet: "width: 738px",
-    mobile: "width: 343px",
+  width: ${getCurrentLayoutProperty({
+    desktop: "auto",
+    tablet: "738px",
+    mobile: "343px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "",
-    tablet: "height: 437px",
-    mobile: "height: 203px",
+  height: ${getCurrentLayoutProperty({
+    desktop: "auto",
+    tablet: "437px",
+    mobile: "203px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "",
-    tablet: "left: calc(50% - 370px)",
-    mobile: "left: calc(50% - 170px)",
+  left: ${getCurrentLayoutProperty({
+    desktop: "auto",
+    tablet: "calc(50% - 370px)",
+    mobile: "calc(50% - 170px)",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "",
-    tablet: "top: -100px",
-    mobile: "top: -50px",
+  top: ${getCurrentLayoutProperty({
+    desktop: "auto",
+    tablet: "-100px",
+    mobile: "-50px",
   })};
 
   z-index: 3;
@@ -206,44 +206,44 @@ const ToolsContainer = styled.div<{ isDesktop: boolean }>`
 const ToolsItem = styled.div<LayoutProps>`
   display: flex;
 
-  ${getCurrentLayoutProperty({
-    desktop: "flex-direction: row",
-    tablet: "flex-direction: row",
-    mobile: "flex-direction: column",
+  flex-direction: ${getCurrentLayoutProperty({
+    desktop: "row",
+    tablet: "row",
+    mobile: "column",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "align-items: stretch",
-    tablet: "align-items: center",
-    mobile: "align-items: center",
+  align-items: ${getCurrentLayoutProperty({
+    desktop: "stretch",
+    tablet: "center",
+    mobile: "center",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "justify-content: start",
-    tablet: "justify-content: center",
-    mobile: "justify-content: center",
+  justify-content: ${getCurrentLayoutProperty({
+    desktop: "start",
+    tablet: "center",
+    mobile: "center",
   })};
 
   gap: 30px;
 `;
 
 const ToolItemDescription = styled.div<LayoutProps>`
-  ${getCurrentLayoutProperty({
-    desktop: "width: 456px",
-    tablet: "width: 594px",
-    mobile: "width: 343px",
+  width: ${getCurrentLayoutProperty({
+    desktop: "456px",
+    tablet: "594px",
+    mobile: "343px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "font-size: 24px",
-    tablet: "font-size: 24px",
-    mobile: "font-size: 16px",
+  font-size: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "24px",
+    mobile: "16px",
   })};
 
-  ${getCurrentLayoutProperty({
-    desktop: "text-align: start",
-    tablet: "text-align: start",
-    mobile: "text-align: center",
+  text-align: ${getCurrentLayoutProperty({
+    desktop: "start",
+    tablet: "start",
+    mobile: "center",
   })};
   font-weight: 400;
   font-style: normal;
