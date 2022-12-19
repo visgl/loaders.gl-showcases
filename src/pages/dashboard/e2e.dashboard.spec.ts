@@ -413,6 +413,7 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
     await page.click("a[href='/viewer']");
+    await page.waitForTimeout(5000);
 
     const currentUrl = page.url();
     expect(currentUrl).toBe(
