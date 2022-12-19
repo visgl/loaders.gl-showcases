@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { color_brand_quaternary } from "../constants/colors";
+import { color_brand_quaternary, color_brand_tertiary } from "../constants/colors";
 import { LayoutProps } from "../types";
 import { Theme } from "../utils/enums";
 import { getCurrentLayoutProperty } from "../utils/hooks/layout";
@@ -223,4 +223,19 @@ export const MenuDevider = styled.div`
   height: 1px;
   width: 100%;
   border-top: 1px solid #393a45;
+`;
+
+export const MenuLink = styled.a`
+  display: flex;
+  align-items: center;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  padding-top: 10px;
+  color: ${color_brand_tertiary};
+  opacity: 0.8;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
 `;

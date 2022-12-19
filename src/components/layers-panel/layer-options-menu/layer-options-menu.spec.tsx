@@ -3,12 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { LayerOptionsMenu } from "./layer-options-menu";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 
+const onPointToLayerClick = jest.fn();
+const onLayerSettingsClick = jest.fn();
+const onDeleteLayerClick = jest.fn();
+
 describe("Layer option menu", () => {
   it("Should render options only with point to layer", () => {
-    const onPointToLayerClick = jest.fn();
-    const onLayerSettingsClick = jest.fn();
-    const onDeleteLayerClick = jest.fn();
-
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -31,10 +31,6 @@ describe("Layer option menu", () => {
   });
 
   it("Should render options with point to layer, layer settings and delete layer", () => {
-    const onPointToLayerClick = jest.fn();
-    const onLayerSettingsClick = jest.fn();
-    const onDeleteLayerClick = jest.fn();
-
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -68,10 +64,6 @@ describe("Layer option menu", () => {
   });
 
   it("Should point to child layer viewState if layer is group", () => {
-    const onPointToLayerClick = jest.fn();
-    const onLayerSettingsClick = jest.fn();
-    const onDeleteLayerClick = jest.fn();
-
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -115,10 +107,6 @@ describe("Layer option menu", () => {
   });
 
   it("Should point to deep child layer viewState if layer is group", () => {
-    const onPointToLayerClick = jest.fn();
-    const onLayerSettingsClick = jest.fn();
-    const onDeleteLayerClick = jest.fn();
-
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -161,5 +149,26 @@ describe("Layer option menu", () => {
       longitude: 120,
       zoom: 10,
     });
+  });
+
+  it("Should render mapInfo option", () => {
+    renderWithTheme(
+      <LayerOptionsMenu
+        layer={{
+          id: "test",
+          name: "test",
+          url: "https://test.url",
+          mapInfo: 'https://test.com'
+        }}
+        selected={false}
+        hasSettings={false}
+        onPointToLayerClick={onPointToLayerClick}
+        onLayerSettingsClick={onLayerSettingsClick}
+        onDeleteLayerClick={onDeleteLayerClick}
+      />
+    );
+
+    const mapInfoItem = screen.getByText("Map Info");
+    expect(mapInfoItem).toBeInTheDocument();
   });
 });
