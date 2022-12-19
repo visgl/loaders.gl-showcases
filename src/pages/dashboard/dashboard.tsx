@@ -73,8 +73,14 @@ const DashboardContainer = styled.div<LayoutProps>`
   background-size: cover;
 `;
 
-const Title = styled.div<LayoutProps>`
+const DeckWithTitleWrapper = styled.div`
+  display: flex;
   position: relative;
+  height: 100%;
+`;
+
+const Title = styled.div<LayoutProps>`
+  position: absolute;
 
   left: ${getCurrentLayoutProperty({
     desktop: "80px",
@@ -296,20 +302,21 @@ export const Dashboard = () => {
 
   return (
     <DashboardContainer id="dashboard-container" layout={layout}>
-      <DeckGL
-        id={"dashboard-app"}
-        controller={false}
-        views={[VIEW]}
-        layers={[tile3DLayer]}
-        initialViewState={viewState}
-        style={{ position: "relative", height: "50%" }}
-      >
-        <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+      <DeckWithTitleWrapper>
         <Title id="dashboard-title" layout={layout}>
           Explore and Debug I3S Data with one
           <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
         </Title>
-      </DeckGL>
+        <DeckGL
+          id={"dashboard-app"}
+          controller={false}
+          views={[VIEW]}
+          layers={[tile3DLayer]}
+          initialViewState={viewState}
+        >
+          <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+        </DeckGL>
+      </DeckWithTitleWrapper>
       <Wrapper id="tools-wrapper">
         {layout !== Layout.Desktop ? (
           <AppShowcaseMobile
