@@ -24,21 +24,6 @@ describe("Dashboard Default View", () => {
     expect(text).toContain("I3S Explorer");
   });
 
-  it("Should contain title", async () => {
-    await page.hover("#dashboard-title");
-    const text = await page.$eval("#dashboard-title", (e) => e.textContent);
-    expect(text).toContain(
-      "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
-    );
-
-    await page.hover("#green-text");
-    expect(
-      await page.$eval("#green-text", (e) =>
-        getComputedStyle(e).getPropertyValue("color")
-      )
-    ).toEqual("rgb(96, 194, 164)");
-  }, 60000);
-
   it("Contains page links", async () => {
     await page.waitForSelector("#header-links-default");
 
@@ -342,6 +327,21 @@ describe("Dashboard Tablet or Mobile view", () => {
   });
 
   afterAll(() => browser.close());
+
+  it("Should contain title", async () => {
+    await page.hover("#dashboard-title");
+    const text = await page.$eval("#dashboard-title", (e) => e.textContent);
+    expect(text).toContain(
+      "Explore and Debug I3S Data with one Simple and Easy-to-Use Tool"
+    );
+
+    await page.hover("#green-text");
+    expect(
+      await page.$eval("#green-text", (e) =>
+        getComputedStyle(e).getPropertyValue("color")
+      )
+    ).toEqual("rgb(96, 194, 164)");
+  }, 60000);
 
   it("Should contain app showcase image", async () => {
     await page.waitForSelector("#app-showcase");
