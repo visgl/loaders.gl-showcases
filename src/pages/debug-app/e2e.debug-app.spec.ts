@@ -114,6 +114,6 @@ describe("DebugApp", () => {
 
   it("Memory Usage tab works", async () => {
     await page.click("#memory-usage-tab");
-    await page.waitForSelector("#stats-widget", { visible: true });
+    await page.waitForSelector("#viewer-memory-usage-panel", { visible: true });
   });
 });
