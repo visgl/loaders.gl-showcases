@@ -5,7 +5,7 @@ import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
 import { SliderType } from "../../../types";
 
-const FiltrationConatainer = styled.div`
+const FiltrationContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -91,8 +91,6 @@ export const FiltrationSection = () => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("");
 
-  const activeIndex = floors.findIndex((floor) => floor.id === selectedFloorId);
-
   const onSelectFloorHandler = (floorId: string) => {
     const floor = floors.find(({ id }) => id === floorId);
     if (!floor) {
@@ -110,7 +108,7 @@ export const FiltrationSection = () => {
   };
 
   return (
-    <FiltrationConatainer>
+    <FiltrationContainer>
       <SectionTitle>NUM_FLOORS</SectionTitle>
       <FiltrationSectionItem sliderType={SliderType.Floors}>
         <SliderContainer sliderType={SliderType.Floors}>
@@ -124,15 +122,15 @@ export const FiltrationSection = () => {
 
         <FloorsContainer>
           {floors.map((floor, index) => {
-            const activeFloor = index === activeIndex;
+            const isFloorActive = floor.id === selectedFloorId;
             return (
               <FloorsItem
                 key={`${floor.id}-image`}
-                active={activeFloor}
+                active={isFloorActive}
                 zIndex={index}
               >
                 <FloorsImage>
-                  {activeFloor ? <FloorActive /> : <Floor />}
+                  {isFloorActive ? <FloorActive /> : <Floor />}
                 </FloorsImage>
               </FloorsItem>
             );
@@ -150,6 +148,6 @@ export const FiltrationSection = () => {
           />
         </SliderContainer>
       </FiltrationSectionItem>
-    </FiltrationConatainer>
+    </FiltrationContainer>
   );
 };

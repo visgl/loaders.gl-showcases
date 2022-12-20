@@ -20,8 +20,8 @@ import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
 import { Bookmark, SliderType } from "../../types";
-import { BookmarkInnerButton } from "./bookmark-inner-button";
-import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
+import { SliderInnerButton } from "../slider/slider-inner-button";
+import { ConfirmDeletingPanel } from "../slider/confirm-deleting-panel";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
@@ -307,28 +307,28 @@ export const BookmarksPanel = ({
     if (isDesktop) {
       return (
         <>
-          <BookmarkInnerButton
+          <SliderInnerButton
             width={32}
             height={32}
             onInnerClick={() => onClearBookmarksHandler()}
           >
             <ConfirmIcon />
-          </BookmarkInnerButton>
-          <BookmarkInnerButton
+          </SliderInnerButton>
+          <SliderInnerButton
             width={32}
             height={32}
             onInnerClick={() => setClearBookmarksMode(false)}
           >
             <CloseIcon />
-          </BookmarkInnerButton>
+          </SliderInnerButton>
         </>
       );
     }
 
     return (
-      <BookmarkInnerButton onInnerClick={() => setClearBookmarksMode(false)}>
+      <SliderInnerButton onInnerClick={() => setClearBookmarksMode(false)}>
         <OptionsIcon panel={Panels.Bookmarks} />
-      </BookmarkInnerButton>
+      </SliderInnerButton>
     );
   };
 
@@ -350,13 +350,13 @@ export const BookmarksPanel = ({
 
         <ItemsList layout={layout}>
           <ButtonWrapper layout={layout}>
-            <BookmarkInnerButton
+            <SliderInnerButton
               disabled={disableAddButton || disableBookmarksAdding}
               blurButton={disableAddButton || disableBookmarksAdding}
               onInnerClick={onAddBookmark}
             >
               <PlusIcon fill={theme.colors.buttonIconColor} />
-            </BookmarkInnerButton>
+            </SliderInnerButton>
           </ButtonWrapper>
 
           {bookmarks.length > 0 ? (
@@ -365,7 +365,7 @@ export const BookmarksPanel = ({
               selectedItemId={selectedBookmarkId}
               sliderType={SliderType.Bookmarks}
               editingMode={editingMode}
-              onDeleteBookmark={onDeleteBookmark}
+              onDelete={onDeleteBookmark}
               onSelect={onSelectBookmark}
             />
           ) : (
@@ -382,22 +382,22 @@ export const BookmarksPanel = ({
             >
               <ButtonsWrapper>
                 {editingMode && (
-                  <BookmarkInnerButton
+                  <SliderInnerButton
                     onInnerClick={() => {
                       onEditBookmark(selectedBookmarkId);
                       setEditingMode(false);
                     }}
                   >
                     <ConfirmationIcon />
-                  </BookmarkInnerButton>
+                  </SliderInnerButton>
                 )}
                 {!editingMode && (
-                  <BookmarkInnerButton
+                  <SliderInnerButton
                     hide={clearBookmarks}
                     onInnerClick={() => setPopoverType(PopoverType.options)}
                   >
                     <OptionsIcon panel={Panels.Bookmarks} />
-                  </BookmarkInnerButton>
+                  </SliderInnerButton>
                 )}
                 {clearBookmarks && renderClearBookmarksContent()}
               </ButtonsWrapper>

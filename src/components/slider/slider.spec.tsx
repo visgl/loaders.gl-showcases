@@ -44,7 +44,7 @@ const callRender = (renderFunc, props = {}) => {
       editingMode={false}
       sliderType={SliderType.Bookmarks}
       onSelect={onSelect}
-      onDeleteBookmark={onDeleteBookmark}
+      onDelete={onDeleteBookmark}
       {...props}
     />
   );

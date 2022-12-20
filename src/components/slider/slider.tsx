@@ -10,7 +10,7 @@ import {
 
 const SliderItemsList = styled.div<
   LayoutProps & {
-    sliderType: number;
+    sliderType: SliderType;
   }
 >`
   display: flex;
@@ -87,11 +87,11 @@ const ArrowIconRight = styled(ArrowIconLeft)<
 
 type SliderProps = {
   data: Bookmark[] | any;
-  sliderType: number;
+  sliderType: SliderType;
   editingMode?: boolean;
   selectedItemId: string;
   onSelect: (id: string) => void;
-  onDeleteBookmark?: (id: string) => void;
+  onDelete?: (id: string) => void;
 };
 
 const BOOKMARKS_OFFSET = 150;
@@ -103,7 +103,7 @@ export const Slider = ({
   sliderType,
   selectedItemId,
   onSelect,
-  onDeleteBookmark,
+  onDelete,
 }: SliderProps) => {
   const sliderItemsListRef = useRef<HTMLDivElement | null>(null);
   const listItems = useRef<HTMLDivElement[]>([]);
@@ -195,9 +195,9 @@ export const Slider = ({
               sliderType={sliderType}
               url={item.imageUrl}
               editingMode={editingMode}
-              onSelectBookmark={() => onSelectHandler(item.id)}
-              onDeleteBookmark={() =>
-                onDeleteBookmark && onDeleteBookmark(item.id)
+              onSelect={() => onSelectHandler(item.id)}
+              onDelete={() =>
+                onDelete && onDelete(item.id)
               }
             />
           );

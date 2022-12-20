@@ -1,11 +1,11 @@
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { BookmarkInnerButton } from "./bookmark-inner-button";
+import { SliderInnerButton } from "./slider-inner-button";
 
 const onInnerClick = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
-    <BookmarkInnerButton
+    <SliderInnerButton
       blurButton={false}
       hide={false}
       disabled={false}
@@ -13,7 +13,7 @@ const callRender = (renderFunc, props = {}) => {
       {...props}
     >
       Test button
-    </BookmarkInnerButton>
+    </SliderInnerButton>
   );
 };
 

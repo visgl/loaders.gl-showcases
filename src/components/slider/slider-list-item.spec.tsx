@@ -20,8 +20,8 @@ const callRender = (renderFunc, props = {}) => {
       url={"screenshot"}
       editingMode={false}
       editingSelected={false}
-      onSelectBookmark={onSelectBookmark}
-      onDeleteBookmark={onDeleteBookmark}
+      onSelect={onSelectBookmark}
+      onDelete={onDeleteBookmark}
       {...props}
     />
   );

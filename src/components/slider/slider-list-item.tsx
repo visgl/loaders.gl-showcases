@@ -9,9 +9,9 @@ import {
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
-import { BookmarkInnerButton } from "../bookmarks-panel/bookmark-inner-button";
+import { SliderInnerButton } from "./slider-inner-button";
 import { Layout } from "../../utils/enums";
-import { ConfirmDeletingPanel } from "../bookmarks-panel/confirm-deleting-panel";
+import { ConfirmDeletingPanel } from "./confirm-deleting-panel";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
@@ -20,7 +20,7 @@ import { LayoutProps, SliderType } from "../../types";
 
 type ListItemProps = {
   url: string;
-  sliderType: number;
+  sliderType: SliderType;
   editingMode?: boolean;
   deleteBookmark?: boolean;
   deleting: boolean;
@@ -162,10 +162,10 @@ type SliderListItemProps = {
   url: string;
   editingMode?: boolean;
   editingSelected?: boolean;
-  sliderType: number;
+  sliderType: SliderType;
   sliderItemText?: string;
-  onSelectBookmark: () => void;
-  onDeleteBookmark: () => void;
+  onSelect: () => void;
+  onDelete: () => void;
 };
 
 const confirmText = "Are you sure you  want to delete the bookmark?";
@@ -183,8 +183,8 @@ export const SliderListItem = forwardRef(
       editingMode,
       editingSelected,
       sliderItemText,
-      onSelectBookmark,
-      onDeleteBookmark,
+      onSelect,
+      onDelete,
     } = props;
     const [isHovering, setIsHovering] = useState<boolean>(false);
     const [deleteBookmark, setDeleteBookmark] = useState<boolean>(false);
@@ -215,30 +215,30 @@ export const SliderListItem = forwardRef(
         <>
           {deleteBookmark && (
             <>
-              <BookmarkInnerButton
+              <SliderInnerButton
                 width={32}
                 height={32}
-                onInnerClick={onDeleteBookmark}
+                onInnerClick={onDelete}
               >
                 <ConfirmIcon />
-              </BookmarkInnerButton>
-              <BookmarkInnerButton
+              </SliderInnerButton>
+              <SliderInnerButton
                 width={32}
                 height={32}
                 onInnerClick={onUndoDeleting}
               >
                 <CloseIcon />
-              </BookmarkInnerButton>
+              </SliderInnerButton>
             </>
           )}
           {!deleteBookmark && (
-            <BookmarkInnerButton
+            <SliderInnerButton
               width={32}
               height={32}
               onInnerClick={onDeleteBookmarkClickHandler}
             >
               <TrashIcon />
-            </BookmarkInnerButton>
+            </SliderInnerButton>
           )}
         </>
       );
@@ -270,7 +270,7 @@ export const SliderListItem = forwardRef(
           editing={editingSelected}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          onClick={onSelectBookmark}
+          onClick={onSelect}
         >
           {isHovering &&
             !isMobileLayout &&
@@ -283,7 +283,7 @@ export const SliderListItem = forwardRef(
           <ConfirmDeletingPanel
             title={confirmText}
             onCancel={() => setIsDeletePanelOpen(false)}
-            onConfirm={onDeleteBookmark}
+            onConfirm={onDelete}
           />
         )}
       </>
