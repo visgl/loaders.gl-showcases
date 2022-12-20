@@ -48,6 +48,7 @@ import {
   RightSideToolsPanelWrapper,
 } from "../../common";
 import { initStats, sumTilesetsStats } from "../../../utils/stats";
+import { IS_LOADED_DELAY } from "../../../constants/common";
 
 type LayoutProps = {
   layout: string;
@@ -62,9 +63,6 @@ const Container = styled.div<LayoutProps>`
   height: 100%;
   position: relative;
 `;
-
-/** Delay to await asynchronous traversal of the tileset **/
-const IS_LOADED_DELAY = 500;
 
 type ComparisonSideProps = {
   mode: ComparisonMode;

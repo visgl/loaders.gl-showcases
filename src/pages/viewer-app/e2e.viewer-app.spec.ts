@@ -12,7 +12,8 @@ describe("ViewerApp", () => {
 
   afterAll(() => browser.close());
 
-  it("Contains statistic panel", async () => {
-    await page.waitForSelector("#stats-panel");
+  it("Memory Usage tab works", async () => {
+    await page.click("#memory-usage-tab");
+    await page.waitForSelector("#viewer-memory-usage-panel", { visible: true });
   });
 });

@@ -14,3 +14,6 @@ export const Font = `
   letter-spacing: 0em;
   text-align: left;
 `;
+
+/** Delay to await asynchronous traversal of the tileset **/
+export const IS_LOADED_DELAY = 500;
