@@ -63,7 +63,7 @@ type MemoryUsageProps = {
   activeLayers: LayerExample[];
   tilesetStats?: Stats | null;
   contentFormats?: ContentFormats | null;
-  loadingTime: number;
+  loadingTime?: number;
   updateNumber: number;
   onClose: () => void;
 };
@@ -105,11 +105,12 @@ export const MemoryUsagePanel = ({
       <PanelHorizontalLine top={0} />
 
       <PanelContent>
-        <StatTimeContainer>
-          <StatTitle>Loading time: </StatTitle>
-          <Title left={6}>{`${loadingTime} ms`}</Title>
-        </StatTimeContainer>
-
+        {loadingTime !== undefined && (
+          <StatTimeContainer>
+            <StatTitle>Loading time: </StatTitle>
+            <Title left={6}>{`${loadingTime} ms`}</Title>
+          </StatTimeContainer>
+        )}
         {memoryStats && (
           <StatSection>
             <Title bottom={12}>Memory Usage</Title>

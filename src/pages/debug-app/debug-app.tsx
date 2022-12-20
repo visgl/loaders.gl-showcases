@@ -736,7 +736,6 @@ export const DebugApp = () => {
             activeLayers={activeLayers}
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
-            loadingTime={0}
             updateNumber={updateStatsNumber}
             onClose={() =>
               onChangeMainToolsPanelHandler(ActiveButton.memory)
