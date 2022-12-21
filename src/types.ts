@@ -157,6 +157,8 @@ export type LayerExample = {
   viewState?: LayerViewState;
   /** Type of the tileset (I3S/3DTiles) */
   type?: TilesetType;
+  /** Information about where layer was taken from */
+  mapInfo?: string;
 };
 
 export type LayerViewState = {

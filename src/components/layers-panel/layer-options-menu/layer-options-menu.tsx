@@ -2,6 +2,7 @@ import { useTheme } from "styled-components";
 import LocationIcon from "../../../../public/icons/location.svg";
 import DeleteIcon from "../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../public/icons/settings.svg";
+import InfoIcon from '../../../../public/icons/info.svg'
 import { color_accent_primary } from "../../../constants/colors";
 import { ReactEventHandler } from "react";
 import { LayerExample, LayerViewState } from "../../../types";
@@ -10,6 +11,7 @@ import {
   MenuItem,
   MenuSettingsIcon,
   MenuDevider,
+  MenuLink
 } from "../../common";
 
 type LayerOptionsMenuProps = {
@@ -104,6 +106,18 @@ export const LayerOptionsMenu = ({
             </MenuSettingsIcon>
             Delete layer
           </MenuItem>
+        </>
+      )}
+
+      {layer.mapInfo && (
+        <>
+          <MenuDevider />
+          <MenuLink href={layer.mapInfo} target="_blank">
+            <MenuSettingsIcon>
+              <InfoIcon />
+            </MenuSettingsIcon>
+            Map Info
+          </MenuLink>
         </>
       )}
     </MenuContainer>
