@@ -63,7 +63,7 @@ type BookmarkInnerButtonProps = {
   onInnerClick: () => void;
 };
 
-export const BookmarkInnerButton = ({
+export const SliderInnerButton = ({
   children,
   blurButton,
   hide,

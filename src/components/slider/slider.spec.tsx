@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { Slider } from "./slider";
+import { SliderType } from "../../types";
 
 const TEST_BOOKMARKS = [
   {
@@ -32,17 +33,18 @@ const TEST_BOOKMARKS = [
   },
 ];
 
-const onSelectBookmark = jest.fn();
+const onSelect = jest.fn();
 const onDeleteBookmark = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <Slider
-      selectedBookmarkId="testId2"
-      bookmarks={TEST_BOOKMARKS}
+      selectedItemId="testId2"
+      data={TEST_BOOKMARKS}
       editingMode={false}
-      onSelectBookmark={onSelectBookmark}
-      onDeleteBookmark={onDeleteBookmark}
+      sliderType={SliderType.Bookmarks}
+      onSelect={onSelect}
+      onDelete={onDeleteBookmark}
       {...props}
     />
   );
@@ -63,14 +65,32 @@ describe("Slider", () => {
     const { container } = callRender(renderWithTheme);
     const arrowRight = container.lastChild;
     userEvent.click(arrowRight);
-    expect(onSelectBookmark).toHaveBeenCalled();
+    expect(onSelect).toHaveBeenCalled();
+  });
+
+  it("Should click arrow bottom", () => {
+    const { container } = callRender(renderWithTheme, {
+      sliderType: SliderType.Floors,
+    });
+    const arrowBottom = container.lastChild;
+    userEvent.click(arrowBottom);
+    expect(onSelect).toHaveBeenCalled();
   });
 
   it("Should click arrow left", () => {
     const { container } = callRender(renderWithTheme);
     const arrowLeft = container.firstChild;
     userEvent.click(arrowLeft);
-    expect(onSelectBookmark).toHaveBeenCalled();
+    expect(onSelect).toHaveBeenCalled();
+  });
+
+  it("Should click arrow top", () => {
+    const { container } = callRender(renderWithTheme, {
+      sliderType: SliderType.Floors,
+    });
+    const arrowTop = container.firstChild;
+    userEvent.click(arrowTop);
+    expect(onSelect).toHaveBeenCalled();
   });
 
   it("Should select slider item", () => {
@@ -78,7 +98,7 @@ describe("Slider", () => {
     const sliderItem = container.childNodes[1].firstChild;
 
     userEvent.click(sliderItem);
-    expect(onSelectBookmark).toHaveBeenCalled();
+    expect(onSelect).toHaveBeenCalled();
   });
 
   it("Should delete slider item", () => {
