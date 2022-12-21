@@ -72,7 +72,7 @@ import {
 } from "../../utils/layer-utils";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
-import { MemoryUsagePanel } from "../../components/comparison/memory-usage-panel/memory-usage-panel";
+import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters

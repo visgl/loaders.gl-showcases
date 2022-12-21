@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
-import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
+import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { MemoryUsagePanel } from "./memory-usage-panel";
 
 Object.assign(window.navigator, {

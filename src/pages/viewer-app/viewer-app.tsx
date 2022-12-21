@@ -51,7 +51,7 @@ import {
 } from "../../utils/layer-utils";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
-import { MemoryUsagePanel } from "../../components/comparison/memory-usage-panel/memory-usage-panel";
+import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { IS_LOADED_DELAY } from "../../constants/common";
 
 const INITIAL_VIEW_STATE = {

@@ -28,7 +28,7 @@ import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
 import { EXAMPLES } from "../../../constants/i3s-examples";
 import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-params-panel";
-import { MemoryUsagePanel } from "../../../components/comparison/memory-usage-panel/memory-usage-panel";
+import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 import { ActiveSublayer } from "../../../utils/active-sublayer";
 import {
   getCurrentLayoutProperty,
