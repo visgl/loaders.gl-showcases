@@ -34,9 +34,11 @@ import {
   ListItemType,
   BaseMap,
   BuildingSceneSublayerExtended,
+  Layout,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
+  BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
@@ -53,6 +55,7 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { IS_LOADED_DELAY } from "../../constants/common";
+import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -454,14 +457,26 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
       />
-      <RightSideToolsPanelWrapper layout={layout}>
-        <MainToolsPanel
-          id="viewer--tools-panel"
-          activeButton={activeButton}
-          showLayerOptions
-          onChange={onChangeMainToolsPanelHandler}
-        />
-      </RightSideToolsPanelWrapper>
+
+      {layout !== Layout.Mobile && (
+        <RightSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            id="viewer--tools-panel"
+            activeButton={activeButton}
+            showLayerOptions
+            onChange={onChangeMainToolsPanelHandler}
+          />
+        </RightSideToolsPanelWrapper>
+      )}
+      {layout === Layout.Mobile && (
+        <BottomToolsPanelWrapper layout={layout}>
+          <MobileToolsPanel
+            id={"mobile-viewer-tools-panel"}
+            activeButton={activeButton}
+            onChange={onChangeMainToolsPanelHandler}
+          />
+        </BottomToolsPanelWrapper>
+      )}
       {activeButton === ActiveButton.options && (
         <RightSidePanelWrapper layout={layout}>
           <LayersPanel
