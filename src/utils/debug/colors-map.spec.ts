@@ -22,7 +22,7 @@ describe("Color Map", () => {
       id: 'test'
     };
 
-    const randomColor = colorMap.getColor(tile, {});
+    const randomColor = colorMap.getTileColor(tile, {});
     expect(randomColor).toEqual(DEFAULT_COLOR);
   });
 
@@ -31,10 +31,10 @@ describe("Color Map", () => {
       id: 'test'
     };
 
-    const randomColor = colorMap.getColor(tile, {});
+    const randomColor = colorMap.getTileColor(tile, {});
     expect(randomColor).toEqual(DEFAULT_COLOR);
 
-    const defaultColor = colorMap.getColor(tile, { coloredBy: 0 });
+    const defaultColor = colorMap.getTileColor(tile, { coloredBy: 'Original' });
     expect(defaultColor).toEqual(DEFAULT_COLOR);
   });
 
@@ -43,9 +43,9 @@ describe("Color Map", () => {
       id: 'test'
     };
 
-    const randomColor = colorMap.getColor(tile, { coloredBy: 1 });
+    const randomColor = colorMap.getTileColor(tile, { coloredBy: 'Random by tile' });
     expect(randomColor).toBeDefined();
-    const colorForTheSameTile = colorMap.getColor(tile, { coloredBy: 1 });
+    const colorForTheSameTile = colorMap.getTileColor(tile, { coloredBy: 'Random by tile' });
 
     expect(randomColor).toEqual(colorForTheSameTile);
   });
@@ -56,9 +56,9 @@ describe("Color Map", () => {
       depth: 1
     };
 
-    const colorByDepth = colorMap.getColor(tile, { coloredBy: 2 });
+    const colorByDepth = colorMap.getTileColor(tile, { coloredBy: 'By depth' });
     expect(colorByDepth).toBeDefined();
-    const colorForTheSameTile = colorMap.getColor(tile, { coloredBy: 2 });
+    const colorForTheSameTile = colorMap.getTileColor(tile, { coloredBy: 'By depth' });
 
     expect(colorByDepth).toEqual(colorForTheSameTile);
   });
@@ -68,19 +68,8 @@ describe("Color Map", () => {
       id: 'test'
     };
 
-    const colorByTile = colorMap.getColor(tile, { coloredBy: 4 });
+    const colorByTile = colorMap.getTileColor(tile, { coloredBy: 'User selected' });
     expect(colorByTile).toEqual(DEFAULT_COLOR);
-  });
-
-  test("Should return existing tile color in _getColorByTile method", () => {
-    const tile = {
-      id: 'test'
-    };
-
-    const colorByDepth = colorMap.getColor(tile, { coloredBy: 2 });
-    const colorByTile = colorMap.getColor(tile, { coloredBy: 4 });
-
-    expect(colorByDepth).toEqual(colorByTile);
   });
 
   test("Should return DEFAULT tile color in _getCustomColor if coloredTilesMap is not provided", () => {
@@ -89,7 +78,7 @@ describe("Color Map", () => {
       coloredTilesMap: null
     };
 
-    const customColor = colorMap.getColor(tile, { coloredBy: 3 });
+    const customColor = colorMap.getTileColor(tile, { coloredBy: 'User selected' });
 
     expect(customColor).toEqual(DEFAULT_COLOR);
   });
@@ -100,7 +89,7 @@ describe("Color Map", () => {
       coloredTilesMap: {}
     };
 
-    const customColor = colorMap.getColor(tile, { coloredBy: 3 });
+    const customColor = colorMap.getTileColor(tile, { coloredBy: 'User selected' });
 
     expect(customColor).toEqual(DEFAULT_COLOR);
   });
@@ -110,7 +99,7 @@ describe("Color Map", () => {
       id: 'test',
     };
 
-    const customColor = colorMap.getColor(tile, { coloredBy: 3, coloredTilesMap: { 'test': [128, 128, 128] } });
+    const customColor = colorMap.getTileColor(tile, { coloredBy: 'User selected', coloredTilesMap: { 'test': [128, 128, 128] } });
 
     expect(customColor).toEqual([128, 128, 128]);
   });
@@ -120,20 +109,60 @@ describe("Color Map", () => {
       id: 'test',
     };
 
-    const customColor = colorMap.getColor(tile, { coloredBy: 3, selectedTileId: 'test' });
+    const customColor = colorMap.getTileColor(tile, { coloredBy: 'User selected', selectedTileId: 'test' });
     const isCustomColorExistInColorMap = Boolean(colorMap.colorMap['test']);
 
     expect(customColor).toEqual(DEFAULT_HIGLIGHT_COLOR);
     expect(isCustomColorExistInColorMap).toBe(true);
   });
 
+  test("Should return default bounding volume color", () => {
+    const boundingVolumeTile = {
+      id: 'test'
+    };
+
+    const defaultColor = colorMap.getBoundingVolumeColor(boundingVolumeTile, { coloredBy: 'Original' });
+
+    expect(defaultColor).toEqual(DEFAULT_COLOR);
+  });
+
+  test("Should return default bounding volume color if provided wrong coloredBy prop", () => {
+    const boundingVolumeTile = {
+      id: 'test'
+    };
+
+    const defaultColor = colorMap.getBoundingVolumeColor(boundingVolumeTile, { coloredBy: 'Wrong' });
+
+    expect(defaultColor).toEqual(DEFAULT_COLOR);
+  });
+
+  test("Should return default color if colored by tile option is provided and no any colors in map", () => {
+    const tile = {
+      id: 'test'
+    };
+
+    const colorByDepth = colorMap.getBoundingVolumeColor(tile, { coloredBy: 'By tile' });
+
+    expect(colorByDepth).toEqual(DEFAULT_COLOR);
+  });
+
+  test("Should return tile color if color bounding volume tile id exists in colors map and colorsMap is not empty", () => {
+    const tile = {
+      id: 'test'
+    };
+
+    const colorByDepth = colorMap.getTileColor(tile, { coloredBy: 'By depth' });
+    const colorByTile = colorMap.getBoundingVolumeColor(tile, { coloredBy: 'By tile' });
+
+    expect(colorByDepth).toEqual(colorByTile);
+  });
 
   test("Should reset colors map", () => {
     const tile = {
       id: 'test',
     };
 
-    colorMap.getColor(tile, { coloredBy: 1 });
+    colorMap.getTileColor(tile, { coloredBy: 'Random by tile' });
     const map = colorMap.colorMap;
     expect(Boolean(map['test'])).toBe(true);
 

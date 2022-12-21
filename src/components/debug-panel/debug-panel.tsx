@@ -1,337 +1,222 @@
+import { ReactEventHandler } from "react";
 import styled from "styled-components";
 
-import { DebugOptionGroup, ToggleSwitch, Checkbox } from "../";
-
-import { Color, Font, DropDownStyle } from "../../constants/common";
-
 import {
-  TILE_COLOR_MODES,
-  BOUNDING_VOLUME_COLOR_MODES,
-  BOUNDING_VOLUME_TYPE,
-} from "../../constants/map-styles";
-import { SelectionState } from "../../types";
+  BoundingVolumeColoredBy,
+  BoundingVolumeType,
+  DebugOptions,
+  DebugOptionsAction,
+  DebugOptionsActionKind,
+  ListItemType,
+  SelectionState,
+  TileColoredBy
+} from "../../types";
+import { useAppLayout } from "../../utils/hooks/layout";
+import { CloseButton } from "../close-button/close-button";
+import { Panels, PanelContainer, PanelHeader, Title, PanelHorizontalLine } from "../common"
+import { ListItem } from "../layers-panel/list-item/list-item";
+import { ToggleSwitch } from "../toogle-switch/toggle-switch";
 
-const Container = styled.div<{
-  renderControlPanel: boolean;
-  hasBuildingExplorer: boolean;
-}>`
-  ${Color}
-  ${Font}
+const CloseButtonWrapper = styled.div`
   position: absolute;
+  right: 6px;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+`;
+
+const ToggleOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  z-index: 20;
-  top: ${(props) =>
-    props.renderControlPanel
-      ? props.hasBuildingExplorer
-        ? "310px"
-        : "250px"
-      : "120px"};
-  left: 10px;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
-  padding: 10px 15px 5px 15px;
-  box-sizing: border-box;
-  border-radius: 8px;
-  width: 278px;
-
-  height: ${(props) =>
-    props.renderControlPanel
-      ? props.hasBuildingExplorer
-        ? "calc(100% - 310px)"
-        : "calc(100% - 270px)"
-      : "calc(100% - 120px)"};
-  max-height: 540px;
   overflow-y: auto;
-  overflow-x: hidden;
 `;
 
-const Header = styled.h6`
-  padding: 0;
-  margin: 0 0 12px 0;
-  font-weight: 500;
-  line-height: 15px;
-  text-transform: uppercase;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-`;
-
-const DropDown = styled.select`
-  ${Color}
-  ${Font}
-  ${DropDownStyle}
-  width: 167px;
-  left: 86px;
-  margin: 0;
-`;
-
-const Label = styled.label`
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: bold;
-`;
-
-const Option = styled.h3`
-  ${Color}
-  ${Font}
-  font-weight: 500;
-  width: 70px;
-  margin: 8px 15px 8px 0;
-`;
-
-const DebugTextureContainer = styled.div`
-  padding: 5px;
-  margin-left: 5px;
-  width: 30%;
-
-  &:hover {
-    transition: all 1s;
-    width: 85%;
-  }
-`;
-
-const CheckboxOption = styled.div`
+const ItemContainer = styled.div`
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 246px;
-  padding-bottom: 8px;
+  padding: 10px 20px 10px 0px;
+  margin-bottom: 8px;
 `;
 
-const CheckboxTitle = styled.span`
-  margin-left: 5px;
-  cursor: pointer;
+const NestedItemContainer = styled(ItemContainer)`
+  margin-left: 16px;
 `;
 
-/**
- * TODO: Add types to component
- */
-export const DebugPanel = ({
-  debugOptions,
-  debugTextureImage,
-  renderControlPanel,
-  hasBuildingExplorer,
-  onDebugOptionsChange,
-}: {
-  debugOptions: any;
-  debugTextureImage: string;
-  renderControlPanel: boolean;
-  hasBuildingExplorer: boolean;
-  onDebugOptionsChange: (newDebugOptions: any) => void;
-}) => {
-  const renderBoundingVolumeColor = () => {
-    const { boundingVolumeColorMode } = debugOptions;
+const RadioButtonWrapper = styled.div`
+  margin: 0 16px;
+`;
 
-    return (
-      <CheckboxOption>
-        <Option>Color</Option>
-        <DropDown
-          id="volume-color"
-          value={boundingVolumeColorMode}
-          onChange={(evt) =>
-            onDebugOptionsChange({
-              boundingVolumeColorMode: parseInt(evt.target.value, 10),
-            })
-          }
-        >
-          {Object.keys(BOUNDING_VOLUME_COLOR_MODES).map((key) => {
-            return (
-              <option key={key} value={BOUNDING_VOLUME_COLOR_MODES[key]}>
-                {key}
-              </option>
-            );
-          })}
-        </DropDown>
-      </CheckboxOption>
-    );
-  };
+type DebugPanelProps = {
+  debugOptions: DebugOptions,
+  onChangeOption: React.Dispatch<DebugOptionsAction>,
+  onClose: ReactEventHandler
+};
 
-  const renderBoundingVolumeTypes = () => {
-    const { boundingVolumeType } = debugOptions;
-
-    return (
-      <CheckboxOption>
-        <Option>Type</Option>
-        <DropDown
-          id="volume-type"
-          value={boundingVolumeType}
-          onChange={(evt) =>
-            onDebugOptionsChange({ boundingVolumeType: evt.target.value })
-          }
-        >
-          {Object.keys(BOUNDING_VOLUME_TYPE).map((key) => {
-            const shape = BOUNDING_VOLUME_TYPE[key];
-            return (
-              <option key={key} value={shape}>
-                {key}
-              </option>
-            );
-          })}
-        </DropDown>
-      </CheckboxOption>
-    );
-  };
-
-  const renderBoundingVolume = () => {
-    const { boundingVolume } = debugOptions;
-    return (
-      <DebugOptionGroup>
-        <CheckboxOption>
-          <Label htmlFor="boundingVolume">Bounding Volumes</Label>
-          <ToggleSwitch
-            id="boundingVolume"
-            checked={boundingVolume}
-            onChange={() =>
-              onDebugOptionsChange({ boundingVolume: !boundingVolume })
-            }
-          />
-        </CheckboxOption>
-        {boundingVolume ? renderBoundingVolumeTypes() : null}
-        {boundingVolume ? renderBoundingVolumeColor() : null}
-      </DebugOptionGroup>
-    );
-  };
-
-  const renderDebugTextureImage = () => {
-    return (
-      <DebugTextureContainer>
-        <img src={debugTextureImage} alt="Debug Texture Image" width="100%" />
-      </DebugTextureContainer>
-    );
-  };
-
-  const renderTileOptions = () => {
-    const {
-      tileColorMode,
-      pickable,
-      loadTiles,
-      showUVDebugTexture,
-      wireframe,
-    } = debugOptions;
-
-    return (
-      <DebugOptionGroup>
-        <CheckboxOption>
-          <Label>Tiles</Label>
-        </CheckboxOption>
-        <CheckboxOption>
-          <label>
-            <Checkbox
-              id="loadTiles"
-              checked={loadTiles ? SelectionState.selected : SelectionState.unselected}
-              onChange={() => onDebugOptionsChange({ loadTiles: !loadTiles })}
-            />
-            <CheckboxTitle>Load tiles</CheckboxTitle>
-          </label>
-        </CheckboxOption>
-        <CheckboxOption>
-          <label>
-            <Checkbox
-              id="pickable"
-              checked={pickable ? SelectionState.selected : SelectionState.unselected}
-              onChange={() => onDebugOptionsChange({ pickable: !pickable })}
-            ></Checkbox>
-            <CheckboxTitle>Picking</CheckboxTitle>
-          </label>
-        </CheckboxOption>
-        <CheckboxOption>
-          <label>
-            <Checkbox
-              id="uvDebugTexture"
-              checked={showUVDebugTexture ? SelectionState.selected : SelectionState.unselected}
-              onChange={() =>
-                onDebugOptionsChange({
-                  showUVDebugTexture: !showUVDebugTexture,
-                })
-              }
-            />
-            <CheckboxTitle>Texture UVs</CheckboxTitle>
-          </label>
-        </CheckboxOption>
-        {showUVDebugTexture ? renderDebugTextureImage() : null}
-        <CheckboxOption>
-          <label>
-            <Checkbox
-              id="wireframe"
-              checked={wireframe ? SelectionState.selected : SelectionState.unselected}
-              onChange={() => onDebugOptionsChange({ wireframe: !wireframe })}
-            />
-            <CheckboxTitle>Wireframe</CheckboxTitle>
-          </label>
-        </CheckboxOption>
-        <CheckboxOption>
-          <Option>Color</Option>
-          <DropDown
-            id="color"
-            value={tileColorMode}
-            onChange={(evt) =>
-              onDebugOptionsChange({
-                tileColorMode: parseInt(evt.target.value, 10),
-              })
-            }
-          >
-            {Object.keys(TILE_COLOR_MODES).map((key) => {
-              return (
-                <option key={key} value={TILE_COLOR_MODES[key]}>
-                  {key}
-                </option>
-              );
-            })}
-          </DropDown>
-        </CheckboxOption>
-      </DebugOptionGroup>
-    );
-  };
-
-  const renderMiniMap = () => {
-    const { minimapViewport } = debugOptions;
-
-    return (
-      <CheckboxOption>
-        <label>
-          <Checkbox
-            id="showFrustumCullingMinimapViewport"
-            checked={minimapViewport ? SelectionState.selected : SelectionState.unselected}
-            onChange={() =>
-              onDebugOptionsChange({ minimapViewport: !minimapViewport })
-            }
-          />
-          <CheckboxTitle>Different viewports</CheckboxTitle>
-        </label>
-      </CheckboxOption>
-    );
-  };
-
-  const renderFrustumCullingOption = () => {
-    const { minimap } = debugOptions;
-
-    return (
-      <DebugOptionGroup>
-        <CheckboxOption>
-          <Label htmlFor="showFrustumCullingMinimap">Minimap</Label>
-          <ToggleSwitch
-            id="showFrustumCullingMinimap"
-            checked={minimap}
-            onChange={() => onDebugOptionsChange({ minimap: !minimap })}
-          />
-        </CheckboxOption>
-        {minimap ? renderMiniMap() : null}
-      </DebugOptionGroup>
-    );
-  };
+export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanelProps) => {
+  const layout = useAppLayout();
 
   return (
-    <Container
-      className="debug-panel"
-      renderControlPanel={renderControlPanel}
-      hasBuildingExplorer={hasBuildingExplorer}
-    >
-      <Header>Debug Panel</Header>
-      {renderFrustumCullingOption()}
-      {renderTileOptions()}
-      {renderBoundingVolume()}
-    </Container>
-  );
-};
+    <PanelContainer layout={layout}>
+      <PanelHeader panel={Panels.Debug}>
+        <Title id='debug-panel-title' left={16}>Debug Panel</Title>
+      </PanelHeader>
+      <CloseButtonWrapper>
+        <CloseButton id="debug-panel-close-button" onClick={onClose} />
+      </CloseButtonWrapper>
+      <PanelHorizontalLine top={10} />
+      <ToggleOptionsContainer>
+        <ItemContainer>
+          <Title left={16} id={'toggle-minimap-title'}>Minimap</Title>
+          <ToggleSwitch
+            id={'toggle-minimap'}
+            checked={debugOptions.minimap}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'minimap' }
+            })}
+          />
+        </ItemContainer>
+        {debugOptions.minimap && (
+          <NestedItemContainer>
+            <Title left={16} id={'toggle-different-viewports-title'}>Use different Viewports</Title>
+            <ToggleSwitch
+              id={'toggle-minimap-viewport'}
+              checked={debugOptions.minimapViewport}
+              onChange={() => onChangeOption({
+                type: DebugOptionsActionKind.toggle,
+                payload: { optionName: 'minimapViewport' }
+              })}
+            />
+          </NestedItemContainer>
+        )}
+        <ItemContainer>
+          <Title left={16} id={'toggle-loading-tiles-title'}>Loading Tiles</Title>
+          <ToggleSwitch
+            id={'toggle-loading-tiles'}
+            checked={debugOptions.loadTiles}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'loadTiles' }
+            })}
+          />
+        </ItemContainer>
+        <ItemContainer>
+          <Title left={16} id={'toggle-picking-title'}>Enable picking</Title>
+          <ToggleSwitch
+            id={'toggle-enable-picking'}
+            checked={debugOptions.pickable}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'pickable' }
+            })}
+          />
+        </ItemContainer>
+        <ItemContainer>
+          <Title left={16} id={'toggle-wireframe-title'}>Wireframe mode</Title>
+          <ToggleSwitch
+            id={'toggle-enable-wireframe'}
+            checked={debugOptions.wireframe}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'wireframe' }
+            })}
+          />
+        </ItemContainer>
+        <ItemContainer>
+          <Title left={16} id={'toggle-texture-uv-title'}>Texture UVs</Title>
+          <ToggleSwitch
+            id={'toggle-enable-texture-uvs'}
+            checked={debugOptions.showUVDebugTexture}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'showUVDebugTexture' }
+            })}
+          />
+        </ItemContainer>
+        <Title top={8} left={16} bottom={16} id={'color-section-title'}>Color</Title>
+        <RadioButtonWrapper>
+          {
+            Object.keys(TileColoredBy).map(value => {
+              const selected = debugOptions.tileColorMode === TileColoredBy[value] ? SelectionState.selected : SelectionState.unselected;
+              return (
+                <ListItem
+                  id={`color-section-radio-button-${value}`}
+                  key={value}
+                  title={TileColoredBy[value]}
+                  type={ListItemType.Radio}
+                  selected={selected}
+                  onChange={() => onChangeOption({
+                    type: DebugOptionsActionKind.select,
+                    payload: { optionName: 'tileColorMode', value: TileColoredBy[value] }
+                  })}
+                />
+              )
+            })
+          }
+        </RadioButtonWrapper>
+        <PanelHorizontalLine top={10} />
+        <ItemContainer>
+          <Title left={16} id={'bounding-volumes-section-title'}>Bounding Volumes</Title>
+          <ToggleSwitch
+            id={'toggle-enable-bounding-volumes'}
+            checked={debugOptions.boundingVolume}
+            onChange={() => onChangeOption({
+              type: DebugOptionsActionKind.toggle,
+              payload: { optionName: 'boundingVolume' }
+            })}
+          />
+        </ItemContainer>
+        {debugOptions.boundingVolume && (
+          <>
+            <Title top={8} left={16} bottom={16} id={'bounding-volume-type-title'}>Type</Title>
+            <RadioButtonWrapper>
+              {
+                Object.keys(BoundingVolumeType).map(value => {
+                  const selected = debugOptions.boundingVolumeType === BoundingVolumeType[value]
+                    ? SelectionState.selected
+                    : SelectionState.unselected;
+                  return (
+                    <ListItem
+                      id={`bounding-volume-type-button-${value}`}
+                      key={value}
+                      title={BoundingVolumeType[value]}
+                      type={ListItemType.Radio}
+                      selected={selected}
+                      onChange={() => onChangeOption({
+                        type: DebugOptionsActionKind.select,
+                        payload: { optionName: 'boundingVolumeType', value: BoundingVolumeType[value] }
+                      })}
+                    />
+                  )
+                })
+              }
+            </RadioButtonWrapper>
+            <Title top={8} left={16} bottom={16} id={'bounding-volume-color-title'}>Color</Title>
+            <RadioButtonWrapper>
+              {
+                Object.keys(BoundingVolumeColoredBy).map(value => {
+                  const selected = debugOptions.boundingVolumeColorMode === BoundingVolumeColoredBy[value] ? SelectionState.selected : SelectionState.unselected;
+                  return (
+                    <ListItem
+                      id={`bounding-volume-color-button-${value}`}
+                      key={value}
+                      title={BoundingVolumeColoredBy[value]}
+                      type={ListItemType.Radio}
+                      selected={selected}
+                      onChange={() => onChangeOption({
+                        type: DebugOptionsActionKind.select,
+                        payload: { optionName: 'boundingVolumeColorMode', value: BoundingVolumeColoredBy[value] }
+                      })}
+                    />
+                  )
+                })
+              }
+            </RadioButtonWrapper>
+          </>
+        )}
+      </ToggleOptionsContainer>
+    </PanelContainer>
+  )
+}

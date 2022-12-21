@@ -11,9 +11,15 @@ import {
   BuildingSceneSublayerExtended,
   LayerViewState,
   ListItemType,
+  BoundingVolumeType,
+  DebugOptions,
+  DebugOptionsAction,
+  DebugOptionsActionKind,
+  BoundingVolumeColoredBy,
+  TileColoredBy,
 } from "../../types";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { render } from "react-dom";
 import { HuePicker, MaterialPicker } from "react-color";
 import styled from "styled-components";
@@ -26,16 +32,12 @@ import { StatsWidget } from "@probe.gl/stats-widget";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
 import {
-  INITIAL_TILE_COLOR_MODE,
-  INITIAL_BOUNDING_VOLUME_COLOR_MODE,
-  INITIAL_BOUNDING_VOLUME_TYPE,
   BASE_MAPS,
 } from "../../constants/map-styles";
 import {
-  DebugPanel,
   SemanticValidator,
-  ToolBar,
   TileValidator,
+  DebugPanel
 } from "../../components";
 import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
 import { Color, Font } from "../../constants/common";
@@ -47,9 +49,8 @@ import { TileDetailsPanel } from "../../components/tile-details-panel/tile-detai
 import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
-  COLORED_BY,
   getRGBValueFromColorObject,
-  makeRGBObjectFromColor,
+  makeRGBObjectFromColor
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
@@ -75,8 +76,6 @@ import { useSearchParams } from "react-router-dom";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
-const UV_DEBUG_TEXTURE_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -98,42 +97,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0,
   },
-};
-
-const INITIAL_DEBUG_OPTIONS_STATE = {
-  // Show minimap
-  minimap: true,
-  // Use separate traversal for the minimap viewport
-  minimapViewport: false,
-  // Show bounding volumes
-  boundingVolume: false,
-  // Tile coloring mode selector
-  tileColorMode: INITIAL_TILE_COLOR_MODE,
-  // Bounding volume coloring mode selector
-  boundingVolumeColorMode: INITIAL_BOUNDING_VOLUME_COLOR_MODE,
-  // Bounding volume geometry shape selector
-  boundingVolumeType: INITIAL_BOUNDING_VOLUME_TYPE,
-  // Select tiles with a mouse button
-  pickable: false,
-  // Load tiles after traversal.
-  // Use this to freeze loaded tiles and see on them from different perspective
-  loadTiles: true,
-  // Show the semantic validation warnings window
-  semanticValidator: false,
-  // Use "uv-debug-texture" texture to check UV coordinates
-  showUVDebugTexture: false,
-  // Enable/Disable wireframe mode
-  wireframe: false,
-  // Show statswidget
-  showMemory: false,
-  // Show control panel
-  controlPanel: true,
-  // Show debug panel
-  debugPanel: false,
-  // Show map info
-  showFullInfo: false,
-  // Show building explorer.
-  buildingExplorer: false,
 };
 
 const MATERIAL_PICKER_STYLE = {
@@ -169,7 +132,7 @@ const StatsWidgetContainer = styled.div`
   color: rgba(255, 255, 255, .6);
   z-index: 3;
   top: 70px;
-  right: 10px;
+  left: 10px;
   word-break: break-word;
   padding: 24px;
   border-radius: 8px;
@@ -180,14 +143,72 @@ const StatsWidgetContainer = styled.div`
 `;
 
 const colorMap = new ColorMap();
-/**
- * TODO: Add types to component
- */
+
+const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
+  // Show minimap
+  minimap: true,
+  // Use separate traversal for the minimap viewport
+  minimapViewport: false,
+  // Show bounding volumes
+  boundingVolume: false,
+  // Select tiles with a mouse button
+  pickable: false,
+  // Load tiles after traversal.
+  // Use this to freeze loaded tiles and see on them from different perspective
+  loadTiles: true,
+  // Use "uv-debug-texture" texture to check UV coordinates
+  showUVDebugTexture: false,
+  // Enable/Disable wireframe mode
+  wireframe: false,
+  // Tile coloring mode selector
+  tileColorMode: TileColoredBy.original,
+  // Bounding volume coloring mode selector
+  boundingVolumeColorMode: BoundingVolumeColoredBy.original,
+  // Bounding volume geometry shape selector
+  boundingVolumeType: BoundingVolumeType.mbs,
+};
+
+const debugOptionsReducer = (state: DebugOptions, action: DebugOptionsAction): DebugOptions => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case DebugOptionsActionKind.toggle:
+
+      if (payload) {
+        const option = payload.optionName;
+        return {
+          ...state,
+          [option]: !state[option]
+        }
+      }
+      return {
+        ...state
+      }
+    case DebugOptionsActionKind.select:
+      if (payload) {
+        const option = payload.optionName;
+        return {
+          ...state,
+          [option]: payload.value,
+        };
+      }
+      return {
+        ...state
+      }
+    case DebugOptionsActionKind.reset:
+      return {
+        ...INITIAL_DEBUG_OPTIONS_STATE
+      }
+    default:
+      return state;
+  }
+}
+
 export const DebugApp = () => {
   let statsWidgetContainer = useRef(null);
   const layout = useAppLayout();
 
-  const [debugOptions, setDebugOptions] = useState(INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, dispatchDebugOptions] = useReducer(debugOptionsReducer, INITIAL_DEBUG_OPTIONS_STATE);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -338,8 +359,15 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
+    dispatchDebugOptions({ type: DebugOptionsActionKind.reset });
   }, [activeLayers]);
+
+  useEffect(() => {
+    if (debugOptions.tileColorMode !== TileColoredBy.custom) {
+      setColoredTilesMap({});
+      setSelectedTile(null);
+    }
+  }, [debugOptions.tileColorMode])
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -401,23 +429,6 @@ export const DebugApp = () => {
     );
   };
 
-  const handleSetDebugOptions = (newDebugOptions) => {
-    const updatedDebugOptions = { ...debugOptions, ...newDebugOptions };
-
-    if (updatedDebugOptions.tileColorMode !== COLORED_BY.CUSTOM) {
-      setColoredTilesMap({});
-      setSelectedTile(null);
-    }
-
-    const { debugPanel } = debugOptions;
-    const { debugPanel: newDebugPanel } = updatedDebugOptions;
-
-    if (debugPanel !== newDebugPanel && newDebugPanel) {
-      updatedDebugOptions.buildingExplorer = false;
-    }
-    setDebugOptions(updatedDebugOptions);
-  };
-
   const handleValidateTile = (tile) => {
     const newWarnings = validateTile(tile);
 
@@ -434,36 +445,6 @@ export const DebugApp = () => {
       />
     );
   };
-
-  const renderMemory = () => {
-    const { showMemory } = debugOptions;
-    return (
-      <StatsWidgetWrapper id="stats-widget" showMemory={showMemory}>
-        {renderStats()}
-      </StatsWidgetWrapper>
-    );
-  };
-
-  const renderDebugPanel = () => {
-    const { controlPanel } = debugOptions;
-
-    return (
-      <DebugPanel
-        onDebugOptionsChange={handleSetDebugOptions}
-        debugTextureImage={UV_DEBUG_TEXTURE_URL}
-        debugOptions={debugOptions}
-        renderControlPanel={controlPanel}
-        hasBuildingExplorer={Boolean(sublayers.length)}
-      ></DebugPanel>
-    );
-  };
-
-  const renderToolPanel = () => (
-    <ToolBar
-      onDebugOptionsChange={handleSetDebugOptions}
-      debugOptions={debugOptions}
-    />
-  );
 
   const getTooltip = (info: { object: Tile3D; index: number; layer: any }) => {
     if (!info.object || info.index < 0 || !info.layer) {
@@ -563,7 +544,7 @@ export const DebugApp = () => {
       return null;
     }
 
-    const isShowColorPicker = debugOptions.tileColorMode === COLORED_BY.CUSTOM;
+    const isShowColorPicker = debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
@@ -605,15 +586,6 @@ export const DebugApp = () => {
           </div>
         )}
       </TileDetailsPanel>
-    );
-  };
-
-  const renderSemanticValidator = () => {
-    return (
-      <SemanticValidator
-        warnings={warnings}
-        clearWarnings={handleClearWarnings}
-      />
     );
   };
 
@@ -719,8 +691,6 @@ export const DebugApp = () => {
   };
 
   const {
-    debugPanel,
-    semanticValidator,
     minimap,
     minimapViewport,
     tileColorMode,
@@ -732,13 +702,10 @@ export const DebugApp = () => {
     showUVDebugTexture,
     loadTiles,
   } = debugOptions;
+
   return (
     <MapArea>
-      {renderToolPanel()}
-      {renderMemory()}
-      {debugPanel && renderDebugPanel()}
       {renderTilePanel()}
-      {semanticValidator && renderSemanticValidator()}
       <DeckGlWrapper
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
@@ -747,7 +714,7 @@ export const DebugApp = () => {
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
-        boundingVolumeType={boundingVolume ? boundingVolumeType : ""}
+        boundingVolumeType={boundingVolume ? boundingVolumeType : null}
         boundingVolumeColorMode={boundingVolumeColorMode}
         pickable={pickable}
         wireframe={wireframe}
@@ -773,9 +740,11 @@ export const DebugApp = () => {
       />
       <RightSideToolsPanelWrapper layout={layout}>
         <MainToolsPanel
-          id="debug--tools-panel"
+          id="debug-tools-panel"
           activeButton={activeButton}
           showLayerOptions
+          showDebug
+          showValidator
           onChange={onChangeMainToolsPanelHandler}
         />
       </RightSideToolsPanelWrapper>
@@ -800,6 +769,24 @@ export const DebugApp = () => {
             deleteBaseMap={onDeleteBaseMapHandler}
           />
         </RightSidePanelWrapper>
+      )}
+      {activeButton === ActiveButton.debug && (
+        <RightSidePanelWrapper layout={layout}>
+          <DebugPanel
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
+            debugOptions={debugOptions}
+            onChangeOption={dispatchDebugOptions}
+          />
+        </RightSidePanelWrapper>
+      )}
+      <StatsWidgetWrapper id="stats-widget" showMemory={activeButton === ActiveButton.memory}>
+        {renderStats()}
+      </StatsWidgetWrapper>
+      {activeButton === ActiveButton.validator && (
+        <SemanticValidator
+          warnings={warnings}
+          clearWarnings={handleClearWarnings}
+        />
       )}
     </MapArea>
   );

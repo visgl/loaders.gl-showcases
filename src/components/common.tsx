@@ -9,6 +9,7 @@ export enum Panels {
   ComparisonParams,
   MemoryUsage,
   Bookmarks,
+  Debug
 }
 
 export const MapArea = styled.div`
@@ -175,8 +176,8 @@ export const OptionsIcon = styled.div<{ panel: number }>`
   }
 `;
 
-export const Title = styled.div<{ bottom?: number; left?: number }>`
-  margin: ${({ bottom = 0, left = 0 }) => `0 0 ${bottom}px ${left}px`};
+export const Title = styled.div<{top?: number; bottom?: number; left?: number }>`
+  margin: ${({top = 0, bottom = 0, left = 0 }) => `${top}px 0 ${bottom}px ${left}px`};
   font-style: normal;
   font-weight: 700;
   font-size: 16px;

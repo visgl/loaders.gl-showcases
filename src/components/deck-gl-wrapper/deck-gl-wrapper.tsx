@@ -25,6 +25,9 @@ import {
   ColorsByAttribute,
   LoadOptions,
   TilesetType,
+  BoundingVolumeType,
+  TileColoredBy,
+  BoundingVolumeColoredBy,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -93,15 +96,15 @@ type DeckGlI3sProps = {
   /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
   mapStyle?: string;
   /** Color mode for tiles */
-  tileColorMode?: number;
+  tileColorMode?: TileColoredBy;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
   /** Property for I3SLoaderOptions. Properties for attribute driven visualization */
   colorsByAttribute?: ColorsByAttribute | null;
   /** Bounding volume type: OBB of MBS. Set to "" to hide bounding volumes visualisation */
-  boundingVolumeType?: string;
+  boundingVolumeType?: BoundingVolumeType | null;
   /** Bounding volume color mode */
-  boundingVolumeColorMode?: number;
+  boundingVolumeColorMode?: BoundingVolumeColoredBy;
   /** Allows layers picking to handle mouse events */
   pickable?: boolean;
   /** Show wireframe representation of layers */
@@ -182,7 +185,7 @@ export const DeckGlWrapper = ({
   tileColorMode,
   coloredTilesMap,
   colorsByAttribute,
-  boundingVolumeType = "",
+  boundingVolumeType,
   boundingVolumeColorMode,
   pickable = false,
   wireframe,
@@ -215,7 +218,7 @@ export const DeckGlWrapper = ({
   onTilesetLoad,
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onTileUnload = () => {},
+  onTileUnload = () => { },
 }: DeckGlI3sProps) => {
   const VIEWS = useMemo(
     () => [
@@ -239,11 +242,11 @@ export const DeckGlWrapper = ({
         controller: disableController
           ? false
           : {
-              maxZoom: 9,
-              minZoom: 9,
-              dragRotate: false,
-              keyboard: false,
-            },
+            maxZoom: 9,
+            minZoom: 9,
+            dragRotate: false,
+            keyboard: false,
+          },
       }),
     ],
     [disableController]
@@ -351,7 +354,7 @@ export const DeckGlWrapper = ({
     }
     let elevation =
       cameraTerrainElevation === null ||
-      viewportCenterTerrainElevation > cameraTerrainElevation
+        viewportCenterTerrainElevation > cameraTerrainElevation
         ? viewportCenterTerrainElevation
         : cameraTerrainElevation;
     if (!interactionState.isZooming) {
@@ -430,7 +433,7 @@ export const DeckGlWrapper = ({
 
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
       const [pLongitude, pLatitude] = getLonLatWithElevationOffset(zmin, pitch, bearing, longitude, latitude, viewport);
-    
+
       const newViewState = {
         main: {
           ...viewState.main,
@@ -497,7 +500,7 @@ export const DeckGlWrapper = ({
   };
 
   const getBoundingVolumeColor = (tile) => {
-    const color = colorMap.getColor(tile, {
+    const color = colorMap.getBoundingVolumeColor(tile, {
       coloredBy: boundingVolumeColorMode,
     });
 
@@ -505,7 +508,7 @@ export const DeckGlWrapper = ({
   };
 
   const getMeshColor = (tile) => {
-    const result = colorMap.getColor(tile, {
+    const result = colorMap.getTileColor(tile, {
       coloredBy: tileColorMode,
       selectedTileId: selectedTile?.id,
       coloredTilesMap,
@@ -515,7 +518,7 @@ export const DeckGlWrapper = ({
   };
 
   const renderBoundingVolumeLayer = () => {
-    if (boundingVolumeType === "") {
+    if (!boundingVolumeType) {
       return null;
     }
     const tiles = getAllTilesFromTilesets(loadedTilesets);
@@ -629,8 +632,8 @@ export const DeckGlWrapper = ({
       highlightedObjectIndex: autoHighlight
         ? undefined
         : layer.url === selectedTilesetBasePath
-        ? selectedIndex
-        : -1,
+          ? selectedIndex
+          : -1,
     });
   };
 
@@ -730,13 +733,13 @@ export const DeckGlWrapper = ({
         disableController
           ? false
           : {
-              type: MapController,
-              maxPitch: 60,
-              inertia: true,
-              scrollZoom: { speed: 0.01, smooth: true },
-              touchRotate: true,
-              dragMode,
-            }
+            type: MapController,
+            maxPitch: 60,
+            inertia: true,
+            scrollZoom: { speed: 0.01, smooth: true },
+            touchRotate: true,
+            dragMode,
+          }
       }
       glOptions={{
         preserveDrawingBuffer: true,

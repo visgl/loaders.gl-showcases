@@ -36,7 +36,14 @@ export enum ActiveButton {
   settings,
   memory,
   bookmarks,
+  debug,
+  validator,
   none,
+}
+
+export enum BoundingVolumeType {
+  mbs = 'MBS',
+  obb = 'OBB'
 }
 
 export enum ActionButtonVariant {
@@ -279,3 +286,39 @@ export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
   token?: string;
   type?: TilesetType;
 };
+
+export enum TileColoredBy {
+  original = 'Original',
+  random = 'Random by tile',
+  depth = 'By depth',
+  custom = 'User selected',
+}
+
+export enum BoundingVolumeColoredBy {
+  original = 'Original',
+  tile = 'By tile',
+}
+
+export enum DebugOptionsActionKind {
+  toggle,
+  select,
+  reset
+}
+
+export type DebugOptions = {
+  minimap: boolean;
+  minimapViewport: boolean;
+  boundingVolume: boolean;
+  tileColorMode: TileColoredBy;
+  boundingVolumeColorMode: BoundingVolumeColoredBy;
+  boundingVolumeType: BoundingVolumeType;
+  pickable: boolean;
+  loadTiles: boolean;
+  showUVDebugTexture: boolean;
+  wireframe: boolean;
+}
+
+export type DebugOptionsAction = {
+  type: DebugOptionsActionKind;
+  payload?: { optionName: keyof DebugOptions, value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType };
+}

@@ -1,10 +1,4 @@
-export const COLORED_BY = {
-  ORIGINAL: 0,
-  RANDOM: 1,
-  DEPTH: 2,
-  CUSTOM: 3,
-  TILE: 4,
-};
+import { BoundingVolumeColoredBy, TileColoredBy } from "../../types";
 
 export const DEPTH_COLOR_MAP = {
   1: [72, 149, 239],
@@ -35,20 +29,34 @@ export default class ColorMap {
   }
 
   /**
-   * Returns color in RGB format depends on coloredBy param.
+   * Returns tile color in RGB format depends on coloredBy param.
    * @param {object} tile
    * @param {object} options
    */
-  getColor(tile, options) {
+  getTileColor(tile, options) {
     switch (options.coloredBy) {
-      case COLORED_BY.RANDOM:
+      case TileColoredBy.random:
         return this._getRandomColor(tile.id);
-      case COLORED_BY.DEPTH:
+      case TileColoredBy.depth:
         return this._getColorByDepth(tile.id, tile.depth);
-      case COLORED_BY.TILE:
-        return this._getColorByTile(tile.id);
-      case COLORED_BY.CUSTOM:
+      case TileColoredBy.custom:
         return this._getCustomColor(tile.id, options);
+      default:
+        return this._getDefaultColor(tile.id)
+    }
+  }
+
+  /**
+  * Returns bounding volume color in RGB format depends on coloredBy param.
+  * @param {object} tile
+  * @param {object} options
+  */
+  getBoundingVolumeColor(tile, options) {
+    switch (options.coloredBy) {
+      case BoundingVolumeColoredBy.tile:
+        return this._getColorByTile(tile.id);
+      case BoundingVolumeColoredBy.original:
+        return this._getDefaultColor(tile.id);
       default:
         return this._getDefaultColor(tile.id)
     }

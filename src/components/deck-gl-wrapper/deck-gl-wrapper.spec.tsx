@@ -66,8 +66,13 @@ const imageStubObject = { width: 1024, height: 1024, data: new ArrayBuffer(0) };
 );
 const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
-  .spyOn(ColorMap.prototype, "getColor")
+  .spyOn(ColorMap.prototype, "getTileColor")
   .mockImplementation(() => [100, 150, 200]);
+
+const getBoundingVolumeColorMock = jest
+  .spyOn(ColorMap.prototype, "getBoundingVolumeColor")
+  .mockImplementation(() => [100, 150, 200]);
+
 const controllerExpected = {
   type: MapController,
   maxPitch: 60,
@@ -507,17 +512,17 @@ describe("Deck.gl I3S map component", () => {
     it("Should call getBoundingVolumeColor", () => {
       callRender(render, {
         boundingVolumeType: "OBB",
-        boundingVolumeColorMode: 5,
+        boundingVolumeColorMode: 'tile',
       });
       const { getBoundingVolumeColor } = (
         BoundingVolumeLayer as unknown as jest.Mock<BoundingVolumeLayer>
       ).mock.calls[0][0];
       getBoundingVolumeColor({ id: "custom-tile" });
-      expect(getColorMock).toHaveBeenCalledWith(
+      expect(getBoundingVolumeColorMock).toHaveBeenCalledWith(
         {
           id: "custom-tile",
         },
-        { coloredBy: 5 }
+        { coloredBy: 'tile' }
       );
     });
   });
