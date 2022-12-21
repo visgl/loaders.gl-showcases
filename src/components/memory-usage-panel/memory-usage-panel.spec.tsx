@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
-import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
+import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { MemoryUsagePanel } from "./memory-usage-panel";
 
 Object.assign(window.navigator, {
@@ -172,6 +172,26 @@ describe("MemoryUsagePanel", () => {
     );
     const tilesetTitle = screen.getByText('San Francisco');
     expect(tilesetTitle).toBeInTheDocument();
+  });
+
+  it("Should not show loading time if it is not provided", () => {
+    renderWithTheme(
+      <MemoryUsagePanel
+        id="test-memory-usage-panel"
+        memoryStats={memoryStats}
+        tilesetStats={tilesetStats}
+        updateNumber={1}
+        onClose={onClose}
+        activeLayers={[{
+          id: 'active-layer-id',
+          name: 'San Francisco',
+          url: 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0'
+        }]}
+      />,
+      rerenderFunc
+    );
+    const tilesetTitle = screen.queryByText('Loading time');
+    expect(tilesetTitle).not.toBeInTheDocument();
   });
 
   it("Should copy to clipboard", () => {

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
-import styled from "styled-components";
 import { load } from "@loaders.gl/core";
 import { lumaStats } from "@luma.gl/core";
 import {
@@ -8,17 +7,13 @@ import {
   loadFeatureAttributes,
   StatisticsInfo,
 } from "@loaders.gl/i3s";
-import { StatsWidget } from "@probe.gl/stats-widget";
+import { Stats } from "@probe.gl/stats";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { Tileset3D } from "@loaders.gl/tiles";
-import {
-  color_brand_primary,
-  color_canvas_primary_inverted,
-} from "../../constants/colors";
 
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
@@ -56,6 +51,8 @@ import {
 } from "../../utils/layer-utils";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
+import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
+import { IS_LOADED_DELAY } from "../../constants/common";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -72,43 +69,8 @@ const INITIAL_VIEW_STATE = {
   },
 };
 
-const StatsWidgetWrapper = styled.div<{ showMemory: boolean }>`
-  display: flex;
-`;
-
-const StatsWidgetContainer = styled.div<{
-  showBuildingExplorer: boolean;
-  hasSublayers: boolean;
-}>`
-  display: ${(props) => (props.showBuildingExplorer ? "none" : "flex")};
-  flex-direction: column;
-  align-items: flex-start;
-  position: absolute;
-  top: ${(props) => (props.hasSublayers ? "260px" : "200px")};
-  background: ${color_brand_primary};
-  color: ${color_canvas_primary_inverted};
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 19px;
-  letter-spacing: 0em;
-  text-align: left;
-  color: rgba(255, 255, 255, 0.6);
-  z-index: 3;
-  bottom: 15px;
-  word-break: break-word;
-  padding: 24px;
-  border-radius: 8px;
-  line-height: 135%;
-  bottom: auto;
-  width: 277px;
-  left: 10px;
-  max-height: calc(100% - 280px);
-  overflow: auto;
-`;
-
 export const ViewerApp = () => {
-  let statsWidgetContainer = useRef(null);
+  const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
@@ -126,9 +88,8 @@ export const ViewerApp = () => {
     BuildingSceneSublayerExtended[]
   >([]);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
-  const [memWidget, setMemWidget] = useState<StatsWidget | null>(null);
-  const [tilesetStatsWidget, setTilesetStatsWidget] =
-    useState<StatsWidget | null>(null);
+  const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
+  const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const [loadedTilesets, setLoadedTilesets] = useState<Tileset3D[]>([]);
 
   const [activeButton, setActiveButton] = useState<ActiveButton>(
@@ -167,29 +128,6 @@ export const ViewerApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
-    const memoryUsage = lumaStats.get("Memory Usage");
-    const memWidget = new StatsWidget(memoryUsage, {
-      framesPerUpdate: 1,
-      formatters: {
-        "GPU Memory": "memory",
-        "Buffer Memory": "memory",
-        "Renderbuffer Memory": "memory",
-        "Texture Memory": "memory",
-      },
-      // @ts-expect-error - Type 'MutableRefObject<null>' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, dir, and 275 more.
-      container: statsWidgetContainer,
-    });
-
-    setMemWidget(memWidget);
-
-    // @ts-expect-error - Argument of type 'null' is not assignable to parameter of type 'Stats'.
-    const tilesetStatsWidget = new StatsWidget(null, {
-      container: statsWidgetContainer,
-      formatters: {
-        "Tile Memory Use": "memory",
-      },
-    });
-    setTilesetStatsWidget(tilesetStatsWidget);
   }, []);
 
   /**
@@ -197,8 +135,6 @@ export const ViewerApp = () => {
    */
   useEffect(() => {
     const tilesetsStats = initStats(activeLayers[0]?.url);
-
-    tilesetStatsWidget && tilesetStatsWidget.setStats(tilesetsStats);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
 
@@ -301,14 +237,10 @@ export const ViewerApp = () => {
     }
   };
 
-  /**
-   * Updates stats, called every frame
-   */
-  const updateStatWidgets = () => {
-    memWidget && memWidget.update();
-
-    sumTilesetsStats(loadedTilesets, tilesetsStats);
-    tilesetStatsWidget && tilesetStatsWidget.update();
+  const onTileLoad = () => {
+    setTimeout(() => {
+      setUpdateStatsNumber((prev) => prev + 1);
+    }, IS_LOADED_DELAY);
   };
 
   const onTilesetLoad = (tileset: Tileset3D) => {
@@ -316,6 +248,8 @@ export const ViewerApp = () => {
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(tileset, prevExamples)
     );
+    tilesetRef.current = tileset;
+    setUpdateStatsNumber((prev) => prev + 1);
   };
 
   const isLayerPickable = () => {
@@ -360,19 +294,6 @@ export const ViewerApp = () => {
     setSelectedTilesetBasePath(selectedTilesetBasePath);
   };
 
-  const renderStats = () => {
-    // TODO - too verbose, get more default styling from stats widget?
-    return (
-      <StatsWidgetContainer
-        id="stats-panel"
-        hasSublayers={Boolean(sublayers.length)}
-        showBuildingExplorer={false}
-        // @ts-expect-error - Type 'HTMLDivElement | null' is not assignable to type 'MutableRefObject<null>'.
-        ref={(_) => (statsWidgetContainer = _)}
-      />
-    );
-  };
-
   const getTooltip = () => {
     if (isAttributesLoading) {
       // eslint-disable-next-line no-undef
@@ -400,10 +321,6 @@ export const ViewerApp = () => {
       onColorsByAttributeChange={setColorsByAttribute}
     />
   );
-
-  const renderMemory = () => {
-    return <StatsWidgetWrapper showMemory>{renderStats()}</StatsWidgetWrapper>;
-  };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
     setActiveButton((prevValue) =>
@@ -501,10 +418,18 @@ export const ViewerApp = () => {
     setViewState(viewStateSet);
   };
 
+  const onWebGLInitialized = () => {
+    const stats = lumaStats.get('Memory Usage');
+    setMemoryStats(stats);
+  };
+
+  const handleOnAfterRender = () => {
+    sumTilesetsStats(loadedTilesets, tilesetsStats);
+  };
+
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
-      {renderMemory()}
       <DeckGlWrapper
         parentViewState={{
           ...viewState,
@@ -521,13 +446,13 @@ export const ViewerApp = () => {
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
         colorsByAttribute={colorsByAttribute}
-        onAfterRender={() => updateStatWidgets()}
+        onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
         onViewStateChange={onViewStateChangeHandler}
         onTilesetLoad={onTilesetLoad}
-        onTileLoad={() => updateStatWidgets()}
-        onTileUnload={() => updateStatWidgets()}
+        onTileLoad={onTileLoad}
+        onWebGLInitialized={onWebGLInitialized}
       />
       <RightSideToolsPanelWrapper layout={layout}>
         <MainToolsPanel
@@ -556,6 +481,21 @@ export const ViewerApp = () => {
             insertBaseMap={onInsertBaseMapHandler}
             selectBaseMap={onSelectBaseMapHandler}
             deleteBaseMap={onDeleteBaseMapHandler}
+          />
+        </RightSidePanelWrapper>
+      )}
+      {activeButton === ActiveButton.memory && (
+        <RightSidePanelWrapper layout={layout}>
+          <MemoryUsagePanel
+            id={'viewer-memory-usage-panel'}
+            memoryStats={memoryStats}
+            activeLayers={activeLayers}
+            tilesetStats={tilesetsStats}
+            contentFormats={tilesetRef.current?.contentFormats}
+            updateNumber={updateStatsNumber}
+            onClose={() =>
+              onChangeMainToolsPanelHandler(ActiveButton.memory)
+            }
           />
         </RightSidePanelWrapper>
       )}

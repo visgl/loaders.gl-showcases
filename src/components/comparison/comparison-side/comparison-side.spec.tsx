@@ -15,14 +15,14 @@ import { ComparisonParamsPanel } from "../comparison-params-panel/comparison-par
 import { LayersPanel } from "../../layers-panel/layers-panel";
 import { ComparisonSide } from "./comparison-side";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
-import { MemoryUsagePanel } from "../memory-usage-panel/memory-usage-panel";
+import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../../layers-panel/layers-panel");
 jest.mock("../comparison-params-panel/comparison-params-panel");
-jest.mock("../memory-usage-panel/memory-usage-panel");
+jest.mock("../../memory-usage-panel/memory-usage-panel");
 jest.mock("../../../utils/url-utils");
 jest.mock("../../../utils/sublayers");
 jest.mock("../../../constants/i3s-examples", () => ({

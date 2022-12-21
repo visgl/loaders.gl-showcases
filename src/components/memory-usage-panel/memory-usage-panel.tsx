@@ -7,15 +7,15 @@ import {
   PanelHorizontalLine,
   Panels,
   Title,
-} from "../../common";
-import { CloseButton } from "../../close-button/close-button";
-import { ExpandIcon } from "../../expand-icon/expand-icon";
-import { ExpandState, CollapseDirection, ContentFormats, LayerExample } from "../../../types";
-import LinkIcon from "../../../../public/icons/link.svg";
-import { useExpand } from "../../../utils/hooks/use-expand";
-import { useAppLayout } from "../../../utils/hooks/layout";
-import { formatMemory } from "../../../utils/format/format-memory";
-import { formatBoolean } from "../../../utils/format/format-utils";
+} from "../common";
+import { CloseButton } from "../close-button/close-button";
+import { ExpandIcon } from "../expand-icon/expand-icon";
+import { ExpandState, CollapseDirection, ContentFormats, LayerExample } from "../../types";
+import LinkIcon from "../../../public/icons/link.svg";
+import { useExpand } from "../../utils/hooks/use-expand";
+import { useAppLayout } from "../../utils/hooks/layout";
+import { formatMemory } from "../../utils/format/format-memory";
+import { formatBoolean } from "../../utils/format/format-utils";
 
 const contentFormatsMap = {
   draco: "Draco",
@@ -63,7 +63,7 @@ type MemoryUsageProps = {
   activeLayers: LayerExample[];
   tilesetStats?: Stats | null;
   contentFormats?: ContentFormats | null;
-  loadingTime: number;
+  loadingTime?: number;
   updateNumber: number;
   onClose: () => void;
 };
@@ -105,11 +105,12 @@ export const MemoryUsagePanel = ({
       <PanelHorizontalLine top={0} />
 
       <PanelContent>
-        <StatTimeContainer>
-          <StatTitle>Loading time: </StatTitle>
-          <Title left={6}>{`${loadingTime} ms`}</Title>
-        </StatTimeContainer>
-
+        {loadingTime !== undefined && (
+          <StatTimeContainer>
+            <StatTitle>Loading time: </StatTitle>
+            <Title left={6}>{`${loadingTime} ms`}</Title>
+          </StatTimeContainer>
+        )}
         {memoryStats && (
           <StatSection>
             <Title bottom={12}>Memory Usage</Title>
