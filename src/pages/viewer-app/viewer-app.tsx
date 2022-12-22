@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { load } from "@loaders.gl/core";
 import { lumaStats } from "@luma.gl/core";
@@ -18,9 +18,7 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import {
-  parseTilesetUrlParams,
-} from "../../utils/url-utils";
+import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import {
   FeatureAttributes,
@@ -34,6 +32,7 @@ import {
   ListItemType,
   BaseMap,
   BuildingSceneSublayerExtended,
+  DragMode,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -53,6 +52,7 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { IS_LOADED_DELAY } from "../../constants/common";
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -102,6 +102,7 @@ export const ViewerApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
+  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -365,21 +366,22 @@ export const ViewerApp = () => {
     );
   };
 
-  const pointToTileset = (layerViewState?: LayerViewState) => {
+  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
     if (layerViewState) {
-      const { zoom, longitude, latitude } = layerViewState;
-
-      setViewState({
-        main: {
-          ...viewState.main,
-          zoom: zoom + 2.5,
-          longitude,
-          latitude,
-          transitionDuration: 1000,
-        },
+      setViewState((viewStatePrev) => {
+        const { zoom, longitude, latitude } = layerViewState;
+        return {
+          main: {
+            ...viewStatePrev.main,
+            zoom: zoom + 2.5,
+            longitude,
+            latitude,
+            transitionDuration: 1000,
+          },
+        };
       });
     }
-  };
+  }, []);
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -419,13 +421,62 @@ export const ViewerApp = () => {
   };
 
   const onWebGLInitialized = () => {
-    const stats = lumaStats.get('Memory Usage');
+    const stats = lumaStats.get("Memory Usage");
     setMemoryStats(stats);
   };
 
   const handleOnAfterRender = () => {
     sumTilesetsStats(loadedTilesets, tilesetsStats);
   };
+
+  const onZoomIn = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, maxZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === maxZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
+    });
+  }, []);
+
+  const onZoomOut = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, minZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === minZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
+    });
+  }, []);
+
+  const onCompassClick = useCallback(() => {
+    setViewState((viewStatePrev) => ({
+      main: {
+        ...viewStatePrev.main,
+        bearing: 0,
+        transitionDuration: 1000,
+      },
+    }));
+  }, []);
+
+  const toggleDragMode = useCallback(() => {
+    setDragMode((prev) => {
+      if (prev === DragMode.pan) {
+        return DragMode.rotate;
+      }
+      return DragMode.pan;
+    });
+  }, []);
 
   return (
     <MapArea>
@@ -487,18 +538,24 @@ export const ViewerApp = () => {
       {activeButton === ActiveButton.memory && (
         <RightSidePanelWrapper layout={layout}>
           <MemoryUsagePanel
-            id={'viewer-memory-usage-panel'}
+            id={"viewer-memory-usage-panel"}
             memoryStats={memoryStats}
             activeLayers={activeLayers}
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() =>
-              onChangeMainToolsPanelHandler(ActiveButton.memory)
-            }
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
           />
         </RightSidePanelWrapper>
       )}
+      <MapControllPanel
+        bearing={viewState.main.bearing}
+        dragMode={dragMode}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onCompassClick={onCompassClick}
+        onDragModeToggle={toggleDragMode}
+      />
     </MapArea>
   );
 };
