@@ -152,7 +152,6 @@ export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   })};
 `;
 
-
 export const ComparisonRightSidePanelWrapper = styled(RightSidePanelWrapper)`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
