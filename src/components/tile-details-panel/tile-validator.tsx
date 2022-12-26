@@ -1,80 +1,38 @@
 import type { Tile3D } from "@loaders.gl/tiles";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Checkbox } from "../";
-import { color_canvas_primary_inverted } from "../../constants/colors";
-import { SelectionState } from "../../types";
+import { color_brand_tertiary } from "../../constants/colors";
 import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
+import { Title } from "../common";
+import ChevronIcon from "../../../public/icons/chevron.svg";
 
-const TileValidatorContainer = styled.div`
+const ValidateButton = styled.div`
   display: flex;
-  flex-direction: column;
-  flex: 1 0;
-  font-size: 14px;
-`;
-
-const ValidateButton = styled.button`
-  display: flex;
-  padding: 4px 16px;
-  background: #4f52cc;
-  color: ${color_canvas_primary_inverted};
   align-items: center;
-  height: 20px;
-  justify-content: center;
-  width: 120px;
-  border: none;
-  font-weight: bold;
+  justify-content: space-between;
+  height: 48px;
   cursor: pointer;
-  margin-bottom: 5px;
-  border-radius: 4px;
+  margin: 16px;
+  padding: 0 16px;
+  background: ${({ theme }) => theme.colors.mainAttibuteItemColor};
+  border-radius: 8px;
 `;
 
-const NormalsValidator = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-flow: column nowrap;
+const ValidatorTitle = styled(Title)`
+  color: ${color_brand_tertiary};
+`;
+
+const ArrowContainer = styled.div`
+  transform: rotate(-180deg);
+  fill: ${color_brand_tertiary};
 `;
 
 const ValidatorInfoList = styled.div`
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-`;
-
-const GapInput = styled.input`
-  max-width: 50px;
-  margin: 0 10px;
-  background: #1d2335;
-  color: ${color_canvas_primary_inverted};
-  font-weight: bold;
-  text-align: center;
-  border-radius: 4px;
-  cursor: ${(props) => (props.disabled ? "auto" : "pointer")};
-  border: none;
-  padding: 5px;
-`;
-
-const NormalsControl = styled.div`
-  width: 100%;
-  display flex;
-  align-items: center;
-  margin: 10px 0 10px 0;
-  white-space: nowrap;
-`;
-
-const NoNormalsInfo = styled.span`
-  display: flex;
-  align-self: flex-start;
-  margin: 5px;
-  color: #ff0047;
-`;
-
-const CheckboxTitle = styled.span`
-  margin-left: 5px;
-  cursor: pointer;
 `;
 
 const VALIDATE_TILE = "Validate Tile";
@@ -94,32 +52,12 @@ type ITriangleMessage = {
 
 type TileValidatorProps = {
   tile: Tile3D;
-  handleShowNormals: (tile: Tile3D) => void;
-  showNormals: boolean;
-  trianglesPercentage: number;
-  normalsLength: number;
-  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
-  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
 };
 
 /**
  * TODO: Add types to component
  */
-export const TileValidator = ({
-  tile,
-  handleShowNormals,
-  showNormals,
-  trianglesPercentage,
-  normalsLength,
-  handleChangeTrianglesPercentage,
-  handleChangeNormalsLength,
-}: TileValidatorProps) => {
-  useEffect(() => {
-    setGeometryInfo(null);
-    setTriangleMessages(null);
-    setBoundingVolumeInfo(null);
-  }, [tile.id]);
-
+export const TileValidator = ({ tile }: TileValidatorProps) => {
   const [geometryInfo, setGeometryInfo] = useState<IGeometryInfo | null>(null);
   const [triangleMessages, setTriangleMessages] = useState<
     ITriangleMessage[] | null
@@ -127,13 +65,19 @@ export const TileValidator = ({
   const [boundingVolumeInfo, setBoundingVolumeInfo] =
     useState<IGeometryInfo | null>(null);
 
-  const onValidateTile = (tile) => {
+  const onValidateTile = (tile: Tile3D) => {
     validateGeometryInsideBoundingVolume(tile);
     validateGeometryVsTexture(tile);
     compareGeometryBoundingVolumeVsTileBoundingVolume(tile);
   };
 
-  const validateGeometryInsideBoundingVolume = (tile) => {
+  useEffect(() => {
+    setGeometryInfo(null);
+    setTriangleMessages(null);
+    setBoundingVolumeInfo(null);
+  }, [tile.id]);
+
+  const validateGeometryInsideBoundingVolume = (tile: Tile3D) => {
     try {
       const result = isTileGeometryInsideBoundingVolume(tile);
 
@@ -153,7 +97,7 @@ export const TileValidator = ({
     }
   };
 
-  const validateGeometryVsTexture = (tile) => {
+  const validateGeometryVsTexture = (tile: Tile3D) => {
     const triangleMetrics = getGeometryVsTextureMetrics(tile);
 
     if (!triangleMetrics) {
@@ -240,7 +184,7 @@ export const TileValidator = ({
     setTriangleMessages(newTriangleMessages);
   };
 
-  const compareGeometryBoundingVolumeVsTileBoundingVolume = (tile) => {
+  const compareGeometryBoundingVolumeVsTileBoundingVolume = (tile: Tile3D) => {
     try {
       const result = isGeometryBoundingVolumeMoreSuitable(tile);
 
@@ -265,12 +209,6 @@ export const TileValidator = ({
     return {
       color: type === WARNING_TYPE ? "#FF0047" : "#01DC69",
       marginTop: "5px",
-    };
-  };
-
-  const getCheckboxStyle = (isTileHasNormals) => {
-    return {
-      cursor: isTileHasNormals ? "pointer" : "auto",
     };
   };
 
@@ -305,72 +243,19 @@ export const TileValidator = ({
     );
   };
 
-  const renderNormalsValidationControl = () => {
-    const isTileHasNormals =
-      tile &&
-      tile.content &&
-      tile.content.attributes &&
-      tile.content.attributes.normals;
-    return (
-      <NormalsValidator>
-        {!isTileHasNormals && (
-          <NoNormalsInfo>{"Tile has no normals"}</NoNormalsInfo>
-        )}
-        <NormalsControl>
-          <label
-            style={getCheckboxStyle(isTileHasNormals)}
-            htmlFor="normals-checkbox"
-          >
-            <Checkbox
-              id="normals-checkbox"
-              checked={showNormals ? SelectionState.selected : SelectionState.unselected}
-              onChange={() => handleShowNormals(tile)}
-            ></Checkbox>
-            <CheckboxTitle>Show Normals</CheckboxTitle>
-          </label>
-        </NormalsControl>
-        <NormalsControl>
-          <span>Percent</span>
-          <GapInput
-            type="number"
-            min="1"
-            max="100"
-            value={trianglesPercentage}
-            disabled={!isTileHasNormals}
-            onChange={(event) =>
-              handleChangeTrianglesPercentage(tile, Number(event.target.value))
-            }
-          />
-          <span>% triangles with normals</span>
-        </NormalsControl>
-        <NormalsControl>
-          <span>Normals length</span>
-          <GapInput
-            type="number"
-            min="1"
-            value={normalsLength}
-            disabled={!isTileHasNormals}
-            onChange={(event) =>
-              handleChangeNormalsLength(tile, Number(event.target.value))
-            }
-          />
-          <span>m</span>
-        </NormalsControl>
-      </NormalsValidator>
-    );
-  };
-
   return (
-    <TileValidatorContainer>
-      {renderNormalsValidationControl()}
+    <>
       <ValidateButton onClick={() => onValidateTile(tile)}>
-        {VALIDATE_TILE}
+        <ValidatorTitle>{VALIDATE_TILE}</ValidatorTitle>
+        <ArrowContainer>
+          <ChevronIcon />
+        </ArrowContainer>
       </ValidateButton>
       <ValidatorInfoList>
         {renderGeometryMetrics()}
         {renderBoundingVolumesMetrics()}
         {renderTriangleMetrics()}
       </ValidatorInfoList>
-    </TileValidatorContainer>
+    </>
   );
 };
