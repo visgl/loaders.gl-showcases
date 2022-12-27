@@ -68,6 +68,12 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { Normals } from "../../components/tile-details-panel/normals";
+import { ValidateTilePanel } from "../../components/tile-details-panel/validate-tile-panel";
+
+enum ActiveTileInfoPanel {
+  TileDetailsPanel,
+  ValidateTilePanel,
+}
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -212,6 +218,8 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
+  const [activeTileInfoPanel, setActiveTileInfoPanel] =
+    useState<ActiveTileInfoPanel>(ActiveTileInfoPanel.TileDetailsPanel);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -236,6 +244,10 @@ export const DebugApp = () => {
     }
     setActiveLayers([newActiveLayer]);
   }, []);
+
+  useEffect(() => {
+    setActiveTileInfoPanel(ActiveTileInfoPanel.TileDetailsPanel);
+  }, [selectedTile]);
 
   /**
    * Hook for start using tilesets stats.
@@ -486,39 +498,57 @@ export const DebugApp = () => {
     const title = `Tile Info: ${selectedTile.id}`;
 
     return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <TileValidator tile={selectedTile} />
-        <TileMetadata tile={selectedTile} />
-        <Normals
-          tile={selectedTile}
-          showNormals={Boolean(normalsDebugData)}
-          trianglesPercentage={trianglesPercentage}
-          normalsLength={normalsLength}
-          handleShowNormals={handleShowNormals}
-          handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-          handleChangeNormalsLength={handleChangeNormalsLength}
-        />
-        {isShowColorPicker && (
-          <div style={CURSOR_STYLE}>
-            <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
-            <HuePicker
-              width={"auto"}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
+      <TileDetailsPanel
+        isValidatePanel={
+          activeTileInfoPanel === ActiveTileInfoPanel.ValidateTilePanel
+        }
+        title={title}
+        handleClosePanel={handleClosePanel}
+        onBackClick={() =>
+          setActiveTileInfoPanel(ActiveTileInfoPanel.TileDetailsPanel)
+        }
+        onValidateClick={() =>
+          setActiveTileInfoPanel(ActiveTileInfoPanel.ValidateTilePanel)
+        }
+      >
+        {activeTileInfoPanel === ActiveTileInfoPanel.TileDetailsPanel && (
+          <>
+            <TileMetadata tile={selectedTile} />
+            <Normals
+              tile={selectedTile}
+              showNormals={Boolean(normalsDebugData)}
+              trianglesPercentage={trianglesPercentage}
+              normalsLength={normalsLength}
+              handleShowNormals={handleShowNormals}
+              handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
+              handleChangeNormalsLength={handleChangeNormalsLength}
             />
-            <MaterialPicker
-              styles={MATERIAL_PICKER_STYLE}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
-            />
-            <button
-              disabled={isResetButtonDisabled}
-              style={getResetButtonStyle(isResetButtonDisabled)}
-              onClick={() => handleResetColor(tileId)}
-            >
-              Reset
-            </button>
-          </div>
+            {isShowColorPicker && (
+              <div style={CURSOR_STYLE}>
+                <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
+                <HuePicker
+                  width={"auto"}
+                  color={tileSelectedColor}
+                  onChange={(color) => handleSelectTileColor(tileId, color)}
+                />
+                <MaterialPicker
+                  styles={MATERIAL_PICKER_STYLE}
+                  color={tileSelectedColor}
+                  onChange={(color) => handleSelectTileColor(tileId, color)}
+                />
+                <button
+                  disabled={isResetButtonDisabled}
+                  style={getResetButtonStyle(isResetButtonDisabled)}
+                  onClick={() => handleResetColor(tileId)}
+                >
+                  Reset
+                </button>
+              </div>
+            )}
+          </>
+        )}
+        {activeTileInfoPanel === ActiveTileInfoPanel.ValidateTilePanel && (
+          <ValidateTilePanel tile={selectedTile} />
         )}
       </TileDetailsPanel>
     );
