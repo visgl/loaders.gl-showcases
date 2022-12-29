@@ -31,9 +31,6 @@ const TileInfoValue = styled(Title)`
   flex: 1;
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
   font-weight: 400;
-
-  //Must be added? added cause lod metric type is a long single word and it does not fit in properly, this is probably because scrollbar is too wide
-  //also oveflow: hidden will help
   word-break: break-all;
   white-space: pre-wrap;
 `;
@@ -49,13 +46,12 @@ export const TileMetadata = ({ tile }: { tile: Tile3D }) => {
     id,
     type,
     header: { children: tileChildren },
-    _distanceToCamera,
+    distanceToCamera,
     content: { vertexCount, texture, material },
     refine,
     lodMetricType,
     lodMetricValue,
-    // @ts-expect-error - Property '_screenSpaceError' is private and only accessible within class 'TileHeader'.
-    _screenSpaceError,
+    screenSpaceError,
   } = tile;
   const childrenInfo = getChildrenInfo(tileChildren);
 
@@ -73,7 +69,7 @@ export const TileMetadata = ({ tile }: { tile: Tile3D }) => {
     { title: "Vertex count", value: formatIntValue(vertexCount) || NO_DATA },
     {
       title: "Distance to camera",
-      value: formatFloatNumber(_distanceToCamera) || NO_DATA,
+      value: formatFloatNumber(distanceToCamera) || NO_DATA,
     },
     { title: "Refinement Type", value: REFINEMENT_TYPES[refine] || NO_DATA },
     { title: "Has Texture", value: Boolean(texture).toString() },
@@ -86,7 +82,7 @@ export const TileMetadata = ({ tile }: { tile: Tile3D }) => {
     { title: "LOD Metric Value", value: formatFloatNumber(lodMetricValue) },
     {
       title: "Screen Space Error",
-      value: formatFloatNumber(_screenSpaceError) || NO_DATA,
+      value: formatFloatNumber(screenSpaceError) || NO_DATA,
     },
   ];
 

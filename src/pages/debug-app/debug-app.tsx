@@ -48,7 +48,6 @@ import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
-import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
   MapArea,
   RightSidePanelWrapper,
@@ -66,9 +65,6 @@ import {
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
-
-const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
-const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -185,10 +181,6 @@ export const DebugApp = () => {
   );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
-  const [trianglesPercentage, setTrianglesPercentage] = useState(
-    DEFAULT_TRIANGLES_PERCENTAGE
-  );
-  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -437,39 +429,6 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
-  const handleShowNormals = (tile: Tile3D) => {
-    if (normalsDebugData === null) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    } else {
-      setNormalsDebugData(null);
-    }
-  };
-
-  const handleChangeTrianglesPercentage = (tile: Tile3D, newValue: number) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    const percent = validateTrianglesPercentage(newValue);
-    setTrianglesPercentage(percent);
-  };
-
-  const validateTrianglesPercentage = (newValue: number) => {
-    if (newValue < 0) {
-      return 1;
-    } else if (newValue > 100) {
-      return 100;
-    }
-    return newValue;
-  };
-
-  const handleChangeNormalsLength = (tile: Tile3D, newValue: number) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-    setNormalsLength(newValue);
-  };
-
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
@@ -485,13 +444,7 @@ export const DebugApp = () => {
     return (
       <TileDetailsPanel
         tile={selectedTile}
-        showNormals={Boolean(normalsDebugData)}
-        trianglesPercentage={trianglesPercentage}
-        normalsLength={normalsLength}
         handleClosePanel={handleClosePanel}
-        handleShowNormals={handleShowNormals}
-        handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-        handleChangeNormalsLength={handleChangeNormalsLength}
       >
         {isShowColorPicker && (
           <div style={CURSOR_STYLE}>
@@ -664,8 +617,6 @@ export const DebugApp = () => {
         loadTiles={loadTiles}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
-        normalsTrianglesPercentage={trianglesPercentage}
-        normalsLength={normalsLength}
         selectedTile={selectedTile}
         autoHighlight
         loadedTilesets={loadedTilesets}

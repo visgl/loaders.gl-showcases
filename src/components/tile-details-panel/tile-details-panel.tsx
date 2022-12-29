@@ -92,13 +92,7 @@ const ArrowContainer = styled.div`
 
 type TileDetailsPanelProps = {
   tile: Tile3D;
-  showNormals: boolean;
-  trianglesPercentage: number;
-  normalsLength: number;
   handleClosePanel: () => void;
-  handleShowNormals: (tile: Tile3D) => void;
-  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
-  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
   children?: React.ReactNode;
 };
 
@@ -106,14 +100,8 @@ const VALIDATE_TILE = "Validate Tile";
 
 export const TileDetailsPanel = ({
   tile,
-  showNormals,
-  trianglesPercentage,
-  normalsLength,
-  handleClosePanel,
-  handleShowNormals,
-  handleChangeTrianglesPercentage,
-  handleChangeNormalsLength,
   children,
+  handleClosePanel,
 }: TileDetailsPanelProps) => {
   const [activeTileInfoPanel, setActiveTileInfoPanel] =
     useState<ActiveTileInfoPanel>(ActiveTileInfoPanel.TileDetailsPanel);
@@ -326,15 +314,7 @@ export const TileDetailsPanel = ({
             </ValidateButton>
             <TileMetadata tile={tile} />
             {children}
-            <Normals
-              tile={tile}
-              showNormals={Boolean(showNormals)}
-              trianglesPercentage={trianglesPercentage}
-              normalsLength={normalsLength}
-              handleShowNormals={handleShowNormals}
-              handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-              handleChangeNormalsLength={handleChangeNormalsLength}
-            />
+            <Normals tile={tile} />
           </>
         )}
         {!isDetailsPanel && (

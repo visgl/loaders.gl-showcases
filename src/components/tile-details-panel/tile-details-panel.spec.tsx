@@ -4,21 +4,12 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { getTile3d } from "../../test/tile-stub";
 
 const handleClosePanel = jest.fn();
-const handleShowNormals = jest.fn();
-const handleChangeTrianglesPercentage = jest.fn();
-const handleChangeNormalsLength = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <TileDetailsPanel
       tile={getTile3d()}
-      showNormals={false}
-      trianglesPercentage={1}
-      normalsLength={3}
-      handleShowNormals={handleShowNormals}
       handleClosePanel={handleClosePanel}
-      handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-      handleChangeNormalsLength={handleChangeNormalsLength}
       {...props}
     >
       {"Some Text"}
