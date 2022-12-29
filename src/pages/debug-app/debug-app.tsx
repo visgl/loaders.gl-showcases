@@ -31,7 +31,7 @@ import { Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { BASE_MAPS } from "../../constants/map-styles";
-import { SemanticValidator, TileValidator, DebugPanel } from "../../components";
+import { SemanticValidator, DebugPanel } from "../../components";
 import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
 import {
@@ -39,7 +39,6 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { TileMetadata } from "../../components/tile-details-panel/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
   getRGBValueFromColorObject,
@@ -67,13 +66,6 @@ import {
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
-import { Normals } from "../../components/tile-details-panel/normals";
-import { ValidateTilePanel } from "../../components/tile-details-panel/validate-tile-panel";
-
-enum ActiveTileInfoPanel {
-  TileDetailsPanel,
-  ValidateTilePanel,
-}
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -218,8 +210,6 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [activeTileInfoPanel, setActiveTileInfoPanel] =
-    useState<ActiveTileInfoPanel>(ActiveTileInfoPanel.TileDetailsPanel);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -244,10 +234,6 @@ export const DebugApp = () => {
     }
     setActiveLayers([newActiveLayer]);
   }, []);
-
-  useEffect(() => {
-    setActiveTileInfoPanel(ActiveTileInfoPanel.TileDetailsPanel);
-  }, [selectedTile]);
 
   /**
    * Hook for start using tilesets stats.
@@ -495,60 +481,39 @@ export const DebugApp = () => {
     const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    const title = `Tile Info: ${selectedTile.id}`;
 
     return (
       <TileDetailsPanel
-        isValidatePanel={
-          activeTileInfoPanel === ActiveTileInfoPanel.ValidateTilePanel
-        }
-        title={title}
+        tile={selectedTile}
+        showNormals={Boolean(normalsDebugData)}
+        trianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
         handleClosePanel={handleClosePanel}
-        onBackClick={() =>
-          setActiveTileInfoPanel(ActiveTileInfoPanel.TileDetailsPanel)
-        }
-        onValidateClick={() =>
-          setActiveTileInfoPanel(ActiveTileInfoPanel.ValidateTilePanel)
-        }
+        handleShowNormals={handleShowNormals}
+        handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
+        handleChangeNormalsLength={handleChangeNormalsLength}
       >
-        {activeTileInfoPanel === ActiveTileInfoPanel.TileDetailsPanel && (
-          <>
-            <TileMetadata tile={selectedTile} />
-            <Normals
-              tile={selectedTile}
-              showNormals={Boolean(normalsDebugData)}
-              trianglesPercentage={trianglesPercentage}
-              normalsLength={normalsLength}
-              handleShowNormals={handleShowNormals}
-              handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-              handleChangeNormalsLength={handleChangeNormalsLength}
+        {isShowColorPicker && (
+          <div style={CURSOR_STYLE}>
+            <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
+            <HuePicker
+              width={"auto"}
+              color={tileSelectedColor}
+              onChange={(color) => handleSelectTileColor(tileId, color)}
             />
-            {isShowColorPicker && (
-              <div style={CURSOR_STYLE}>
-                <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
-                <HuePicker
-                  width={"auto"}
-                  color={tileSelectedColor}
-                  onChange={(color) => handleSelectTileColor(tileId, color)}
-                />
-                <MaterialPicker
-                  styles={MATERIAL_PICKER_STYLE}
-                  color={tileSelectedColor}
-                  onChange={(color) => handleSelectTileColor(tileId, color)}
-                />
-                <button
-                  disabled={isResetButtonDisabled}
-                  style={getResetButtonStyle(isResetButtonDisabled)}
-                  onClick={() => handleResetColor(tileId)}
-                >
-                  Reset
-                </button>
-              </div>
-            )}
-          </>
-        )}
-        {activeTileInfoPanel === ActiveTileInfoPanel.ValidateTilePanel && (
-          <ValidateTilePanel tile={selectedTile} />
+            <MaterialPicker
+              styles={MATERIAL_PICKER_STYLE}
+              color={tileSelectedColor}
+              onChange={(color) => handleSelectTileColor(tileId, color)}
+            />
+            <button
+              disabled={isResetButtonDisabled}
+              style={getResetButtonStyle(isResetButtonDisabled)}
+              onClick={() => handleResetColor(tileId)}
+            >
+              Reset
+            </button>
+          </div>
         )}
       </TileDetailsPanel>
     );

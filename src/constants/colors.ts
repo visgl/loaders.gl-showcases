@@ -28,6 +28,9 @@ export const color_accent_secondary = "#33A985";
 export const dim_canvas_primary = "#616678";
 export const dim_canvas_secondary = "#CDCFD6";
 
+export const validate_tile_warning_dark= "#FDCECE";
+export const validate_tile_ok_dark = "#D7F4DB";
+
 export const COLORS_BY_ATTRIBUTE: {
   min: {
     hex: string;
