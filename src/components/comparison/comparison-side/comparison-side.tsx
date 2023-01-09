@@ -42,9 +42,9 @@ import {
   selectNestedLayers,
 } from "../../../utils/layer-utils";
 import {
-  LeftSidePanelWrapper,
+  ComparisonLeftSidePanelWrapper,
+  ComparisonRightSidePanelWrapper,
   LeftSideToolsPanelWrapper,
-  RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
 } from "../../common";
 import { initStats, sumTilesetsStats } from "../../../utils/stats";
@@ -498,8 +498,8 @@ export const ComparisonSide = ({
       : RightSideToolsPanelWrapper;
   const OptionsPanelWrapper =
     side === ComparisonSideMode.left
-      ? LeftSidePanelWrapper
-      : RightSidePanelWrapper;
+      ? ComparisonLeftSidePanelWrapper
+      : ComparisonRightSidePanelWrapper;
 
   const handleOnAfterRender = () => {
     sumTilesetsStats(loadedTilesets, tilesetsStats);

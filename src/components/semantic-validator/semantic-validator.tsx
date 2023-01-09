@@ -1,17 +1,23 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { LayoutProps } from "../../types";
 import {
   color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
-const SemanticValidatorContainer = styled.div`
+const SemanticValidatorContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: absolute;
   left: 25%;
   right: 25%;
-  bottom: 10px;
+  bottom: ${getCurrentLayoutProperty({
+    desktop: "10px",
+    tablet: "10px",
+    mobile: "76px",
+  })};
   color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   background: ${color_brand_primary};
@@ -90,6 +96,8 @@ const defaultProps = {
  * TODO: Add types to component
  */
 export const SemanticValidator = ({ warnings, clearWarnings }) => {
+  const layout = useAppLayout();
+
   const renderColumns = (warnings) =>
     warnings.map((warning, index) => (
       <tr key={`${warning.title}-${index}`}>
@@ -126,7 +134,7 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
   };
 
   return (
-    <SemanticValidatorContainer id="semantic-validator">
+    <SemanticValidatorContainer id="semantic-validator" layout={layout}>
       {warnings && Boolean(warnings.length) ? (
         renderWarnings(warnings)
       ) : (

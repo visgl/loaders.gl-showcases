@@ -17,6 +17,7 @@ import {
   DebugOptionsActionKind,
   BoundingVolumeColoredBy,
   TileColoredBy,
+  Layout,
   DragMode,
 } from "../../types";
 
@@ -59,6 +60,7 @@ import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
+  BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
@@ -75,6 +77,7 @@ import {
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
+import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
@@ -747,16 +750,29 @@ export const DebugApp = () => {
           onTileLoad={onTileLoad}
           onWebGLInitialized={onWebGLInitialized}
         />
-        <RightSideToolsPanelWrapper layout={layout}>
-          <MainToolsPanel
-            id="debug-tools-panel"
+      {layout !== Layout.Mobile && (
+          <RightSideToolsPanelWrapper layout={layout}>
+            <MainToolsPanel
+              id="debug-tools-panel"
+              activeButton={activeButton}
+              showLayerOptions
+              showDebug
+              showValidator
+              onChange={onChangeMainToolsPanelHandler}
+            />
+          </RightSideToolsPanelWrapper>
+      )}
+      {layout === Layout.Mobile && (
+        <BottomToolsPanelWrapper layout={layout}>
+          <MobileToolsPanel
+            id={"mobile-debug-tools-panel"}
             activeButton={activeButton}
-            showLayerOptions
             showDebug
             showValidator
             onChange={onChangeMainToolsPanelHandler}
           />
-        </RightSideToolsPanelWrapper>
+        </BottomToolsPanelWrapper>
+      )}
         {activeButton === ActiveButton.options && (
           <RightSidePanelWrapper layout={layout}>
             <LayersPanel
