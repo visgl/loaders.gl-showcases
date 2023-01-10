@@ -29,6 +29,7 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 import { ActiveSublayer } from "../../utils/active-sublayer";
+import { downloadJsonFile } from "../../utils/files-utils";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -282,17 +283,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       loadManagerRef.current.stopLoading();
       return CompareButtonMode.Start;
     });
-  };
-
-  const downloadJsonFile = (data: { [key: string]: any }, fileName: string) => {
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(data)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = fileName;
-
-    link.click();
   };
 
   const downloadClickHandler = () => {

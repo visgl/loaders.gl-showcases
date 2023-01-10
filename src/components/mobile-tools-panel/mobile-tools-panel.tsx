@@ -1,3 +1,5 @@
+import { ActiveButton, Layout } from "../../types";
+
 import styled, { useTheme } from "styled-components";
 import {
   color_brand_tertiary,
@@ -6,10 +8,9 @@ import {
 } from "../../constants/colors";
 import MapIcon from "../../../public/icons/select-map.svg";
 import MemoryIcon from "../../../public/icons/memory.svg";
-
 import DebugIcon from "../../../public/icons/debug.svg";
 import ValidatorIcon from "../../../public/icons/validator.svg";
-import { ActiveButton, Layout } from "../../types";
+import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
 type ContainerProps = {
@@ -75,8 +76,11 @@ type MainToolsPanelProps = {
   id: string;
   activeButton: ActiveButton;
   showDebug?: boolean;
+  showBookmarks?: boolean;
+  bookmarksActive?: boolean;
   showValidator?: boolean;
   onChange?: (active: ActiveButton) => void;
+  onShowBookmarksChange?: () => void;
 };
 
 const IconWrapper = styled.div`
@@ -90,7 +94,10 @@ export const MobileToolsPanel = ({
   activeButton,
   showDebug = false,
   showValidator = false,
+  showBookmarks = false,
+  bookmarksActive = false,
   onChange = () => ({}),
+  onShowBookmarksChange
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
   const theme = useTheme();
@@ -128,7 +135,7 @@ export const MobileToolsPanel = ({
             onClick={() => onChange(ActiveButton.validator)}
           >
             <IconWrapper>
-              <ValidatorIcon />
+              <ValidatorIcon fill={theme.colors.fontColor} />
             </IconWrapper>
             <Text>Validator</Text>
           </Button>
@@ -144,6 +151,19 @@ export const MobileToolsPanel = ({
               <DebugIcon />
             </IconWrapper>
             <Text>Debug</Text>
+          </Button>
+        )}
+        {showBookmarks && (
+          <Button
+            id={'mobile-bookmarks-tab'}
+            layout={layout}
+            active={bookmarksActive}
+            onClick={onShowBookmarksChange}
+          >
+            <IconWrapper>
+              <BookmarksIcon fill={theme.colors.fontColor} />
+            </IconWrapper>
+            <Text>Bookmarks</Text>
           </Button>
         )}
       </ContentWrapper>
