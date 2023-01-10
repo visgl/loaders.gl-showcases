@@ -330,3 +330,8 @@ export type DebugOptionsAction = {
   type: DebugOptionsActionKind;
   payload?: { optionName: keyof DebugOptions, value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType };
 }
+
+export type MinimapPosition = {
+  x: string;
+  y: string;
+}

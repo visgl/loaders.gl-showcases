@@ -28,7 +28,7 @@ import {
   BoundingVolumeType,
   TileColoredBy,
   BoundingVolumeColoredBy,
-  Layout,
+  MinimapPosition,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -46,7 +46,6 @@ import {
   getNormalTargetPosition,
 } from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
-import { useAppLayout } from "../../utils/hooks/layout";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -161,6 +160,8 @@ type DeckGlI3sProps = {
   loadNumber?: number;
   /** prevent transition to a layer */
   preventTransitions?: boolean;
+  /** calculate position of minimap */
+  minimapPosition?: MinimapPosition;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -212,6 +213,7 @@ export const DeckGlWrapper = ({
   dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
+  minimapPosition,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -222,8 +224,6 @@ export const DeckGlWrapper = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
-  const layout = useAppLayout();
-  const isMobileLayout = layout === Layout.Mobile;
 
   const VIEWS = useMemo(
     () => [
@@ -236,8 +236,8 @@ export const DeckGlWrapper = ({
         id: "minimap",
 
         // Position on top of main map
-        x: isMobileLayout ? "2%" : "1%",
-        y: isMobileLayout ? "1%" : "79%",
+        x: minimapPosition?.x,
+        y: minimapPosition?.y,
         width: "20%",
         height: "20%",
 

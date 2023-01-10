@@ -19,6 +19,7 @@ import {
   TileColoredBy,
   Layout,
   DragMode,
+  MinimapPosition,
 } from "../../types";
 
 import {
@@ -192,7 +193,10 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, dispatchDebugOptions] = useReducer(debugOptionsReducer, INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, dispatchDebugOptions] = useReducer(
+    debugOptionsReducer,
+    INITIAL_DEBUG_OPTIONS_STATE
+  );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -227,6 +231,16 @@ export const DebugApp = () => {
     () => activeLayers.map((layer) => layer.id),
     [activeLayers]
   );
+
+  const isMobileLayout = layout === Layout.Mobile;
+
+  const minimapPosition: MinimapPosition = useMemo(() => {
+    return {
+      x: isMobileLayout ? "2%" : "1%",
+      y: isMobileLayout ? "1%" : "79%",
+    };
+  }, []);
+
   const layers3d = useMemo(() => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
@@ -716,51 +730,52 @@ export const DebugApp = () => {
   } = debugOptions;
 
   return (
-      <MapArea>
-        {renderTilePanel()}
-        <DeckGlWrapper
-          showMinimap={minimap}
-          createIndependentMinimapViewport={minimapViewport}
-          parentViewState={viewState}
-          showTerrain={selectedBaseMap.id === "Terrain"}
-          mapStyle={selectedBaseMap.mapUrl}
-          tileColorMode={tileColorMode}
-          coloredTilesMap={coloredTilesMap}
-          boundingVolumeType={boundingVolume ? boundingVolumeType : null}
-          boundingVolumeColorMode={boundingVolumeColorMode}
-          pickable={pickable}
-          wireframe={wireframe}
-          layers3d={layers3d}
-          lastLayerSelectedId={selectedLayerIds[0] || ""}
-          loadDebugTextureImage
-          showDebugTexture={showUVDebugTexture}
-          loadTiles={loadTiles}
-          featurePicking={false}
-          normalsDebugData={normalsDebugData}
-          normalsTrianglesPercentage={trianglesPercentage}
-          normalsLength={normalsLength}
-          selectedTile={selectedTile}
-          autoHighlight
-          loadedTilesets={loadedTilesets}
-          onAfterRender={handleOnAfterRender}
-          getTooltip={getTooltip}
-          onClick={handleClick}
-          onViewStateChange={onViewStateChangeHandler}
-          onTilesetLoad={onTilesetLoad}
-          onTileLoad={onTileLoad}
-          onWebGLInitialized={onWebGLInitialized}
-        />
+    <MapArea>
+      {renderTilePanel()}
+      <DeckGlWrapper
+        showMinimap={minimap}
+        createIndependentMinimapViewport={minimapViewport}
+        parentViewState={viewState}
+        showTerrain={selectedBaseMap.id === "Terrain"}
+        mapStyle={selectedBaseMap.mapUrl}
+        tileColorMode={tileColorMode}
+        coloredTilesMap={coloredTilesMap}
+        boundingVolumeType={boundingVolume ? boundingVolumeType : null}
+        boundingVolumeColorMode={boundingVolumeColorMode}
+        pickable={pickable}
+        wireframe={wireframe}
+        layers3d={layers3d}
+        lastLayerSelectedId={selectedLayerIds[0] || ""}
+        loadDebugTextureImage
+        showDebugTexture={showUVDebugTexture}
+        loadTiles={loadTiles}
+        featurePicking={false}
+        normalsDebugData={normalsDebugData}
+        normalsTrianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
+        selectedTile={selectedTile}
+        autoHighlight
+        loadedTilesets={loadedTilesets}
+        minimapPosition={minimapPosition}
+        onAfterRender={handleOnAfterRender}
+        getTooltip={getTooltip}
+        onClick={handleClick}
+        onViewStateChange={onViewStateChangeHandler}
+        onTilesetLoad={onTilesetLoad}
+        onTileLoad={onTileLoad}
+        onWebGLInitialized={onWebGLInitialized}
+      />
       {layout !== Layout.Mobile && (
-          <RightSideToolsPanelWrapper layout={layout}>
-            <MainToolsPanel
-              id="debug-tools-panel"
-              activeButton={activeButton}
-              showLayerOptions
-              showDebug
-              showValidator
-              onChange={onChangeMainToolsPanelHandler}
-            />
-          </RightSideToolsPanelWrapper>
+        <RightSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            id="debug-tools-panel"
+            activeButton={activeButton}
+            showLayerOptions
+            showDebug
+            showValidator
+            onChange={onChangeMainToolsPanelHandler}
+          />
+        </RightSideToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
         <BottomToolsPanelWrapper layout={layout}>
@@ -773,66 +788,64 @@ export const DebugApp = () => {
           />
         </BottomToolsPanelWrapper>
       )}
-        {activeButton === ActiveButton.options && (
-          <RightSidePanelWrapper layout={layout}>
-            <LayersPanel
-              id="debug--layers-panel"
-              layers={examples}
-              selectedLayerIds={selectedLayerIds}
-              onLayerInsert={onLayerInsertHandler}
-              onLayerSelect={onLayerSelectHandler}
-              onLayerDelete={(id) => onLayerDeleteHandler(id)}
-              onPointToLayer={(viewState) => pointToTileset(viewState)}
-              type={ListItemType.Radio}
-              sublayers={sublayers}
-              onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-              onClose={() =>
-                onChangeMainToolsPanelHandler(ActiveButton.options)
-              }
-              baseMaps={baseMaps}
-              selectedBaseMapId={selectedBaseMap.id}
-              insertBaseMap={onInsertBaseMapHandler}
-              selectBaseMap={onSelectBaseMapHandler}
-              deleteBaseMap={onDeleteBaseMapHandler}
-            />
-          </RightSidePanelWrapper>
-        )}
-        {activeButton === ActiveButton.debug && (
-          <RightSidePanelWrapper layout={layout}>
-            <DebugPanel
-              onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
-              debugOptions={debugOptions}
-              onChangeOption={dispatchDebugOptions}
-            />
-          </RightSidePanelWrapper>
-        )}
-        {activeButton === ActiveButton.validator && (
-          <SemanticValidator
-            warnings={warnings}
-            clearWarnings={handleClearWarnings}
+      {activeButton === ActiveButton.options && (
+        <RightSidePanelWrapper layout={layout}>
+          <LayersPanel
+            id="debug--layers-panel"
+            layers={examples}
+            selectedLayerIds={selectedLayerIds}
+            onLayerInsert={onLayerInsertHandler}
+            onLayerSelect={onLayerSelectHandler}
+            onLayerDelete={(id) => onLayerDeleteHandler(id)}
+            onPointToLayer={(viewState) => pointToTileset(viewState)}
+            type={ListItemType.Radio}
+            sublayers={sublayers}
+            onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
+            baseMaps={baseMaps}
+            selectedBaseMapId={selectedBaseMap.id}
+            insertBaseMap={onInsertBaseMapHandler}
+            selectBaseMap={onSelectBaseMapHandler}
+            deleteBaseMap={onDeleteBaseMapHandler}
           />
-        )}
-        {activeButton === ActiveButton.memory && (
-          <RightSidePanelWrapper layout={layout}>
-            <MemoryUsagePanel
-              id={"debug-memory-usage-panel"}
-              memoryStats={memoryStats}
-              activeLayers={activeLayers}
-              tilesetStats={tilesetsStats}
-              contentFormats={tilesetRef.current?.contentFormats}
-              updateNumber={updateStatsNumber}
-              onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
-            />
-          </RightSidePanelWrapper>
-        )}
-        <MapControllPanel
-          bearing={viewState.main.bearing}
-          dragMode={dragMode}
-          onZoomIn={onZoomIn}
-          onZoomOut={onZoomOut}
-          onCompassClick={onCompassClick}
-          onDragModeToggle={toggleDragMode}
+        </RightSidePanelWrapper>
+      )}
+      {activeButton === ActiveButton.debug && (
+        <RightSidePanelWrapper layout={layout}>
+          <DebugPanel
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
+            debugOptions={debugOptions}
+            onChangeOption={dispatchDebugOptions}
+          />
+        </RightSidePanelWrapper>
+      )}
+      {activeButton === ActiveButton.validator && (
+        <SemanticValidator
+          warnings={warnings}
+          clearWarnings={handleClearWarnings}
         />
-      </MapArea>
+      )}
+      {activeButton === ActiveButton.memory && (
+        <RightSidePanelWrapper layout={layout}>
+          <MemoryUsagePanel
+            id={"debug-memory-usage-panel"}
+            memoryStats={memoryStats}
+            activeLayers={activeLayers}
+            tilesetStats={tilesetsStats}
+            contentFormats={tilesetRef.current?.contentFormats}
+            updateNumber={updateStatsNumber}
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
+          />
+        </RightSidePanelWrapper>
+      )}
+      <MapControllPanel
+        bearing={viewState.main.bearing}
+        dragMode={dragMode}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onCompassClick={onCompassClick}
+        onDragModeToggle={toggleDragMode}
+      />
+    </MapArea>
   );
 };
