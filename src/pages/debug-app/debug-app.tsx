@@ -703,6 +703,7 @@ export const DebugApp = () => {
             activeButton={activeButton}
             showDebug
             showValidator
+            showBookmarks
             onChange={onChangeMainToolsPanelHandler}
           />
         </BottomToolsPanelWrapper>

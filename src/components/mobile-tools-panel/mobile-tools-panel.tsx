@@ -24,10 +24,11 @@ const Container = styled.div<ContainerProps>`
   background: transparent;
 `;
 
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
+const ContentWrapper = styled.div<{ showDebug: boolean }>`
+  display: grid;
+  grid-template-columns: ${({ showDebug }) => showDebug ? 'repeat(5, 0.5fr)' : 'repeat(3, 1fr)'};
+  max-width: 90%;
+  overflow-x: auto;
   background: ${(props) => props.theme.colors.mainCanvasColor};
   border-radius: 12px;
   padding: 2px;
@@ -45,7 +46,6 @@ const Button = styled.button<ButtonProps>`
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  width: 72px;
   height: 56px;
   cursor: pointer;
   fill: ${({ theme, active }) =>
@@ -104,7 +104,7 @@ export const MobileToolsPanel = ({
 
   return (
     <Container id={id}>
-      <ContentWrapper>
+      <ContentWrapper showDebug={showDebug}>
         <Button
           id={'layers-options-tab'}
           layout={layout}
