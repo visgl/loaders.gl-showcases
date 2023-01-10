@@ -24,10 +24,11 @@ const Container = styled.div<ContainerProps>`
   background: transparent;
 `;
 
-const ContentWrapper = styled.div<{ showDebug: boolean }>`
+const ContentWrapper = styled.div`
   display: grid;
-  grid-template-columns: ${({ showDebug }) => showDebug ? 'repeat(5, 0.5fr)' : 'repeat(3, 1fr)'};
-  max-width: 90%;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  max-width: 95%;
   overflow-x: auto;
   background: ${(props) => props.theme.colors.mainCanvasColor};
   border-radius: 12px;
@@ -104,7 +105,7 @@ export const MobileToolsPanel = ({
 
   return (
     <Container id={id}>
-      <ContentWrapper showDebug={showDebug}>
+      <ContentWrapper>
         <Button
           id={'layers-options-tab'}
           layout={layout}
@@ -148,7 +149,7 @@ export const MobileToolsPanel = ({
             onClick={() => onChange(ActiveButton.debug)}
           >
             <IconWrapper>
-              <DebugIcon />
+              <DebugIcon fill={theme.colors.fontColor} />
             </IconWrapper>
             <Text>Debug</Text>
           </Button>
