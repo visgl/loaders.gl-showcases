@@ -16,4 +16,9 @@ describe("ViewerApp", () => {
     await page.click("#memory-usage-tab");
     await page.waitForSelector("#viewer-memory-usage-panel", { visible: true });
   });
+
+  it("Memory Usage tab works", async () => {
+    await page.click("#bookmarks-tab");
+    await page.waitForSelector("#viewer-bookmarks-panel", { visible: true });
+  });
 });

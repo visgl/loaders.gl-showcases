@@ -48,16 +48,7 @@ export const createViewerBookmarkThumbnail = async (
     return null;
   }
 
-  const outputCanvas = document.createElement("canvas");
-  const ctx = outputCanvas.getContext("2d");
-  if (!ctx) {
-    return null;
-  }
-  outputCanvas.width = canvas.width + canvas.width;
-  outputCanvas.height = canvas.height;
-  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-
-  return outputCanvas.toDataURL("image/png");
+  return canvas.toDataURL("image/png");
 };
 
 /**
