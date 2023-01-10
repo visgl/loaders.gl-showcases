@@ -5,8 +5,6 @@ import {
   BoundingVolumeColoredBy,
   BoundingVolumeType,
   DebugOptions,
-  DebugOptionsAction,
-  DebugOptionsActionKind,
   ListItemType,
   SelectionState,
   TileColoredBy
@@ -50,7 +48,7 @@ const RadioButtonWrapper = styled.div`
 
 type DebugPanelProps = {
   debugOptions: DebugOptions,
-  onChangeOption: React.Dispatch<DebugOptionsAction>,
+  onChangeOption: (optionName: keyof DebugOptions, value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean) => void,
   onClose: ReactEventHandler
 };
 
@@ -72,10 +70,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-minimap'}
             checked={debugOptions.minimap}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'minimap' }
-            })}
+            onChange={() => onChangeOption('minimap', !debugOptions.minimap)}
           />
         </ItemContainer>
         {debugOptions.minimap && (
@@ -84,10 +79,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
             <ToggleSwitch
               id={'toggle-minimap-viewport'}
               checked={debugOptions.minimapViewport}
-              onChange={() => onChangeOption({
-                type: DebugOptionsActionKind.toggle,
-                payload: { optionName: 'minimapViewport' }
-              })}
+              onChange={() => onChangeOption('minimapViewport', !debugOptions.minimapViewport)}
             />
           </NestedItemContainer>
         )}
@@ -96,10 +88,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-loading-tiles'}
             checked={debugOptions.loadTiles}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'loadTiles' }
-            })}
+            onChange={() => onChangeOption('loadTiles', !debugOptions.loadTiles)}
           />
         </ItemContainer>
         <ItemContainer>
@@ -107,10 +96,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-enable-picking'}
             checked={debugOptions.pickable}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'pickable' }
-            })}
+            onChange={() => onChangeOption('pickable', !debugOptions.pickable)}
           />
         </ItemContainer>
         <ItemContainer>
@@ -118,10 +104,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-enable-wireframe'}
             checked={debugOptions.wireframe}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'wireframe' }
-            })}
+            onChange={() => onChangeOption('wireframe', !debugOptions.wireframe)}
           />
         </ItemContainer>
         <ItemContainer>
@@ -129,10 +112,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-enable-texture-uvs'}
             checked={debugOptions.showUVDebugTexture}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'showUVDebugTexture' }
-            })}
+            onChange={() => onChangeOption('showUVDebugTexture', !debugOptions.showUVDebugTexture)}
           />
         </ItemContainer>
         <Title top={8} left={16} bottom={16} id={'color-section-title'}>Color</Title>
@@ -147,10 +127,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
                   title={TileColoredBy[value]}
                   type={ListItemType.Radio}
                   selected={selected}
-                  onChange={() => onChangeOption({
-                    type: DebugOptionsActionKind.select,
-                    payload: { optionName: 'tileColorMode', value: TileColoredBy[value] }
-                  })}
+                  onChange={() => onChangeOption('tileColorMode', TileColoredBy[value])}
                 />
               )
             })
@@ -162,10 +139,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
           <ToggleSwitch
             id={'toggle-enable-bounding-volumes'}
             checked={debugOptions.boundingVolume}
-            onChange={() => onChangeOption({
-              type: DebugOptionsActionKind.toggle,
-              payload: { optionName: 'boundingVolume' }
-            })}
+            onChange={() => onChangeOption('boundingVolume', !debugOptions.boundingVolume)}
           />
         </ItemContainer>
         {debugOptions.boundingVolume && (
@@ -184,10 +158,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
                       title={BoundingVolumeType[value]}
                       type={ListItemType.Radio}
                       selected={selected}
-                      onChange={() => onChangeOption({
-                        type: DebugOptionsActionKind.select,
-                        payload: { optionName: 'boundingVolumeType', value: BoundingVolumeType[value] }
-                      })}
+                      onChange={() => onChangeOption('boundingVolumeType', BoundingVolumeType[value])}
                     />
                   )
                 })
@@ -205,10 +176,7 @@ export const DebugPanel = ({ debugOptions, onChangeOption, onClose }: DebugPanel
                       title={BoundingVolumeColoredBy[value]}
                       type={ListItemType.Radio}
                       selected={selected}
-                      onChange={() => onChangeOption({
-                        type: DebugOptionsActionKind.select,
-                        payload: { optionName: 'boundingVolumeColorMode', value: BoundingVolumeColoredBy[value] }
-                      })}
+                      onChange={() => onChangeOption('boundingVolumeColorMode', BoundingVolumeColoredBy[value])}
                     />
                   )
                 })

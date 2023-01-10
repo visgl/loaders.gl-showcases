@@ -13,15 +13,13 @@ import {
   ListItemType,
   BoundingVolumeType,
   DebugOptions,
-  DebugOptionsAction,
-  DebugOptionsActionKind,
   BoundingVolumeColoredBy,
   TileColoredBy,
   Layout,
   Bookmark,
 } from "../../types";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { HuePicker, MaterialPicker } from "react-color";
 import { lumaStats } from "@luma.gl/core";
@@ -152,47 +150,11 @@ const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
   boundingVolumeType: BoundingVolumeType.mbs,
 };
 
-const debugOptionsReducer = (state: DebugOptions, action: DebugOptionsAction): DebugOptions => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case DebugOptionsActionKind.toggle:
-
-      if (payload) {
-        const option = payload.optionName;
-        return {
-          ...state,
-          [option]: !state[option]
-        }
-      }
-      return {
-        ...state
-      }
-    case DebugOptionsActionKind.select:
-      if (payload) {
-        const option = payload.optionName;
-        return {
-          ...state,
-          [option]: payload.value,
-        };
-      }
-      return {
-        ...state
-      }
-    case DebugOptionsActionKind.reset:
-      return {
-        ...INITIAL_DEBUG_OPTIONS_STATE
-      }
-    default:
-      return state;
-  }
-}
-
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, dispatchDebugOptions] = useReducer(debugOptionsReducer, INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -318,7 +280,7 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    dispatchDebugOptions({ type: DebugOptionsActionKind.reset });
+    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
   }, [activeLayers]);
 
   useEffect(() => {
@@ -670,6 +632,7 @@ export const DebugApp = () => {
           id: newBookmarkId,
           imageUrl,
           viewState,
+          debugOptions,
           layersLeftSide: activeLayers,
           layersRightSide: [],
           activeLayersIdsLeftSide: [...selectedLayerIds],
@@ -688,6 +651,12 @@ export const DebugApp = () => {
     setPreventTransitions(true);
     setViewState(bookmark.viewState);
     setActiveLayers(bookmark.layersLeftSide);
+
+    setTimeout(() => {
+      if (bookmark?.debugOptions) {
+        setDebugOptions(bookmark.debugOptions);
+      }
+    }, IS_LOADED_DELAY);
   };
 
   const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
@@ -705,6 +674,7 @@ export const DebugApp = () => {
               ...bookmark,
               imageUrl,
               viewState,
+              debugOptions,
               layersLeftSide: activeLayers,
               layersRightSide: [],
               activeLayersIdsLeftSide: selectedLayerIds,
@@ -728,6 +698,16 @@ export const DebugApp = () => {
     setBookmarks(bookmarks);
     onSelectBookmarkHandler(bookmarks[0].id);
   };
+
+  const handleChangeDebugOptions = useCallback((
+    optionName: keyof DebugOptions,
+    value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
+  ) => {
+    setDebugOptions(prevValues => ({
+      ...prevValues,
+      [optionName]: value
+    }))
+  }, []);
 
   const {
     minimap,
@@ -835,7 +815,7 @@ export const DebugApp = () => {
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
             debugOptions={debugOptions}
-            onChangeOption={dispatchDebugOptions}
+            onChangeOption={handleChangeDebugOptions}
           />
         </RightSidePanelWrapper>
       )}
