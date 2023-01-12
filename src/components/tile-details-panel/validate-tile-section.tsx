@@ -23,9 +23,13 @@ const ValidateDataContainer = styled.div`
 `;
 
 const ValidateDataTitle = styled(Title)`
-  width: 287px;
+  flex: 1;
   font-weight: 400;
   color: inherit;
+`;
+
+const IconContainer = styled.div`
+  width: 22px;
 `;
 
 type ValidateTileSectionProps = {
@@ -39,7 +43,9 @@ export const ValidateTileSection = ({
 }: ValidateTileSectionProps) => {
   return (
     <DataSection dataType={dataType}>
-      {dataType === ValidatedDataType.Warning ? <WarningIcon /> : <OkIcon />}
+      <IconContainer>
+        {dataType === ValidatedDataType.Warning ? <WarningIcon /> : <OkIcon />}
+      </IconContainer>
       <ValidateDataContainer>
         {validatedData.map((data) => (
           <ValidateDataTitle key={data.key}>{data.title}</ValidateDataTitle>

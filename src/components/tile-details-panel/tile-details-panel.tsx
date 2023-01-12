@@ -12,7 +12,7 @@ import { ValidateTilePanel } from "./validate-tile-panel";
 import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
-import { LayoutProps, ValidatedTile } from "../../types";
+import { Layout, LayoutProps, ValidatedTile } from "../../types";
 import {
   useAppLayout,
   getCurrentLayoutProperty,
@@ -93,6 +93,8 @@ const ArrowContainer = styled.div`
 type TileDetailsPanelProps = {
   tile: Tile3D;
   handleClosePanel: () => void;
+  deactiveDebugPanel: () => void;
+  activeDebugPanel: () => void;
   children?: React.ReactNode;
 };
 
@@ -102,6 +104,8 @@ export const TileDetailsPanel = ({
   tile,
   children,
   handleClosePanel,
+  deactiveDebugPanel,
+  activeDebugPanel,
 }: TileDetailsPanelProps) => {
   const [activeTileInfoPanel, setActiveTileInfoPanel] =
     useState<ActiveTileInfoPanel>(ActiveTileInfoPanel.TileDetailsPanel);
@@ -117,6 +121,8 @@ export const TileDetailsPanel = ({
     activeTileInfoPanel === ActiveTileInfoPanel.TileDetailsPanel;
   const title = `Tile Info: ${tile.id}`;
 
+  const nonDesktopLayout = layout !== Layout.Desktop;
+
   const onValidateTile = (tile: Tile3D) => {
     validateGeometryInsideBoundingVolume(tile);
     validateGeometryVsTexture(tile);
@@ -128,6 +134,12 @@ export const TileDetailsPanel = ({
     setValidateTileWarnings([]);
     setActiveTileInfoPanel(ActiveTileInfoPanel.TileDetailsPanel);
   }, [tile.id]);
+
+  useEffect(() => {
+    if (nonDesktopLayout) {
+      deactiveDebugPanel();
+    }
+  }, []);
 
   const validateGeometryInsideBoundingVolume = (tile: Tile3D) => {
     try {
@@ -277,6 +289,13 @@ export const TileDetailsPanel = ({
     }
   };
 
+  const onClosePanel = () => {
+    handleClosePanel();
+    if (nonDesktopLayout) {
+      activeDebugPanel();
+    }
+  };
+
   return (
     <Container layout={layout}>
       <HeaderWrapper title={title}>
@@ -296,7 +315,7 @@ export const TileDetailsPanel = ({
             {title}
           </Title>
         )}
-        <CloseButton onClick={handleClosePanel} />
+        <CloseButton onClick={onClosePanel} />
       </HeaderWrapper>
       <ContentWrapper>
         {isDetailsPanel && (

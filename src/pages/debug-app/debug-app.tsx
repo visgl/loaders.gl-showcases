@@ -445,6 +445,8 @@ export const DebugApp = () => {
       <TileDetailsPanel
         tile={selectedTile}
         handleClosePanel={handleClosePanel}
+        deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
+        activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
       >
         {isShowColorPicker && (
           <div style={CURSOR_STYLE}>
