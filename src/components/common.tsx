@@ -106,6 +106,13 @@ export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
+export const BottomToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+`;
+
 export const LeftSidePanelWrapper = styled.div<LayoutProps>`
   position: absolute;
   z-index: 2;
@@ -123,7 +130,7 @@ export const LeftSidePanelWrapper = styled.div<LayoutProps>`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "bottom: 8px;",
+    mobile: "bottom: 76x;",
   })};
 `;
 
@@ -141,6 +148,22 @@ export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
     mobile: "left: calc(50% - 180px);",
   })};
 
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 76px;",
+  })};
+`;
+
+export const ComparisonRightSidePanelWrapper = styled(RightSidePanelWrapper)`
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
+export const ComparisonLeftSidePanelWrapper = styled(LeftSidePanelWrapper)`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",

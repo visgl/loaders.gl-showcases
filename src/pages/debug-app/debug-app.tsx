@@ -17,6 +17,7 @@ import {
   DebugOptionsActionKind,
   BoundingVolumeColoredBy,
   TileColoredBy,
+  Layout,
 } from "../../types";
 
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -49,6 +50,7 @@ import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
 import {
+  BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
@@ -65,6 +67,7 @@ import {
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
+import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -630,16 +633,29 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
       />
-      <RightSideToolsPanelWrapper layout={layout}>
-        <MainToolsPanel
-          id="debug-tools-panel"
-          activeButton={activeButton}
-          showLayerOptions
-          showDebug
-          showValidator
-          onChange={onChangeMainToolsPanelHandler}
-        />
-      </RightSideToolsPanelWrapper>
+      {layout !== Layout.Mobile && (
+        <RightSideToolsPanelWrapper layout={layout}>
+          <MainToolsPanel
+            id="debug-tools-panel"
+            activeButton={activeButton}
+            showLayerOptions
+            showDebug
+            showValidator
+            onChange={onChangeMainToolsPanelHandler}
+          />
+        </RightSideToolsPanelWrapper>
+      )}
+      {layout === Layout.Mobile && (
+        <BottomToolsPanelWrapper layout={layout}>
+          <MobileToolsPanel
+            id={"mobile-debug-tools-panel"}
+            activeButton={activeButton}
+            showDebug
+            showValidator
+            onChange={onChangeMainToolsPanelHandler}
+          />
+        </BottomToolsPanelWrapper>
+      )}
       {activeButton === ActiveButton.options && (
         <RightSidePanelWrapper layout={layout}>
           <LayersPanel
