@@ -1,6 +1,5 @@
-import type { Tile3D } from "@loaders.gl/tiles";
 import styled from "styled-components";
-import { ToggleSwitch } from "..";
+import { ToggleSwitch } from "../toogle-switch/toggle-switch";
 import { color_accent_primary } from "../../constants/colors";
 import { Title, PanelHorizontalLine } from "../common";
 
@@ -26,15 +25,13 @@ const NormalsContainer = styled.div`
   margin: 16px;
 `;
 
-type NormalsProps = {
-  tile: Tile3D;
-};
-
 const NORMALS_ABSENCE_MESSAGE = "The tile has no normals";
 
-export const Normals = ({ tile }: NormalsProps) => {
-  const isTileHasNormals = Boolean(tile?.content?.attributes?.normals);
-
+export const Normals = ({
+  isTileHasNormals,
+}: {
+  isTileHasNormals: boolean;
+}) => {
   return (
     <>
       {!isTileHasNormals && (

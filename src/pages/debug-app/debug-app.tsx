@@ -386,14 +386,14 @@ export const DebugApp = () => {
 
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
-      handleClosePanel();
+      handleCloseTilePanel();
       return;
     }
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
 
-  const handleClosePanel = () => {
+  const handleCloseTilePanel = () => {
     setSelectedTile(null);
     setNormalsDebugData(null);
   };
@@ -447,7 +447,7 @@ export const DebugApp = () => {
     return (
       <TileDetailsPanel
         tile={selectedTile}
-        handleClosePanel={handleClosePanel}
+        handleClosePanel={handleCloseTilePanel}
         deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
       >
@@ -478,6 +478,10 @@ export const DebugApp = () => {
   };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+    if (layout !== Layout.Desktop) {
+      handleCloseTilePanel();
+    }
+
     setActiveButton((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );

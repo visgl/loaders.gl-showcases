@@ -12,11 +12,18 @@ import { ValidateTilePanel } from "./validate-tile-panel";
 import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
-import { Layout, LayoutProps, ValidatedTile } from "../../types";
+import { Layout, LayoutProps, ValidatedTile, TileInfo } from "../../types";
 import {
   useAppLayout,
   getCurrentLayoutProperty,
 } from "../../utils/hooks/layout";
+import { getChildrenInfo } from "../../utils/debug/tile-debug";
+import {
+  formatFloatNumber,
+  formatIntValue,
+  formatStringValue,
+} from "../../utils/format/format-utils";
+import { getBoundingType } from "../../utils/debug/bounding-volume";
 
 enum ActiveTileInfoPanel {
   TileDetailsPanel,
@@ -25,7 +32,6 @@ enum ActiveTileInfoPanel {
 
 const Container = styled.div<LayoutProps>`
   position: absolute;
-  top: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,14 +44,20 @@ const Container = styled.div<LayoutProps>`
   max-height: ${getCurrentLayoutProperty({
     desktop: "75%",
     tablet: "50%",
-    mobile: "50%",
+    mobile: "380px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px",
+    tablet: "top: 24px",
+    mobile: "bottom: 85px",
   })};
 
   ${getCurrentLayoutProperty({
     desktop: "left: 10px",
     tablet: "right: 10px",
-    mobile: "left: calc(50% - 180px)",
-  })}
+    mobile: "right: calc(50% - 180px)",
+  })};
 `;
 
 const HeaderWrapper = styled.div`
@@ -100,6 +112,13 @@ type TileDetailsPanelProps = {
 
 const VALIDATE_TILE = "Validate Tile";
 
+const REFINEMENT_TYPES = {
+  1: "Add",
+  2: "Replace",
+};
+
+const NO_DATA = "No Data";
+
 export const TileDetailsPanel = ({
   tile,
   children,
@@ -123,6 +142,50 @@ export const TileDetailsPanel = ({
 
   const nonDesktopLayout = layout !== Layout.Desktop;
 
+  const {
+    id,
+    type,
+    header: { children: tileChildren },
+    distanceToCamera,
+    content: { vertexCount, texture, material },
+    refine,
+    lodMetricType,
+    lodMetricValue,
+    screenSpaceError,
+  } = tile;
+  const childrenInfo = getChildrenInfo(tileChildren);
+
+  const TILE_INFO: TileInfo[] = [
+    { title: "Tile Id", value: formatStringValue(id) || NO_DATA },
+    { title: "Type", value: formatStringValue(type) || NO_DATA },
+    {
+      title: "Children Count",
+      value: formatIntValue(childrenInfo.count) || NO_DATA,
+    },
+    {
+      title: "Children Ids",
+      value: formatStringValue(childrenInfo.ids) || NO_DATA,
+    },
+    { title: "Vertex count", value: formatIntValue(vertexCount) || NO_DATA },
+    {
+      title: "Distance to camera",
+      value: formatFloatNumber(distanceToCamera) || NO_DATA,
+    },
+    { title: "Refinement Type", value: REFINEMENT_TYPES[refine] || NO_DATA },
+    { title: "Has Texture", value: Boolean(texture).toString() },
+    { title: "Has Material", value: Boolean(material).toString() },
+    {
+      title: "Bounding Type",
+      value: formatStringValue(getBoundingType(tile)) || NO_DATA,
+    },
+    { title: "LOD Metric Type", value: formatStringValue(lodMetricType) },
+    { title: "LOD Metric Value", value: formatFloatNumber(lodMetricValue) },
+    {
+      title: "Screen Space Error",
+      value: formatFloatNumber(screenSpaceError) || NO_DATA,
+    },
+  ];
+  
   const onValidateTile = (tile: Tile3D) => {
     validateGeometryInsideBoundingVolume(tile);
     validateGeometryVsTexture(tile);
@@ -301,7 +364,6 @@ export const TileDetailsPanel = ({
       <HeaderWrapper title={title}>
         {!isDetailsPanel && (
           <BackButton
-            data-testid="attributes-panel-back-button"
             fill={theme.colors.fontColor}
             onClick={() => {
               setValidateTileOk([]);
@@ -331,9 +393,11 @@ export const TileDetailsPanel = ({
                 <ChevronIcon />
               </ArrowContainer>
             </ValidateButton>
-            <TileMetadata tile={tile} />
+            <TileMetadata tileInfo={TILE_INFO} />
             {children}
-            <Normals tile={tile} />
+            <Normals
+              isTileHasNormals={Boolean(tile?.content?.attributes?.normals)}
+            />
           </>
         )}
         {!isDetailsPanel && (

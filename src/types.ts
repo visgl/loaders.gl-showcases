@@ -343,3 +343,8 @@ export type DebugOptionsAction = {
     value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType;
   };
 };
+
+export type TileInfo = {
+  title: string;
+  value: any;
+};
