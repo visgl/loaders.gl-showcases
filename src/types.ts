@@ -48,8 +48,8 @@ export enum ActiveButton {
 }
 
 export enum BoundingVolumeType {
-  mbs = 'MBS',
-  obb = 'OBB'
+  mbs = "MBS",
+  obb = "OBB",
 }
 
 export enum ActionButtonVariant {
@@ -101,6 +101,16 @@ export enum ButtonSize {
   Small,
   Big,
 }
+
+export enum ValidatedDataType {
+  Warning = "warning",
+  Ok = "ok",
+}
+
+export type ValidatedTile = {
+  key: string;
+  title: string;
+};
 
 export type TileWarning = {
   type: string;
@@ -296,21 +306,21 @@ export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
 };
 
 export enum TileColoredBy {
-  original = 'Original',
-  random = 'Random by tile',
-  depth = 'By depth',
-  custom = 'User selected',
+  original = "Original",
+  random = "Random by tile",
+  depth = "By depth",
+  custom = "User selected",
 }
 
 export enum BoundingVolumeColoredBy {
-  original = 'Original',
-  tile = 'By tile',
+  original = "Original",
+  tile = "By tile",
 }
 
 export enum DebugOptionsActionKind {
   toggle,
   select,
-  reset
+  reset,
 }
 
 export type DebugOptions = {
@@ -324,9 +334,17 @@ export type DebugOptions = {
   loadTiles: boolean;
   showUVDebugTexture: boolean;
   wireframe: boolean;
-}
+};
 
 export type DebugOptionsAction = {
   type: DebugOptionsActionKind;
-  payload?: { optionName: keyof DebugOptions, value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType };
-}
+  payload?: {
+    optionName: keyof DebugOptions;
+    value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType;
+  };
+};
+
+export type TileInfo = {
+  title: string;
+  value: any;
+};

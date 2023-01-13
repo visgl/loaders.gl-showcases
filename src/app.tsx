@@ -16,6 +16,9 @@ import {
   color_canvas_secondary_inverted,
   color_accent_secondary,
   color_brand_quinary,
+  color_brand_secondary_dark,
+  color_accent_primary,
+  color_accent_tertiary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -69,6 +72,8 @@ const THEMES: AppThemes = {
       mainAttributeHighlightColor: hilite_canvas_primary,
       mainHistogramColor: color_brand_secondary,
       bookmarkFileInteracrions: dim_canvas_primary,
+      validateTileOk: color_brand_secondary_dark,
+      validateTileWarning: color_accent_tertiary,
     },
     name: Theme.Dark,
   },
@@ -97,6 +102,8 @@ const THEMES: AppThemes = {
       mainAttributeHighlightColor: dim_canvas_secondary,
       mainHistogramColor: color_brand_quinary,
       bookmarkFileInteracrions: color_canvas_secondary_inverted,
+      validateTileOk: color_brand_secondary,
+      validateTileWarning: color_accent_primary,
     },
     name: Theme.Light,
   },

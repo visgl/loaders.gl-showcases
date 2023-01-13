@@ -31,32 +31,24 @@ import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
-import {
-  BASE_MAPS,
-} from "../../constants/map-styles";
-import {
-  SemanticValidator,
-  TileValidator,
-  DebugPanel
-} from "../../components";
-import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
+import { BASE_MAPS } from "../../constants/map-styles";
+import { SemanticValidator, DebugPanel } from "../../components";
+import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
 import {
   color_brand_primary,
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
   getRGBValueFromColorObject,
-  makeRGBObjectFromColor
+  makeRGBObjectFromColor,
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
-import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
   BottomToolsPanelWrapper,
   MapArea,
@@ -76,9 +68,6 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
-
-const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
-const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -147,22 +136,24 @@ const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
   boundingVolumeType: BoundingVolumeType.mbs,
 };
 
-const debugOptionsReducer = (state: DebugOptions, action: DebugOptionsAction): DebugOptions => {
+const debugOptionsReducer = (
+  state: DebugOptions,
+  action: DebugOptionsAction
+): DebugOptions => {
   const { type, payload } = action;
 
   switch (type) {
     case DebugOptionsActionKind.toggle:
-
       if (payload) {
         const option = payload.optionName;
         return {
           ...state,
-          [option]: !state[option]
-        }
+          [option]: !state[option],
+        };
       }
       return {
-        ...state
-      }
+        ...state,
+      };
     case DebugOptionsActionKind.select:
       if (payload) {
         const option = payload.optionName;
@@ -172,28 +163,27 @@ const debugOptionsReducer = (state: DebugOptions, action: DebugOptionsAction): D
         };
       }
       return {
-        ...state
-      }
+        ...state,
+      };
     case DebugOptionsActionKind.reset:
       return {
-        ...INITIAL_DEBUG_OPTIONS_STATE
-      }
+        ...INITIAL_DEBUG_OPTIONS_STATE,
+      };
     default:
       return state;
   }
-}
+};
 
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, dispatchDebugOptions] = useReducer(debugOptionsReducer, INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, dispatchDebugOptions] = useReducer(
+    debugOptionsReducer,
+    INITIAL_DEBUG_OPTIONS_STATE
+  );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
-  const [trianglesPercentage, setTrianglesPercentage] = useState(
-    DEFAULT_TRIANGLES_PERCENTAGE
-  );
-  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -317,7 +307,7 @@ export const DebugApp = () => {
       setColoredTilesMap({});
       setSelectedTile(null);
     }
-  }, [debugOptions.tileColorMode])
+  }, [debugOptions.tileColorMode]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -396,14 +386,14 @@ export const DebugApp = () => {
 
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
-      handleClosePanel();
+      handleCloseTilePanel();
       return;
     }
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
 
-  const handleClosePanel = () => {
+  const handleCloseTilePanel = () => {
     setSelectedTile(null);
     setNormalsDebugData(null);
   };
@@ -442,64 +432,25 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
-  const handleShowNormals = (tile) => {
-    if (normalsDebugData === null) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    } else {
-      setNormalsDebugData(null);
-    }
-  };
-
-  const handleChangeTrianglesPercentage = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    const percent = validateTrianglesPercentage(newValue);
-    setTrianglesPercentage(percent);
-  };
-
-  const handleChangeNormalsLength = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    setNormalsLength(newValue);
-  };
-
-  const validateTrianglesPercentage = (newValue) => {
-    if (newValue < 0) {
-      return 1;
-    } else if (newValue > 100) {
-      return 100;
-    }
-    return newValue;
-  };
-
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
     }
 
-    const isShowColorPicker = debugOptions.tileColorMode === TileColoredBy.custom;
+    const isShowColorPicker =
+      debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    const title = `Tile: ${selectedTile.id}`;
 
     return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <TileMetadata tile={selectedTile}></TileMetadata>
-        <TileValidator
-          tile={selectedTile}
-          showNormals={Boolean(normalsDebugData)}
-          trianglesPercentage={trianglesPercentage}
-          normalsLength={normalsLength}
-          handleShowNormals={handleShowNormals}
-          handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-          handleChangeNormalsLength={handleChangeNormalsLength}
-        />
+      <TileDetailsPanel
+        tile={selectedTile}
+        handleClosePanel={handleCloseTilePanel}
+        deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
+        activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
+      >
         {isShowColorPicker && (
           <div style={CURSOR_STYLE}>
             <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
@@ -527,6 +478,10 @@ export const DebugApp = () => {
   };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+    if (layout !== Layout.Desktop) {
+      handleCloseTilePanel();
+    }
+
     setActiveButton((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );
@@ -632,7 +587,7 @@ export const DebugApp = () => {
   };
 
   const onWebGLInitialized = () => {
-    const stats = lumaStats.get('Memory Usage');
+    const stats = lumaStats.get("Memory Usage");
     setMemoryStats(stats);
   };
 
@@ -671,8 +626,6 @@ export const DebugApp = () => {
         loadTiles={loadTiles}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
-        normalsTrianglesPercentage={trianglesPercentage}
-        normalsLength={normalsLength}
         selectedTile={selectedTile}
         autoHighlight
         loadedTilesets={loadedTilesets}
@@ -747,15 +700,13 @@ export const DebugApp = () => {
       {activeButton === ActiveButton.memory && (
         <RightSidePanelWrapper layout={layout}>
           <MemoryUsagePanel
-            id={'debug-memory-usage-panel'}
+            id={"debug-memory-usage-panel"}
             memoryStats={memoryStats}
             activeLayers={activeLayers}
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() =>
-              onChangeMainToolsPanelHandler(ActiveButton.memory)
-            }
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
           />
         </RightSidePanelWrapper>
       )}
