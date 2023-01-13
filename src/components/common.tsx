@@ -1,5 +1,8 @@
 import styled from "styled-components";
-import { color_brand_quaternary, color_brand_tertiary } from "../constants/colors";
+import {
+  color_brand_quaternary,
+  color_brand_tertiary,
+} from "../constants/colors";
 import { LayoutProps } from "../types";
 import { Theme } from "../utils/enums";
 import { getCurrentLayoutProperty } from "../utils/hooks/layout";
@@ -9,7 +12,7 @@ export enum Panels {
   ComparisonParams,
   MemoryUsage,
   Bookmarks,
-  Debug
+  Debug,
 }
 
 export const MapArea = styled.div`

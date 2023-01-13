@@ -41,15 +41,14 @@ import { Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { BASE_MAPS } from "../../constants/map-styles";
-import { SemanticValidator, TileValidator, DebugPanel } from "../../components";
-import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
+import { SemanticValidator, DebugPanel } from "../../components";
+import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
 import {
   color_brand_primary,
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
   getRGBValueFromColorObject,
@@ -59,7 +58,6 @@ import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
-import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
   BottomToolsPanelWrapper,
   MapArea,
@@ -80,9 +78,6 @@ import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
-
-const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
-const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -199,10 +194,6 @@ export const DebugApp = () => {
   );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
-  const [trianglesPercentage, setTrianglesPercentage] = useState(
-    DEFAULT_TRIANGLES_PERCENTAGE
-  );
-  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -416,14 +407,14 @@ export const DebugApp = () => {
 
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
-      handleClosePanel();
+      handleCloseTilePanel();
       return;
     }
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
 
-  const handleClosePanel = () => {
+  const handleCloseTilePanel = () => {
     setSelectedTile(null);
     setNormalsDebugData(null);
   };
@@ -462,40 +453,6 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
-  const handleShowNormals = (tile) => {
-    if (normalsDebugData === null) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    } else {
-      setNormalsDebugData(null);
-    }
-  };
-
-  const handleChangeTrianglesPercentage = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    const percent = validateTrianglesPercentage(newValue);
-    setTrianglesPercentage(percent);
-  };
-
-  const handleChangeNormalsLength = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    setNormalsLength(newValue);
-  };
-
-  const validateTrianglesPercentage = (newValue) => {
-    if (newValue < 0) {
-      return 1;
-    } else if (newValue > 100) {
-      return 100;
-    }
-    return newValue;
-  };
-
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
@@ -507,20 +464,14 @@ export const DebugApp = () => {
     const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    const title = `Tile: ${selectedTile.id}`;
 
     return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <TileMetadata tile={selectedTile}></TileMetadata>
-        <TileValidator
-          tile={selectedTile}
-          showNormals={Boolean(normalsDebugData)}
-          trianglesPercentage={trianglesPercentage}
-          normalsLength={normalsLength}
-          handleShowNormals={handleShowNormals}
-          handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-          handleChangeNormalsLength={handleChangeNormalsLength}
-        />
+      <TileDetailsPanel
+        tile={selectedTile}
+        handleClosePanel={handleCloseTilePanel}
+        deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
+        activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
+      >
         {isShowColorPicker && (
           <div style={CURSOR_STYLE}>
             <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
@@ -548,6 +499,10 @@ export const DebugApp = () => {
   };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+    if (layout !== Layout.Desktop) {
+      handleCloseTilePanel();
+    }
+
     setActiveButton((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );
@@ -751,8 +706,6 @@ export const DebugApp = () => {
         loadTiles={loadTiles}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
-        normalsTrianglesPercentage={trianglesPercentage}
-        normalsLength={normalsLength}
         selectedTile={selectedTile}
         autoHighlight
         loadedTilesets={loadedTilesets}
