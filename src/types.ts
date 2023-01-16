@@ -348,3 +348,9 @@ export type TileInfo = {
   title: string;
   value: any;
 };
+
+export type TileSelectedColor = {
+  r: number;
+  g: number;
+  b: number;
+};
