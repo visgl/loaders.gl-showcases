@@ -349,6 +349,11 @@ export type TileInfo = {
   value: any;
 };
 
+export type MinimapPosition = {
+  x: string;
+  y: string;
+}
+
 export type TileSelectedColor = {
   r: number;
   g: number;

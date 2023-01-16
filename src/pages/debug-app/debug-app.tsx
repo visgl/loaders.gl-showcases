@@ -18,10 +18,19 @@ import {
   BoundingVolumeColoredBy,
   TileColoredBy,
   Layout,
+  DragMode,
+  MinimapPosition,
   TileSelectedColor,
 } from "../../types";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
@@ -64,6 +73,7 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 import { ColorResult } from "react-color";
 
@@ -184,12 +194,23 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
+  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
     [activeLayers]
   );
+
+  const isMobileLayout = layout === Layout.Mobile;
+
+  const minimapPosition: MinimapPosition = useMemo(() => {
+    return {
+      x: isMobileLayout ? "2%" : "1%",
+      y: isMobileLayout ? "1%" : "79%",
+    };
+  }, []);
+
   const layers3d = useMemo(() => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
@@ -474,26 +495,27 @@ export const DebugApp = () => {
     );
   };
 
-  const pointToTileset = (layerViewState?: LayerViewState) => {
+  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
     if (layerViewState) {
-      const { zoom, longitude, latitude } = layerViewState;
-
-      setViewState({
-        main: {
-          ...viewState.main,
-          zoom: zoom + 2.5,
-          longitude,
-          latitude,
-          transitionDuration: 1000,
-        },
-        minimap: {
-          ...viewState.minimap,
-          longitude,
-          latitude,
-        },
+      setViewState((viewStatePrev) => {
+        const { zoom, longitude, latitude } = layerViewState;
+        return {
+          main: {
+            ...viewStatePrev.main,
+            zoom: zoom + 2.5,
+            longitude,
+            latitude,
+            transitionDuration: 1000,
+          },
+          minimap: {
+            ...viewStatePrev.minimap,
+            longitude,
+            latitude,
+          },
+        };
       });
     }
-  };
+  }, []);
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -541,6 +563,64 @@ export const DebugApp = () => {
     setMemoryStats(stats);
   };
 
+  const onZoomIn = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, maxZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === maxZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+        minimap: {
+          ...viewStatePrev.minimap,
+        },
+      };
+    });
+  }, []);
+
+  const onZoomOut = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, minZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === minZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+        minimap: {
+          ...viewStatePrev.minimap,
+        },
+      };
+    });
+  }, []);
+
+  const onCompassClick = useCallback(() => {
+    setViewState((viewStatePrev) => ({
+      main: {
+        ...viewStatePrev.main,
+        bearing: 0,
+        transitionDuration: 1000,
+      },
+      minimap: {
+        ...viewStatePrev.minimap,
+      },
+    }));
+  }, []);
+
+  const toggleDragMode = useCallback(() => {
+    setDragMode((prev) => {
+      if (prev === DragMode.pan) {
+        return DragMode.rotate;
+      }
+      return DragMode.pan;
+    });
+  }, []);
+
   const {
     minimap,
     minimapViewport,
@@ -579,6 +659,7 @@ export const DebugApp = () => {
         selectedTile={selectedTile}
         autoHighlight
         loadedTilesets={loadedTilesets}
+        minimapPosition={minimapPosition}
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
@@ -660,6 +741,14 @@ export const DebugApp = () => {
           />
         </RightSidePanelWrapper>
       )}
+      <MapControllPanel
+        bearing={viewState.main.bearing}
+        dragMode={dragMode}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onCompassClick={onCompassClick}
+        onDragModeToggle={toggleDragMode}
+      />
     </MapArea>
   );
 };
