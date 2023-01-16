@@ -348,3 +348,8 @@ export type TileInfo = {
   title: string;
   value: any;
 };
+
+export type MinimapPosition = {
+  x: string;
+  y: string;
+}
