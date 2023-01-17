@@ -19,12 +19,12 @@ import {
   Bookmark,
   DragMode,
   MinimapPosition,
+  TileSelectedColor,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
  
 import { render } from "react-dom";
-import { HuePicker, MaterialPicker } from "react-color";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
 
@@ -38,10 +38,6 @@ import { BASE_MAPS } from "../../constants/map-styles";
 import { SemanticValidator, DebugPanel } from "../../components";
 import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
-import {
-  color_brand_primary,
-  color_canvas_primary_inverted,
-} from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
@@ -75,6 +71,8 @@ import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel
 import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
+import { ColorResult } from "react-color";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -96,25 +94,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0,
   },
-};
-
-const MATERIAL_PICKER_STYLE = {
-  default: {
-    material: {
-      height: "auto",
-      width: "auto",
-    },
-  },
-};
-
-const TILE_COLOR_SELECTOR = "Tile Color Selector";
-
-const HEADER_STYLE = {
-  color: color_canvas_primary_inverted,
-};
-
-const CURSOR_STYLE = {
-  cursor: "pointer",
 };
 
 const colorMap = new ColorMap();
@@ -379,36 +358,20 @@ export const DebugApp = () => {
     setNormalsDebugData(null);
   };
 
-  const handleSelectTileColor = (tileId, selectedColor) => {
+  const handleSelectTileColor = (tileId: string, selectedColor: ColorResult) => {
     const color = getRGBValueFromColorObject(selectedColor);
     const updatedMap = {
       ...coloredTilesMap,
       ...{ [tileId]: color },
     };
+    
     setColoredTilesMap(updatedMap);
   };
 
-  const handleResetColor = (tileId) => {
+  const handleResetColor = (tileId: string) => {
     const updatedColoredMap = { ...coloredTilesMap };
     delete updatedColoredMap[tileId];
     setColoredTilesMap(updatedColoredMap);
-  };
-
-  const getResetButtonStyle = (isResetButtonDisabled) => {
-    return {
-      display: "flex",
-      padding: "4px 16px",
-      borderRadius: "8px",
-      alignItems: "center",
-      height: "27px",
-      fontWeight: "bold",
-      marginTop: "10px",
-      cursor: isResetButtonDisabled ? "auto" : "pointer",
-      color: isResetButtonDisabled
-        ? "rgba(255,255,255,.6)"
-        : color_canvas_primary_inverted,
-      background: isResetButtonDisabled ? color_brand_primary : "#4F52CC",
-    };
   };
 
   const handleClearWarnings = () => setWarnings([]);
@@ -422,7 +385,7 @@ export const DebugApp = () => {
       debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
-    const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
+    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
 
     return (
@@ -433,26 +396,13 @@ export const DebugApp = () => {
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
       >
         {isShowColorPicker && (
-          <div style={CURSOR_STYLE}>
-            <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
-            <HuePicker
-              width={"auto"}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
-            />
-            <MaterialPicker
-              styles={MATERIAL_PICKER_STYLE}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
-            />
-            <button
-              disabled={isResetButtonDisabled}
-              style={getResetButtonStyle(isResetButtonDisabled)}
-              onClick={() => handleResetColor(tileId)}
-            >
-              Reset
-            </button>
-          </div>
+          <TileColorSection
+            tileId={tileId}
+            tileSelectedColor={tileSelectedColor}
+            isResetButtonDisabled={isResetButtonDisabled}
+            handleResetColor={handleResetColor}
+            handleSelectTileColor={handleSelectTileColor}
+          />
         )}
       </TileDetailsPanel>
     );
