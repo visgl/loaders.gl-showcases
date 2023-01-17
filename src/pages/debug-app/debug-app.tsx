@@ -78,6 +78,7 @@ import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -119,6 +120,9 @@ const HEADER_STYLE = {
 const CURSOR_STYLE = {
   cursor: "pointer",
 };
+
+const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
+const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
 
@@ -194,6 +198,10 @@ export const DebugApp = () => {
   );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
+  const [trianglesPercentage, setTrianglesPercentage] = useState(
+    DEFAULT_TRIANGLES_PERCENTAGE
+  );
+  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -453,6 +461,40 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
+  const handleShowNormals = (tile) => {
+    if (normalsDebugData === null) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    } else {
+      setNormalsDebugData(null);
+    }
+  };
+
+  const handleChangeTrianglesPercentage = (tile, newValue) => {
+    if (normalsDebugData?.length) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    }
+
+    const percent = validateTrianglesPercentage(newValue);
+    setTrianglesPercentage(percent);
+  };
+
+  const handleChangeNormalsLength = (tile, newValue) => {
+    if (normalsDebugData?.length) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    }
+
+    setNormalsLength(newValue);
+  };
+
+  const validateTrianglesPercentage = (newValue) => {
+    if (newValue < 0) {
+      return 1;
+    } else if (newValue > 100) {
+      return 100;
+    }
+    return newValue;
+  };
+
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
@@ -468,6 +510,11 @@ export const DebugApp = () => {
     return (
       <TileDetailsPanel
         tile={selectedTile}
+        trianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
+        handleShowNormals={handleShowNormals}
+        handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
+        handleChangeNormalsLength={handleChangeNormalsLength}
         handleClosePanel={handleCloseTilePanel}
         deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
@@ -695,6 +742,8 @@ export const DebugApp = () => {
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
+        normalsTrianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
         boundingVolumeType={boundingVolume ? boundingVolumeType : null}
         boundingVolumeColorMode={boundingVolumeColorMode}
         pickable={pickable}

@@ -104,6 +104,11 @@ const ArrowContainer = styled.div`
 
 type TileDetailsPanelProps = {
   tile: Tile3D;
+  trianglesPercentage: number;
+  normalsLength: number;
+  handleShowNormals: (tile: Tile3D) => void;
+  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
+  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
   handleClosePanel: () => void;
   deactiveDebugPanel: () => void;
   activeDebugPanel: () => void;
@@ -121,8 +126,13 @@ const NO_DATA = "No Data";
 
 export const TileDetailsPanel = ({
   tile,
+  trianglesPercentage,
+  normalsLength,
   children,
   handleClosePanel,
+  handleShowNormals,
+  handleChangeTrianglesPercentage,
+  handleChangeNormalsLength,
   deactiveDebugPanel,
   activeDebugPanel,
 }: TileDetailsPanelProps) => {
@@ -185,7 +195,7 @@ export const TileDetailsPanel = ({
       value: formatFloatNumber(screenSpaceError) || NO_DATA,
     },
   ];
-  
+
   const onValidateTile = (tile: Tile3D) => {
     validateGeometryInsideBoundingVolume(tile);
     validateGeometryVsTexture(tile);
@@ -396,7 +406,12 @@ export const TileDetailsPanel = ({
             <TileMetadata tileInfo={TILE_INFO} />
             {children}
             <Normals
-              isTileHasNormals={Boolean(tile?.content?.attributes?.normals)}
+              tile={tile}
+              trianglesPercentage={trianglesPercentage}
+              normalsLength={normalsLength}
+              handleShowNormals={handleShowNormals}
+              handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
+              handleChangeNormalsLength={handleChangeNormalsLength}
             />
           </>
         )}
