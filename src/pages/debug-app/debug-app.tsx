@@ -793,10 +793,15 @@ export const DebugApp = () => {
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.validator && (
-        <SemanticValidator
-          warnings={warnings}
-          clearWarnings={handleClearWarnings}
-        />
+        <RightSidePanelWrapper layout={layout}>
+          <SemanticValidator
+            warnings={warnings}
+            clearWarnings={handleClearWarnings}
+            onClose={() =>
+              onChangeMainToolsPanelHandler(ActiveButton.validator)
+            }
+          />
+        </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.memory && (
         <RightSidePanelWrapper layout={layout}>

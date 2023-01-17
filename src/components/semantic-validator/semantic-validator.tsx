@@ -5,6 +5,8 @@ import {
   color_brand_primary, color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import { PanelContainer, PanelContent, PanelHeader, PanelHorizontalLine, Panels, Title } from "../common";
+import { CloseButton } from "../close-button/close-button";
 
 const SemanticValidatorContainer = styled.div<LayoutProps>`
   display: flex;
@@ -31,15 +33,17 @@ const SemanticValidatorContainer = styled.div<LayoutProps>`
 
 const Table = styled.table`
   width: 100%;
+  color: #ffffff;
+  font-size: 16px;
 `;
 
 const TableHeader = styled.th`
   position: sticky;
   top: 0;
   text-align: left;
-  background: ${color_brand_primary};
+  font-size: 16px;
   padding: 8px;
-  height: 22px;
+  height: 44px;
 `;
 
 const NoIssuesItem = styled.h4`
@@ -51,18 +55,17 @@ const NoIssuesItem = styled.h4`
 const TableButton = styled.button`
   display: flex;
   position: absolute;
-  top: 0;
+  top: 6px;
   right: 0;
-  width: 90px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   background: transparent;
   padding: 4px 16px;
-  margin: 0 10px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
   font-weight: 500px;
-  border-radius: 4px;
-  margin: 8px;
+  border-radius: 12px;
+  border: 1px solid #ffffff;
   cursor: pointer;
 `;
 
@@ -95,7 +98,7 @@ const defaultProps = {
 /**
  * TODO: Add types to component
  */
-export const SemanticValidator = ({ warnings, clearWarnings }) => {
+export const SemanticValidator = ({ warnings, clearWarnings, onClose }) => {
   const layout = useAppLayout();
 
   const renderColumns = (warnings) =>
@@ -124,7 +127,7 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
             <TableHeader>{WARNING_TYPE}</TableHeader>
             <TableHeader>
               {WARNING}
-              <TableButton onClick={clearWarnings}>Clear All</TableButton>
+              <TableButton onClick={clearWarnings}>Clear</TableButton>
             </TableHeader>
           </Row>
         </thead>
@@ -134,13 +137,20 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
   };
 
   return (
-    <SemanticValidatorContainer id="semantic-validator" layout={layout}>
-      {warnings && Boolean(warnings.length) ? (
-        renderWarnings(warnings)
-      ) : (
-        <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
-      )}
-    </SemanticValidatorContainer>
+    <PanelContainer id="semantic-validator" layout={layout}>
+      <PanelHeader panel={Panels.MemoryUsage}>
+        <Title left={16}>Validator</Title>
+        <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
+      </PanelHeader>
+      <PanelHorizontalLine top={10} />
+      <PanelContent>
+        {warnings && Boolean(warnings.length) ? (
+          renderWarnings(warnings)
+        ) : (
+          <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
+        )}
+      </PanelContent>
+    </PanelContainer>
   );
 };
 
