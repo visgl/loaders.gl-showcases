@@ -275,6 +275,7 @@ export type Bookmark = {
   id: string;
   imageUrl: string;
   viewState: ViewStateSet;
+  debugOptions?: DebugOptions;
   layersLeftSide: LayerExample[];
   activeLayersIdsLeftSide: string[];
   layersRightSide: LayerExample[];
@@ -317,12 +318,6 @@ export enum BoundingVolumeColoredBy {
   tile = "By tile",
 }
 
-export enum DebugOptionsActionKind {
-  toggle,
-  select,
-  reset,
-}
-
 export type DebugOptions = {
   minimap: boolean;
   minimapViewport: boolean;
@@ -336,14 +331,6 @@ export type DebugOptions = {
   wireframe: boolean;
 };
 
-export type DebugOptionsAction = {
-  type: DebugOptionsActionKind;
-  payload?: {
-    optionName: keyof DebugOptions;
-    value?: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType;
-  };
-};
-
 export type TileInfo = {
   title: string;
   value: any;
@@ -353,3 +340,9 @@ export type MinimapPosition = {
   x: string;
   y: string;
 }
+
+export type TileSelectedColor = {
+  r: number;
+  g: number;
+  b: number;
+};

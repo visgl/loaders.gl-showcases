@@ -116,6 +116,11 @@ describe("DebugApp", () => {
     await page.click("#memory-usage-tab");
     await page.waitForSelector("#debug-memory-usage-panel", { visible: true });
   });
+
+  it("Bookmarks tab works", async () => {
+    await page.click("#bookmarks-tab");
+    await page.waitForSelector("#debug-bookmarks-panel", { visible: true });
+  });
 });
 
 const chevronSvgHtml =

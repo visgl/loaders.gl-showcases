@@ -5,7 +5,6 @@ import { DebugPanel } from "./debug-panel";
 import {
   BoundingVolumeColoredBy,
   BoundingVolumeType,
-  DebugOptionsActionKind,
   TileColoredBy,
 } from "../../types";
 import userEvent from "@testing-library/user-event";
@@ -52,58 +51,58 @@ const toggles = {
   differentViewports: {
     toggleId: "toggle-minimap-viewport",
     titleText: "Use different Viewports",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "minimapViewport" },
-    },
+    calledWith: [
+      'minimapViewport',
+      true,
+    ],
   },
   minimap: {
     toggleId: "toggle-minimap",
     titleText: "Minimap",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "minimap" },
-    },
+    calledWith: [
+      'minimap',
+      false,
+    ],
   },
   loadingTiles: {
     toggleId: "toggle-loading-tiles",
     titleText: "Loading Tiles",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "loadTiles" },
-    },
+    calledWith: [
+      'loadTiles',
+      true,
+    ],
   },
   picking: {
     toggleId: "toggle-enable-picking",
     titleText: "Enable picking",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "pickable" },
-    },
+    calledWith: [
+      'pickable',
+      true,
+    ],
   },
   wireframe: {
     toggleId: "toggle-enable-wireframe",
     titleText: "Wireframe mode",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "wireframe" },
-    },
+    calledWith: [
+      'wireframe',
+      true,
+    ],
   },
   textureUvs: {
     toggleId: "toggle-enable-texture-uvs",
     titleText: "Texture UVs",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "showUVDebugTexture" },
-    },
+    calledWith: [
+      'showUVDebugTexture',
+      true,
+    ],
   },
   boundingVolumes: {
     toggleId: "toggle-enable-bounding-volumes",
     titleText: "Bounding Volumes",
-    calledWith: {
-      type: DebugOptionsActionKind.toggle,
-      payload: { optionName: "boundingVolume" },
-    },
+    calledWith: [
+      'boundingVolume',
+      true,
+    ],
   },
 };
 
@@ -115,7 +114,7 @@ const checkToggleTitleAndEvent = ({ toggleId, titleText, calledWith }) => {
   if (toggle) {
     userEvent.click(toggle);
   }
-  expect(onChangeOptionMock).toHaveBeenCalledWith(calledWith);
+  expect(onChangeOptionMock).toHaveBeenCalledWith(...calledWith);
 };
 
 describe("Debug panel", () => {
@@ -184,50 +183,38 @@ describe("Debug panel", () => {
     const colorItems = [
       {
         buttonText: "Original",
-        calledWith: {
-          type: DebugOptionsActionKind.select,
-          payload: {
-            optionName: "tileColorMode",
-            value: TileColoredBy.original,
-          },
-        },
+        calledWith: [
+          'tileColorMode',
+          TileColoredBy.original
+        ]
       },
       {
         buttonText: "Random by tile",
-        calledWith: {
-          type: DebugOptionsActionKind.select,
-          payload: {
-            optionName: "tileColorMode",
-            value: TileColoredBy.random,
-          },
-        },
+        calledWith: [
+          'tileColorMode',
+          TileColoredBy.random
+        ]
       },
       {
         buttonText: "By depth",
-        calledWith: {
-          type: DebugOptionsActionKind.select,
-          payload: {
-            optionName: "tileColorMode",
-            value: TileColoredBy.depth,
-          },
-        },
+        calledWith: [
+          'tileColorMode',
+          TileColoredBy.depth
+        ]
       },
       {
         buttonText: "User selected",
-        calledWith: {
-          type: DebugOptionsActionKind.select,
-          payload: {
-            optionName: "tileColorMode",
-            value: TileColoredBy.custom,
-          },
-        },
+        calledWith: [
+          'tileColorMode',
+          TileColoredBy.custom
+        ]
       },
     ];
 
     for (const colorItem of colorItems) {
       const button = screen.getByText(colorItem.buttonText);
       userEvent.click(button);
-      expect(onChangeOptionMock).toHaveBeenCalledWith(colorItem.calledWith);
+      expect(onChangeOptionMock).toHaveBeenCalledWith(...colorItem.calledWith);
     }
   });
 
@@ -252,24 +239,11 @@ describe("Debug panel", () => {
     const originalColorButton = screen.getAllByText("Original")[1];
     userEvent.click(originalColorButton);
 
-    expect(onChangeOptionMock).toHaveBeenCalledWith({
-      type: DebugOptionsActionKind.select,
-      payload: {
-        optionName: "boundingVolumeColorMode",
-        value: BoundingVolumeColoredBy.original,
-      },
-    });
+    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeColorMode', BoundingVolumeColoredBy.original);
 
     const byTileColorButton = screen.getByText("By tile");
     userEvent.click(byTileColorButton);
-
-    expect(onChangeOptionMock).toHaveBeenCalledWith({
-      type: DebugOptionsActionKind.select,
-      payload: {
-        optionName: "boundingVolumeColorMode",
-        value: BoundingVolumeColoredBy.tile,
-      },
-    });
+    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeColorMode', BoundingVolumeColoredBy.tile);
   });
 
   it("Should be able to select bounding volume type", () => {
@@ -293,23 +267,11 @@ describe("Debug panel", () => {
     const OBBButton = screen.getByText("OBB");
     userEvent.click(OBBButton);
 
-    expect(onChangeOptionMock).toHaveBeenCalledWith({
-      type: DebugOptionsActionKind.select,
-      payload: {
-        optionName: "boundingVolumeType",
-        value: BoundingVolumeType.obb,
-      },
-    });
+    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeType', BoundingVolumeType.obb);
 
     const MBSButton = screen.getByText("MBS");
     userEvent.click(MBSButton);
 
-    expect(onChangeOptionMock).toHaveBeenCalledWith({
-      type: DebugOptionsActionKind.select,
-      payload: {
-        optionName: "boundingVolumeType",
-        value: BoundingVolumeType.mbs,
-      },
-    });
+    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeType', BoundingVolumeType.mbs);
   });
 });

@@ -13,30 +13,24 @@ import {
   ListItemType,
   BoundingVolumeType,
   DebugOptions,
-  DebugOptionsAction,
-  DebugOptionsActionKind,
   BoundingVolumeColoredBy,
   TileColoredBy,
   Layout,
+  Bookmark,
   DragMode,
   MinimapPosition,
+  TileSelectedColor,
 } from "../../types";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+ 
 import { render } from "react-dom";
-import { HuePicker, MaterialPicker } from "react-color";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
 
 import { load } from "@loaders.gl/core";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
@@ -44,10 +38,6 @@ import { BASE_MAPS } from "../../constants/map-styles";
 import { SemanticValidator, DebugPanel } from "../../components";
 import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
-import {
-  color_brand_primary,
-  color_canvas_primary_inverted,
-} from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
@@ -77,7 +67,12 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
+import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
+import { downloadJsonFile } from "../../utils/files-utils";
+import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
+import { ColorResult } from "react-color";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 
 const INITIAL_VIEW_STATE = {
@@ -100,25 +95,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0,
   },
-};
-
-const MATERIAL_PICKER_STYLE = {
-  default: {
-    material: {
-      height: "auto",
-      width: "auto",
-    },
-  },
-};
-
-const TILE_COLOR_SELECTOR = "Tile Color Selector";
-
-const HEADER_STYLE = {
-  color: color_canvas_primary_inverted,
-};
-
-const CURSOR_STYLE = {
-  cursor: "pointer",
 };
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
@@ -150,52 +126,11 @@ const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
   boundingVolumeType: BoundingVolumeType.mbs,
 };
 
-const debugOptionsReducer = (
-  state: DebugOptions,
-  action: DebugOptionsAction
-): DebugOptions => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case DebugOptionsActionKind.toggle:
-      if (payload) {
-        const option = payload.optionName;
-        return {
-          ...state,
-          [option]: !state[option],
-        };
-      }
-      return {
-        ...state,
-      };
-    case DebugOptionsActionKind.select:
-      if (payload) {
-        const option = payload.optionName;
-        return {
-          ...state,
-          [option]: payload.value,
-        };
-      }
-      return {
-        ...state,
-      };
-    case DebugOptionsActionKind.reset:
-      return {
-        ...INITIAL_DEBUG_OPTIONS_STATE,
-      };
-    default:
-      return state;
-  }
-};
-
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, dispatchDebugOptions] = useReducer(
-    debugOptionsReducer,
-    INITIAL_DEBUG_OPTIONS_STATE
-  );
+  const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -216,6 +151,10 @@ export const DebugApp = () => {
   const [activeButton, setActiveButton] = useState<ActiveButton>(
     ActiveButton.none
   );
+  const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
+  const [preventTransitions, setPreventTransitions] = useState<boolean>(false);
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
@@ -328,7 +267,7 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    dispatchDebugOptions({ type: DebugOptionsActionKind.reset });
+    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
   }, [activeLayers]);
 
   useEffect(() => {
@@ -427,36 +366,20 @@ export const DebugApp = () => {
     setNormalsDebugData(null);
   };
 
-  const handleSelectTileColor = (tileId, selectedColor) => {
+  const handleSelectTileColor = (tileId: string, selectedColor: ColorResult) => {
     const color = getRGBValueFromColorObject(selectedColor);
     const updatedMap = {
       ...coloredTilesMap,
       ...{ [tileId]: color },
     };
+    
     setColoredTilesMap(updatedMap);
   };
 
-  const handleResetColor = (tileId) => {
+  const handleResetColor = (tileId: string) => {
     const updatedColoredMap = { ...coloredTilesMap };
     delete updatedColoredMap[tileId];
     setColoredTilesMap(updatedColoredMap);
-  };
-
-  const getResetButtonStyle = (isResetButtonDisabled) => {
-    return {
-      display: "flex",
-      padding: "4px 16px",
-      borderRadius: "8px",
-      alignItems: "center",
-      height: "27px",
-      fontWeight: "bold",
-      marginTop: "10px",
-      cursor: isResetButtonDisabled ? "auto" : "pointer",
-      color: isResetButtonDisabled
-        ? "rgba(255,255,255,.6)"
-        : color_canvas_primary_inverted,
-      background: isResetButtonDisabled ? color_brand_primary : "#4F52CC",
-    };
   };
 
   const handleClearWarnings = () => setWarnings([]);
@@ -504,7 +427,7 @@ export const DebugApp = () => {
       debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
-    const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
+    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
 
     return (
@@ -520,26 +443,13 @@ export const DebugApp = () => {
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
       >
         {isShowColorPicker && (
-          <div style={CURSOR_STYLE}>
-            <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
-            <HuePicker
-              width={"auto"}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
-            />
-            <MaterialPicker
-              styles={MATERIAL_PICKER_STYLE}
-              color={tileSelectedColor}
-              onChange={(color) => handleSelectTileColor(tileId, color)}
-            />
-            <button
-              disabled={isResetButtonDisabled}
-              style={getResetButtonStyle(isResetButtonDisabled)}
-              onClick={() => handleResetColor(tileId)}
-            >
-              Reset
-            </button>
-          </div>
+          <TileColorSection
+            tileId={tileId}
+            tileSelectedColor={tileSelectedColor}
+            isResetButtonDisabled={isResetButtonDisabled}
+            handleResetColor={handleResetColor}
+            handleSelectTileColor={handleSelectTileColor}
+          />
         )}
       </TileDetailsPanel>
     );
@@ -560,6 +470,7 @@ export const DebugApp = () => {
     setExamples(newExamples);
     const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
     setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
   };
 
   const onLayerSelectHandler = (
@@ -572,6 +483,7 @@ export const DebugApp = () => {
       rootLayer
     );
     setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
   };
 
   const onLayerDeleteHandler = (id: string) => {
@@ -660,6 +572,106 @@ export const DebugApp = () => {
     setMemoryStats(stats);
   };
 
+  const onBookmarkClick = useCallback(() => {
+    setShowBookmarksPanel((prev) => !prev);
+  }, []);
+
+  const makeScreenshot = async () => {
+    const imageUrl = await createViewerBookmarkThumbnail("#debug-deck-container-wrapper");
+
+    if (!imageUrl) {
+      throw new Error();
+    }
+    return imageUrl;
+  };
+
+  const addBookmarkHandler = () => {
+    const newBookmarkId = uuidv4();
+    setSelectedBookmarkId(newBookmarkId);
+    makeScreenshot().then((imageUrl) => {
+      setBookmarks((prev) => [
+        ...prev,
+        {
+          id: newBookmarkId,
+          imageUrl,
+          viewState,
+          debugOptions,
+          layersLeftSide: activeLayers,
+          layersRightSide: [],
+          activeLayersIdsLeftSide: [...selectedLayerIds],
+          activeLayersIdsRightSide: [],
+        },
+      ]);
+    });
+  };
+
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+    if (!bookmark) {
+      return;
+    }
+    setSelectedBookmarkId(bookmark.id);
+    setPreventTransitions(true);
+    setViewState(bookmark.viewState);
+    setActiveLayers(bookmark.layersLeftSide);
+
+    setTimeout(() => {
+      if (bookmark?.debugOptions) {
+        setDebugOptions(bookmark.debugOptions);
+      }
+    }, IS_LOADED_DELAY);
+  };
+
+  const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
+    setBookmarks((prev) =>
+      prev.filter((bookmark) => bookmark.id !== bookmarkId)
+    );
+  }, []);
+
+  const onEditBookmarkHandler = (bookmarkId: string) => {
+    makeScreenshot().then((imageUrl) => {
+      setBookmarks((prev) =>
+        prev.map((bookmark) =>
+          bookmark.id === bookmarkId
+            ? {
+              ...bookmark,
+              imageUrl,
+              viewState,
+              debugOptions,
+              layersLeftSide: activeLayers,
+              layersRightSide: [],
+              activeLayersIdsLeftSide: selectedLayerIds,
+              activeLayersIdsRightSide: [],
+            }
+            : bookmark
+        )
+      );
+    });
+  };
+
+  const onCloseBookmarkPanel = useCallback(() => {
+    setShowBookmarksPanel(false);
+  }, []);
+
+  const onDownloadBookmarksHandler = () => {
+    downloadJsonFile(bookmarks, "bookmarks.json");
+  };
+
+  const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+    onSelectBookmarkHandler(bookmarks[0].id);
+  };
+
+  const handleChangeDebugOptions = useCallback((
+    optionName: keyof DebugOptions,
+    value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
+  ) => {
+    setDebugOptions(prevValues => ({
+      ...prevValues,
+      [optionName]: value
+    }))
+  }, []);
+  
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
@@ -735,6 +747,7 @@ export const DebugApp = () => {
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
+        id="debug-deck-container"
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
         parentViewState={viewState}
@@ -766,6 +779,7 @@ export const DebugApp = () => {
         onTilesetLoad={onTilesetLoad}
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
+        preventTransitions={preventTransitions}
       />
       {layout !== Layout.Mobile && (
         <RightSideToolsPanelWrapper layout={layout}>
@@ -775,7 +789,10 @@ export const DebugApp = () => {
             showLayerOptions
             showDebug
             showValidator
+            showBookmarks
             onChange={onChangeMainToolsPanelHandler}
+            bookmarksActive={showBookmarksPanel}
+            onShowBookmarksChange={onBookmarkClick}
           />
         </RightSideToolsPanelWrapper>
       )}
@@ -786,7 +803,10 @@ export const DebugApp = () => {
             activeButton={activeButton}
             showDebug
             showValidator
+            showBookmarks
             onChange={onChangeMainToolsPanelHandler}
+            bookmarksActive={showBookmarksPanel}
+            onShowBookmarksChange={onBookmarkClick}
           />
         </BottomToolsPanelWrapper>
       )}
@@ -817,7 +837,7 @@ export const DebugApp = () => {
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
             debugOptions={debugOptions}
-            onChangeOption={dispatchDebugOptions}
+            onChangeOption={handleChangeDebugOptions}
           />
         </RightSidePanelWrapper>
       )}
@@ -839,6 +859,23 @@ export const DebugApp = () => {
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
           />
         </RightSidePanelWrapper>
+      )}
+      {showBookmarksPanel && (
+        <BookmarksPanel
+          id="debug-bookmarks-panel"
+          bookmarks={bookmarks}
+          selectedBookmarkId={selectedBookmarkId}
+          disableBookmarksAdding={!activeLayers.length}
+          onClose={onBookmarkClick}
+          onAddBookmark={addBookmarkHandler}
+          onSelectBookmark={onSelectBookmarkHandler}
+          onCollapsed={onCloseBookmarkPanel}
+          onDownloadBookmarks={onDownloadBookmarksHandler}
+          onClearBookmarks={() => setBookmarks([])}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
+          onDeleteBookmark={onDeleteBookmarkHandler}
+          onEditBookmark={onEditBookmarkHandler}
+        />
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}

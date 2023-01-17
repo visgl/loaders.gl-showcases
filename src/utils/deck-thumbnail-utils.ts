@@ -30,6 +30,28 @@ export const createComparisonBookmarkThumbnail = async (
 };
 
 /**
+ * Create a thumbnail from canvas element
+ * @param containerId - html id of canvas container
+ * @returns base64 image
+ */
+export const createViewerBookmarkThumbnail = async (
+  containerId
+): Promise<string | null> => {
+  // If only one canvas is presented just use it's image.
+  const canvas = await createBookmarkThumbnail(
+    containerId,
+    BOOKMARK_THUMBNAIL_WIDTH,
+    BOOKMARK_THUMBNAIL_HEIGHT
+  );
+
+  if (!canvas) {
+    return null;
+  }
+
+  return canvas.toDataURL("image/png");
+};
+
+/**
  * Create a thumbnail image from comparison side canvas.
  * Taking screenshots from deck.gl is a tricky task. The current implementation relies
  * on the comment:

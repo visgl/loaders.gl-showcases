@@ -112,16 +112,6 @@ export const MainToolsPanel = ({
       >
         <MemoryIcon />
       </Button>
-      {showBookmarks && (
-        <Button
-          id={'bookmarks-tab'}
-          layout={layout}
-          active={bookmarksActive}
-          onClick={onShowBookmarksChange}
-        >
-          <BookmarksIcon />
-        </Button>
-      )}
       {showValidator && (
         <Button
           id={'validator-tab'}
@@ -140,6 +130,16 @@ export const MainToolsPanel = ({
           onClick={() => onChange(ActiveButton.debug)}
         >
           <DebugIcon />
+        </Button>
+      )}
+      {showBookmarks && (
+        <Button
+          id={'bookmarks-tab'}
+          layout={layout}
+          active={bookmarksActive}
+          onClick={onShowBookmarksChange}
+        >
+          <BookmarksIcon />
         </Button>
       )}
     </Container>
