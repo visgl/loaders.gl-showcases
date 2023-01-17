@@ -1,13 +1,5 @@
 import styled from "styled-components";
-import { Title } from "../common";
-
-const InputSectionWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin: 24px 0;
-`;
+import { Title, TileInfoSectionWrapper } from "../common";
 
 const NormalsLabel = styled(Title)`
   width: 160px;
@@ -40,7 +32,7 @@ export const NormalsInputItem = ({
   onChange,
 }: NormalsProps) => {
   return (
-    <InputSectionWrapper>
+    <TileInfoSectionWrapper>
       <NormalsLabel as={"label"} htmlFor={id} left={16}>
         {title}
       </NormalsLabel>
@@ -52,6 +44,6 @@ export const NormalsInputItem = ({
         value={value}
         onChange={onChange}
       />
-    </InputSectionWrapper>
+    </TileInfoSectionWrapper>
   );
 };
