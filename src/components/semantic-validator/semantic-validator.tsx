@@ -1,39 +1,12 @@
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { LayoutProps } from "../../types";
-import {
-  color_brand_primary, color_canvas_primary_inverted,
-} from "../../constants/colors";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import { color_canvas_primary_inverted } from "../../constants/colors";
+import { useAppLayout } from "../../utils/hooks/layout";
 import { PanelContainer, PanelContent, PanelHeader, PanelHorizontalLine, Panels, Title } from "../common";
 import { CloseButton } from "../close-button/close-button";
 
-const SemanticValidatorContainer = styled.div<LayoutProps>`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: ${getCurrentLayoutProperty({
-    desktop: "10px",
-    tablet: "10px",
-    mobile: "76px",
-  })};
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  background: ${color_brand_primary};
-  z-index: 17;
-  line-height: 135%;
-  border-radius: 8px;
-  min-height: 38px;
-  max-height: 135px;
-  overflow-y: auto;
-`;
-
 const Table = styled.table`
   width: 100%;
-  color: #ffffff;
+  color: ${color_canvas_primary_inverted};
   font-size: 16px;
 `;
 
@@ -62,10 +35,10 @@ const TableButton = styled.button`
   justify-content: center;
   background: transparent;
   padding: 4px 16px;
-  color: #ffffff;
+  color: ${color_canvas_primary_inverted};
   font-weight: 500px;
   border-radius: 12px;
-  border: 1px solid #ffffff;
+  border: 1px solid ${color_canvas_primary_inverted};
   cursor: pointer;
 `;
 
@@ -86,22 +59,24 @@ const WARNING_TYPES = {
 const WARNING_TYPE = "Type";
 const WARNING = "Warning";
 const COLUMN_NUMBER = "№";
+export interface Warning {
+  title?: string;
+  type: string;
+}
 
-const propTypes = {
-  warnings: PropTypes.arrayOf(PropTypes.object),
-};
-
-const defaultProps = {
-  warnings: [],
-};
+export interface SemanticValidatorProps {
+  warnings?: Warning[], 
+  clearWarnings?: React.MouseEventHandler<HTMLButtonElement>, 
+  onClose: React.ReactEventHandler<Element>
+}
 
 /**
  * TODO: Add types to component
  */
-export const SemanticValidator = ({ warnings, clearWarnings, onClose }) => {
+export const SemanticValidator = ({ warnings = [], clearWarnings, onClose }: SemanticValidatorProps) => {
   const layout = useAppLayout();
 
-  const renderColumns = (warnings) =>
+  const renderColumns = (warnings: Warning[]) =>
     warnings.map((warning, index) => (
       <tr key={`${warning.title}-${index}`}>
         <td style={{ padding: "0 8px 0 8px", textAlign: "center" }}>
@@ -116,7 +91,7 @@ export const SemanticValidator = ({ warnings, clearWarnings, onClose }) => {
       </tr>
     ));
 
-  const renderWarnings = (warnings) => {
+  const renderWarnings = (warnings: Warning[]) => {
     const columns = renderColumns(warnings);
 
     return (
@@ -153,6 +128,3 @@ export const SemanticValidator = ({ warnings, clearWarnings, onClose }) => {
     </PanelContainer>
   );
 };
-
-SemanticValidator.propTypes = propTypes;
-SemanticValidator.defaultProps = defaultProps;
