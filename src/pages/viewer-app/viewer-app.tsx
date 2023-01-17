@@ -7,6 +7,7 @@ import {
   loadFeatureAttributes,
   StatisticsInfo,
 } from "@loaders.gl/i3s";
+import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,6 +34,7 @@ import {
   BaseMap,
   BuildingSceneSublayerExtended,
   Layout,
+  Bookmark,
   DragMode,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
@@ -55,7 +57,10 @@ import { useSearchParams } from "react-router-dom";
 import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usage-panel";
 import { IS_LOADED_DELAY } from "../../constants/common";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
+import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
+import { downloadJsonFile } from "../../utils/files-utils";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -98,6 +103,10 @@ export const ViewerApp = () => {
   const [activeButton, setActiveButton] = useState<ActiveButton>(
     ActiveButton.none
   );
+  const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
+  const [preventTransitions, setPreventTransitions] = useState<boolean>(false);
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
@@ -337,6 +346,7 @@ export const ViewerApp = () => {
     setExamples(newExamples);
     const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
     setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
   };
 
   const onLayerSelectHandler = (
@@ -349,6 +359,7 @@ export const ViewerApp = () => {
       rootLayer
     );
     setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
   };
 
   const onLayerDeleteHandler = (id: string) => {
@@ -432,6 +443,88 @@ export const ViewerApp = () => {
     sumTilesetsStats(loadedTilesets, tilesetsStats);
   };
 
+  const onBookmarkClick = useCallback(() => {
+    setShowBookmarksPanel((prev) => !prev);
+  }, []);
+
+  const makeScreenshot = async () => {
+    const imageUrl = await createViewerBookmarkThumbnail("#viewer-deck-container-wrapper");
+
+    if (!imageUrl) {
+      throw new Error();
+    }
+    return imageUrl;
+  };
+
+  const addBookmarkHandler = () => {
+    const newBookmarkId = uuidv4();
+    setSelectedBookmarkId(newBookmarkId);
+    makeScreenshot().then((imageUrl) => {
+      setBookmarks((prev) => [
+        ...prev,
+        {
+          id: newBookmarkId,
+          imageUrl,
+          viewState,
+          layersLeftSide: activeLayers,
+          layersRightSide: [],
+          activeLayersIdsLeftSide: [...selectedLayerIds],
+          activeLayersIdsRightSide: [],
+        },
+      ]);
+    });
+  };
+
+  const onSelectBookmarkHandler = (bookmarkId: string) => {
+    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+    if (!bookmark) {
+      return;
+    }
+    setSelectedBookmarkId(bookmark.id);
+    setPreventTransitions(true);
+    setViewState(bookmark.viewState);
+    setActiveLayers(bookmark.layersLeftSide);
+  };
+
+  const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
+    setBookmarks((prev) =>
+      prev.filter((bookmark) => bookmark.id !== bookmarkId)
+    );
+  }, []);
+
+  const onEditBookmarkHandler = (bookmarkId: string) => {
+    makeScreenshot().then((imageUrl) => {
+      setBookmarks((prev) =>
+        prev.map((bookmark) =>
+          bookmark.id === bookmarkId
+            ? {
+                ...bookmark,
+                imageUrl,
+                viewState,
+                layersLeftSide: activeLayers,
+                layersRightSide: [],
+                activeLayersIdsLeftSide: selectedLayerIds,
+                activeLayersIdsRightSide: [],
+              }
+            : bookmark
+        )
+      );
+    });
+  };
+
+  const onCloseBookmarkPanel = useCallback(() => {
+    setShowBookmarksPanel(false);
+  }, []);
+
+  const onDownloadBookmarksHandler = () => {
+    downloadJsonFile(bookmarks, "bookmarks.json");
+  };
+
+  const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+    onSelectBookmarkHandler(bookmarks[0].id);
+  };
+
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
@@ -485,6 +578,7 @@ export const ViewerApp = () => {
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
       <DeckGlWrapper
+        id="viewer-deck-container"
         parentViewState={{
           ...viewState,
           main: {
@@ -507,6 +601,7 @@ export const ViewerApp = () => {
         onTilesetLoad={onTilesetLoad}
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
+        preventTransitions={preventTransitions}
       />
 
       {layout !== Layout.Mobile && (
@@ -515,7 +610,10 @@ export const ViewerApp = () => {
             id="viewer--tools-panel"
             activeButton={activeButton}
             showLayerOptions
+            showBookmarks
+            bookmarksActive={showBookmarksPanel}
             onChange={onChangeMainToolsPanelHandler}
+            onShowBookmarksChange={onBookmarkClick}
           />
         </RightSideToolsPanelWrapper>
       )}
@@ -525,6 +623,9 @@ export const ViewerApp = () => {
             id={"mobile-viewer-tools-panel"}
             activeButton={activeButton}
             onChange={onChangeMainToolsPanelHandler}
+            showBookmarks
+            bookmarksActive={showBookmarksPanel}
+            onShowBookmarksChange={onBookmarkClick}
           />
         </BottomToolsPanelWrapper>
       )}
@@ -562,6 +663,24 @@ export const ViewerApp = () => {
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
           />
         </RightSidePanelWrapper>
+      )}
+
+      {showBookmarksPanel && (
+        <BookmarksPanel
+          id="viewer-bookmarks-panel"
+          bookmarks={bookmarks}
+          selectedBookmarkId={selectedBookmarkId}
+          disableBookmarksAdding={!activeLayers.length}
+          onClose={onBookmarkClick}
+          onAddBookmark={addBookmarkHandler}
+          onSelectBookmark={onSelectBookmarkHandler}
+          onCollapsed={onCloseBookmarkPanel}
+          onDownloadBookmarks={onDownloadBookmarksHandler}
+          onClearBookmarks={() => setBookmarks([])}
+          onBookmarksUploaded={onBookmarksUploadedHandler}
+          onDeleteBookmark={onDeleteBookmarkHandler}
+          onEditBookmark={onEditBookmarkHandler}
+        />
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}

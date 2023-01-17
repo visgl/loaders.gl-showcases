@@ -1,5 +1,5 @@
 import html2canvas from "html2canvas";
-import { createComparisonBookmarkThumbnail } from "./deck-thumbnail-utils";
+import { createComparisonBookmarkThumbnail, createViewerBookmarkThumbnail } from "./deck-thumbnail-utils";
 
 jest.mock("html2canvas");
 const html2canvasMock = html2canvas as unknown as jest.Mocked<any>;
@@ -49,5 +49,12 @@ describe("Deck.gl thumbnails", () => {
     expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledTimes(3);
     expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledTimes(1);
     expect(mockDrawImage).toHaveBeenCalledTimes(4);
+  });
+
+  test("createViewerBookmarkThumbnail: should return null", async () => {
+    const thumbnail = await createViewerBookmarkThumbnail(
+      "#container3",
+    );
+    expect(thumbnail).toBeNull();
   });
 });
