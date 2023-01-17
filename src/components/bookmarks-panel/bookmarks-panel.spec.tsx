@@ -1,4 +1,5 @@
 import userEvent from "@testing-library/user-event";
+import { BookmarkPageId } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksPanel } from "./bookmarks-panel";
@@ -9,6 +10,7 @@ jest.mock("../../utils/hooks/layout");
 const TEST_BOOKMARKS = [
   {
     id: "testId1",
+    pageId: BookmarkPageId.viewer,
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
@@ -18,6 +20,7 @@ const TEST_BOOKMARKS = [
   },
   {
     id: "testId2",
+    pageId: BookmarkPageId.viewer,
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],
@@ -27,6 +30,7 @@ const TEST_BOOKMARKS = [
   },
   {
     id: "testId3",
+    pageId: BookmarkPageId.viewer,
     imageUrl: "testUrl",
     layersLeftSide: [],
     layersRightSide: [],

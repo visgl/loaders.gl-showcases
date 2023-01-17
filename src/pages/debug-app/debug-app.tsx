@@ -20,6 +20,7 @@ import {
   DragMode,
   MinimapPosition,
   TileSelectedColor,
+  BookmarkPageId,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -71,8 +72,9 @@ import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel
 import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
-import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
+import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
+import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -546,6 +548,7 @@ export const DebugApp = () => {
         ...prev,
         {
           id: newBookmarkId,
+          pageId: BookmarkPageId.debug,
           imageUrl,
           viewState,
           debugOptions,
@@ -611,8 +614,14 @@ export const DebugApp = () => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    setBookmarks(bookmarks);
-    onSelectBookmarkHandler(bookmarks[0].id);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.debug);
+
+    if (bookmarksPageId === BookmarkPageId.debug) {
+      setBookmarks(bookmarks);
+      onSelectBookmarkHandler(bookmarks[0].id);
+    } else {
+      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the debug app`);
+    }
   };
 
   const handleChangeDebugOptions = useCallback((

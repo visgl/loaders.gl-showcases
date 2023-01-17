@@ -24,6 +24,13 @@ jest.mock("./map-options-panel");
 jest.mock("./insert-panel/insert-panel");
 jest.mock("./warning/warning-panel");
 jest.mock("./layer-settings-panel");
+jest.mock("react-router-dom", () => ({
+  useLocation: jest.fn().mockImplementation(() => ({
+    location: {
+      pathname: '/viewer'
+    }
+  }))
+}))
 
 jest.mock("../close-button/close-button", () => ({
   CloseButton: ({ onClick }) => {

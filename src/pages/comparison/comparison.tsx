@@ -15,6 +15,7 @@ import {
   Bookmark,
   LayerViewState,
   StatsData,
+  BookmarkPageId,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -30,6 +31,7 @@ import {
 } from "../../utils/hooks/layout";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
+import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -289,8 +291,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    setBookmarks(bookmarks);
-    onSelectBookmarkHandler(bookmarks[0].id);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.comparison);
+
+    if (bookmarksPageId === BookmarkPageId.comparison) {
+      setBookmarks(bookmarks);
+      onSelectBookmarkHandler(bookmarks[0].id);
+    } else {
+      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`);
+    }
   };
 
   const onDownloadBookmarksHandler = () => {
@@ -374,6 +382,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ...prev,
         {
           id: newBookmarkId,
+          pageId: BookmarkPageId.comparison,
           imageUrl,
           viewState,
           layersLeftSide,

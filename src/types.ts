@@ -273,6 +273,7 @@ export type LoadOptions = {
 
 export type Bookmark = {
   id: string;
+  pageId: BookmarkPageId;
   imageUrl: string;
   viewState: ViewStateSet;
   debugOptions?: DebugOptions;
@@ -281,6 +282,12 @@ export type Bookmark = {
   layersRightSide: LayerExample[];
   activeLayersIdsRightSide: string[];
 };
+
+export enum BookmarkPageId {
+  viewer = 'Viewer',
+  debug = 'Debug',
+  comparison = 'Comparison'
+}
 
 export enum SelectionState {
   selected,

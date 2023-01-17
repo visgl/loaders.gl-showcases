@@ -36,6 +36,7 @@ import {
   Layout,
   Bookmark,
   DragMode,
+  BookmarkPageId,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -61,6 +62,7 @@ import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { downloadJsonFile } from "../../utils/files-utils";
+import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -464,6 +466,7 @@ export const ViewerApp = () => {
         ...prev,
         {
           id: newBookmarkId,
+          pageId: BookmarkPageId.viewer,
           imageUrl,
           viewState,
           layersLeftSide: activeLayers,
@@ -521,8 +524,14 @@ export const ViewerApp = () => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    setBookmarks(bookmarks);
-    onSelectBookmarkHandler(bookmarks[0].id);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.viewer);
+
+    if (bookmarksPageId === BookmarkPageId.viewer) {
+      setBookmarks(bookmarks);
+      onSelectBookmarkHandler(bookmarks[0].id);
+    } else {
+      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the viewer app`);
+    }
   };
 
   const onZoomIn = useCallback(() => {
