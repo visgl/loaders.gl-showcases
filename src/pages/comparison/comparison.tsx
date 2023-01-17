@@ -202,72 +202,71 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
-  const pointToTileset = (layerViewState?: LayerViewState) => {
+  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
     if (layerViewState) {
-      const { zoom, longitude, latitude } = layerViewState;
-
-      setViewState({
-        main: {
-          ...viewState.main,
-          zoom: zoom + 2.5,
-          longitude,
-          latitude,
-          transitionDuration: 1000,
-        },
+      setViewState((viewStatePrev) => {
+        const { zoom, longitude, latitude } = layerViewState;
+        return {
+          main: {
+            ...viewStatePrev.main,
+            zoom: zoom + 2.5,
+            longitude,
+            latitude,
+            transitionDuration: 1000,
+          },
+        };
       });
     }
-  };
+  }, []);
 
-  const onZoomIn = () => {
-    const { zoom, maxZoom } = viewState.main;
+  const onZoomIn = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, maxZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === maxZoom;
 
-    if (zoom >= maxZoom) {
-      return;
-    }
-
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom + 1,
-        transitionDuration: 1000,
-      },
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
     });
-  };
+  }, []);
 
-  const onZoomOut = () => {
-    const { zoom, minZoom } = viewState.main;
+  const onZoomOut = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, minZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === minZoom;
 
-    if (zoom <= minZoom) {
-      return;
-    }
-
-    setViewState({
-      main: {
-        ...viewState.main,
-        zoom: zoom - 1,
-        transitionDuration: 1000,
-      },
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+      };
     });
-  };
+  }, []);
 
-  const onCompassClick = () => {
-    setViewState({
+  const onCompassClick = useCallback(() => {
+    setViewState((viewStatePrev) => ({
       main: {
-        ...viewState.main,
+        ...viewStatePrev.main,
         bearing: 0,
         transitionDuration: 1000,
       },
-    });
-  };
+    }));
+  }, []);
 
-  const toggleDragMode = () => {
+  const toggleDragMode = useCallback(() => {
     setDragMode((prev) => {
       if (prev === DragMode.pan) {
         return DragMode.rotate;
       }
       return DragMode.pan;
     });
-  };
+  }, []);
 
   const toggleCompareButtonMode = () => {
     setCompareButtonMode((prev) => {

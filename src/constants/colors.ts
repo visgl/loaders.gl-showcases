@@ -7,6 +7,7 @@ import { COLOR } from "../types";
 
 export const color_brand_primary = "#232430";
 export const color_brand_secondary = "#60C2A4";
+export const color_brand_secondary_dark = "#D7F4DB";
 export const color_brand_tertiary = "#605DEC";
 export const color_brand_quaternary = "#9EA2AE";
 export const color_brand_quinary = "#30B18A";
@@ -24,6 +25,7 @@ export const hilite_canvas_secondary = "#DCDEE3";
 
 export const color_accent_primary = "#F95050";
 export const color_accent_secondary = "#33A985";
+export const color_accent_tertiary = "#FDCECE";
 
 export const dim_canvas_primary = "#616678";
 export const dim_canvas_secondary = "#CDCFD6";

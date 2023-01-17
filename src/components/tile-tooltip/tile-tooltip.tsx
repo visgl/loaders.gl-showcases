@@ -1,16 +1,16 @@
 import styled from "styled-components";
 import { Tile3D } from "@loaders.gl/tiles";
-import { getChildrenInfo } from "../../../utils/debug/tile-debug";
-import { formatFloatNumber, formatIntValue, formatStringValue } from "../../../utils/format/format-utils";
+import { getChildrenInfo } from "../../utils/debug/tile-debug";
+import { formatFloatNumber, formatIntValue, formatStringValue } from "../../utils/format/format-utils";
 
 const NO_DATA = "No Data";
 
 const Tooltip = styled.div`
-  background: "#0E111A",
-  margin: "-10px",
-  color: "rgba(255,255,255,.6)",
-  font-size: "14px",
-  padding: "10px",
+  background: "#0E111A";
+  margin: "-10px";
+  color: "rgba(255,255,255,.6)";
+  font-size: "14px";
+  padding: "10px";
 `;
 
 const TableHeader = styled.th`

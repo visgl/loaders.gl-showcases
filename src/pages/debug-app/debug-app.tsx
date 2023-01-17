@@ -17,9 +17,12 @@ import {
   TileColoredBy,
   Layout,
   Bookmark,
+  DragMode,
+  MinimapPosition,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+ 
 import { render } from "react-dom";
 import { HuePicker, MaterialPicker } from "react-color";
 import { lumaStats } from "@luma.gl/core";
@@ -31,32 +34,24 @@ import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
-import {
-  BASE_MAPS,
-} from "../../constants/map-styles";
-import {
-  SemanticValidator,
-  TileValidator,
-  DebugPanel
-} from "../../components";
-import { TileTooltip } from "../../components/debug/tile-tooltip/tile-tooltip";
+import { BASE_MAPS } from "../../constants/map-styles";
+import { SemanticValidator, DebugPanel } from "../../components";
+import { TileTooltip } from "../../components/tile-tooltip/tile-tooltip";
 import { IS_LOADED_DELAY } from "../../constants/common";
 import {
   color_brand_primary,
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { TileDetailsPanel } from "../../components/tile-details-panel/tile-details-panel";
-import { TileMetadata } from "../../components/debug/tile-metadata/tile-metadata";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import ColorMap, {
   getRGBValueFromColorObject,
-  makeRGBObjectFromColor
+  makeRGBObjectFromColor,
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
-import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
   BottomToolsPanelWrapper,
   MapArea,
@@ -79,9 +74,7 @@ import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-too
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
-
-const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
-const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
+import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -157,10 +150,6 @@ export const DebugApp = () => {
   const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
-  const [trianglesPercentage, setTrianglesPercentage] = useState(
-    DEFAULT_TRIANGLES_PERCENTAGE
-  );
-  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -186,12 +175,23 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
+  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
     [activeLayers]
   );
+
+  const isMobileLayout = layout === Layout.Mobile;
+
+  const minimapPosition: MinimapPosition = useMemo(() => {
+    return {
+      x: isMobileLayout ? "2%" : "1%",
+      y: isMobileLayout ? "1%" : "79%",
+    };
+  }, []);
+
   const layers3d = useMemo(() => {
     return flattenedSublayers
       .filter((sublayer) => sublayer.visibility)
@@ -288,7 +288,7 @@ export const DebugApp = () => {
       setColoredTilesMap({});
       setSelectedTile(null);
     }
-  }, [debugOptions.tileColorMode])
+  }, [debugOptions.tileColorMode]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -367,14 +367,14 @@ export const DebugApp = () => {
 
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
-      handleClosePanel();
+      handleCloseTilePanel();
       return;
     }
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
 
-  const handleClosePanel = () => {
+  const handleCloseTilePanel = () => {
     setSelectedTile(null);
     setNormalsDebugData(null);
   };
@@ -413,64 +413,25 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
-  const handleShowNormals = (tile) => {
-    if (normalsDebugData === null) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    } else {
-      setNormalsDebugData(null);
-    }
-  };
-
-  const handleChangeTrianglesPercentage = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    const percent = validateTrianglesPercentage(newValue);
-    setTrianglesPercentage(percent);
-  };
-
-  const handleChangeNormalsLength = (tile, newValue) => {
-    if (normalsDebugData?.length) {
-      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
-    }
-
-    setNormalsLength(newValue);
-  };
-
-  const validateTrianglesPercentage = (newValue) => {
-    if (newValue < 0) {
-      return 1;
-    } else if (newValue > 100) {
-      return 100;
-    }
-    return newValue;
-  };
-
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
     }
 
-    const isShowColorPicker = debugOptions.tileColorMode === TileColoredBy.custom;
+    const isShowColorPicker =
+      debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
     const tileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
     const isResetButtonDisabled = !coloredTilesMap[tileId];
-    const title = `Tile: ${selectedTile.id}`;
 
     return (
-      <TileDetailsPanel title={title} handleClosePanel={handleClosePanel}>
-        <TileMetadata tile={selectedTile}></TileMetadata>
-        <TileValidator
-          tile={selectedTile}
-          showNormals={Boolean(normalsDebugData)}
-          trianglesPercentage={trianglesPercentage}
-          normalsLength={normalsLength}
-          handleShowNormals={handleShowNormals}
-          handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-          handleChangeNormalsLength={handleChangeNormalsLength}
-        />
+      <TileDetailsPanel
+        tile={selectedTile}
+        handleClosePanel={handleCloseTilePanel}
+        deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
+        activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
+      >
         {isShowColorPicker && (
           <div style={CURSOR_STYLE}>
             <h3 style={HEADER_STYLE}>{TILE_COLOR_SELECTOR}</h3>
@@ -498,6 +459,10 @@ export const DebugApp = () => {
   };
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {
+    if (layout !== Layout.Desktop) {
+      handleCloseTilePanel();
+    }
+
     setActiveButton((prevValue) =>
       prevValue === active ? ActiveButton.none : active
     );
@@ -542,26 +507,27 @@ export const DebugApp = () => {
     );
   };
 
-  const pointToTileset = (layerViewState?: LayerViewState) => {
+  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
     if (layerViewState) {
-      const { zoom, longitude, latitude } = layerViewState;
-
-      setViewState({
-        main: {
-          ...viewState.main,
-          zoom: zoom + 2.5,
-          longitude,
-          latitude,
-          transitionDuration: 1000,
-        },
-        minimap: {
-          ...viewState.minimap,
-          longitude,
-          latitude,
-        },
+      setViewState((viewStatePrev) => {
+        const { zoom, longitude, latitude } = layerViewState;
+        return {
+          main: {
+            ...viewStatePrev.main,
+            zoom: zoom + 2.5,
+            longitude,
+            latitude,
+            transitionDuration: 1000,
+          },
+          minimap: {
+            ...viewStatePrev.minimap,
+            longitude,
+            latitude,
+          },
+        };
       });
     }
-  };
+  }, []);
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -605,7 +571,7 @@ export const DebugApp = () => {
   };
 
   const onWebGLInitialized = () => {
-    const stats = lumaStats.get('Memory Usage');
+    const stats = lumaStats.get("Memory Usage");
     setMemoryStats(stats);
   };
 
@@ -708,6 +674,64 @@ export const DebugApp = () => {
       [optionName]: value
     }))
   }, []);
+  
+  const onZoomIn = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, maxZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === maxZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+        minimap: {
+          ...viewStatePrev.minimap,
+        },
+      };
+    });
+  }, []);
+
+  const onZoomOut = useCallback(() => {
+    setViewState((viewStatePrev) => {
+      const { zoom, minZoom } = viewStatePrev.main;
+      const zoomEqualityCondition = zoom === minZoom;
+
+      return {
+        main: {
+          ...viewStatePrev.main,
+          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+          transitionDuration: zoomEqualityCondition ? 0 : 1000,
+        },
+        minimap: {
+          ...viewStatePrev.minimap,
+        },
+      };
+    });
+  }, []);
+
+  const onCompassClick = useCallback(() => {
+    setViewState((viewStatePrev) => ({
+      main: {
+        ...viewStatePrev.main,
+        bearing: 0,
+        transitionDuration: 1000,
+      },
+      minimap: {
+        ...viewStatePrev.minimap,
+      },
+    }));
+  }, []);
+
+  const toggleDragMode = useCallback(() => {
+    setDragMode((prev) => {
+      if (prev === DragMode.pan) {
+        return DragMode.rotate;
+      }
+      return DragMode.pan;
+    });
+  }, []);
 
   const {
     minimap,
@@ -745,11 +769,10 @@ export const DebugApp = () => {
         loadTiles={loadTiles}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
-        normalsTrianglesPercentage={trianglesPercentage}
-        normalsLength={normalsLength}
         selectedTile={selectedTile}
         autoHighlight
         loadedTilesets={loadedTilesets}
+        minimapPosition={minimapPosition}
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
@@ -828,15 +851,13 @@ export const DebugApp = () => {
       {activeButton === ActiveButton.memory && (
         <RightSidePanelWrapper layout={layout}>
           <MemoryUsagePanel
-            id={'debug-memory-usage-panel'}
+            id={"debug-memory-usage-panel"}
             memoryStats={memoryStats}
             activeLayers={activeLayers}
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() =>
-              onChangeMainToolsPanelHandler(ActiveButton.memory)
-            }
+            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
           />
         </RightSidePanelWrapper>
       )}
@@ -857,6 +878,14 @@ export const DebugApp = () => {
           onEditBookmark={onEditBookmarkHandler}
         />
       )}
+      <MapControllPanel
+        bearing={viewState.main.bearing}
+        dragMode={dragMode}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onCompassClick={onCompassClick}
+        onDragModeToggle={toggleDragMode}
+      />
     </MapArea>
   );
 };

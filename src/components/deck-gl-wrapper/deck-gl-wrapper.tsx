@@ -28,6 +28,7 @@ import {
   BoundingVolumeType,
   TileColoredBy,
   BoundingVolumeColoredBy,
+  MinimapPosition,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -159,6 +160,8 @@ type DeckGlI3sProps = {
   loadNumber?: number;
   /** prevent transition to a layer */
   preventTransitions?: boolean;
+  /** calculate position of minimap */
+  minimapPosition?: MinimapPosition;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -210,6 +213,7 @@ export const DeckGlWrapper = ({
   dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
+  minimapPosition,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -218,8 +222,9 @@ export const DeckGlWrapper = ({
   onTilesetLoad,
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onTileUnload = () => { },
+  onTileUnload = () => {},
 }: DeckGlI3sProps) => {
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -231,8 +236,8 @@ export const DeckGlWrapper = ({
         id: "minimap",
 
         // Position on top of main map
-        x: "79%",
-        y: "79%",
+        x: minimapPosition?.x,
+        y: minimapPosition?.y,
         width: "20%",
         height: "20%",
 
@@ -242,11 +247,11 @@ export const DeckGlWrapper = ({
         controller: disableController
           ? false
           : {
-            maxZoom: 9,
-            minZoom: 9,
-            dragRotate: false,
-            keyboard: false,
-          },
+              maxZoom: 9,
+              minZoom: 9,
+              dragRotate: false,
+              keyboard: false,
+            },
       }),
     ],
     [disableController]
@@ -354,7 +359,7 @@ export const DeckGlWrapper = ({
     }
     let elevation =
       cameraTerrainElevation === null ||
-        viewportCenterTerrainElevation > cameraTerrainElevation
+      viewportCenterTerrainElevation > cameraTerrainElevation
         ? viewportCenterTerrainElevation
         : cameraTerrainElevation;
     if (!interactionState.isZooming) {
@@ -432,7 +437,14 @@ export const DeckGlWrapper = ({
       } = viewState;
 
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
-      const [pLongitude, pLatitude] = getLonLatWithElevationOffset(zmin, pitch, bearing, longitude, latitude, viewport);
+      const [pLongitude, pLatitude] = getLonLatWithElevationOffset(
+        zmin,
+        pitch,
+        bearing,
+        longitude,
+        latitude,
+        viewport
+      );
 
       const newViewState = {
         main: {
@@ -632,8 +644,8 @@ export const DeckGlWrapper = ({
       highlightedObjectIndex: autoHighlight
         ? undefined
         : layer.url === selectedTilesetBasePath
-          ? selectedIndex
-          : -1,
+        ? selectedIndex
+        : -1,
     });
   };
 
@@ -733,13 +745,13 @@ export const DeckGlWrapper = ({
         disableController
           ? false
           : {
-            type: MapController,
-            maxPitch: 60,
-            inertia: true,
-            scrollZoom: { speed: 0.01, smooth: true },
-            touchRotate: true,
-            dragMode,
-          }
+              type: MapController,
+              maxPitch: 60,
+              inertia: true,
+              scrollZoom: { speed: 0.01, smooth: true },
+              touchRotate: true,
+              dragMode,
+            }
       }
       glOptions={{
         preserveDrawingBuffer: true,
