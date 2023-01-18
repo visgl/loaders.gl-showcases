@@ -43,6 +43,7 @@ const Button = styled.button<{ active?: boolean }>`
   align-items: center;
   border-radius: 12px;
   width: 44px;
+  padding: 0;
   height: 44px;
   cursor: pointer;
   background-color: ${({ theme, active = false }) =>
