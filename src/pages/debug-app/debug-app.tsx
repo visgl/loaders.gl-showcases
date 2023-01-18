@@ -731,6 +731,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
         <RightSideToolsPanelWrapper layout={layout}>
