@@ -191,6 +191,9 @@ export const AttributeStats = ({
     return decodeURI(statUrl.toString());
   };
 
+  const capitalize = (str: string) =>
+    `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+
   useEffect(() => {
     /**
      * Load I3S attribute statistics
@@ -242,7 +245,9 @@ export const AttributeStats = ({
           break;
 
         case MOST_FREQUENT_VALUES: {
-          statisticsRows.push(<Statistic key={statName}>{statName}</Statistic>);
+          statisticsRows.push(
+            <Statistic key={statName}>{capitalize(statName)}</Statistic>
+          );
           const frequentValues = renderMostFrequentValuesStats(statValue);
           statisticsRows.push(
             <Statistic key={`${statName}-${statValue}`}>
@@ -253,7 +258,9 @@ export const AttributeStats = ({
         }
 
         default: {
-          statisticsRows.push(<Statistic key={statName}>{statName}</Statistic>);
+          statisticsRows.push(
+            <Statistic key={statName}>{capitalize(statName)}</Statistic>
+          );
           statisticsRows.push(
             <Statistic key={`${statName}-${statValue}`}>{statValue}</Statistic>
           );
