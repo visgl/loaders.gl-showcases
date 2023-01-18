@@ -61,8 +61,8 @@ const Container = styled.div<LayoutProps>`
     tablet: "column",
     mobile: "column-reverse",
   })};
-  margin-top: 60px;
-  height: calc(100% - 60px);
+  margin-top: 58px;
+  height: calc(100% - 58px);
 `;
 
 const Devider = styled.div<LayoutProps>`
