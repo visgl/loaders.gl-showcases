@@ -27,6 +27,7 @@ import {
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { calculateAverageValue } from "../../../utils/calculate-average-value";
 import { COLORS_BY_ATTRIBUTE } from "../../../constants/colors";
+import { capitalize } from "../../../utils/capitalize";
 
 type VisibilityProps = {
   visible: boolean;
@@ -190,9 +191,6 @@ export const AttributeStats = ({
     const statUrl = new URL(statisticUrl, `${tilesetUrl}/`);
     return decodeURI(statUrl.toString());
   };
-
-  const capitalize = (str: string) =>
-    `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
   useEffect(() => {
     /**
