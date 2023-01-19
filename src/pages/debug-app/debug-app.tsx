@@ -20,7 +20,7 @@ import {
   DragMode,
   MinimapPosition,
   TileSelectedColor,
-  BookmarkPageId,
+  PageId,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -548,7 +548,7 @@ export const DebugApp = () => {
         ...prev,
         {
           id: newBookmarkId,
-          pageId: BookmarkPageId.debug,
+          pageId: PageId.debug,
           imageUrl,
           viewState,
           debugOptions,
@@ -614,9 +614,9 @@ export const DebugApp = () => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.debug);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.debug);
 
-    if (bookmarksPageId === BookmarkPageId.debug) {
+    if (bookmarksPageId === PageId.debug) {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id);
     } else {
@@ -774,6 +774,7 @@ export const DebugApp = () => {
         <RightSidePanelWrapper layout={layout}>
           <LayersPanel
             id="debug--layers-panel"
+            pageId={PageId.debug}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}

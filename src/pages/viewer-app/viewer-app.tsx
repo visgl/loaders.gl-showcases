@@ -36,7 +36,7 @@ import {
   Layout,
   Bookmark,
   DragMode,
-  BookmarkPageId,
+  PageId,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -466,7 +466,7 @@ export const ViewerApp = () => {
         ...prev,
         {
           id: newBookmarkId,
-          pageId: BookmarkPageId.viewer,
+          pageId: PageId.viewer,
           imageUrl,
           viewState,
           layersLeftSide: activeLayers,
@@ -524,9 +524,9 @@ export const ViewerApp = () => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.viewer);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.viewer);
 
-    if (bookmarksPageId === BookmarkPageId.viewer) {
+    if (bookmarksPageId === PageId.viewer) {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id);
     } else {
@@ -642,6 +642,7 @@ export const ViewerApp = () => {
         <RightSidePanelWrapper layout={layout}>
           <LayersPanel
             id="viewer--layers-panel"
+            pageId={PageId.viewer}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}

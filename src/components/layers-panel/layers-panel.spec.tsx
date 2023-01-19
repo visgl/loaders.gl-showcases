@@ -10,6 +10,7 @@ import { InsertPanel } from "./insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
+import { PageId } from "../../types";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
@@ -82,6 +83,7 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <LayersPanel
       id={""}
+      pageId={PageId.viewer}
       layers={[]}
       sublayers={[]}
       selectedLayerIds={[]}

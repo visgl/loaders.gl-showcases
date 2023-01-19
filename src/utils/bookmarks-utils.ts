@@ -2,7 +2,7 @@ import type { ArcGisWebScene } from "@loaders.gl/i3s/src/types";
 import { Proj4Projection } from '@math.gl/proj4';
 import { WebMercatorViewport } from '@deck.gl/core';
 
-import { Bookmark, BookmarkPageId, LayerExample, LayerViewState } from "../types";
+import { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
 import { getLonLatWithElevationOffset } from "./elevation-utils";
 import { flattenLayerIds } from "./layer-utils";
 
@@ -20,7 +20,7 @@ export const convertArcGisSlidesToBookmars = (
   webScene: ArcGisWebScene,
   webSceneLayerExamples: LayerExample[],
   layersLeftSide: LayerExample[],
-  pageId: BookmarkPageId
+  pageId: PageId
 ): Bookmark[] => {
   const bookmarks: Bookmark[] = [];
   const addedLayersIds = flattenLayerIds(webSceneLayerExamples);
@@ -115,7 +115,13 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewS
   return null;
 }
 
-export const checkBookmarksByPageId = (bookmarks: Bookmark[], pageId: BookmarkPageId): BookmarkPageId => {
+/**
+ * Try to find bookmars in boomarks list which is not aplicable to current page
+ * If page ids of all bookmarks are the same as current page id return current pageId if not return pageId of bookmark.
+ * @param bookmarks 
+ * @param pageId 
+ */
+export const checkBookmarksByPageId = (bookmarks: Bookmark[], pageId: PageId): PageId => {
   for (const bookmark of bookmarks) {
     if (bookmark.pageId !== pageId) {
       return bookmark.pageId;

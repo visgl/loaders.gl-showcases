@@ -15,7 +15,7 @@ import {
   Bookmark,
   LayerViewState,
   StatsData,
-  BookmarkPageId,
+  PageId,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -291,9 +291,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.comparison);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
 
-    if (bookmarksPageId === BookmarkPageId.comparison) {
+    if (bookmarksPageId === PageId.comparison) {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id);
     } else {
@@ -382,7 +382,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         ...prev,
         {
           id: newBookmarkId,
-          pageId: BookmarkPageId.comparison,
+          pageId: PageId.comparison,
           imageUrl,
           viewState,
           layersLeftSide,

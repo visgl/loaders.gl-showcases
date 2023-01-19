@@ -1,6 +1,6 @@
 import type { ArcGisWebSceneData, OperationalLayer } from "@loaders.gl/i3s/src/types";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styled, { css } from "styled-components";
 import { load } from "@loaders.gl/core";
 
@@ -10,7 +10,7 @@ import {
   BaseMap,
   LayerViewState,
   Bookmark,
-  BookmarkPageId,
+  PageId,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
@@ -32,7 +32,6 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
-import { useLocation } from "react-router-dom";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -51,6 +50,7 @@ enum Tabs {
 
 type LayersPanelProps = {
   id: string;
+  pageId: PageId;
   layers: LayerExample[];
   sublayers: ActiveSublayer[];
   selectedLayerIds: string[];
@@ -154,6 +154,7 @@ const SupportedLayerItem = styled.li`
 
 export const LayersPanel = ({
   id,
+  pageId,
   type,
   layers,
   sublayers,
@@ -172,21 +173,6 @@ export const LayersPanel = ({
   onPointToLayer,
 }: LayersPanelProps) => {
   const layout = useAppLayout();
-  const location = useLocation();
-
-  const bookmarksPageId = useMemo(() => {
-    switch (location.pathname) {
-      case '/viewer':
-        return BookmarkPageId.viewer;
-      case '/debug':
-        return BookmarkPageId.debug;
-      case '/compare-across-layers':
-      case '/compare-within-layer':
-        return BookmarkPageId.comparison;
-      default:
-        return null
-    }
-  }, [location])
 
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [showLayerInsertPanel, setShowLayerInsertPanel] = useState(false);
@@ -285,7 +271,7 @@ export const LayersPanel = ({
 
       const newLayersExamples = [...layers, newLayer];
       const isWebsceneHasSlides = !!webScene.header?.presentation?.slides?.length;
-      const bookmarks = isAddingBookmarksAllowed  && bookmarksPageId ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples, bookmarksPageId) : [];
+      const bookmarks = isAddingBookmarksAllowed  && pageId ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples, pageId) : [];
 
       if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
         setShowAddingSlidesWarning(true);

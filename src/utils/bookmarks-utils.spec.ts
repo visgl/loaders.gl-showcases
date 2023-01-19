@@ -1,4 +1,4 @@
-import { BookmarkPageId } from '../types';
+import { PageId } from '../types';
 import { convertArcGisSlidesToBookmars, checkBookmarksByPageId } from './bookmarks-utils';
 
 jest.mock('@math.gl/proj4', () => ({
@@ -248,25 +248,25 @@ describe("Bookmarks utils", () => {
 
   test("Should return the same bookmarks page id if all bookmars mached current page id", () => {
     const bookmarks = [
-      {id: 1, pageId: BookmarkPageId.comparison},
-      {id: 2, pageId: BookmarkPageId.comparison},
+      {id: 1, pageId: PageId.comparison},
+      {id: 2, pageId: PageId.comparison},
     ];
 
     // @ts-expect-error - should follow types for webscene
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.comparison);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
 
-    expect(bookmarksPageId).toEqual(BookmarkPageId.comparison);
+    expect(bookmarksPageId).toEqual(PageId.comparison);
   });
 
   test("Should return bookmarks page id if all bookmars are not mached with current page id", () => {
     const bookmarks = [
-      {id: 1, pageId: BookmarkPageId.debug},
-      {id: 2, pageId: BookmarkPageId.debug},
+      {id: 1, pageId: PageId.debug},
+      {id: 2, pageId: PageId.debug},
     ];
 
     // @ts-expect-error - should follow types for webscene
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, BookmarkPageId.comparison);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
 
-    expect(bookmarksPageId).toEqual(BookmarkPageId.debug);
+    expect(bookmarksPageId).toEqual(PageId.debug);
   });
 });
