@@ -32,6 +32,7 @@ import {
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
+import { Layout } from "../../utils/enums";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -63,8 +64,8 @@ const Container = styled.div<LayoutProps>`
     tablet: "column",
     mobile: "column-reverse",
   })};
-  margin-top: 60px;
-  height: calc(100% - 60px);
+  margin-top: 58px;
+  height: calc(100% - 58px);
 `;
 
 const Devider = styled.div<LayoutProps>`
@@ -551,6 +552,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           onDragModeToggle={toggleDragMode}
+          bottom={layout === Layout.Mobile ? 8 : 16}
         />
       )}
     </Container>

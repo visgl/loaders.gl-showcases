@@ -14,7 +14,7 @@ import {
 import { useExpand } from "../../utils/hooks/use-expand";
 import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
-const Container = styled.div<LayoutProps>`
+const Container = styled.div<LayoutProps & {bottom?: number; right?: number}>`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -24,16 +24,16 @@ const Container = styled.div<LayoutProps>`
   padding: 8px;
   gap: 10px;
 
-  right: ${getCurrentLayoutProperty({
-    desktop: "24px",
-    tablet: "24px",
-    mobile: "24px",
+  right: ${({right}) => getCurrentLayoutProperty({
+    desktop: `${(right || 24)}px`,
+    tablet: `${(right || 24)}px`,
+    mobile: `${(right || 8)}px`,
   })};
 
-  bottom: ${getCurrentLayoutProperty({
-    desktop: "24px",
-    tablet: "80px",
-    mobile: "80px",
+  bottom: ${({bottom}) => getCurrentLayoutProperty({
+    desktop: `${(bottom || 24)}px`,
+    tablet: `${(bottom || 80)}px`,
+    mobile: `${(bottom || 80)}px`,
   })};
 `;
 
@@ -43,6 +43,7 @@ const Button = styled.button<{ active?: boolean }>`
   align-items: center;
   border-radius: 12px;
   width: 44px;
+  padding: 0;
   height: 44px;
   cursor: pointer;
   background-color: ${({ theme, active = false }) =>
@@ -63,6 +64,8 @@ const Button = styled.button<{ active?: boolean }>`
 type MapControlPanelProps = {
   bearing: number;
   dragMode: DragMode;
+  bottom?: number;
+  right?: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
@@ -86,6 +89,8 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
 export const MapControllPanel = ({
   bearing,
   dragMode,
+  bottom,
+  right,
   onZoomIn,
   onZoomOut,
   onCompassClick,
@@ -97,7 +102,7 @@ export const MapControllPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout} id="map-control-panel">
+    <Container id="map-control-panel" layout={layout} bottom={bottom} right={right}>
       <ExpandIcon
         expandState={expandState}
         collapseDirection={CollapseDirection.bottom}

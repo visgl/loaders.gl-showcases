@@ -712,7 +712,12 @@ export const DebugApp = () => {
         id="debug-deck-container"
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
-        parentViewState={viewState}
+        parentViewState={{
+          ...viewState,
+          main: {
+            ...viewState.main,
+          },
+        }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
@@ -740,6 +745,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
         <RightSideToolsPanelWrapper layout={layout}>
