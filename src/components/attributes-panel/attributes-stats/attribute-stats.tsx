@@ -27,7 +27,7 @@ import {
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { calculateAverageValue } from "../../../utils/calculate-average-value";
 import { COLORS_BY_ATTRIBUTE } from "../../../constants/colors";
-import { capitalize } from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/format/capitalize";
 
 type VisibilityProps = {
   visible: boolean;

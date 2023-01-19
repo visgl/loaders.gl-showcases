@@ -4,7 +4,7 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { AttributeStats } from "./attribute-stats";
 
 import { load } from "@loaders.gl/core";
-import { capitalize } from "../../../utils/capitalize";
+import { capitalize } from "../../../utils/format/capitalize";
 
 jest.mock("@loaders.gl/core");
 
