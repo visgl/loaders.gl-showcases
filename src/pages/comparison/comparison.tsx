@@ -30,6 +30,7 @@ import {
 } from "../../utils/hooks/layout";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
+import { Layout } from "../../utils/enums";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -542,6 +543,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           onDragModeToggle={toggleDragMode}
+          bottom={layout === Layout.Mobile ? 8 : 16}
         />
       )}
     </Container>
