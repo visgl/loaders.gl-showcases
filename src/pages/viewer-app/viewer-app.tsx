@@ -602,6 +602,7 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        dragMode={dragMode}
       />
 
       {layout !== Layout.Mobile && (
