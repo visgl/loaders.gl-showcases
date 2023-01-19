@@ -157,7 +157,7 @@ export const ViewerApp = () => {
       setFlattenedSublayers([]);
       return;
     }
-    setSearchParams({ tileset: activeLayers[0].id });
+    setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
     async function fetchFlattenedSublayers(
       tilesetsData: {
