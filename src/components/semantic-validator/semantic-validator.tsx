@@ -70,9 +70,6 @@ export interface SemanticValidatorProps {
   onClose: React.ReactEventHandler<Element>
 }
 
-/**
- * TODO: Add types to component
- */
 export const SemanticValidator = ({ warnings = [], clearWarnings, onClose }: SemanticValidatorProps) => {
   const layout = useAppLayout();
 
