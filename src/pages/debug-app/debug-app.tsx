@@ -23,7 +23,6 @@ import {
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
- 
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
@@ -384,7 +383,7 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
-  const handleShowNormals = (tile) => {
+  const onShowNormals = (tile) => {
     if (normalsDebugData === null) {
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
     } else {
@@ -392,7 +391,7 @@ export const DebugApp = () => {
     }
   };
 
-  const handleChangeTrianglesPercentage = (tile, newValue) => {
+  const onChangeTrianglesPercentage = (tile, newValue) => {
     if (normalsDebugData?.length) {
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
     }
@@ -401,7 +400,7 @@ export const DebugApp = () => {
     setTrianglesPercentage(percent);
   };
 
-  const handleChangeNormalsLength = (tile, newValue) => {
+  const onChangeNormalsLength = (tile, newValue) => {
     if (normalsDebugData?.length) {
       setNormalsDebugData(generateBinaryNormalsDebugData(tile));
     }
@@ -435,9 +434,9 @@ export const DebugApp = () => {
         tile={selectedTile}
         trianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
-        handleShowNormals={handleShowNormals}
-        handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-        handleChangeNormalsLength={handleChangeNormalsLength}
+        onShowNormals={onShowNormals}
+        onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+        onChangeNormalsLength={onChangeNormalsLength}
         handleClosePanel={handleCloseTilePanel}
         deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}

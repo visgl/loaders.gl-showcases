@@ -2,9 +2,9 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { Normals } from "./normals";
 import { fireEvent } from "@testing-library/react";
 
-const handleShowNormals = jest.fn();
-const handleChangeTrianglesPercentage = jest.fn();
-const handleChangeNormalsLength = jest.fn();
+const onShowNormals = jest.fn();
+const onChangeTrianglesPercentage = jest.fn();
+const onChangeNormalsLength = jest.fn();
 
 const TILE = {
   id: "41510-main",
@@ -29,9 +29,9 @@ const callRender = (renderFunc, props = {}) => {
       tile={TILE}
       trianglesPercentage={30}
       normalsLength={20}
-      handleShowNormals={handleShowNormals}
-      handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-      handleChangeNormalsLength={handleChangeNormalsLength}
+      onShowNormals={onShowNormals}
+      onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+      onChangeNormalsLength={onChangeNormalsLength}
       {...props}
     />
   );
@@ -56,10 +56,10 @@ describe("Normals section", () => {
     fireEvent.change(getByLabelText("Percent of triangles with normals, %"), {
       target: { value: 31 },
     });
-    expect(handleChangeTrianglesPercentage).toHaveBeenCalled();
+    expect(onChangeTrianglesPercentage).toHaveBeenCalled();
     fireEvent.change(getByLabelText("Normals length, m"), {
       target: { value: 27 },
     });
-    expect(handleChangeNormalsLength).toHaveBeenCalled();
+    expect(onChangeNormalsLength).toHaveBeenCalled();
   });
 });

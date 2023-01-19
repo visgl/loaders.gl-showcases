@@ -8,9 +8,9 @@ jest.mock("../../utils/hooks/layout");
 const handleClosePanel = jest.fn();
 const activeDebugPanel = jest.fn();
 const deactiveDebugPanel = jest.fn();
-const handleShowNormals = jest.fn();
-const handleChangeTrianglesPercentage = jest.fn();
-const handleChangeNormalsLength = jest.fn();
+const onShowNormals = jest.fn();
+const onChangeTrianglesPercentage = jest.fn();
+const onChangeNormalsLength = jest.fn();
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
@@ -34,9 +34,9 @@ const callRender = (renderFunc, props = {}) => {
       tile={TILE}
       trianglesPercentage={30}
       normalsLength={20}
-      handleShowNormals={handleShowNormals}
-      handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-      handleChangeNormalsLength={handleChangeNormalsLength}
+      onShowNormals={onShowNormals}
+      onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+      onChangeNormalsLength={onChangeNormalsLength}
       handleClosePanel={handleClosePanel}
       activeDebugPanel={activeDebugPanel}
       deactiveDebugPanel={deactiveDebugPanel}

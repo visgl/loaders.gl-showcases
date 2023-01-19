@@ -106,9 +106,9 @@ type TileDetailsPanelProps = {
   tile: Tile3D;
   trianglesPercentage: number;
   normalsLength: number;
-  handleShowNormals: (tile: Tile3D) => void;
-  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
-  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
+  onShowNormals: (tile: Tile3D) => void;
+  onChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
+  onChangeNormalsLength: (tile: Tile3D, length: number) => void;
   handleClosePanel: () => void;
   deactiveDebugPanel: () => void;
   activeDebugPanel: () => void;
@@ -130,9 +130,9 @@ export const TileDetailsPanel = ({
   normalsLength,
   children,
   handleClosePanel,
-  handleShowNormals,
-  handleChangeTrianglesPercentage,
-  handleChangeNormalsLength,
+  onShowNormals,
+  onChangeTrianglesPercentage,
+  onChangeNormalsLength,
   deactiveDebugPanel,
   activeDebugPanel,
 }: TileDetailsPanelProps) => {
@@ -409,9 +409,9 @@ export const TileDetailsPanel = ({
               tile={tile}
               trianglesPercentage={trianglesPercentage}
               normalsLength={normalsLength}
-              handleShowNormals={handleShowNormals}
-              handleChangeTrianglesPercentage={handleChangeTrianglesPercentage}
-              handleChangeNormalsLength={handleChangeNormalsLength}
+              onShowNormals={onShowNormals}
+              onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+              onChangeNormalsLength={onChangeNormalsLength}
             />
           </>
         )}

@@ -4,7 +4,7 @@ import { color_accent_primary } from "../../constants/colors";
 import { Title, PanelHorizontalLine } from "../common";
 import { useState } from "react";
 import { Tile3D } from "@loaders.gl/tiles";
-import { NormalsInputItem } from "./normals-input";
+import { NormalsInputItem } from "./normals-input-item";
 
 const NoNormalsInfo = styled.div`
   display: flex;
@@ -36,33 +36,33 @@ type NormalsProps = {
   tile: Tile3D;
   trianglesPercentage: number;
   normalsLength: number;
-  handleShowNormals: (tile: Tile3D) => void;
-  handleChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
-  handleChangeNormalsLength: (tile: Tile3D, length: number) => void;
+  onShowNormals: (tile: Tile3D) => void;
+  onChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
+  onChangeNormalsLength: (tile: Tile3D, length: number) => void;
 };
 
 export const Normals = ({
   tile,
   normalsLength,
   trianglesPercentage,
-  handleShowNormals,
-  handleChangeTrianglesPercentage,
-  handleChangeNormalsLength,
+  onShowNormals,
+  onChangeTrianglesPercentage,
+  onChangeNormalsLength,
 }: NormalsProps) => {
   const [showNormalsInput, setShowNormalsInput] = useState<boolean>(false);
 
   const isTileHasNormals = Boolean(tile?.content?.attributes?.normals);
 
-  const onNormalPercentChange = (
+  const handleNormalPercentChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    handleChangeTrianglesPercentage(tile, Number(event.target.value));
+    onChangeTrianglesPercentage(tile, Number(event.target.value));
   };
 
-  const onNormalsLengthChange = (
+  const handleNormalsLengthChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    handleChangeNormalsLength(tile, Number(event.target.value));
+    onChangeNormalsLength(tile, Number(event.target.value));
   };
 
   return (
@@ -81,7 +81,7 @@ export const Normals = ({
               id={"toggle-show-normals"}
               checked={showNormalsInput}
               onChange={() => {
-                handleShowNormals(tile);
+                onShowNormals(tile);
                 setShowNormalsInput((prev) => !prev);
               }}
             />
@@ -93,13 +93,13 @@ export const Normals = ({
                 title={NORMALS_PERCENTAGE_TITLE}
                 value={trianglesPercentage}
                 maxValue={"100"}
-                onChange={onNormalPercentChange}
+                onChange={handleNormalPercentChange}
               />
               <NormalsInputItem
                 id={"normals-length"}
                 title={NORMALS_LENGTH_TITLE}
                 value={normalsLength}
-                onChange={onNormalsLengthChange}
+                onChange={handleNormalsLengthChange}
               />
             </>
           )}
