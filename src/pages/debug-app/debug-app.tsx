@@ -23,7 +23,7 @@ import {
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
- 
+
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
@@ -204,7 +204,7 @@ export const DebugApp = () => {
       setFlattenedSublayers([]);
       return;
     }
-    setSearchParams({ tileset: activeLayers[0].id });
+    setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
     async function fetchFlattenedSublayers(
       tilesetsData: {
@@ -364,7 +364,7 @@ export const DebugApp = () => {
       ...coloredTilesMap,
       ...{ [tileId]: color },
     };
-    
+
     setColoredTilesMap(updatedMap);
   };
 
@@ -587,15 +587,15 @@ export const DebugApp = () => {
         prev.map((bookmark) =>
           bookmark.id === bookmarkId
             ? {
-              ...bookmark,
-              imageUrl,
-              viewState,
-              debugOptions,
-              layersLeftSide: activeLayers,
-              layersRightSide: [],
-              activeLayersIdsLeftSide: selectedLayerIds,
-              activeLayersIdsRightSide: [],
-            }
+                ...bookmark,
+                imageUrl,
+                viewState,
+                debugOptions,
+                layersLeftSide: activeLayers,
+                layersRightSide: [],
+                activeLayersIdsLeftSide: selectedLayerIds,
+                activeLayersIdsRightSide: [],
+              }
             : bookmark
         )
       );
@@ -616,15 +616,15 @@ export const DebugApp = () => {
   };
 
   const handleChangeDebugOptions = useCallback((
-    optionName: keyof DebugOptions,
+      optionName: keyof DebugOptions,
     value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
-  ) => {
+    ) => {
     setDebugOptions(prevValues => ({
-      ...prevValues,
+        ...prevValues,
       [optionName]: value
     }))
   }, []);
-  
+
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
