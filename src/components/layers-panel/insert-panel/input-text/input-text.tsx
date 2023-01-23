@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useMemo } from "react";
 import styled from "styled-components";
 import { color_accent_primary } from "../../../../constants/colors";
 
@@ -70,18 +70,21 @@ const ErrorMessage = styled.span`
 `;
 
 export const InputText = ({
-  id = "input-text",
+  id,
   label,
   value,
   error = "",
   onChange,
+  name,
   ...rest
 }: InputProps) => {
+  const inputId = useMemo(() => id || name || "input-text", [id, name]);
   return (
     <InputWrapper>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && <Label htmlFor={inputId}>{label}</Label>}
       <Input
-        id={id}
+        id={inputId}
+        name={name}
         value={value}
         onChange={onChange}
         error={error}

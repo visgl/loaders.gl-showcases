@@ -2,7 +2,10 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import { ActionButtonVariant } from "../../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
 import { InputText } from "./input-text/input-text";
 
@@ -93,12 +96,13 @@ export const InsertPanel = ({
     return isFormValid;
   };
 
-  const handleInsert = () => {
+  const handleInsert = (event) => {
     const isFormValid = validateFields();
 
     if (isFormValid) {
       onInsert({ name, url, token });
     }
+    event.preventDefault();
   };
 
   const handleInputChange = (event) => {
@@ -123,34 +127,36 @@ export const InsertPanel = ({
   return (
     <Container layout={layout}>
       <Title>{title}</Title>
-      <InputsWrapper>
-        <InputText
-          name="Name"
-          label="Name"
-          value={name}
-          error={nameError}
-          onChange={handleInputChange}
-        />
-        <InputText
-          name="URL"
-          label="URL"
-          value={url}
-          error={urlError}
-          onChange={handleInputChange}
-        />
-        <InputText
-          name="Token"
-          label="Token"
-          value={token}
-          onChange={handleInputChange}
-        />
-      </InputsWrapper>
-      <ButtonsWrapper>
-        <ActionButton variant={ActionButtonVariant.cancel} onClick={onCancel}>
-          Cancel
-        </ActionButton>
-        <ActionButton onClick={handleInsert}>Insert</ActionButton>
-      </ButtonsWrapper>
+      <form className="insert-form" onSubmit={handleInsert}>
+        <InputsWrapper>
+          <InputText
+            name="Name"
+            label="Name"
+            value={name}
+            error={nameError}
+            onChange={handleInputChange}
+          />
+          <InputText
+            name="URL"
+            label="URL"
+            value={url}
+            error={urlError}
+            onChange={handleInputChange}
+          />
+          <InputText
+            name="Token"
+            label="Token"
+            value={token}
+            onChange={handleInputChange}
+          />
+        </InputsWrapper>
+        <ButtonsWrapper>
+          <ActionButton variant={ActionButtonVariant.cancel} onClick={onCancel}>
+            Cancel
+          </ActionButton>
+          <ActionButton type="submit">Insert</ActionButton>
+        </ButtonsWrapper>
+      </form>
       {children}
     </Container>
   );
