@@ -1,4 +1,8 @@
 import puppeteer from "puppeteer";
+import {
+  checkLayersPanel,
+  inserAndDeleteLayer,
+} from "../../utils/testing-utils/e2e-layers-panel";
 
 describe("ViewerApp", () => {
   let browser;
@@ -7,17 +11,99 @@ describe("ViewerApp", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await page.setViewport({ width: 1366, height: 768 });
+  });
+
+  beforeEach(async () => {
     await page.goto("http://localhost:3000/viewer");
   });
 
   afterAll(() => browser.close());
 
-  it("Memory Usage tab works", async () => {
-    await page.click("#memory-usage-tab");
-    await page.waitForSelector("#viewer-memory-usage-panel", { visible: true });
+  it("Should automatically redirect from to the initial layer", async () => {
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(
+      "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
+    );
   });
 
-  it("Memory Usage tab works", async () => {
+  it("Should activate 'Viewer' menu item", async () => {
+    expect(
+      await page.$eval(
+        "#header-links-default>a[active='1']",
+        (node) => node.innerText
+      )
+    ).toEqual("Viewer");
+  });
+
+  describe("Main tools panel", () => {
+    it("Should show Main tools panel", async () => {
+      expect(await page.$$("#viewer--tools-panel")).toBeDefined();
+      const panel = await page.$("#viewer--tools-panel");
+      const panelChildren = await panel.$$(":scope > *");
+      expect(panelChildren.length).toEqual(3);
+    });
+
+    it("Should open layers panel", async () => {
+      expect(await page.$("#viewer--layers-panel")).toBeNull();
+      const layersPanelButton = await page.$(
+        "#viewer--tools-panel>button:first-child"
+      );
+      await layersPanelButton.click();
+      expect(await page.$("#viewer--layers-panel")).toBeDefined();
+
+      await layersPanelButton.click();
+      expect(await page.$("#viewer--layers-panel")).toBeNull();
+    });
+
+    it("Memory Usage tab works", async () => {
+      await page.click("#memory-usage-tab");
+      await page.waitForSelector("#viewer-memory-usage-panel", {
+        visible: true,
+      });
+    });
+  });
+
+  describe("Layers panel", () => {
+    beforeEach(async () => {
+      const layersPanelButton = await page.$(
+        "#viewer--tools-panel>button:first-child"
+      );
+      await layersPanelButton.click();
+    });
+
+    it("Should close layers panel", async () => {
+      const closeButton = await page.$("#layers-panel-close-button");
+      await closeButton.click();
+      expect(await page.$("#viewer--layers-panel")).toBeNull();
+    });
+
+    it("Should show layers panel", async () => {
+      const panelId = "#viewer--layers-panel";
+      await page.waitForSelector(panelId);
+      expect(await page.$$(panelId)).toBeDefined();
+      await checkLayersPanel(page, panelId, true);
+    });
+
+    it("Should select initial layer", async () => {
+      expect(
+        await page.$eval(
+          "#viewer--layers-panel #san-francisco-v1_7>input",
+          (node) => node.checked
+        )
+      ).toBeTruthy();
+    });
+
+    it("Should insert and delete layers", async () => {
+      await inserAndDeleteLayer(
+        page,
+        "#viewer--layers-panel",
+        "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
+      );
+    });
+  });
+
+  it("Bookmarks tab works", async () => {
     await page.click("#bookmarks-tab");
     await page.waitForSelector("#viewer-bookmarks-panel", { visible: true });
   });

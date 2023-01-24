@@ -6,7 +6,7 @@ export const TRANSITION_DURATION = 4000;
 // https://www.arcgis.com/sharing/rest/content/items/19dcff93eeb64f208d09d328656dd492/data
 
 export const INITIAL_EXAMPLE: LayerExample = {
-  id: "san-francisco-v1.7",
+  id: "san-francisco-v1_7",
   name: "San Francisco v1.7",
   url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
   type: TilesetType.I3S,
@@ -15,7 +15,7 @@ export const INITIAL_EXAMPLE: LayerExample = {
 
 export const EXAMPLES: LayerExample[] = [
   {
-    id: "san-francisco-v1.6",
+    id: "san-francisco-v1_6",
     name: "San Francisco v1.6",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
     type: TilesetType.I3S,

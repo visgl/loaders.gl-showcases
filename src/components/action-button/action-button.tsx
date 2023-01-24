@@ -9,8 +9,9 @@ import { ActionButtonVariant } from "../../types";
 
 type ActionButtonProps = {
   variant?: ActionButtonVariant;
-  onClick: (event: MouseEventHandler<HTMLButtonElement>) => void;
+  onClick?: (event: MouseEventHandler<HTMLButtonElement>) => void;
   children?: React.ReactNode;
+  type?: string;
 };
 
 type ButtonProps = {
@@ -64,6 +65,7 @@ export const ActionButton = ({
   variant = ActionButtonVariant.primary,
   onClick,
   children,
+  type = "button",
 }: ActionButtonProps) => {
   const getButtonComponent = (): any => {
     switch (variant) {
@@ -80,5 +82,9 @@ export const ActionButton = ({
 
   const ButtonComponent = useMemo(() => getButtonComponent(), [variant]);
 
-  return <ButtonComponent onClick={onClick}>{children}</ButtonComponent>;
+  return (
+    <ButtonComponent type={type} onClick={onClick}>
+      {children}
+    </ButtonComponent>
+  );
 };
