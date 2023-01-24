@@ -1,4 +1,5 @@
-import { convertArcGisSlidesToBookmars } from './bookmarks-utils';
+import { PageId } from '../types';
+import { convertArcGisSlidesToBookmars, checkBookmarksByPageId } from './bookmarks-utils';
 
 jest.mock('@math.gl/proj4', () => ({
   Proj4Projection: jest.fn().mockImplementation(() => ({
@@ -243,5 +244,29 @@ describe("Bookmarks utils", () => {
     const bookmarks = convertArcGisSlidesToBookmars(webScene, layers, layersLeftSide);
 
     expect(bookmarks).toEqual(expectedBookmarks);
+  });
+
+  test("Should return the same bookmarks page id if all bookmars mached current page id", () => {
+    const bookmarks = [
+      {id: 1, pageId: PageId.comparison},
+      {id: 2, pageId: PageId.comparison},
+    ];
+
+    // @ts-expect-error - should follow types for webscene
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
+
+    expect(bookmarksPageId).toEqual(PageId.comparison);
+  });
+
+  test("Should return bookmarks page id if all bookmars are not mached with current page id", () => {
+    const bookmarks = [
+      {id: 1, pageId: PageId.debug},
+      {id: 2, pageId: PageId.debug},
+    ];
+
+    // @ts-expect-error - should follow types for webscene
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
+
+    expect(bookmarksPageId).toEqual(PageId.debug);
   });
 });

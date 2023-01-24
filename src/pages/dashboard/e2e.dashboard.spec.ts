@@ -54,7 +54,7 @@ describe("Dashboard Default View", () => {
     await page.waitForTimeout(5000);
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+      "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
     expect(controlPanel).toBeDefined();
@@ -67,7 +67,7 @@ describe("Dashboard Default View", () => {
     await page.waitForTimeout(5000);
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+      "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");
     expect(toolBar).toBeDefined();
@@ -291,7 +291,7 @@ describe("Dashboard Default View", () => {
 
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+      "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
   });
 
@@ -302,7 +302,7 @@ describe("Dashboard Default View", () => {
     await page.waitForTimeout(5000);
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+      "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
   });
 
@@ -417,7 +417,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/viewer?tileset=san-francisco-v1.7"
+      "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
     expect(controlPanel).toBeDefined();
@@ -434,7 +434,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     const currentUrl = page.url();
     expect(currentUrl).toBe(
-      "http://localhost:3000/debug?tileset=san-francisco-v1.7"
+      "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");
     expect(toolBar).toBeDefined();

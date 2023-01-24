@@ -20,6 +20,7 @@ import {
   DragMode,
   MinimapPosition,
   TileSelectedColor,
+  PageId,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -70,8 +71,9 @@ import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel
 import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
-import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
+import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
+import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 
 const INITIAL_VIEW_STATE = {
@@ -211,7 +213,7 @@ export const DebugApp = () => {
       setFlattenedSublayers([]);
       return;
     }
-    setSearchParams({ tileset: activeLayers[0].id });
+    setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
     async function fetchFlattenedSublayers(
       tilesetsData: {
@@ -371,7 +373,7 @@ export const DebugApp = () => {
       ...coloredTilesMap,
       ...{ [tileId]: color },
     };
-    
+
     setColoredTilesMap(updatedMap);
   };
 
@@ -592,6 +594,7 @@ export const DebugApp = () => {
         ...prev,
         {
           id: newBookmarkId,
+          pageId: PageId.debug,
           imageUrl,
           viewState,
           debugOptions,
@@ -633,15 +636,15 @@ export const DebugApp = () => {
         prev.map((bookmark) =>
           bookmark.id === bookmarkId
             ? {
-              ...bookmark,
-              imageUrl,
-              viewState,
-              debugOptions,
-              layersLeftSide: activeLayers,
-              layersRightSide: [],
-              activeLayersIdsLeftSide: selectedLayerIds,
-              activeLayersIdsRightSide: [],
-            }
+                ...bookmark,
+                imageUrl,
+                viewState,
+                debugOptions,
+                layersLeftSide: activeLayers,
+                layersRightSide: [],
+                activeLayersIdsLeftSide: selectedLayerIds,
+                activeLayersIdsRightSide: [],
+              }
             : bookmark
         )
       );
@@ -657,20 +660,26 @@ export const DebugApp = () => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    setBookmarks(bookmarks);
-    onSelectBookmarkHandler(bookmarks[0].id);
+    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.debug);
+
+    if (bookmarksPageId === PageId.debug) {
+      setBookmarks(bookmarks);
+      onSelectBookmarkHandler(bookmarks[0].id);
+    } else {
+      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the debug app`);
+    }
   };
 
   const handleChangeDebugOptions = useCallback((
-    optionName: keyof DebugOptions,
+      optionName: keyof DebugOptions,
     value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
-  ) => {
+    ) => {
     setDebugOptions(prevValues => ({
-      ...prevValues,
+        ...prevValues,
       [optionName]: value
     }))
   }, []);
-  
+
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
@@ -749,7 +758,12 @@ export const DebugApp = () => {
         id="debug-deck-container"
         showMinimap={minimap}
         createIndependentMinimapViewport={minimapViewport}
-        parentViewState={viewState}
+        parentViewState={{
+          ...viewState,
+          main: {
+            ...viewState.main,
+          },
+        }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
@@ -779,6 +793,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
         <RightSideToolsPanelWrapper layout={layout}>
@@ -813,6 +828,7 @@ export const DebugApp = () => {
         <RightSidePanelWrapper layout={layout}>
           <LayersPanel
             id="debug--layers-panel"
+            pageId={PageId.debug}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}
@@ -841,10 +857,15 @@ export const DebugApp = () => {
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.validator && (
-        <SemanticValidator
-          warnings={warnings}
-          clearWarnings={handleClearWarnings}
-        />
+        <RightSidePanelWrapper layout={layout}>
+          <SemanticValidator
+            warnings={warnings}
+            clearWarnings={handleClearWarnings}
+            onClose={() =>
+              onChangeMainToolsPanelHandler(ActiveButton.validator)
+            }
+          />
+        </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.memory && (
         <RightSidePanelWrapper layout={layout}>

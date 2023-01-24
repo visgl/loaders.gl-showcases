@@ -16,8 +16,8 @@ export enum Panels {
 }
 
 export const MapArea = styled.div`
-  margin-top: 60px;
-  height: calc(100% - 60px);
+  margin-top: 58px;
+  height: calc(100% - 58px);
   display: flex;
   position: relative;
 `;

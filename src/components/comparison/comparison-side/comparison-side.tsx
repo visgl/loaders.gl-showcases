@@ -22,6 +22,7 @@ import {
   LayerViewState,
   Bookmark,
   BuildingSceneSublayerExtended,
+  PageId,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -550,6 +551,7 @@ export const ComparisonSide = ({
             <OptionsPanelWrapper layout={layout}>
               <LayersPanel
                 id={`${side}-layers-panel`}
+                pageId={PageId.comparison}
                 layers={examples}
                 selectedLayerIds={selectedLayerIds}
                 onLayerInsert={onLayerInsertHandler}
