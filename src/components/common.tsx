@@ -266,3 +266,11 @@ export const MenuLink = styled.a`
   cursor: pointer;
   text-decoration: none;
 `;
+
+export const TileInfoSectionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 24px 0;
+`;

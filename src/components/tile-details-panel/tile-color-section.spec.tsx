@@ -19,7 +19,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Tile Color Section", () => {
-  it("Should render validate data", () => {
+  it("Should render tile color section", () => {
     const { container } = callRender(renderWithTheme);
     expect(container.firstChild).toBeInTheDocument();
   });

@@ -8,6 +8,9 @@ jest.mock("../../utils/hooks/layout");
 const handleClosePanel = jest.fn();
 const activeDebugPanel = jest.fn();
 const deactiveDebugPanel = jest.fn();
+const onShowNormals = jest.fn();
+const onChangeTrianglesPercentage = jest.fn();
+const onChangeNormalsLength = jest.fn();
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
@@ -29,6 +32,11 @@ const callRender = (renderFunc, props = {}) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       tile={TILE}
+      trianglesPercentage={30}
+      normalsLength={20}
+      onShowNormals={onShowNormals}
+      onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+      onChangeNormalsLength={onChangeNormalsLength}
       handleClosePanel={handleClosePanel}
       activeDebugPanel={activeDebugPanel}
       deactiveDebugPanel={deactiveDebugPanel}

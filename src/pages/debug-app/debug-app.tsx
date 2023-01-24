@@ -24,7 +24,6 @@ import {
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
@@ -75,6 +74,7 @@ import { MapControllPanel } from "../../components/map-control-panel/map-control
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
+import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -97,6 +97,9 @@ const INITIAL_VIEW_STATE = {
     bearing: 0,
   },
 };
+
+const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
+const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
 
@@ -131,6 +134,10 @@ export const DebugApp = () => {
   const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
+  const [trianglesPercentage, setTrianglesPercentage] = useState(
+    DEFAULT_TRIANGLES_PERCENTAGE
+  );
+  const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
@@ -378,6 +385,40 @@ export const DebugApp = () => {
 
   const handleClearWarnings = () => setWarnings([]);
 
+  const onShowNormals = (tile) => {
+    if (normalsDebugData === null) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    } else {
+      setNormalsDebugData(null);
+    }
+  };
+
+  const onChangeTrianglesPercentage = (tile, newValue) => {
+    if (normalsDebugData?.length) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    }
+
+    const percent = validateTrianglesPercentage(newValue);
+    setTrianglesPercentage(percent);
+  };
+
+  const onChangeNormalsLength = (tile, newValue) => {
+    if (normalsDebugData?.length) {
+      setNormalsDebugData(generateBinaryNormalsDebugData(tile));
+    }
+
+    setNormalsLength(newValue);
+  };
+
+  const validateTrianglesPercentage = (newValue) => {
+    if (newValue < 0) {
+      return 1;
+    } else if (newValue > 100) {
+      return 100;
+    }
+    return newValue;
+  };
+
   const renderTilePanel = () => {
     if (!selectedTile) {
       return null;
@@ -393,6 +434,11 @@ export const DebugApp = () => {
     return (
       <TileDetailsPanel
         tile={selectedTile}
+        trianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
+        onShowNormals={onShowNormals}
+        onChangeTrianglesPercentage={onChangeTrianglesPercentage}
+        onChangeNormalsLength={onChangeNormalsLength}
         handleClosePanel={handleCloseTilePanel}
         deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
         activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
@@ -722,6 +768,8 @@ export const DebugApp = () => {
         mapStyle={selectedBaseMap.mapUrl}
         tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
+        normalsTrianglesPercentage={trianglesPercentage}
+        normalsLength={normalsLength}
         boundingVolumeType={boundingVolume ? boundingVolumeType : null}
         boundingVolumeColorMode={boundingVolumeColorMode}
         pickable={pickable}

@@ -1,17 +1,9 @@
 import styled, { css } from "styled-components";
-import { Title } from "../common";
+import { Title, TileInfoSectionWrapper } from "../common";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 import { useExpand } from "../../utils/hooks/use-expand";
 import { CollapseDirection, ExpandState, TileSelectedColor } from "../../types";
 import { HuePicker, MaterialPicker, ColorResult } from "react-color";
-
-const SectionWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin: 24px 0;
-`;
 
 const SelectedColorContainer = styled.div`
   display: flex;
@@ -99,7 +91,7 @@ export const TileColorSection = ({
 
   return (
     <>
-      <SectionWrapper>
+      <TileInfoSectionWrapper>
         <Title left={16}>Tile color:</Title>
         <SelectedColorContainer>
           <SelectedColor tileSelectedColor={tileSelectedColor} />
@@ -109,7 +101,7 @@ export const TileColorSection = ({
             onClick={expand}
           />
         </SelectedColorContainer>
-      </SectionWrapper>
+      </TileInfoSectionWrapper>
       {expandState === ExpandState.collapsed && (
         <TileColorSelectorWrapper>
           <HuePicker
