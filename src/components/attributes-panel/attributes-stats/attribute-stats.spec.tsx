@@ -4,6 +4,7 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { AttributeStats } from "./attribute-stats";
 
 import { load } from "@loaders.gl/core";
+import { capitalize } from "../../../utils/format/capitalize";
 
 jest.mock("@loaders.gl/core");
 
@@ -111,7 +112,7 @@ describe("AttributeStats", () => {
       if (statKey !== "histogram" && statKey !== "mostFrequentValues") {
         const statValue = stats[statKey];
 
-        expect(screen.getByText(statKey)).toBeInTheDocument();
+        expect(screen.getAllByText(capitalize(statKey))[0]).toBeInTheDocument();
         expect(screen.getByText(statValue)).toBeInTheDocument();
       }
     }

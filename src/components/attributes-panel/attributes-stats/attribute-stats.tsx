@@ -27,6 +27,7 @@ import {
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { calculateAverageValue } from "../../../utils/calculate-average-value";
 import { COLORS_BY_ATTRIBUTE } from "../../../constants/colors";
+import { capitalize } from "../../../utils/format/capitalize";
 
 type VisibilityProps = {
   visible: boolean;
@@ -242,7 +243,9 @@ export const AttributeStats = ({
           break;
 
         case MOST_FREQUENT_VALUES: {
-          statisticsRows.push(<Statistic key={statName}>{statName}</Statistic>);
+          statisticsRows.push(
+            <Statistic key={statName}>{capitalize(statName)}</Statistic>
+          );
           const frequentValues = renderMostFrequentValuesStats(statValue);
           statisticsRows.push(
             <Statistic key={`${statName}-${statValue}`}>
@@ -253,7 +256,9 @@ export const AttributeStats = ({
         }
 
         default: {
-          statisticsRows.push(<Statistic key={statName}>{statName}</Statistic>);
+          statisticsRows.push(
+            <Statistic key={statName}>{capitalize(statName)}</Statistic>
+          );
           statisticsRows.push(
             <Statistic key={`${statName}-${statValue}`}>{statValue}</Statistic>
           );
