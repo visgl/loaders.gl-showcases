@@ -10,6 +10,7 @@ import {
   BaseMap,
   LayerViewState,
   Bookmark,
+  PageId,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
@@ -49,6 +50,7 @@ enum Tabs {
 
 type LayersPanelProps = {
   id: string;
+  pageId: PageId;
   layers: LayerExample[];
   sublayers: ActiveSublayer[];
   selectedLayerIds: string[];
@@ -152,6 +154,7 @@ const SupportedLayerItem = styled.li`
 
 export const LayersPanel = ({
   id,
+  pageId,
   type,
   layers,
   sublayers,
@@ -268,7 +271,7 @@ export const LayersPanel = ({
 
       const newLayersExamples = [...layers, newLayer];
       const isWebsceneHasSlides = !!webScene.header?.presentation?.slides?.length;
-      const bookmarks = isAddingBookmarksAllowed ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples) : [];
+      const bookmarks = isAddingBookmarksAllowed  && pageId ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples, pageId) : [];
 
       if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
         setShowAddingSlidesWarning(true);

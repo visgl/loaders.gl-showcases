@@ -10,6 +10,7 @@ import { InsertPanel } from "./insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
+import { PageId } from "../../types";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
@@ -24,6 +25,13 @@ jest.mock("./map-options-panel");
 jest.mock("./insert-panel/insert-panel");
 jest.mock("./warning/warning-panel");
 jest.mock("./layer-settings-panel");
+jest.mock("react-router-dom", () => ({
+  useLocation: jest.fn().mockImplementation(() => ({
+    location: {
+      pathname: '/viewer'
+    }
+  }))
+}))
 
 jest.mock("../close-button/close-button", () => ({
   CloseButton: ({ onClick }) => {
@@ -75,6 +83,7 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <LayersPanel
       id={""}
+      pageId={PageId.viewer}
       layers={[]}
       sublayers={[]}
       selectedLayerIds={[]}
