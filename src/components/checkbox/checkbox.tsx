@@ -1,16 +1,27 @@
+import React from "react";
 import styled from "styled-components";
+import {
+  color_brand_tertiary,
+  color_canvas_primary_inverted,
+  dim_brand_tertinary,
+} from "../../constants/colors";
+import { SelectionState } from "../../types";
+import CheckedIcon from "../../../public/icons/checked.svg";
+import IndeterminateIcon from "../../../public/icons/indeterminate.svg";
 
-const CheckboxContainer = styled.div<{ disabled: boolean }>`
+type CheckboxProps = {
+  id: string;
+  checked: SelectionState;
+  onChange: (event: React.ChangeEvent) => void;
+};
+
+const CheckboxContainer = styled.div`
   display: inline-block;
   vertical-align: middle;
-  cursor: ${(props) => (props.disabled ? "auto" : "pointer")}};
+  cursor: pointer;
   position: relative;
 `;
-const Icon = styled.svg`
-  fill: none;
-  stroke: white;
-  stroke-width: 2px;
-`;
+
 const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   border: 0;
   clip: rect(0 0 0 0);
@@ -23,36 +34,30 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   white-space: nowrap;
   width: 1px;
 `;
-const StyledCheckbox = styled.div<{ checked: boolean; disabled: boolean }>`
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  margin-right: 8px;
-  background: ${(props) => (props.checked ? "#4F52CC" : "#0E111A")};
-  border: ${(props) =>
-    props.disabled ? "1px solid rgba(255,255,255, .6)" : "1px solid #4F52CC"};
+
+const StyledCheckbox = styled.div<{ checkedState: SelectionState }>`
+  width: 24px;
+  height: 24px;
+  background: ${({ checkedState }) => checkedState === SelectionState.unselected ? "transparent" : color_brand_tertiary};
+  border: 1px solid ${color_brand_tertiary};
   border-radius: 4px;
-  transition: all 150ms;
 
-  ${HiddenCheckbox}:focus + & {
-    box-shadow: 0 0 0 2px #4f52cc;
-  }
-
-  ${Icon} {
-    visibility: ${(props) => (props.checked ? "visible" : "hidden")};
+  &:hover {
+    background: ${({ checkedState }) => checkedState === SelectionState.unselected ? "transparent" : dim_brand_tertinary};
+    border: 1px solid ${dim_brand_tertinary};
   }
 `;
 
-/**
- * TODO: Add types to component
- */
-export const Checkbox = ({ checked, ...props }) => (
-  <CheckboxContainer disabled={props.disabled}>
-    <HiddenCheckbox checked={checked} {...props} />
-    <StyledCheckbox disabled={props.disabled} checked={checked}>
-      <Icon id={`${props.id}-icon`} viewBox="0 0 24 24">
-        <polyline points="20 6 9 17 4 12" />
-      </Icon>
-    </StyledCheckbox>
-  </CheckboxContainer>
-);
+export const Checkbox = ({ id, onChange, checked: checkedState, ...rest }: CheckboxProps) => {
+  const checked = checkedState === SelectionState.selected;
+
+  return (
+    <CheckboxContainer>
+      <HiddenCheckbox id={id} data-testid={`checkbox-${id}`} checked={checked} onChange={onChange} {...rest} />
+      <StyledCheckbox id={`${id}-icon`} checkedState={checkedState}>
+        {checkedState === SelectionState.selected && <CheckedIcon data-testid="checkbox-icon" stroke={color_canvas_primary_inverted} />}
+        {checkedState === SelectionState.indeterminate && <IndeterminateIcon data-testid="indeterminate-icon" stroke={color_canvas_primary_inverted} />}
+      </StyledCheckbox>
+    </CheckboxContainer>
+  )
+}

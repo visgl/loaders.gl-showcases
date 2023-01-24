@@ -1,59 +1,44 @@
-import PropTypes from "prop-types";
 import styled from "styled-components";
-
-const SemanticValidatorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: 10px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  background: #0e111a;
-  z-index: 17;
-  line-height: 135%;
-  border-radius: 8px;
-  min-height: 38px;
-  max-height: 135px;
-  overflow-y: auto;
-`;
+import { color_canvas_primary_inverted } from "../../constants/colors";
+import { useAppLayout } from "../../utils/hooks/layout";
+import { PanelContainer, PanelContent, PanelHeader, PanelHorizontalLine, Panels, Title } from "../common";
+import { CloseButton } from "../close-button/close-button";
 
 const Table = styled.table`
   width: 100%;
+  color: ${color_canvas_primary_inverted};
+  font-size: 16px;
 `;
 
 const TableHeader = styled.th`
   position: sticky;
   top: 0;
   text-align: left;
-  background: #0e111a;
+  font-size: 16px;
   padding: 8px;
-  height: 22px;
+  height: 44px;
 `;
 
 const NoIssuesItem = styled.h4`
   margin: auto;
-  color: white;
+  color: ${color_canvas_primary_inverted};
   font-weight: normal;
 `;
 
 const TableButton = styled.button`
   display: flex;
   position: absolute;
-  top: 0;
+  top: 6px;
   right: 0;
-  width: 90px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   background: transparent;
   padding: 4px 16px;
-  margin: 0 10px;
-  color: rgba(255, 255, 255, 0.6);
+  color: ${color_canvas_primary_inverted};
   font-weight: 500px;
-  border-radius: 4px;
-  margin: 8px;
+  border-radius: 12px;
+  border: 1px solid ${color_canvas_primary_inverted};
   cursor: pointer;
 `;
 
@@ -74,20 +59,21 @@ const WARNING_TYPES = {
 const WARNING_TYPE = "Type";
 const WARNING = "Warning";
 const COLUMN_NUMBER = "№";
+export interface Warning {
+  title?: string;
+  type: string;
+}
 
-const propTypes = {
-  warnings: PropTypes.arrayOf(PropTypes.object),
-};
+export interface SemanticValidatorProps {
+  warnings?: Warning[], 
+  clearWarnings?: React.MouseEventHandler<HTMLButtonElement>, 
+  onClose: React.ReactEventHandler<Element>
+}
 
-const defaultProps = {
-  warnings: [],
-};
+export const SemanticValidator = ({ warnings = [], clearWarnings, onClose }: SemanticValidatorProps) => {
+  const layout = useAppLayout();
 
-/**
- * TODO: Add types to component
- */
-export const SemanticValidator = ({ warnings, clearWarnings }) => {
-  const renderColumns = (warnings) =>
+  const renderColumns = (warnings: Warning[]) =>
     warnings.map((warning, index) => (
       <tr key={`${warning.title}-${index}`}>
         <td style={{ padding: "0 8px 0 8px", textAlign: "center" }}>
@@ -102,7 +88,7 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
       </tr>
     ));
 
-  const renderWarnings = (warnings) => {
+  const renderWarnings = (warnings: Warning[]) => {
     const columns = renderColumns(warnings);
 
     return (
@@ -113,7 +99,7 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
             <TableHeader>{WARNING_TYPE}</TableHeader>
             <TableHeader>
               {WARNING}
-              <TableButton onClick={clearWarnings}>Clear All</TableButton>
+              <TableButton onClick={clearWarnings}>Clear</TableButton>
             </TableHeader>
           </Row>
         </thead>
@@ -123,15 +109,19 @@ export const SemanticValidator = ({ warnings, clearWarnings }) => {
   };
 
   return (
-    <SemanticValidatorContainer id="semantic-validator">
-      {warnings && Boolean(warnings.length) ? (
-        renderWarnings(warnings)
-      ) : (
-        <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
-      )}
-    </SemanticValidatorContainer>
+    <PanelContainer id="semantic-validator" layout={layout}>
+      <PanelHeader panel={Panels.MemoryUsage}>
+        <Title left={16}>Validator</Title>
+        <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
+      </PanelHeader>
+      <PanelHorizontalLine top={10} />
+      <PanelContent>
+        {warnings && Boolean(warnings.length) ? (
+          renderWarnings(warnings)
+        ) : (
+          <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
+        )}
+      </PanelContent>
+    </PanelContainer>
   );
 };
-
-SemanticValidator.propTypes = propTypes;
-SemanticValidator.defaultProps = defaultProps;

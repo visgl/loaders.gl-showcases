@@ -1,5 +1,8 @@
-export const getTilesetHeader = () => {
-  return {
+import { SceneLayer3D } from "@loaders.gl/i3s";
+import { DATA_TYPE } from "@loaders.gl/i3s/dist/types";
+
+export const getTilesetJson = (): SceneLayer3D => {
+  const i3sProperties: SceneLayer3D = {
     id: 0,
     version: "E74C24B8-42E3-4729-81BA-89A9F273AC1F",
     name: "AllRegions",
@@ -7,7 +10,6 @@ export const getTilesetHeader = () => {
       lastUpdate: 1592936682000,
     },
     href: "./layers/0",
-    associatedLayerID: 0,
     layerType: "3DObject",
     spatialReference: {
       wkid: 4326,
@@ -28,6 +30,7 @@ export const getTilesetHeader = () => {
       color: false,
     },
     drawingInfo: {
+      scaleSymbols: false,
       renderer: {
         type: "simple",
         symbol: {
@@ -161,9 +164,6 @@ export const getTilesetHeader = () => {
       indexCRS: "http://www.opengis.net/def/crs/EPSG/0/4326",
       vertexCRS: "http://www.opengis.net/def/crs/EPSG/0/4326",
       normalReferenceFrame: "earth-centered",
-      nidEncoding: "application/vnd.esri.i3s.json+gzip; version=1.7",
-      featureEncoding: "application/vnd.esri.i3s.json+gzip; version=1.7",
-      geometryEncoding: "application/octet-stream; version=1.7",
       attributeEncoding: "application/octet-stream; version=1.7",
       lodType: "MeshPyramid",
       lodModel: "node-switching",
@@ -172,35 +172,35 @@ export const getTilesetHeader = () => {
         header: [
           {
             property: "vertexCount",
-            type: "UInt32",
+            type: DATA_TYPE.UInt32,
           },
           {
             property: "featureCount",
-            type: "UInt32",
+            type: DATA_TYPE.UInt32,
           },
         ],
         topology: "PerAttributeArray",
         ordering: ["position", "normal", "uv0", "color", "region"],
         vertexAttributes: {
           position: {
-            valueType: "Float32",
+            valueType: DATA_TYPE.Float32,
             valuesPerElement: 3,
           },
           normal: {
-            valueType: "Float32",
+            valueType: DATA_TYPE.Float32,
             valuesPerElement: 3,
           },
           uv0: {
-            valueType: "Float32",
+            valueType: DATA_TYPE.Float32,
             valuesPerElement: 2,
           },
           color: {
-            valueType: "UInt8",
+            valueType: DATA_TYPE.UInt8,
             valuesPerElement: 4,
           },
           region: {
             valuesPerElement: 4,
-            valueType: "UInt16",
+            valueType: DATA_TYPE.UInt16,
           },
         },
         featureAttributeOrder: ["id", "faceRange"],
@@ -225,6 +225,8 @@ export const getTilesetHeader = () => {
     materialDefinitions: [
       {
         cullFace: "back",
+        pbrMetallicRoughness: { metallicFactor: 1, roughnessFactor: 0 },
+        alphaMode: "opaque",
       },
       {
         cullFace: "back",
@@ -234,7 +236,9 @@ export const getTilesetHeader = () => {
             texCoord: 0,
           },
           metallicFactor: 0,
+          roughnessFactor: 0,
         },
+        alphaMode: "opaque",
       },
       {
         cullFace: "back",
@@ -244,7 +248,9 @@ export const getTilesetHeader = () => {
             texCoord: 0,
           },
           metallicFactor: 0,
+          roughnessFactor: 0,
         },
+        alphaMode: "opaque",
       },
     ],
     textureSetDefinitions: [
@@ -276,24 +282,29 @@ export const getTilesetHeader = () => {
     ],
     geometryDefinitions: [
       {
+        topology: "triangle",
         geometryBuffers: [
           {
             offset: 8,
             position: {
               type: "Float32",
               component: 3,
+              binding: "per-vertex",
             },
             normal: {
               type: "Float32",
               component: 3,
+              binding: "per-vertex",
             },
             uv0: {
               type: "Float32",
               component: 2,
+              binding: "per-vertex",
             },
             color: {
               type: "UInt8",
               component: 4,
+              binding: "per-vertex",
             },
             featureId: {
               type: "UInt64",
@@ -315,28 +326,34 @@ export const getTilesetHeader = () => {
         ],
       },
       {
+        topology: "triangle",
         geometryBuffers: [
           {
             offset: 8,
             position: {
               type: "Float32",
               component: 3,
+              binding: "per-vertex",
             },
             normal: {
               type: "Float32",
               component: 3,
+              binding: "per-vertex",
             },
             uv0: {
               type: "Float32",
               component: 2,
+              binding: "per-vertex",
             },
             color: {
               type: "UInt8",
               component: 4,
+              binding: "per-vertex",
             },
             uvRegion: {
               type: "UInt16",
               component: 4,
+              binding: "per-vertex",
             },
             featureId: {
               type: "UInt64",
@@ -364,6 +381,12 @@ export const getTilesetHeader = () => {
         ],
       },
     ],
+  };
+  return i3sProperties;
+};
+
+export const getTilesetHeader = () => {
+  const syntheticProperties = {
     loader: {
       name: "I3S (Indexed Scene Layers)",
       id: "i3s",
@@ -842,4 +865,5 @@ export const getTilesetHeader = () => {
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
     type: "I3S",
   };
+  return { ...getTilesetJson(), ...syntheticProperties };
 };

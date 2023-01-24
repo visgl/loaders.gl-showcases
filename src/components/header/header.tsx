@@ -1,75 +1,93 @@
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import GitHubIcon from "../../../public/icons/github-icon.png";
-import { Theme } from "../../utils/enums";
 
-const HeaderContainer = styled.div`
+import { Layout, Theme } from "../../types";
+
+import GitHubIconDark from "../../../public/icons/github-icon-dark.png";
+import GitHubIconLight from "../../../public/icons/github-icon-light.png";
+
+import { DesktopHeaderContent } from "./desktop-header-content";
+import { NonDesktopHeaderContent } from "./non-desktop-header-content";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+
+type HeaderProps = {
+  theme: Theme;
+  showHelp: boolean;
+  setTheme: (theme: Theme) => void;
+  onHelpClick: () => void;
+};
+
+type PropsWithLayout = {
+  layout: string;
+};
+
+const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
-  background-color: white;
+  z-index: 103;
+  background-color: ${(props) => props.theme.colors.mainColor};
+
+  height: ${getCurrentLayoutProperty({
+    desktop: "65px",
+    tablet: "65px",
+    mobile: "58px",
+  })};
 `;
 
-const HeaderLogo = styled.h2`
-  margin-left: 15px;
-  height: 30px;
+const HeaderLogo = styled.h2<PropsWithLayout>`
+  white-space: nowrap;
+  color: ${(props) => props.theme.colors.fontColor};
+  font-size: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "16px",
+    mobile: "16px",
+  })};
+
+  margin-left: ${getCurrentLayoutProperty({
+    desktop: "24px",
+    tablet: "16px",
+    mobile: "16px",
+  })};
 `;
 
-const MenuContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-right: 15px;
-  width: 400px;
-`;
+export const Header = ({ theme, setTheme, showHelp, onHelpClick }: HeaderProps) => {
+  const layout = useAppLayout();
+  const location = useLocation();
+  const { pathname } = location;
 
-const MenuLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  color: black;
-  text-decoration: inherit;
-`;
+  const isDesktopLayout = layout === Layout.Desktop;
+  const githubIcon = theme === Theme.Light ? GitHubIconDark : GitHubIconLight;
 
-const GithubImage = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-left: 5px;
-`;
-
-const GitHubLink = styled.a`
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color black;
-`;
-
-interface HeaderProps {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
-
-/**
- * @todo: Use theme props inside header
- */
-export const Header = ({ theme, setTheme }: HeaderProps) => {
   return (
-    <HeaderContainer>
-      <HeaderLogo id="header-logo">I3S Explorer</HeaderLogo>
-      <MenuContainer id="header-links">
-        <MenuLink to="dashboard">Home</MenuLink>
-        <MenuLink to="viewer">Viewer</MenuLink>
-        <MenuLink to="debug">Debug</MenuLink>
-        <MenuLink to="comparison">Comparison</MenuLink>
-        <GitHubLink href="https://github.com/visgl/loaders.gl-showcases">
-          GitHub
-          <GithubImage src={GitHubIcon} />
-        </GitHubLink>
-      </MenuContainer>
+    <HeaderContainer id="header-container" layout={layout}>
+      <HeaderLogo layout={layout} id="header-logo">
+        I3S Explorer
+      </HeaderLogo>
+      {isDesktopLayout ? (
+        <DesktopHeaderContent
+          pathname={pathname}
+          theme={theme}
+          setTheme={setTheme}
+          githubIcon={githubIcon}
+          showHelp={showHelp}
+          onHelpClick={onHelpClick}
+        />
+      ) : (
+        <NonDesktopHeaderContent
+          theme={theme}
+          setTheme={setTheme}
+          pathname={pathname}
+          githubIcon={githubIcon}
+          showHelp={showHelp}
+          onHelpClick={onHelpClick}
+        />
+      )}
     </HeaderContainer>
   );
 };
