@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 
 import { checkLayersPanel, inserAndDeleteLayer } from "../../utils/testing-utils/e2e-layers-panel";
 
-describe("Compare pages", () => {
+describe("Compare", () => {
   let browser;
   let page;
 
@@ -44,7 +44,7 @@ describe("Compare pages", () => {
   });
 });
 
-describe("Main tools panel Across Layers mode", () => {
+describe("Compare - Main tools panel Across Layers mode", () => {
   let browser;
   let page;
 
@@ -81,7 +81,7 @@ describe("Main tools panel Across Layers mode", () => {
   });
 });
 
-describe("Main tools panel Within Layer mode", () => {
+describe("Compare - Main tools panel Within Layer mode", () => {
   let browser;
   let page;
 
@@ -118,7 +118,7 @@ describe("Main tools panel Within Layer mode", () => {
   });
 });
 
-describe("Layers Panel Across Layers mode", () => {
+describe("Compare - Layers Panel Across Layers mode", () => {
   let browser;
   let page;
 
@@ -200,7 +200,7 @@ describe("Layers Panel Across Layers mode", () => {
   });
 });
 
-describe("Layers Panel Within Layer mode", () => {
+describe("Compare - Layers Panel Within Layer mode", () => {
   let browser;
   let page;
 
@@ -257,7 +257,7 @@ const orbitSvgHtml =
 const compasSvgHtml =
   '<path d="M0 12 6 0l6 12H0Z" fill="#F95050"></path><path d="M12 12 6 24 0 12h12Z"></path>';
 
-describe("Map Control Panel", () => {
+describe("Compare - Map Control Panel", () => {
   let browser;
   let page;
 
@@ -298,7 +298,7 @@ describe("Map Control Panel", () => {
   });
 });
 
-describe("Comparison Params Panel", () => {
+describe("Compare - Comparison Params Panel", () => {
   let browser;
   let page;
 
@@ -378,7 +378,7 @@ describe("Comparison Params Panel", () => {
   });
 });
 
-describe("Statistics", () => {
+describe("Compare - Statistics", () => {
   let browser;
   let page;
 
@@ -434,7 +434,7 @@ describe("Statistics", () => {
   });
 });
 
-describe("Compare button", () => {
+describe("Compare - Compare button", () => {
   let browser;
   let page;
 
