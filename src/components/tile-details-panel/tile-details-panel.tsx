@@ -374,6 +374,7 @@ export const TileDetailsPanel = ({
       <HeaderWrapper title={title}>
         {!isDetailsPanel && (
           <BackButton
+            data-testid="tile-details-back-button"
             fill={theme.colors.fontColor}
             onClick={() => {
               setValidateTileOk([]);
