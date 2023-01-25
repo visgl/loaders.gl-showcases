@@ -12,7 +12,7 @@
     "build": "webpack --config ./webpack.prod.config.js",
     "test:unit": "jest --testPathIgnorePatterns=e2e.*.spec.ts",
     "test:unit:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --testPathIgnorePatterns=e2e.*.spec.ts",
-    "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
+    "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false --runInBand",
     "test:e2e:debug": "node --inspect-brk node_modules/.bin/jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
     "test": "yarn test:unit && yarn test:e2e",
     "lint": "eslint src"
