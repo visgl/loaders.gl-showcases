@@ -28,6 +28,7 @@ describe("Tooltip Panel", () => {
     expect(getColumnheader("Tile Id")).toBeInTheDocument();
     expect(getColumnheader("Type")).toBeInTheDocument();
     expect(getColumnheader("Vertex count")).toBeInTheDocument();
+    expect(getColumnheader("Depth")).toBeInTheDocument();
   });
 
   it("Should render tooltip without tooltip values", () => {
@@ -50,6 +51,7 @@ describe("Tooltip Panel", () => {
       "Children Ids",
       "Vertex count",
       "Distance to camera",
+      "Depth"
     ]);
     expect(cells).toEqual(cellsValues);
   });
