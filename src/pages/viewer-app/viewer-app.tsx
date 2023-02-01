@@ -41,6 +41,7 @@ import {
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
   BottomToolsPanelWrapper,
+  AttributesSidePanelWrapper,
   MapArea,
   RightSidePanelWrapper,
   RightSideToolsPanelWrapper,
@@ -321,20 +322,22 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => (
-    <AttributesPanel
-      title={
-        selectedFeatureAttributes?.NAME ||
-        selectedFeatureAttributes?.OBJECTID ||
-        ""
-      }
-      onClose={handleClosePanel}
-      tilesetName={activeLayers[0]?.name}
-      attributes={selectedFeatureAttributes}
-      statisticsInfo={tilesetStatisticsInfo}
-      tilesetBasePath={selectedTilesetBasePath}
-      colorsByAttribute={colorsByAttribute}
-      onColorsByAttributeChange={setColorsByAttribute}
-    />
+    <AttributesSidePanelWrapper layout={layout}>
+      <AttributesPanel
+        title={
+          selectedFeatureAttributes?.NAME ||
+          selectedFeatureAttributes?.OBJECTID ||
+          ""
+        }
+        onClose={handleClosePanel}
+        tilesetName={activeLayers[0]?.name}
+        attributes={selectedFeatureAttributes}
+        statisticsInfo={tilesetStatisticsInfo}
+        tilesetBasePath={selectedTilesetBasePath}
+        colorsByAttribute={colorsByAttribute}
+        onColorsByAttributeChange={setColorsByAttribute}
+      />
+    </AttributesSidePanelWrapper>
   );
 
   const onChangeMainToolsPanelHandler = (active: ActiveButton) => {

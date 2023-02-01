@@ -11,15 +11,13 @@ import { color_brand_tertiary } from "../../constants/colors";
 
 import StatisticsIcon from "../../../public/icons/statistics.svg";
 import ArrowLeft from "../../../public/icons/arrow-left.svg";
+import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
 
 type RowProps = {
   selectable: boolean;
 };
 
-const Container = styled.div`
-  position: absolute;
-  top: 70px;
-  right: 10px;
+const Container = styled.div<{layout: string}>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -27,13 +25,17 @@ const Container = styled.div`
   background: ${({ theme }) => theme.colors.mainCanvasColor};
   flex-flow: column;
   width: 360px;
-  height: auto;
   min-height: 120px;
-  max-height: 75%;
   z-index: 16;
   word-break: break-word;
   border-radius: 8px;
   box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
+
+  max-height: ${getCurrentLayoutProperty({
+    desktop: "75%",
+    tablet: "75%",
+    mobile: "360px",
+  })};
 `;
 
 const HeaderWrapper = styled.div`
@@ -143,6 +145,7 @@ export const AttributesPanel = ({
   onColorsByAttributeChange,
 }: AttributesPanelProps) => {
   const theme = useTheme();
+  const layout = useAppLayout();
   const [selectedAttributeStatsInfo, setSelectedAttributeStatsInfo] =
     useState<StatisticsInfo | null>(null);
   const [selectedAttributeName, setSelectedAttributeName] = useState("");
@@ -204,7 +207,7 @@ export const AttributesPanel = ({
   };
 
   return (
-    <Container>
+    <Container layout={layout}>
       <HeaderWrapper>
         {selectedAttributeStatsInfo && (
           <BackButton

@@ -130,7 +130,7 @@ export const LeftSidePanelWrapper = styled.div<LayoutProps>`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
     tablet: "top: 16px;",
-    mobile: "bottom: 76x;",
+    mobile: "bottom: 76px;",
   })};
 `;
 
@@ -168,6 +168,15 @@ export const ComparisonLeftSidePanelWrapper = styled(LeftSidePanelWrapper)`
     desktop: "top: 24px;",
     tablet: "top: 16px;",
     mobile: "bottom: 8px;",
+  })};
+`;
+
+export const AttributesSidePanelWrapper = styled(LeftSidePanelWrapper)`
+  height: 100%;
+  ${getCurrentLayoutProperty({
+    desktop: "left: 24px;",
+    tablet: "right: 100px; left: auto;",
+    mobile: "bottom: 76px; height: auto;",
   })};
 `;
 
