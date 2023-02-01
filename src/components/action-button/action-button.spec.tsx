@@ -65,6 +65,12 @@ describe("Action Button", () => {
     );
 
     expect(bgColor).toBe("transparent");
+
+    const borderColor = getComputedStyle(button as Element).getPropertyValue(
+      "border-color"
+    );
+
+    expect(borderColor).toBe("#000001");
     userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
@@ -86,6 +92,12 @@ describe("Action Button", () => {
     );
 
     expect(bgColor).toBe("transparent");
+
+    const borderColor = getComputedStyle(button as Element).getPropertyValue(
+      "border-color"
+    );
+
+    expect(borderColor).toBe("transparent");
     userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
