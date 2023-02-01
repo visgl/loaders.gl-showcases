@@ -141,6 +141,7 @@ export const UploadPanel = ({
         onChange={onUploadChangeHandler}
       />
       <FileInteractionContainer
+        data-testid="upload-file-label"
         htmlFor={UPLOAD_INPUT_ID}
         onDragEnter={onDragHandler}
       >
@@ -156,6 +157,7 @@ export const UploadPanel = ({
         </BrosweFileLink>
         {dragActive && (
           <DragAndDropOverlay
+            data-testid="dnd-overlay"
             onDragEnter={onDragHandler}
             onDragLeave={onDragHandler}
             onDragOver={onDragHandler}
