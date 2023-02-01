@@ -97,6 +97,7 @@ export const MainToolsPanel = ({
       )}
       {showComparisonSettings && (
         <Button
+          id={'settings-tab'}
           layout={layout}
           active={activeButton === ActiveButton.settings}
           onClick={() => onChange(ActiveButton.settings)}
