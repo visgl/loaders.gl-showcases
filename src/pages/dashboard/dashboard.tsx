@@ -59,12 +59,17 @@ const DashboardContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   overflow: auto;
   overflow-x: hidden;
   background: url(${Background});
   background-attachment: fixed;
   background-size: cover;
+
+  height: ${getCurrentLayoutProperty({
+    desktop: "calc(100vh - 65px)",
+    tablet: "calc(100vh - 65px)",
+    mobile: "calc(100vh - 58px)",
+  })};
 
   margin-top: ${getCurrentLayoutProperty({
     desktop: "65px",
@@ -93,14 +98,13 @@ const Wrapper = styled.div<LayoutProps>`
 const ToolsContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
+  gap: 40px;
 
   margin: ${getCurrentLayoutProperty({
     desktop: "40px 0 114px 80px",
-    tablet: "0 48px 57px 48px",
-    mobile: "0 16px 31px 16px",
+    tablet: "0 48px 172px 48px",
+    mobile: "0 16px 100px 16px",
   })};
-
-  gap: 40px;
 `;
 
 const Title = styled.div<LayoutProps>`
@@ -187,6 +191,7 @@ const IphoneImage = styled.img`
 
 const AppShowcaseMobile = styled.img<LayoutProps>`
   position: relative;
+  z-index: 3;
 
   width: ${getCurrentLayoutProperty({
     desktop: "auto",
@@ -211,8 +216,6 @@ const AppShowcaseMobile = styled.img<LayoutProps>`
     tablet: "-100px",
     mobile: "-50px",
   })};
-
-  z-index: 3;
 `;
 
 const ToolsItem = styled.div<LayoutProps>`
