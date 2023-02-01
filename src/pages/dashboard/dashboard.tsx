@@ -1,11 +1,10 @@
-import React from "react";
 import { useState, useCallback } from "react";
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { MapView, LinearInterpolator } from "@deck.gl/core";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Layout } from "../../utils/enums";
 import ViewerImage from "../../../public/images/viewer-image.svg";
 import DebugImage from "../../../public/images/debug-image.svg";
@@ -57,30 +56,70 @@ const VIEW = new MapView({
 });
 
 const DashboardContainer = styled.div<LayoutProps>`
-  overflow: ${getCurrentLayoutProperty({
-    desktop: "hidden",
-    tablet: "scroll",
-    mobile: "scroll",
-  })};
-
-  width: 100%;
-  height: 100%;
   display: flex;
-  flex: 1;
   flex-direction: column;
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
   background: url(${Background});
   background-attachment: fixed;
   background-size: cover;
+
+  height: ${getCurrentLayoutProperty({
+    desktop: "calc(100vh - 65px)",
+    tablet: "calc(100vh - 65px)",
+    mobile: "calc(100vh - 58px)",
+  })};
+
+  margin-top: ${getCurrentLayoutProperty({
+    desktop: "65px",
+    tablet: "65px",
+    mobile: "58px",
+  })};
 `;
 
-const DeckWithTitleWrapper = styled.div`
+const DeckWithTitleWrapper = styled.div<LayoutProps>`
   display: flex;
   position: relative;
-  height: 100%;
+  width: 100%;
+
+  min-height: ${getCurrentLayoutProperty({
+    desktop: "474px",
+    tablet: "538px",
+    mobile: "275px",
+  })};
+`;
+
+const Wrapper = styled.div<LayoutProps>`
+  position: relative;
+  width: 100%;
+`;
+
+const ToolsContainer = styled.div<LayoutProps>`
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+
+  margin: ${getCurrentLayoutProperty({
+    desktop: "40px 0 114px 80px",
+    tablet: "0 48px 172px 48px",
+    mobile: "0 16px 100px 16px",
+  })};
 `;
 
 const Title = styled.div<LayoutProps>`
   position: absolute;
+  font-weight: 700;
+  font-style: normal;
+  color: ${color_canvas_primary_inverted};
+  text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
+  z-index: 4;
+
+  top: ${getCurrentLayoutProperty({
+    desktop: "229px",
+    tablet: "116px",
+    mobile: "75px",
+  })};
 
   left: ${getCurrentLayoutProperty({
     desktop: "80px",
@@ -91,7 +130,7 @@ const Title = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
     desktop: "685px",
     tablet: "685px",
-    mobile: "343px",
+    mobile: "345px",
   })};
 
   height: ${getCurrentLayoutProperty({
@@ -110,41 +149,49 @@ const Title = styled.div<LayoutProps>`
     desktop: "73px",
     tablet: "73px",
     mobile: "45px",
-  })};
-
-  top: ${getCurrentLayoutProperty({
-    desktop: "calc(50% - 50px)",
-    tablet: "calc(50% - 100px)",
-    mobile: "calc(50% - 60px)",
-  })};
-
-  font-weight: 700;
-  font-style: normal;
-  color: ${color_canvas_primary_inverted};
-  text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
-  z-index: 4;
+  })};  
 `;
 
 const GreenText = styled.span`
   color: ${color_brand_secondary};
 `;
 
-const Wrapper = styled.div`
-  width: 100%;
-  height: 50vh;
-`;
-
 const MacImage = styled.img`
   position: absolute;
+  left: 870px;
+  top: -200px;
   width: 1041px;
-  height: 615px;
-  left: 800px;
-  top: calc(50% - 615px / 2 + 130.5px);
+  height: 660px;
   z-index: 3;
+
+  @media (max-width: 1270px) {
+    left: calc(100% - 520px);
+  }
+
+  @media (max-width: 1160px) {
+    left: calc(100% - 320px);
+  }
+`;
+
+const IphoneImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 1670px;
+  z-index: 4;
+  width: 198px;
+ 
+  @media (max-width: 1670px) {
+    left: calc(100% - 184px);
+  }
+
+  @media (max-width: 1160px) {
+    left: calc(100% - 92px);
+  }
 `;
 
 const AppShowcaseMobile = styled.img<LayoutProps>`
   position: relative;
+  z-index: 3;
 
   width: ${getCurrentLayoutProperty({
     desktop: "auto",
@@ -169,48 +216,11 @@ const AppShowcaseMobile = styled.img<LayoutProps>`
     tablet: "-100px",
     mobile: "-50px",
   })};
-
-  z-index: 3;
-`;
-
-const IphoneImage = styled.img`
-  position: absolute;
-  z-index: 4;
-  width: 201px;
-  right: calc(50% - 875px);
-  top: calc(50% - 615px / 2 + 330.5px);
-
-  @media (max-width: 1440px) {
-    right: -20px;
-  }
-
-  @media (max-width: 1250px) {
-    right: -120px;
-  }
-`;
-
-const ToolsContainer = styled.div<{ isDesktop: boolean }>`
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-
-  ${({ isDesktop }) =>
-    isDesktop &&
-    css`
-      margin: 40px 0 40px 80px;
-    `}
-
-  ${({ isDesktop }) =>
-    !isDesktop &&
-    css`
-      align-items: center;
-    `}
-
-  gap: 40px;
 `;
 
 const ToolsItem = styled.div<LayoutProps>`
   display: flex;
+  gap: 30px;
 
   flex-direction: ${getCurrentLayoutProperty({
     desktop: "row",
@@ -229,8 +239,6 @@ const ToolsItem = styled.div<LayoutProps>`
     tablet: "center",
     mobile: "center",
   })};
-
-  gap: 30px;
 `;
 
 const ToolItemDescription = styled.div<LayoutProps>`
@@ -302,7 +310,7 @@ export const Dashboard = () => {
 
   return (
     <DashboardContainer id="dashboard-container" layout={layout}>
-      <DeckWithTitleWrapper>
+      <DeckWithTitleWrapper  layout={layout}>
         <Title id="dashboard-title" layout={layout}>
           Explore and Debug I3S Data with one
           <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
@@ -317,22 +325,24 @@ export const Dashboard = () => {
           <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
         </DeckGL>
       </DeckWithTitleWrapper>
-      <Wrapper id="tools-wrapper">
-        {layout !== Layout.Desktop ? (
+      <Wrapper id="tools-wrapper" layout={layout}>
+        {layout !== Layout.Desktop && (
           <AppShowcaseMobile
             id="app-showcase"
             layout={layout}
             src={AppShowcase}
           />
-        ) : (
-          <>
-            <MacImage id="mac-image" src={Mac} />
-            <IphoneImage id="iphone-image" src={Iphone} />
-          </>
         )}
+        {layout === Layout.Desktop &&
+          (
+            <>
+              <MacImage id="mac-image" src={Mac} />
+              <IphoneImage id="iphone-image" src={Iphone} />
+            </>
+          )}
         <ToolsContainer
           id="tools-description-container"
-          isDesktop={layout === Layout.Desktop}
+          layout={layout}
         >
           <ToolsItem id="tools-item-viewer" layout={layout}>
             <ViewerImage />
