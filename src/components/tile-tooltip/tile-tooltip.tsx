@@ -27,6 +27,7 @@ export const TileTooltip = ({ tile }: { tile: Tile3D }) => {
     header: { children },
     _distanceToCamera,
     content: { vertexCount } = {},
+    depth
   } = tile;
   const childrenInfo = getChildrenInfo(children);
   const distanceToCameraFormatted = formatFloatNumber(_distanceToCamera);
@@ -61,6 +62,10 @@ export const TileTooltip = ({ tile }: { tile: Tile3D }) => {
                 ? `${distanceToCameraFormatted} m`
                 : NO_DATA}
             </td>
+          </tr>
+          <tr>
+            <TableHeader>Depth</TableHeader>
+            <td>{depth || NO_DATA}</td>
           </tr>
         </tbody>
       </table>
