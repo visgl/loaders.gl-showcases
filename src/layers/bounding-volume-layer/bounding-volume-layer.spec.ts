@@ -1,4 +1,3 @@
-
 import { BoundingVolumeType } from '../../types';
 import BoundingVolumeLayer from './bounding-volume-layer';
 
