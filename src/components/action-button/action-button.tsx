@@ -82,9 +82,5 @@ export const ActionButton = ({
 
   const ButtonComponent = useMemo(() => getButtonComponent(), [variant]);
 
-  return (
-    <ButtonComponent type={type} onClick={onClick}>
-      {children}
-    </ButtonComponent>
-  );
+  return ButtonComponent ? <ButtonComponent type={type} onClick={onClick}>{children}</ButtonComponent> : null;
 };
