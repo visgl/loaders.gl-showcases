@@ -162,6 +162,7 @@ export const TileDetailsPanel = ({
     lodMetricType,
     lodMetricValue,
     screenSpaceError,
+    depth
   } = tile;
   const childrenInfo = getChildrenInfo(tileChildren);
 
@@ -193,6 +194,10 @@ export const TileDetailsPanel = ({
     {
       title: "Screen Space Error",
       value: formatFloatNumber(screenSpaceError) || NO_DATA,
+    },
+    {
+      title: "Depth",
+      value: depth || NO_DATA,
     },
   ];
 
