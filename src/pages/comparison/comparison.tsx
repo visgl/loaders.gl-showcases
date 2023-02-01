@@ -292,13 +292,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
-    const bookmarksPageId = checkBookmarksByPageId(bookmarks, PageId.comparison);
+    const bookmarksPageId = checkBookmarksByPageId(
+      bookmarks,
+      PageId.comparison
+    );
 
     if (bookmarksPageId === PageId.comparison) {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id);
     } else {
-      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`);
+      console.warn(
+        `Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`
+      );
     }
   };
 
@@ -488,7 +493,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           bookmarks={bookmarks}
           selectedBookmarkId={selectedBookmarkId}
           disableBookmarksAdding={
-            !layersLeftSide.length || !layersRightSide.length
+            !layersLeftSide.length ||
+            (mode === ComparisonMode.acrossLayers && !layersRightSide.length)
           }
           onClose={onCloseBookmarkPanel}
           onAddBookmark={addBookmarkHandler}
