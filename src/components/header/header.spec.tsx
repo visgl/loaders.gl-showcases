@@ -8,6 +8,14 @@ jest.mock("react-router-dom", () => ({
   useLocation: jest.fn().mockImplementation(() => ({
     pathname: "hellp-world",
   })),
+  Link: ({ children }) => {
+    const LinkMock = "desktop-link-mock";
+
+    return (
+      // @ts-expect-error - mock component
+      <LinkMock>{children}</LinkMock>
+    );
+  },
 }));
 jest.mock("./desktop-header-content", () => ({
   __esModule: true,
