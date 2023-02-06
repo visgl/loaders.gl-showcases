@@ -126,7 +126,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: false, slowMo: 100 });
+    browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768 });
   });
@@ -151,7 +151,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
     await checkLayersPanel(page, panelId);
   });
 
-  it.only("Should select layers", async () => {
+  it("Should select layers", async () => {
     // Select San Francisco v1.7 on left side
     const sfLayer = await page.$(
       `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
