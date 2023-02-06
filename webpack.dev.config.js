@@ -25,6 +25,10 @@ const LOADERS_LINK_ALIASES = {
     __dirname,
     "../loaders.gl/modules/tiles/src"
   ),
+  "@loaders.gl/textures": path.resolve(
+    __dirname,
+    "../loaders.gl/modules/textures/src"
+  ),
 };
 
 const LUMA_LINK_ALIASES = {
