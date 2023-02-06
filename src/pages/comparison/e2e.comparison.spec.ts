@@ -1,6 +1,9 @@
 import puppeteer from "puppeteer";
 
-import { checkLayersPanel, inserAndDeleteLayer } from "../../utils/testing-utils/e2e-layers-panel";
+import {
+  checkLayersPanel,
+  inserAndDeleteLayer,
+} from "../../utils/testing-utils/e2e-layers-panel";
 
 describe("Compare", () => {
   let browser;
@@ -123,7 +126,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({ headless: false, slowMo: 100 });
     page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768 });
   });
@@ -148,7 +151,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
     await checkLayersPanel(page, panelId);
   });
 
-  it("Should select layers", async () => {
+  it.only("Should select layers", async () => {
     // Select San Francisco v1.7 on left side
     const sfLayer = await page.$(
       `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
@@ -172,6 +175,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
     const buldingLayer = await page.$(
       `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)`
     );
+    await buldingLayer.hover();
     await buldingLayer.click();
     selectedLayerRight = await page.$(
       `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
