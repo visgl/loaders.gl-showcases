@@ -40,10 +40,9 @@ type LayoutProps = {
 };
 
 const Container = styled.div<LayoutProps>`
-  background: ${({ theme }) => theme.colors.mainCanvasColor};
   position: absolute;
+  background: ${({ theme }) => theme.colors.mainCanvasColor};
   z-index: 4;
-  height: 177px;
 
   border-radius: ${getCurrentLayoutProperty({
     desktop: "8px",
@@ -51,28 +50,22 @@ const Container = styled.div<LayoutProps>`
     mobile: "0px",
   })};
 
+  left: ${getCurrentLayoutProperty({
+    desktop: "20%",
+    tablet: "0",
+    mobile: "0",
+  })};
+  
+  bottom:  ${getCurrentLayoutProperty({
+    desktop: "24px;",
+    tablet: "0",
+    mobile: "0",
+  })};
+  
   width: ${getCurrentLayoutProperty({
-    desktop: "1112px",
+    desktop: "60%",
     tablet: "100%",
     mobile: "100%",
-  })};
-
-  height: ${getCurrentLayoutProperty({
-    desktop: "177px",
-    tablet: "76px",
-    mobile: "76px",
-  })};
-
-  left: ${getCurrentLayoutProperty({
-    desktop: "calc(50% - 556px)",
-    tablet: "0px",
-    mobile: "0px",
-  })};
-
-  ${getCurrentLayoutProperty({
-    desktop: "bottom: 100px;",
-    tablet: "bottom: 0px;",
-    mobile: "bottom: 0px;",
   })};
 `;
 
@@ -88,7 +81,7 @@ const ItemsList = styled.div<LayoutProps>`
   })};
 
   margin: ${getCurrentLayoutProperty({
-    desktop: "0 16px 0 16px",
+    desktop: "0 16px 16px 16px",
     tablet: "16px",
     mobile: "16px",
   })};
