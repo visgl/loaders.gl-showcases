@@ -1,31 +1,9 @@
-export const DropDownStyle = `
-  position: static;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 16px;
-  height: 28px;
-  cursor: pointer;
-  border-radius: 4px;
-  box-sizing: border-box;
-    option {
-      color: white;
-      background: #0E111A;
-      display: flex;
-      white-space: pre;
-      min-height: 20px;
-      padding: 0px 2px 1px;
-    }
-  &:hover {
-    background: #4F52CC;
-    color: black;
-  }
-`;
+export const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
+import { color_brand_primary, color_canvas_primary_inverted, } from "./colors";
 
 export const Color = `
-  background: #0E111A;
-  color: white;
+  background: ${color_brand_primary};
+  color: ${color_canvas_primary_inverted};
 `;
 
 export const Font = `
@@ -36,3 +14,6 @@ export const Font = `
   letter-spacing: 0em;
   text-align: left;
 `;
+
+/** Delay to await asynchronous traversal of the tileset **/
+export const IS_LOADED_DELAY = 500;

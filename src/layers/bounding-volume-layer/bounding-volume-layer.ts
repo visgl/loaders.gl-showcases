@@ -4,11 +4,16 @@ import { Ellipsoid } from "@math.gl/geospatial";
 import { CubeGeometry, SphereGeometry } from "@luma.gl/engine";
 import { CompositeLayer, COORDINATE_SYSTEM, log } from "@deck.gl/core";
 import { SimpleMeshLayer } from "@deck.gl/mesh-layers";
-import { BOUNDING_VOLUME_MESH_TYPE } from "../../constants/map-styles";
+import { BoundingVolumeType } from "../../types";
 
 const DEFAULT_BG_OPACITY = 100;
 const GEOMETRY_STEP = 50;
 const SINGLE_DATA = [0];
+
+const BOUNDING_VOLUME_MESH_TYPE = {
+  [BoundingVolumeType.mbs]: "sphereMesh",
+  [BoundingVolumeType.obb]: "cubeMesh",
+};
 
 const defaultProps = {
   visible: false,

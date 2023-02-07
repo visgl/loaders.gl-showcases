@@ -25,6 +25,10 @@ const LOADERS_LINK_ALIASES = {
     __dirname,
     "../loaders.gl/modules/tiles/src"
   ),
+  "@loaders.gl/textures": path.resolve(
+    __dirname,
+    "../loaders.gl/modules/textures/src"
+  ),
 };
 
 const LUMA_LINK_ALIASES = {
@@ -136,6 +140,19 @@ module.exports = (env) => {
           options: {
             name: "[name].[ext]",
           },
+        },
+        {
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          use: ["@svgr/webpack"],
+        },
+        {
+          test: /\.css$/,
+          use: [{ loader: "style-loader" }, { loader: "css-loader" }],
+        },
+        {
+          test: /\.mp4$/,
+          use: "file-loader?name=videos/[name].[ext]",
         },
       ],
     },
