@@ -106,6 +106,24 @@ export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
+
+export const OnlyToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
+  left: auto;
+  top: auto;
+
+  ${getCurrentLayoutProperty({
+    desktop: "right 24px",
+    tablet: "right 24px",
+    mobile: "left 8px",
+  })};
+
+  ${getCurrentLayoutProperty({
+    desktop: "top: 24px;",
+    tablet: "top: 16px;",
+    mobile: "bottom: 8px;",
+  })};
+`;
+
 export const BottomToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   top: auto;
   left: 0;
@@ -140,7 +158,7 @@ export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
 
   ${getCurrentLayoutProperty({
     desktop: "right 100px;",
-    tablet: "left: 100px;",
+    tablet: "right: 100px;",
     /**
      * Make mobile panel centered horisontally
      * 180px is half the width of the mobile layers panel
@@ -158,7 +176,7 @@ export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
 export const ComparisonRightSidePanelWrapper = styled(RightSidePanelWrapper)`
   ${getCurrentLayoutProperty({
     desktop: "top: 24px;",
-    tablet: "top: 16px;",
+    tablet: "top: 16px; left: 100px;",
     mobile: "bottom: 8px;",
   })};
 `;

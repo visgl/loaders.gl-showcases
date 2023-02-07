@@ -44,7 +44,7 @@ import {
   AttributesSidePanelWrapper,
   MapArea,
   RightSidePanelWrapper,
-  RightSideToolsPanelWrapper,
+  OnlyToolsPanelWrapper,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -618,7 +618,7 @@ export const ViewerApp = () => {
       />
 
       {layout !== Layout.Mobile && (
-        <RightSideToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="viewer--tools-panel"
             activeButton={activeButton}
@@ -628,7 +628,7 @@ export const ViewerApp = () => {
             onChange={onChangeMainToolsPanelHandler}
             onShowBookmarksChange={onBookmarkClick}
           />
-        </RightSideToolsPanelWrapper>
+        </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
         <BottomToolsPanelWrapper layout={layout}>
