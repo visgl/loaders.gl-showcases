@@ -1,6 +1,9 @@
 import puppeteer from "puppeteer";
 
-import { checkLayersPanel, inserAndDeleteLayer } from "../../utils/testing-utils/e2e-layers-panel";
+import {
+  checkLayersPanel,
+  inserAndDeleteLayer,
+} from "../../utils/testing-utils/e2e-layers-panel";
 
 describe("Compare", () => {
   let browser;
@@ -172,6 +175,7 @@ describe("Compare - Layers Panel Across Layers mode", () => {
     const buldingLayer = await page.$(
       `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)`
     );
+    await buldingLayer.hover();
     await buldingLayer.click();
     selectedLayerRight = await page.$(
       `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
