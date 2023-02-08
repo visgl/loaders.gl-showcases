@@ -420,7 +420,7 @@ export const DebugApp = () => {
   };
 
   const renderTilePanel = () => {
-    if (!selectedTile) {
+    if (!selectedTile || !selectedTile.selected) {
       return null;
     }
 
