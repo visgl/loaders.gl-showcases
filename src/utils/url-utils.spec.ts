@@ -114,7 +114,7 @@ describe("Url Utils - parseTilesetUrlParams", () => {
 describe("Url Utils - getTilesetType", () => {
   test("Should get tileset type by url", () => {
     const result = getTilesetType(
-      "https://assets.cesium.com/1234556/tileset.json"
+      "https://assets.ion.cesium.com/1234556/tileset.json"
     );
     expect(result).toEqual(TilesetType.CesiumIon);
   });
