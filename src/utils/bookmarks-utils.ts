@@ -111,7 +111,7 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any, viewWidth: 
       longitude: pLongitude,
       latitude: pLatitude,
       zoom,
-      bearing: heading,
+      bearing: heading < 180 ? heading : heading - 360,
       pitch: tilt
     } as LayerViewState;
   }
