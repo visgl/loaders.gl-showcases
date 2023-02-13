@@ -554,6 +554,8 @@ export const ComparisonSide = ({
                 pageId={PageId.comparison}
                 layers={examples}
                 selectedLayerIds={selectedLayerIds}
+                viewWidth={viewState?.main?.width}
+                viewHeight={viewState?.main?.height}
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}

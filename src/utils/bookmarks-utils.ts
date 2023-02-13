@@ -20,7 +20,9 @@ export const convertArcGisSlidesToBookmars = (
   webScene: ArcGisWebScene,
   webSceneLayerExamples: LayerExample[],
   layersLeftSide: LayerExample[],
-  pageId: PageId
+  pageId: PageId,
+  viewWidth: number,
+  viewHeight: number
 ): Bookmark[] => {
   const bookmarks: Bookmark[] = [];
   const addedLayersIds = flattenLayerIds(webSceneLayerExamples);
@@ -31,7 +33,7 @@ export const convertArcGisSlidesToBookmars = (
     for (const slide of cameraSlides) {
       const visibleLayersIds = slide?.visibleLayers.map(layer => layer.id) || [];
       const supportedVisibleLayersIds = visibleLayersIds.filter(layerId => addedLayersIds.includes(layerId));
-      const mainViewState = convertArcGisCameraPositionToBookmarkViewState(slide?.viewpoint?.camera);
+      const mainViewState = convertArcGisCameraPositionToBookmarkViewState(slide?.viewpoint?.camera, viewWidth, viewHeight);
 
       if (mainViewState) {
         const bookmark: Bookmark = {
@@ -69,7 +71,7 @@ export const convertArcGisSlidesToBookmars = (
  * @param camera 
  * @returns 
  */
-const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewState | null => {
+const convertArcGisCameraPositionToBookmarkViewState = (camera: any, viewWidth: number, viewHeight: number): LayerViewState | null => {
   const isPseudoMerkatorCRS = PSEUDO_MERCATOR_CRS_WKIDS.includes(camera?.position?.spatialReference?.wkid);
 
   if (isPseudoMerkatorCRS) {
@@ -87,9 +89,11 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewS
     const [longitude, latitude, altitude] = projection.project([x, y, z]);
 
     const viewport = new WebMercatorViewport({
+      width: viewWidth,
+      height: viewHeight,
       longitude,
       latitude,
-      altitude,
+      zoom: 0
     });
 
     // Get changed long lat values based on camera z value.
@@ -107,7 +111,7 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewS
       longitude: pLongitude,
       latitude: pLatitude,
       zoom,
-      bearing: heading,
+      bearing: heading < 180 ? heading : heading - 360,
       pitch: tilt
     } as LayerViewState;
   }
