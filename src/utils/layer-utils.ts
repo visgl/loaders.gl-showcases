@@ -113,6 +113,31 @@ export const findExampleAndUpdateWithViewState = (
   return examplesCopy;
 };
 
+/**
+ * Get layer objects from layersTree having those layer ids
+ * @param staticLayers - layers tree
+ * @param activeIds - layer ids
+ * @param activeLayers - accumulator for recursive logic
+ * @returns layers array that match given ids
+ */
+export const getActiveLayersByIds = (
+  staticLayers: LayerExample[],
+  activeIds: string[] = [],
+  activeLayers: LayerExample[] = []
+): LayerExample[] => {
+  for (const layer of staticLayers) {
+    if (activeIds.includes(layer.id)) {
+      activeLayers.push(layer);
+    }
+
+    if (layer?.layers?.length) {
+      getActiveLayersByIds(layer?.layers, activeIds, activeLayers);
+    }
+  }
+
+  return activeLayers;
+};
+
 const handleSelectGroupLayer = (
   layer: LayerExample,
   activeLayers: LayerExample[],
