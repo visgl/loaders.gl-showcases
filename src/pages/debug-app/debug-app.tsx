@@ -203,10 +203,6 @@ export const DebugApp = () => {
     setActiveLayers([newActiveLayer]);
   }, []);
 
-  useEffect(() => {
-    setPicked(false);
-  }, [viewState.main]);
-
   /**
    * Hook for start using tilesets stats.
    */
@@ -333,6 +329,7 @@ export const DebugApp = () => {
   };
 
   const onTilesetLoad = (tileset: Tileset3D) => {
+    tileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(tileset, prevExamples)
@@ -361,12 +358,21 @@ export const DebugApp = () => {
     return { html: tooltip.innerHTML };
   };
 
+  const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
+    const tileIndex = selectedTiles.findIndex(
+      (tile: Tile3D) => tile === selectedTile
+    );
+    if (tileIndex === -1) {
+      setSelectedTile(null);
+    }
+    return selectedTiles;
+  };
+
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
       handleCloseTilePanel();
       return;
     }
-    setPicked(true);
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
@@ -432,7 +438,7 @@ export const DebugApp = () => {
   };
 
   const renderTilePanel = () => {
-    if (!selectedTile?.selected || !picked) {
+    if (!selectedTile?.selected) {
       return null;
     }
 
