@@ -87,7 +87,7 @@ const ListItem = styled.div<LayoutProps & ListItemProps>`
   ${({ sliderType }) => {
     if (sliderType === SliderType.Bookmarks) {
       return css<ListItemProps>`
-        background: url(${(props) => props.url}) no-repeat;
+        background: url(${(props) => props.url}) round;
         opacity: 1;
         gap: 10px;
         ${({ selected }) =>
