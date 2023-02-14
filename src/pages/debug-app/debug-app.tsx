@@ -131,7 +131,9 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, setDebugOptions] = useState<DebugOptions>(
+    INITIAL_DEBUG_OPTIONS_STATE
+  );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -164,6 +166,8 @@ export const DebugApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
+  const [picked, setPicked] = useState<boolean>(false);
+
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -198,6 +202,10 @@ export const DebugApp = () => {
     }
     setActiveLayers([newActiveLayer]);
   }, []);
+
+  useEffect(() => {
+    setPicked(false);
+  }, [viewState.main]);
 
   /**
    * Hook for start using tilesets stats.
@@ -358,6 +366,7 @@ export const DebugApp = () => {
       handleCloseTilePanel();
       return;
     }
+    setPicked(true);
     setNormalsDebugData(null);
     setSelectedTile(info.object);
   };
@@ -367,7 +376,10 @@ export const DebugApp = () => {
     setNormalsDebugData(null);
   };
 
-  const handleSelectTileColor = (tileId: string, selectedColor: ColorResult) => {
+  const handleSelectTileColor = (
+    tileId: string,
+    selectedColor: ColorResult
+  ) => {
     const color = getRGBValueFromColorObject(selectedColor);
     const updatedMap = {
       ...coloredTilesMap,
@@ -420,7 +432,7 @@ export const DebugApp = () => {
   };
 
   const renderTilePanel = () => {
-    if (!selectedTile || !selectedTile.selected) {
+    if (!selectedTile?.selected || !picked) {
       return null;
     }
 
@@ -428,7 +440,9 @@ export const DebugApp = () => {
       debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
-    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
+    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(
+      coloredTilesMap[tileId]
+    );
     const isResetButtonDisabled = !coloredTilesMap[tileId];
 
     return (
@@ -578,7 +592,9 @@ export const DebugApp = () => {
   }, []);
 
   const makeScreenshot = async () => {
-    const imageUrl = await createViewerBookmarkThumbnail("#debug-deck-container-wrapper");
+    const imageUrl = await createViewerBookmarkThumbnail(
+      "#debug-deck-container-wrapper"
+    );
 
     if (!imageUrl) {
       throw new Error();
@@ -666,19 +682,28 @@ export const DebugApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id);
     } else {
-      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the debug app`);
+      console.warn(
+        `Can't add bookmars with ${bookmarksPageId} pageId to the debug app`
+      );
     }
   };
 
-  const handleChangeDebugOptions = useCallback((
+  const handleChangeDebugOptions = useCallback(
+    (
       optionName: keyof DebugOptions,
-    value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
+      value:
+        | TileColoredBy
+        | BoundingVolumeColoredBy
+        | BoundingVolumeType
+        | boolean
     ) => {
-    setDebugOptions(prevValues => ({
+      setDebugOptions((prevValues) => ({
         ...prevValues,
-      [optionName]: value
-    }))
-  }, []);
+        [optionName]: value,
+      }));
+    },
+    []
+  );
 
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
