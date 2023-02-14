@@ -1,4 +1,7 @@
-import type { ArcGisWebSceneData, OperationalLayer } from "@loaders.gl/i3s/src/types";
+import type {
+  ArcGisWebSceneData,
+  OperationalLayer,
+} from "@loaders.gl/i3s/src/types";
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
@@ -41,33 +44,13 @@ const NOT_SUPPORTED_LAYERS_ERROR =
 const NOT_SUPPORTED_CRS_ERROR =
   "There is no supported CRS system. Only WGS84 is supported.";
 
-const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE = 'Webscene slides cannot be loaded in Across Layers mode';
+const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE =
+  "Webscene slides cannot be loaded in Across Layers mode";
 
 enum Tabs {
   Layers,
   MapOptions,
 }
-
-type LayersPanelProps = {
-  id: string;
-  pageId: PageId;
-  layers: LayerExample[];
-  sublayers: ActiveSublayer[];
-  selectedLayerIds: string[];
-  type: ListItemType;
-  baseMaps: BaseMap[];
-  selectedBaseMapId: string;
-  isAddingBookmarksAllowed?: boolean;
-  insertBaseMap: (baseMap: BaseMap) => void;
-  selectBaseMap: (id: string) => void;
-  deleteBaseMap: (id: string) => void;
-  onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
-  onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
-  onLayerDelete: (id: string) => void;
-  onUpdateSublayerVisibility: (Sublayer) => void;
-  onClose: () => void;
-  onPointToLayer: (viewState?: LayerViewState) => void;
-};
 
 type TabProps = {
   active: boolean;
@@ -152,6 +135,29 @@ const SupportedLayerItem = styled.li`
   }
 `;
 
+type LayersPanelProps = {
+  id: string;
+  pageId: PageId;
+  layers: LayerExample[];
+  sublayers: ActiveSublayer[];
+  selectedLayerIds: string[];
+  type: ListItemType;
+  baseMaps: BaseMap[];
+  selectedBaseMapId: string;
+  isAddingBookmarksAllowed?: boolean;
+  viewWidth?: number;
+  viewHeight?: number;
+  insertBaseMap: (baseMap: BaseMap) => void;
+  selectBaseMap: (id: string) => void;
+  deleteBaseMap: (id: string) => void;
+  onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
+  onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
+  onLayerDelete: (id: string) => void;
+  onUpdateSublayerVisibility: (Sublayer) => void;
+  onClose: () => void;
+  onPointToLayer: (viewState?: LayerViewState) => void;
+};
+
 export const LayersPanel = ({
   id,
   pageId,
@@ -165,6 +171,8 @@ export const LayersPanel = ({
   baseMaps,
   selectedBaseMapId,
   isAddingBookmarksAllowed = true,
+  viewWidth = 1024,
+  viewHeight = 768,
   insertBaseMap,
   selectBaseMap,
   deleteBaseMap,
@@ -258,7 +266,10 @@ export const LayersPanel = ({
     }
 
     try {
-      const webScene: ArcGisWebSceneData = await load(scene.url, ArcGisWebSceneLoader);
+      const webScene: ArcGisWebSceneData = await load(
+        scene.url,
+        ArcGisWebSceneLoader
+      );
       const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
@@ -270,8 +281,19 @@ export const LayersPanel = ({
       };
 
       const newLayersExamples = [...layers, newLayer];
-      const isWebsceneHasSlides = !!webScene.header?.presentation?.slides?.length;
-      const bookmarks = isAddingBookmarksAllowed  && pageId ? convertArcGisSlidesToBookmars(webScene.header, webSceneLayerExamples, newLayersExamples, pageId) : [];
+      const isWebsceneHasSlides =
+        !!webScene.header?.presentation?.slides?.length;
+      const bookmarks =
+        isAddingBookmarksAllowed && pageId
+          ? convertArcGisSlidesToBookmars(
+              webScene.header,
+              webSceneLayerExamples,
+              newLayersExamples,
+              pageId,
+              viewWidth,
+              viewHeight
+            )
+          : [];
 
       if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
         setShowAddingSlidesWarning(true);
