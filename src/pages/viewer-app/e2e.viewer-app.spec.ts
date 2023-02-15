@@ -1,12 +1,12 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Browser, Page } from "puppeteer";
 import {
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 
 describe("Viewer", () => {
-  let browser;
-  let page;
+  let browser: Browser;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
@@ -38,13 +38,14 @@ describe("Viewer", () => {
 });
 
 describe("Viewer - Main tools panel", () => {
-  let browser;
-  let page;
+  let browser: Browser;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.goto("http://localhost:3000/viewer");
+    await page.click("#map-control-panel>div:first-child");
   });
 
   afterAll(() => browser.close());
@@ -52,8 +53,8 @@ describe("Viewer - Main tools panel", () => {
   it("Should show Main tools panel", async () => {
     expect(await page.$$("#viewer--tools-panel")).toBeDefined();
     const panel = await page.$("#viewer--tools-panel");
-    const panelChildren = await panel.$$(":scope > *");
-    expect(panelChildren.length).toEqual(3);
+    const panelChildren = await panel?.$$(":scope > *");
+    expect(panelChildren?.length).toEqual(3);
   });
 
   it("Should open layers panel", async () => {
@@ -61,10 +62,10 @@ describe("Viewer - Main tools panel", () => {
     const layersPanelButton = await page.$(
       "#viewer--tools-panel>button:first-child"
     );
-    await layersPanelButton.click();
+    await layersPanelButton?.click();
     expect(await page.$("#viewer--layers-panel")).toBeDefined();
 
-    await layersPanelButton.click();
+    await layersPanelButton?.click();
     expect(await page.$("#viewer--layers-panel")).toBeNull();
   });
 
@@ -82,8 +83,8 @@ describe("Viewer - Main tools panel", () => {
 });
 
 describe("Viewer - Layers panel", () => {
-  let browser;
-  let page;
+  let browser: Browser;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
@@ -97,12 +98,12 @@ describe("Viewer - Layers panel", () => {
     const layersPanelButton = await page.$(
       "#viewer--tools-panel>button:first-child"
     );
-    await layersPanelButton.click();
+    await layersPanelButton?.click();
   });
 
   it("Should close layers panel", async () => {
     const closeButton = await page.$("#layers-panel-close-button");
-    await closeButton.click();
+    await closeButton?.click();
     expect(await page.$("#viewer--layers-panel")).toBeNull();
   });
 
@@ -143,8 +144,8 @@ const compasSvgHtml =
   '<path d="M0 12 6 0l6 12H0Z" fill="#F95050"></path><path d="M12 12 6 24 0 12h12Z"></path>';
 
 describe("Viewer - Map Control Panel", () => {
-  let browser;
-  let page;
+  let browser: Browser;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
