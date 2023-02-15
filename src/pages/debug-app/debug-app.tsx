@@ -167,7 +167,6 @@ export const DebugApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
-  const [picked, setPicked] = useState<boolean>(false);
 
   const [, setSearchParams] = useSearchParams();
 
@@ -439,7 +438,7 @@ export const DebugApp = () => {
   };
 
   const renderTilePanel = () => {
-    if (!selectedTile?.selected) {
+    if (!selectedTile) {
       return null;
     }
 
