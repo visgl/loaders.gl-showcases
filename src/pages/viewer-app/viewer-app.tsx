@@ -50,6 +50,7 @@ import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-pan
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
   findExampleAndUpdateWithViewState,
+  getActiveLayersByIds,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -346,12 +347,24 @@ export const ViewerApp = () => {
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
+  const updateBookmarks = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+    onSelectBookmarkHandler(bookmarks?.[0].id, bookmarks);
+  };
+
+  const onLayerInsertHandler = (
+    newLayer: LayerExample,
+    bookmarks?: Bookmark[]
+  ) => {
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
     setActiveLayers(newActiveLayers);
     setPreventTransitions(false);
+
+    if (bookmarks?.length) {
+      updateBookmarks(bookmarks);
+    }
   };
 
   const onLayerSelectHandler = (
@@ -453,7 +466,9 @@ export const ViewerApp = () => {
   }, []);
 
   const makeScreenshot = async () => {
-    const imageUrl = await createViewerBookmarkThumbnail("#viewer-deck-container-wrapper");
+    const imageUrl = await createViewerBookmarkThumbnail(
+      "#viewer-deck-container-wrapper"
+    );
 
     if (!imageUrl) {
       throw new Error();
@@ -481,15 +496,26 @@ export const ViewerApp = () => {
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+  const onSelectBookmarkHandler = (
+    bookmarkId: string,
+    newBookmarks?: Bookmark[]
+  ) => {
+    const bookmark = (newBookmarks || bookmarks).find(
+      ({ id }) => id === bookmarkId
+    );
     if (!bookmark) {
       return;
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
     setViewState(bookmark.viewState);
-    setActiveLayers(bookmark.layersLeftSide);
+    setExamples(bookmark.layersLeftSide);
+    setActiveLayers(
+      getActiveLayersByIds(
+        bookmark.layersLeftSide,
+        bookmark.activeLayersIdsLeftSide
+      )
+    );
   };
 
   const onDeleteBookmarkHandler = useCallback((bookmarkId: string) => {
@@ -531,9 +557,11 @@ export const ViewerApp = () => {
 
     if (bookmarksPageId === PageId.viewer) {
       setBookmarks(bookmarks);
-      onSelectBookmarkHandler(bookmarks[0].id);
+      onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the viewer app`);
+      console.warn(
+        `Can't add bookmars with ${bookmarksPageId} pageId to the viewer app`
+      );
     }
   };
 

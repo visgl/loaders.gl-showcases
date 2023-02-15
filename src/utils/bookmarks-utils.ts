@@ -1,6 +1,6 @@
 import type { ArcGisWebScene } from "@loaders.gl/i3s/src/types";
-import { Proj4Projection } from '@math.gl/proj4';
-import { WebMercatorViewport } from '@deck.gl/core';
+import { Proj4Projection } from "@math.gl/proj4";
+import { WebMercatorViewport } from "@deck.gl/core";
 
 import { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
 import { getLonLatWithElevationOffset } from "./elevation-utils";
@@ -12,15 +12,17 @@ const PSEUDO_MERCATOR_CRS_WKIDS = [102100, 3857];
  * Convert ArcGis Slides to the app internal bookmarks
  * Spec - https://developers.arcgis.com/javascript/latest/api-reference/esri-webscene-Presentation.html
  * @todo Add support for webscene basemaps
- * @param webScene 
- * @param layers 
- * @returns 
+ * @param webScene
+ * @param layers
+ * @returns
  */
 export const convertArcGisSlidesToBookmars = (
   webScene: ArcGisWebScene,
   webSceneLayerExamples: LayerExample[],
   layersLeftSide: LayerExample[],
-  pageId: PageId
+  pageId: PageId,
+  viewWidth: number,
+  viewHeight: number
 ): Bookmark[] => {
   const bookmarks: Bookmark[] = [];
   const addedLayersIds = flattenLayerIds(webSceneLayerExamples);
@@ -29,18 +31,30 @@ export const convertArcGisSlidesToBookmars = (
     const cameraSlides = webScene?.presentation?.slides || [];
 
     for (const slide of cameraSlides) {
-      const visibleLayersIds = slide?.visibleLayers.map(layer => layer.id) || [];
-      const supportedVisibleLayersIds = visibleLayersIds.filter(layerId => addedLayersIds.includes(layerId));
-      const mainViewState = convertArcGisCameraPositionToBookmarkViewState(slide?.viewpoint?.camera);
+      const visibleLayersIds =
+        slide?.visibleLayers.map((layer) => layer.id) || [];
+      const supportedVisibleLayersIds = visibleLayersIds.filter((layerId) =>
+        addedLayersIds.includes(layerId)
+      );
+      const mainViewState = convertArcGisCameraPositionToBookmarkViewState(
+        slide?.viewpoint?.camera,
+        viewWidth,
+        viewHeight
+      );
 
       if (mainViewState) {
         const bookmark: Bookmark = {
           id: slide.id,
           pageId,
-          imageUrl: slide?.thumbnail?.url || '',
+          imageUrl: slide?.thumbnail?.url || "",
           viewState: {
             main: mainViewState,
-            minimap: {}
+            minimap: {
+              ...mainViewState,
+              zoom: 9,
+              pitch: 0,
+              bearing: 0,
+            },
           },
           /**
            * Use only left side layers, because webscene bookmarks is only supported for within layer comparison mode.
@@ -59,18 +73,24 @@ export const convertArcGisSlidesToBookmars = (
   }
 
   return bookmarks;
-}
+};
 
 /**
  * Do conversion from ArcGIS spatial reference coordinates of camera to bookmark view state with WGS84 CRS.
  * It can be any CRS system in ArcGIS, but we support conversion only EPSG:3857 for now.
  * Spec - https://developers.arcgis.com/web-scene-specification/objects/spatialReference
  * @todo Add camera type from loaders.gl when types will be published.
- * @param camera 
- * @returns 
+ * @param camera
+ * @returns
  */
-const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewState | null => {
-  const isPseudoMerkatorCRS = PSEUDO_MERCATOR_CRS_WKIDS.includes(camera?.position?.spatialReference?.wkid);
+const convertArcGisCameraPositionToBookmarkViewState = (
+  camera: any,
+  viewWidth: number,
+  viewHeight: number
+): LayerViewState | null => {
+  const isPseudoMerkatorCRS = PSEUDO_MERCATOR_CRS_WKIDS.includes(
+    camera?.position?.spatialReference?.wkid
+  );
 
   if (isPseudoMerkatorCRS) {
     const { heading = 0, tilt = 0, position } = camera;
@@ -83,17 +103,26 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewS
     const { x, y, z } = position;
 
     // Convert x,y,z from EPSG:3857 to WGS84 lat lon altitude.
-    const projection = new Proj4Projection({ from: 'EPSG:3857' });
+    const projection = new Proj4Projection({ from: "EPSG:3857" });
     const [longitude, latitude, altitude] = projection.project([x, y, z]);
 
     const viewport = new WebMercatorViewport({
+      width: viewWidth,
+      height: viewHeight,
       longitude,
       latitude,
-      altitude,
+      zoom: 0,
     });
 
     // Get changed long lat values based on camera z value.
-    const [pLongitude, pLatitude] = getLonLatWithElevationOffset(z, tilt, heading, longitude, latitude, viewport);
+    const [pLongitude, pLatitude] = getLonLatWithElevationOffset(
+      z,
+      tilt,
+      heading,
+      longitude,
+      latitude,
+      viewport
+    );
 
     /**
      * Convert altitude to zoomLevel
@@ -107,21 +136,24 @@ const convertArcGisCameraPositionToBookmarkViewState = (camera: any): LayerViewS
       longitude: pLongitude,
       latitude: pLatitude,
       zoom,
-      bearing: heading,
-      pitch: tilt
+      bearing: heading < 180 ? heading : heading - 360,
+      pitch: tilt,
     } as LayerViewState;
   }
 
   return null;
-}
+};
 
 /**
  * Try to find bookmars in boomarks list which is not aplicable to current page
  * If page ids of all bookmarks are the same as current page id return current pageId if not return pageId of bookmark.
- * @param bookmarks 
- * @param pageId 
+ * @param bookmarks
+ * @param pageId
  */
-export const checkBookmarksByPageId = (bookmarks: Bookmark[], pageId: PageId): PageId => {
+export const checkBookmarksByPageId = (
+  bookmarks: Bookmark[],
+  pageId: PageId
+): PageId => {
   for (const bookmark of bookmarks) {
     if (bookmark.pageId !== pageId) {
       return bookmark.pageId;
@@ -129,4 +161,4 @@ export const checkBookmarksByPageId = (bookmarks: Bookmark[], pageId: PageId): P
   }
 
   return pageId;
-}
+};

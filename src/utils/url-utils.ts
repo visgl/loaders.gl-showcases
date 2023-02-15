@@ -27,7 +27,7 @@ export const parseTilesetUrlParams = (url, options) => {
   return { ...options, tilesetUrl, token, metadataUrl };
 };
 
-const CESIUM_URL_PREFIX = "https://assets.cesium.com";
+const CESIUM_URL_PREFIX = "https://assets.ion.cesium.com";
 /**
  * Deduce tileset type (I3S/3DTiles/Cesium) from the url
  * @param url tileset url

@@ -59,6 +59,7 @@ import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
   findExampleAndUpdateWithViewState,
+  getActiveLayersByIds,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -131,7 +132,9 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
 
-  const [debugOptions, setDebugOptions] = useState<DebugOptions>(INITIAL_DEBUG_OPTIONS_STATE);
+  const [debugOptions, setDebugOptions] = useState<DebugOptions>(
+    INITIAL_DEBUG_OPTIONS_STATE
+  );
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -164,6 +167,7 @@ export const DebugApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
+
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -325,6 +329,7 @@ export const DebugApp = () => {
   };
 
   const onTilesetLoad = (tileset: Tileset3D) => {
+    tileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(tileset, prevExamples)
@@ -353,6 +358,16 @@ export const DebugApp = () => {
     return { html: tooltip.innerHTML };
   };
 
+  const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
+    const tileIndex = selectedTiles.findIndex(
+      (tile: Tile3D) => tile === selectedTile
+    );
+    if (tileIndex === -1) {
+      setSelectedTile(null);
+    }
+    return selectedTiles;
+  };
+
   const handleClick = (info: PickingInfo) => {
     if (!info.object) {
       handleCloseTilePanel();
@@ -367,7 +382,10 @@ export const DebugApp = () => {
     setNormalsDebugData(null);
   };
 
-  const handleSelectTileColor = (tileId: string, selectedColor: ColorResult) => {
+  const handleSelectTileColor = (
+    tileId: string,
+    selectedColor: ColorResult
+  ) => {
     const color = getRGBValueFromColorObject(selectedColor);
     const updatedMap = {
       ...coloredTilesMap,
@@ -428,7 +446,9 @@ export const DebugApp = () => {
       debugOptions.tileColorMode === TileColoredBy.custom;
 
     const tileId = selectedTile.id;
-    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(coloredTilesMap[tileId]);
+    const tileSelectedColor: TileSelectedColor = makeRGBObjectFromColor(
+      coloredTilesMap[tileId]
+    );
     const isResetButtonDisabled = !coloredTilesMap[tileId];
 
     return (
@@ -466,12 +486,24 @@ export const DebugApp = () => {
     );
   };
 
-  const onLayerInsertHandler = (newLayer: LayerExample) => {
+  const updateBookmarks = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+    onSelectBookmarkHandler(bookmarks?.[0].id, bookmarks);
+  };
+
+  const onLayerInsertHandler = (
+    newLayer: LayerExample,
+    bookmarks?: Bookmark[]
+  ) => {
     const newExamples = [...examples, newLayer];
     setExamples(newExamples);
     const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
     setActiveLayers(newActiveLayers);
     setPreventTransitions(false);
+
+    if (bookmarks?.length) {
+      updateBookmarks(bookmarks);
+    }
   };
 
   const onLayerSelectHandler = (
@@ -578,7 +610,9 @@ export const DebugApp = () => {
   }, []);
 
   const makeScreenshot = async () => {
-    const imageUrl = await createViewerBookmarkThumbnail("#debug-deck-container-wrapper");
+    const imageUrl = await createViewerBookmarkThumbnail(
+      "#debug-deck-container-wrapper"
+    );
 
     if (!imageUrl) {
       throw new Error();
@@ -607,15 +641,21 @@ export const DebugApp = () => {
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+  const onSelectBookmarkHandler = (bookmarkId: string, newBookmarks?: Bookmark[]) => {
+    const bookmark = (newBookmarks || bookmarks).find(({ id }) => id === bookmarkId);
     if (!bookmark) {
       return;
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
     setViewState(bookmark.viewState);
-    setActiveLayers(bookmark.layersLeftSide);
+    setExamples(bookmark.layersLeftSide);
+    setActiveLayers(
+      getActiveLayersByIds(
+        bookmark.layersLeftSide,
+        bookmark.activeLayersIdsLeftSide
+      )
+    );
 
     setTimeout(() => {
       if (bookmark?.debugOptions) {
@@ -664,21 +704,30 @@ export const DebugApp = () => {
 
     if (bookmarksPageId === PageId.debug) {
       setBookmarks(bookmarks);
-      onSelectBookmarkHandler(bookmarks[0].id);
+      onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(`Can't add bookmars with ${bookmarksPageId} pageId to the debug app`);
+      console.warn(
+        `Can't add bookmars with ${bookmarksPageId} pageId to the debug app`
+      );
     }
   };
 
-  const handleChangeDebugOptions = useCallback((
+  const handleChangeDebugOptions = useCallback(
+    (
       optionName: keyof DebugOptions,
-    value: TileColoredBy | BoundingVolumeColoredBy | BoundingVolumeType | boolean
+      value:
+        | TileColoredBy
+        | BoundingVolumeColoredBy
+        | BoundingVolumeType
+        | boolean
     ) => {
-    setDebugOptions(prevValues => ({
+      setDebugOptions((prevValues) => ({
         ...prevValues,
-      [optionName]: value
-    }))
-  }, []);
+        [optionName]: value,
+      }));
+    },
+    []
+  );
 
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
