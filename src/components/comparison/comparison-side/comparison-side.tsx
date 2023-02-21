@@ -39,6 +39,7 @@ import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import {
   findExampleAndUpdateWithViewState,
+  getActiveLayersByIds,
   handleSelectAllLeafsInGroup,
   selectNestedLayers,
 } from "../../../utils/layer-utils";
@@ -177,24 +178,6 @@ export const ComparisonSide = ({
 
   useEffect(() => {
     if (staticLayers) {
-      const getActiveLayersByIds = (
-        staticLayers: LayerExample[],
-        activeIds: string[] = [],
-        activeLayers: LayerExample[] = []
-      ) => {
-        for (const layer of staticLayers) {
-          if (activeIds.includes(layer.id)) {
-            activeLayers.push(layer);
-          }
-
-          if (layer?.layers?.length) {
-            getActiveLayersByIds(layer?.layers, activeIds, activeLayers);
-          }
-        }
-
-        return activeLayers;
-      };
-
       const activeLayers = getActiveLayersByIds(staticLayers, activeLayersIds);
 
       setExamples((prevValues) =>
@@ -554,6 +537,8 @@ export const ComparisonSide = ({
                 pageId={PageId.comparison}
                 layers={examples}
                 selectedLayerIds={selectedLayerIds}
+                viewWidth={viewState?.main?.width}
+                viewHeight={viewState?.main?.height}
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}

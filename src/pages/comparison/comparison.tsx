@@ -299,7 +299,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
     if (bookmarksPageId === PageId.comparison) {
       setBookmarks(bookmarks);
-      onSelectBookmarkHandler(bookmarks[0].id);
+      onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
       console.warn(
         `Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`
@@ -400,8 +400,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string) => {
-    const bookmark = bookmarks.find(({ id }) => id === bookmarkId);
+  const onSelectBookmarkHandler = (
+    bookmarkId: string,
+    newBookmarks?: Bookmark[]
+  ) => {
+    const bookmark = (newBookmarks || bookmarks).find(
+      ({ id }) => id === bookmarkId
+    );
     if (!bookmark) {
       return;
     }
@@ -440,6 +445,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     });
   };
 
+  const updateBookmarks = (bookmarks: Bookmark[]) => {
+    setBookmarks(bookmarks);
+    onSelectBookmarkHandler(bookmarks?.[0].id, bookmarks);
+  };
+
   return (
     <Container layout={layout}>
       <ComparisonSide
@@ -473,7 +483,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           setLeftSideLoaded(true);
         }}
         onShowBookmarksChange={onBookmarkClick}
-        onInsertBookmarks={setBookmarks}
+        onInsertBookmarks={updateBookmarks}
         onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
       <Devider layout={layout} />
