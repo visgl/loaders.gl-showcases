@@ -78,6 +78,7 @@ const layerDeleteMock = jest.fn();
 const onUpdateLayerVisibilityMock = jest.fn();
 const onCloseMock = jest.fn();
 const onPointToLayerMock = jest.fn();
+const onBuildingExplorerOpened = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -99,6 +100,7 @@ const callRender = (renderFunc, props = {}) => {
       onUpdateSublayerVisibility={onUpdateLayerVisibilityMock}
       onClose={onCloseMock}
       onPointToLayer={onPointToLayerMock}
+      onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
     />
   );

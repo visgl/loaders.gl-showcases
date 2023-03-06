@@ -17,12 +17,14 @@ beforeAll(() => {
 });
 
 const onUpdateSublayerVisibilityMock = jest.fn();
+const onBuildingExplorerOpened = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <BuildingExplorer
       sublayers={[]}
       onUpdateSublayerVisibility={onUpdateSublayerVisibilityMock}
+      onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
     />
   );

@@ -3,6 +3,7 @@ import { Sublayer } from "../../types";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { SublayerWidget } from "./sublayer-widget";
 import { FiltrationSection } from "./filtration-section/filtration-section";
+import { useEffect } from "react";
 
 const BuildingExplorerSublayers = styled.div`
   display: flex;
@@ -25,10 +26,19 @@ const SectionTitle = styled.div`
 export const BuildingExplorer = ({
   sublayers,
   onUpdateSublayerVisibility,
+  onBuildingExplorerOpened,
 }: {
   sublayers: ActiveSublayer[];
   onUpdateSublayerVisibility: (sublayer: Sublayer) => void;
+  onBuildingExplorerOpened: (opened: boolean) => void;
 }) => {
+  useEffect(() => {
+    onBuildingExplorerOpened(true);
+
+    return () => {
+      onBuildingExplorerOpened(false);
+    };
+  }, []);
   return (
     <>
       <SectionTitle>Categories</SectionTitle>
