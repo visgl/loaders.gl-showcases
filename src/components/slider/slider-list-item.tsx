@@ -4,7 +4,7 @@ import {
   color_canvas_secondary,
   color_brand_tertiary,
   color_accent_primary,
-  color_brand_primary,
+  color_canvas_primary_inverted,
 } from "../../constants/colors";
 import TrashIcon from "../../../public/icons/trash.svg";
 import CloseIcon from "../../../public/icons/close.svg";
@@ -132,8 +132,8 @@ const ListItem = styled.div<LayoutProps & ListItemProps>`
       `;
     } else {
       return css<ListItemProps>`
-        background: ${({ selected }) =>
-          selected ? color_brand_tertiary : color_brand_primary};
+        background: ${({ selected, theme }) =>
+          selected ? color_brand_tertiary : theme.colors.mainAttibuteItemColor};
       `;
     }
   }};
@@ -148,11 +148,16 @@ const TrashIconContainer = styled.div<{ deleting: boolean }>`
   fill: ${({ deleting }) => deleting && color_accent_primary};
 `;
 
-const SliderItemText = styled.div`
+const SliderItemText = styled.div<{ selected: boolean }>`
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
+  ${({ selected }) =>
+    selected &&
+    css`
+      color: ${color_canvas_primary_inverted};
+    `}
 `;
 
 type SliderListItemProps = {
@@ -215,11 +220,7 @@ export const SliderListItem = forwardRef(
         <>
           {deleteBookmark && (
             <>
-              <SliderInnerButton
-                width={32}
-                height={32}
-                onInnerClick={onDelete}
-              >
+              <SliderInnerButton width={32} height={32} onInnerClick={onDelete}>
                 <ConfirmIcon />
               </SliderInnerButton>
               <SliderInnerButton
@@ -277,7 +278,11 @@ export const SliderListItem = forwardRef(
             editingMode &&
             renderListItemContentDesktop()}
           {isMobileLayout && editingMode && renderListItemContentMobile()}
-          {sliderItemText && <SliderItemText>{sliderItemText}</SliderItemText>}
+          {sliderItemText && (
+            <SliderItemText selected={selected}>
+              {sliderItemText}
+            </SliderItemText>
+          )}
         </ListItem>
         {isDeletePanelOpen && (
           <ConfirmDeletingPanel
