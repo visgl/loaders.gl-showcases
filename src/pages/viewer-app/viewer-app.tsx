@@ -119,6 +119,8 @@ export const ViewerApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
+  const [buildingExplorerOpened, setBuildingExplorerOpened] =
+    useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -213,7 +215,7 @@ export const ViewerApp = () => {
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
-  }, [activeLayers]);
+  }, [activeLayers, buildingExplorerOpened]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -233,6 +235,9 @@ export const ViewerApp = () => {
       setSublayers(
         childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
+      const overviewLayer = tileset?.sublayers.find(
+        (sublayer) => sublayer.name === "Overview"
+      );
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
         .map((item) => ({
@@ -240,7 +245,7 @@ export const ViewerApp = () => {
           token: tilesetData.token,
           type: tilesetData.type,
         }));
-      return sublayers;
+      return buildingExplorerOpened ? sublayers : overviewLayer;
     } catch (e) {
       return [
         {
@@ -685,6 +690,9 @@ export const ViewerApp = () => {
             sublayers={sublayers}
             onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
+            onBuildingExplorerOpened={(opened) =>
+              setBuildingExplorerOpened(opened)
+            }
             baseMaps={baseMaps}
             selectedBaseMapId={selectedBaseMap.id}
             insertBaseMap={onInsertBaseMapHandler}

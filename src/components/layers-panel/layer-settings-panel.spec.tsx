@@ -23,6 +23,7 @@ beforeAll(() => {
 const onUpdateSublayerVisibilityMock = jest.fn();
 const onBackClick = jest.fn();
 const onCloseClick = jest.fn();
+const onBuildingExplorerOpened = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
@@ -31,6 +32,7 @@ const callRender = (renderFunc, props = {}) => {
       onUpdateSublayerVisibility={onUpdateSublayerVisibilityMock}
       onBackClick={onBackClick}
       onCloseClick={onCloseClick}
+      onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
     />
   );

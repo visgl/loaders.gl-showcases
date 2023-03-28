@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled, { css } from "styled-components";
+import styled, { css, useTheme } from "styled-components";
 import { Slider } from "../../slider/slider";
 import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
@@ -91,6 +91,8 @@ export const FiltrationSection = () => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("");
 
+  const theme = useTheme();
+
   const onSelectFloorHandler = (floorId: string) => {
     const floor = floors.find(({ id }) => id === floorId);
     if (!floor) {
@@ -130,7 +132,14 @@ export const FiltrationSection = () => {
                 zIndex={index}
               >
                 <FloorsImage>
-                  {isFloorActive ? <FloorActive /> : <Floor />}
+                  {isFloorActive ? (
+                    <FloorActive />
+                  ) : (
+                    <Floor
+                      fill={theme.colors.mainAttributeHighlightColor}
+                      stroke={theme.colors.filtrationImage}
+                    />
+                  )}
                 </FloorsImage>
               </FloorsItem>
             );

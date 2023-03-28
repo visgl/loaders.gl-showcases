@@ -85,6 +85,8 @@ type ComparisonSideProps = {
   showBookmarks: boolean;
   loadNumber: number;
   forcedSublayers?: ActiveSublayer[] | null;
+  buildingExplorerOpened: boolean;
+  onBuildingExplorerOpened: (opened: boolean) => void;
   onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
@@ -118,6 +120,8 @@ export const ComparisonSide = ({
   loadNumber,
   hasBeenCompared,
   forcedSublayers,
+  buildingExplorerOpened,
+  onBuildingExplorerOpened,
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
@@ -265,7 +269,7 @@ export const ComparisonSide = ({
 
     fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
     setSublayers([]);
-  }, [activeLayers]);
+  }, [activeLayers, buildingExplorerOpened]);
 
   /**
    * Init statistics for loaded tilesets every time if loaded tilesets have been changed.
@@ -313,6 +317,9 @@ export const ComparisonSide = ({
       setSublayers(
         childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
+      const overviewLayer = tileset?.sublayers.find(
+        (sublayer) => sublayer.name === "Overview"
+      );
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
         .map((item) => ({
@@ -320,7 +327,7 @@ export const ComparisonSide = ({
           token: tilesetData.token,
           type: tilesetData.type,
         }));
-      return sublayers;
+      return buildingExplorerOpened ? sublayers : overviewLayer;
     } catch (e) {
       return [
         {
@@ -549,6 +556,7 @@ export const ComparisonSide = ({
                 onClose={() =>
                   onChangeMainToolsPanelHandler(ActiveButton.options)
                 }
+                onBuildingExplorerOpened={onBuildingExplorerOpened}
                 baseMaps={baseMaps}
                 selectedBaseMapId={selectedBaseMap.id}
                 isAddingBookmarksAllowed={mode === ComparisonMode.withinLayer}
