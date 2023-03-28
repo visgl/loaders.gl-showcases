@@ -52,7 +52,7 @@ import {
   BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
-  RightSideToolsPanelWrapper,
+  OnlyToolsPanelWrapper,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -855,7 +855,7 @@ export const DebugApp = () => {
         dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
-        <RightSideToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="debug-tools-panel"
             activeButton={activeButton}
@@ -867,7 +867,7 @@ export const DebugApp = () => {
             bookmarksActive={showBookmarksPanel}
             onShowBookmarksChange={onBookmarkClick}
           />
-        </RightSideToolsPanelWrapper>
+        </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
         <BottomToolsPanelWrapper layout={layout}>
