@@ -47,11 +47,13 @@ export const LayerSettingsPanel = ({
   onUpdateSublayerVisibility,
   onBackClick,
   onCloseClick,
+  onBuildingExplorerOpened
 }: {
   sublayers: ActiveSublayer[];
   onUpdateSublayerVisibility: (Sublayer) => void;
   onBackClick: ReactEventHandler;
   onCloseClick: ReactEventHandler;
+  onBuildingExplorerOpened: (opended: boolean) => void;
 }) => {
   const theme = useTheme();
   return (
@@ -69,6 +71,7 @@ export const LayerSettingsPanel = ({
       <BuildingExplorer
         sublayers={sublayers}
         onUpdateSublayerVisibility={onUpdateSublayerVisibility}
+        onBuildingExplorerOpened={onBuildingExplorerOpened}
       ></BuildingExplorer>
     </Container>
   );

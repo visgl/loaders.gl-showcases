@@ -126,6 +126,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   >(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
+  const [buildingExplorerOpenedLeft, setBuildingExplorerOpenedLeft] =
+    useState<boolean>(false);
+  const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
+    useState<boolean>(false);
 
   const layout = useAppLayout();
 
@@ -469,6 +473,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         preventTransitions={preventTransitions}
         showBookmarks={showBookmarksPanel}
         loadNumber={loadNumber}
+        buildingExplorerOpened={buildingExplorerOpenedLeft}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>
@@ -482,6 +487,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
         }}
+        onBuildingExplorerOpened={(opened) =>
+          setBuildingExplorerOpenedLeft(opened)
+        }
         onShowBookmarksChange={onBookmarkClick}
         onInsertBookmarks={updateBookmarks}
         onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
@@ -545,6 +553,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           mode === ComparisonMode.withinLayer ? sublayersLeftSide : null
         }
         loadNumber={loadNumber}
+        buildingExplorerOpened={buildingExplorerOpenedRight}
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>
@@ -557,6 +566,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
+        onBuildingExplorerOpened={(opened) =>
+          setBuildingExplorerOpenedRight(opened)
+        }
         onShowBookmarksChange={onBookmarkClick}
       />
 

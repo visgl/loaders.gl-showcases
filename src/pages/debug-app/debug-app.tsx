@@ -167,6 +167,8 @@ export const DebugApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
+  const [buildingExplorerOpened, setBuildingExplorerOpened] =
+    useState<boolean>(false);
 
   const [, setSearchParams] = useSearchParams();
 
@@ -273,7 +275,7 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
-  }, [activeLayers]);
+  }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
     if (debugOptions.tileColorMode !== TileColoredBy.custom) {
@@ -300,6 +302,9 @@ export const DebugApp = () => {
       setSublayers(
         childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
+      const overviewLayer = tileset?.sublayers.find(
+        (sublayer) => sublayer.name === "Overview"
+      );
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
         .map((item) => ({
@@ -307,7 +312,7 @@ export const DebugApp = () => {
           token: tilesetData.token,
           type: tilesetData.type,
         }));
-      return sublayers;
+      return buildingExplorerOpened ? sublayers : overviewLayer;
     } catch (e) {
       return [
         {
@@ -641,8 +646,13 @@ export const DebugApp = () => {
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string, newBookmarks?: Bookmark[]) => {
-    const bookmark = (newBookmarks || bookmarks).find(({ id }) => id === bookmarkId);
+  const onSelectBookmarkHandler = (
+    bookmarkId: string,
+    newBookmarks?: Bookmark[]
+  ) => {
+    const bookmark = (newBookmarks || bookmarks).find(
+      ({ id }) => id === bookmarkId
+    );
     if (!bookmark) {
       return;
     }
@@ -890,6 +900,9 @@ export const DebugApp = () => {
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
             baseMaps={baseMaps}
             selectedBaseMapId={selectedBaseMap.id}
+            onBuildingExplorerOpened={(opened) =>
+              setBuildingExplorerOpened(opened)
+            }
             insertBaseMap={onInsertBaseMapHandler}
             selectBaseMap={onSelectBaseMapHandler}
             deleteBaseMap={onDeleteBaseMapHandler}
