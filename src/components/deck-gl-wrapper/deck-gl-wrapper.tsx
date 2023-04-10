@@ -15,7 +15,7 @@ import {
   PickingInfo,
   View,
 } from "@deck.gl/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
@@ -268,7 +268,12 @@ export const DeckGlWrapper = ({
   });
   const [terrainTiles, setTerrainTiles] = useState({});
   const [uvDebugTexture, setUvDebugTexture] = useState(null);
+  const uvDebugTextureRef = useRef(null);
+  uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
+
+  const showDebugTextureRef = useRef<boolean>(false);
+  showDebugTextureRef.current = showDebugTexture;
 
   let currentViewport: WebMercatorViewport = null;
 
@@ -485,8 +490,8 @@ export const DeckGlWrapper = ({
       // delete featureIds from data to have instance picking instead of feature picking
       delete tile.content.featureIds;
     }
-    if (showDebugTexture) {
-      selectDebugTextureForTile(tile, uvDebugTexture);
+    if (showDebugTextureRef.current) {
+      selectDebugTextureForTile(tile, uvDebugTextureRef.current);
     } else {
       selectOriginalTextureForTile(tile);
     }
