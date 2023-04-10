@@ -142,6 +142,7 @@ export const DebugApp = () => {
   );
   const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
+  const selectedTileRef = useRef<Tile3D | null>(selectedTile);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
@@ -284,6 +285,10 @@ export const DebugApp = () => {
     }
   }, [debugOptions.tileColorMode]);
 
+  useEffect(() => {
+    selectedTileRef.current = selectedTile;
+  }, [selectedTile]);
+
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
    * @param {string} tilesetUrl
@@ -365,7 +370,7 @@ export const DebugApp = () => {
 
   const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
     const tileIndex = selectedTiles.findIndex(
-      (tile: Tile3D) => tile === selectedTile
+      (tile: Tile3D) => tile === selectedTileRef.current
     );
     if (tileIndex === -1) {
       setSelectedTile(null);
