@@ -52,7 +52,7 @@ import {
   BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
-  RightSideToolsPanelWrapper,
+  OnlyToolsPanelWrapper,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -142,6 +142,7 @@ export const DebugApp = () => {
   );
   const [normalsLength, setNormalsLength] = useState(DEFAULT_NORMALS_LENGTH);
   const [selectedTile, setSelectedTile] = useState<Tile3D | null>(null);
+  const selectedTileRef = useRef<Tile3D | null>(selectedTile);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
   const [flattenedSublayers, setFlattenedSublayers] = useState<
@@ -167,6 +168,9 @@ export const DebugApp = () => {
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
+  const [buildingExplorerOpened, setBuildingExplorerOpened] =
+    useState<boolean>(false);
+
   const [, setSearchParams] = useSearchParams();
 
   const selectedLayerIds = useMemo(
@@ -272,7 +276,7 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
-  }, [activeLayers]);
+  }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
     if (debugOptions.tileColorMode !== TileColoredBy.custom) {
@@ -280,6 +284,10 @@ export const DebugApp = () => {
       setSelectedTile(null);
     }
   }, [debugOptions.tileColorMode]);
+
+  useEffect(() => {
+    selectedTileRef.current = selectedTile;
+  }, [selectedTile]);
 
   /**
    * Tries to get Building Scene Layer sublayer urls if exists.
@@ -299,6 +307,9 @@ export const DebugApp = () => {
       setSublayers(
         childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
+      const overviewLayer = tileset?.sublayers.find(
+        (sublayer) => sublayer.name === "Overview"
+      );
       const sublayers = tileset?.sublayers
         .filter((sublayer) => sublayer.name !== "Overview")
         .map((item) => ({
@@ -306,7 +317,7 @@ export const DebugApp = () => {
           token: tilesetData.token,
           type: tilesetData.type,
         }));
-      return sublayers;
+      return buildingExplorerOpened ? sublayers : overviewLayer;
     } catch (e) {
       return [
         {
@@ -328,6 +339,7 @@ export const DebugApp = () => {
   };
 
   const onTilesetLoad = (tileset: Tileset3D) => {
+    tileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     setLoadedTilesets((prevValues: Tileset3D[]) => [...prevValues, tileset]);
     setExamples((prevExamples) =>
       findExampleAndUpdateWithViewState(tileset, prevExamples)
@@ -354,6 +366,16 @@ export const DebugApp = () => {
     render(<TileTooltip tile={info.object} />, tooltip);
 
     return { html: tooltip.innerHTML };
+  };
+
+  const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
+    const tileIndex = selectedTiles.findIndex(
+      (tile: Tile3D) => tile === selectedTileRef.current
+    );
+    if (tileIndex === -1) {
+      setSelectedTile(null);
+    }
+    return selectedTiles;
   };
 
   const handleClick = (info: PickingInfo) => {
@@ -629,8 +651,13 @@ export const DebugApp = () => {
     });
   };
 
-  const onSelectBookmarkHandler = (bookmarkId: string, newBookmarks?: Bookmark[]) => {
-    const bookmark = (newBookmarks || bookmarks).find(({ id }) => id === bookmarkId);
+  const onSelectBookmarkHandler = (
+    bookmarkId: string,
+    newBookmarks?: Bookmark[]
+  ) => {
+    const bookmark = (newBookmarks || bookmarks).find(
+      ({ id }) => id === bookmarkId
+    );
     if (!bookmark) {
       return;
     }
@@ -833,7 +860,7 @@ export const DebugApp = () => {
         dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
-        <RightSideToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper layout={layout}>
           <MainToolsPanel
             id="debug-tools-panel"
             activeButton={activeButton}
@@ -845,7 +872,7 @@ export const DebugApp = () => {
             bookmarksActive={showBookmarksPanel}
             onShowBookmarksChange={onBookmarkClick}
           />
-        </RightSideToolsPanelWrapper>
+        </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
         <BottomToolsPanelWrapper layout={layout}>
@@ -878,6 +905,9 @@ export const DebugApp = () => {
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
             baseMaps={baseMaps}
             selectedBaseMapId={selectedBaseMap.id}
+            onBuildingExplorerOpened={(opened) =>
+              setBuildingExplorerOpened(opened)
+            }
             insertBaseMap={onInsertBaseMapHandler}
             selectBaseMap={onSelectBaseMapHandler}
             deleteBaseMap={onDeleteBaseMapHandler}

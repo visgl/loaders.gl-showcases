@@ -156,6 +156,7 @@ type LayersPanelProps = {
   onUpdateSublayerVisibility: (Sublayer) => void;
   onClose: () => void;
   onPointToLayer: (viewState?: LayerViewState) => void;
+  onBuildingExplorerOpened: (opened: boolean) => void;
 };
 
 export const LayersPanel = ({
@@ -179,6 +180,7 @@ export const LayersPanel = ({
   onUpdateSublayerVisibility,
   onClose,
   onPointToLayer,
+  onBuildingExplorerOpened
 }: LayersPanelProps) => {
   const layout = useAppLayout();
 
@@ -451,6 +453,7 @@ export const LayersPanel = ({
           sublayers={sublayers}
           onUpdateSublayerVisibility={onUpdateSublayerVisibility}
           onBackClick={() => setShowLayerSettings(false)}
+          onBuildingExplorerOpened={onBuildingExplorerOpened}
           onCloseClick={onClose}
         />
       )}

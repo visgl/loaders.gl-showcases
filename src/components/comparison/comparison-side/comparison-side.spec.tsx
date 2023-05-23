@@ -83,6 +83,8 @@ const onDeleteBaseMapMock = jest.fn();
 const onTilesetLoaded = jest.fn();
 const onLoadingStateChange = jest.fn();
 const onShowBookmarksChange = jest.fn();
+const onBuildingExplorerOpened = jest.fn();
+
 const loadMock = load as unknown as jest.Mocked<any>;
 const DeckGlWrapperMock = DeckGlWrapper as unknown as jest.Mocked<any>;
 const MainToolsPanelMock = MainToolsPanel as unknown as jest.Mocked<any>;
@@ -114,6 +116,7 @@ describe("ComparisonSide", () => {
         showBookmarks={false}
         loadNumber={0}
         preventTransitions={false}
+        buildingExplorerOpened={true}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
         onViewStateChange={onViewStateChangeMock}
@@ -124,6 +127,7 @@ describe("ComparisonSide", () => {
         onDeleteBaseMap={onDeleteBaseMapMock}
         onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
+        onBuildingExplorerOpened={onBuildingExplorerOpened}
         {...props}
       />
     );
