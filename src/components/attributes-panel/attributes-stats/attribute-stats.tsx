@@ -150,8 +150,11 @@ const ColorizeValuesList = styled.div`
 const HISTOGRAM = "histogram";
 const MOST_FREQUENT_VALUES = "mostFrequentValues";
 const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
+const COLORIZE_BY_MULTIPLY = "Multiply Colors";
 const VALUE_TITLE = "Value";
 const COUNT_TITLE = "Count";
+const MODE_MULTIPLY = "multuply";
+const MODE_REPLACE = "replace";
 
 const statisitcsMap = new Map();
 
@@ -303,12 +306,33 @@ export const AttributeStats = ({
           maxValue: statistics.max || 0,
           minColor: COLORS_BY_ATTRIBUTE.min.rgba,
           maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
+          mode: MODE_REPLACE
         });
       }
     } else {
       onColorsByAttributeChange(null);
     }
   };
+
+  const handleColorizeByMultiplyingClick = () => {
+    if (
+      colorsByAttribute &&
+      colorsByAttribute.attributeName === attributeName
+    ) {
+      let newMode = MODE_REPLACE;
+      if (colorsByAttribute?.mode === MODE_REPLACE) {
+        newMode = MODE_MULTIPLY;
+      }
+      onColorsByAttributeChange({
+        attributeName,
+        minValue: statistics?.min || 0,
+        maxValue: statistics?.max || 0,
+        minColor: COLORS_BY_ATTRIBUTE.min.rgba,
+        maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
+        mode: newMode
+      });
+    }
+  }
 
   const statisticRows = useMemo(() => renderStatisticRows(), [statistics]);
 
@@ -359,6 +383,15 @@ export const AttributeStats = ({
                   id={"colorize-by-attribute"}
                   checked={colorsByAttribute?.attributeName === attributeName}
                   onChange={handleColorizeByAttributeClick}
+                />
+              </AttributeColorize>
+              <AttributeColorize>
+                <ColorizeTitle>{COLORIZE_BY_MULTIPLY}</ColorizeTitle>
+                <ToggleSwitch
+                  id={"colorize-by-attribute-mode"}
+                  checked={colorsByAttribute?.attributeName === attributeName &&
+                            colorsByAttribute?.mode === MODE_MULTIPLY}
+                  onChange={handleColorizeByMultiplyingClick}
                 />
               </AttributeColorize>
               {colorsByAttribute?.attributeName === attributeName && (

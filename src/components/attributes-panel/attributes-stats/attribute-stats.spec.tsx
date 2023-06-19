@@ -206,6 +206,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
@@ -235,6 +236,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
@@ -251,6 +253,7 @@ describe("AttributeStats", () => {
       maxValue: 100,
       minColor: [146, 146, 252, 255],
       maxColor: [44, 44, 175, 255],
+      mode: "replace",
     });
   });
 
@@ -272,6 +275,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
