@@ -153,7 +153,7 @@ const COLORIZE_BY_ATTRIBUTE = "Colorize by Attribute";
 const COLORIZE_BY_MULTIPLY = "Multiply Colors";
 const VALUE_TITLE = "Value";
 const COUNT_TITLE = "Count";
-const MODE_MULTIPLY = "multuply";
+const MODE_MULTIPLY = "multiply";
 const MODE_REPLACE = "replace";
 
 const statisitcsMap = new Map();
@@ -377,7 +377,7 @@ export const AttributeStats = ({
           )}
           {typeof statistics?.min === "number" && statistics.max && (
             <>
-              <AttributeColorize>
+              <AttributeColorize role="colorizeByAttribute">
                 <ColorizeTitle>{COLORIZE_BY_ATTRIBUTE}</ColorizeTitle>
                 <ToggleSwitch
                   id={"colorize-by-attribute"}
@@ -385,7 +385,7 @@ export const AttributeStats = ({
                   onChange={handleColorizeByAttributeClick}
                 />
               </AttributeColorize>
-              <AttributeColorize>
+              <AttributeColorize role="colorizeByAttributeMode">
                 <ColorizeTitle>{COLORIZE_BY_MULTIPLY}</ColorizeTitle>
                 <ToggleSwitch
                   id={"colorize-by-attribute-mode"}
