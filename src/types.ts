@@ -259,6 +259,7 @@ export type ColorsByAttribute = {
   maxValue: number;
   minColor: COLOR;
   maxColor: COLOR;
+  mode: string;
 };
 
 export type LoadOptions = {

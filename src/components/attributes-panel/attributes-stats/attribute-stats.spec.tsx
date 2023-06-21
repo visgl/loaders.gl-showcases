@@ -1,4 +1,4 @@
-import { act, screen } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 import { AttributeStats } from "./attribute-stats";
@@ -120,7 +120,8 @@ describe("AttributeStats", () => {
     expect(screen.getByText("Histogram")).toBeInTheDocument();
     expect(screen.getByText("HistogramChart")).toBeInTheDocument();
     expect(screen.getByText("Colorize by Attribute")).toBeInTheDocument();
-    expect(screen.getByText("ToggleSwitch")).toBeInTheDocument();
+    expect(screen.getByRole("colorizeByAttribute")).toBeInTheDocument();
+    expect(screen.getByRole("colorizeByAttributeMode")).toBeInTheDocument();
     expect(screen.getByTestId("histogram-split-line")).toBeInTheDocument();
 
     const histogramIcon = screen.getByText("Histogram").firstElementChild;
@@ -131,7 +132,7 @@ describe("AttributeStats", () => {
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
-    userEvent.click(screen.getByText("ToggleSwitch"));
+    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
 
     // Try to get already cached data
     act(() => {
@@ -206,6 +207,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
@@ -235,6 +237,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
@@ -243,7 +246,7 @@ describe("AttributeStats", () => {
     await sleep(100);
     expect(screen.queryByTestId("colorsByAttributeFadeContainer")).toBeNull();
 
-    userEvent.click(screen.getByText("ToggleSwitch"));
+    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
 
     expect(onColorsByAttributeChange).toHaveBeenCalledWith({
       attributeName: "HEIGHTROOF",
@@ -251,6 +254,7 @@ describe("AttributeStats", () => {
       maxValue: 100,
       minColor: [146, 146, 252, 255],
       maxColor: [44, 44, 175, 255],
+      mode: "replace",
     });
   });
 
@@ -272,6 +276,7 @@ describe("AttributeStats", () => {
             maxValue: 100,
             minColor: [0, 0, 0, 0],
             maxColor: [255, 255, 255, 255],
+            mode: "replace",
           }}
           onColorsByAttributeChange={onColorsByAttributeChange}
         />
@@ -282,8 +287,87 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(screen.getByText("ToggleSwitch"));
+    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
 
     expect(onColorsByAttributeChange).toHaveBeenCalledWith(null);
+  });
+
+  it("Should render switch 'Multiply Colors' on", async () => {
+    act(() => {
+      renderWithTheme(
+        <AttributeStats
+          attributeName={"HEIGHTROOF"}
+          statisticsInfo={{
+            key: "f_0",
+            name: "HEIGHTROOF",
+            href: "../testHref",
+          }}
+          tilesetName={"New York"}
+          tilesetBasePath={"https://test-base-path"}
+          colorsByAttribute={{
+            attributeName: "HEIGHTROOF",
+            minValue: 0,
+            maxValue: 100,
+            minColor: [146, 146, 252, 255],
+            maxColor: [44, 44, 175, 255],
+            mode: "replace",
+          }}
+          onColorsByAttributeChange={onColorsByAttributeChange}
+        />
+      );
+    });
+    await sleep(100);
+    
+    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
+    
+    expect(onColorsByAttributeChange).toHaveBeenCalledWith({
+      attributeName: "HEIGHTROOF",
+      minValue: 0,
+      maxValue: 100,
+      minColor: [146, 146, 252, 255],
+      maxColor: [44, 44, 175, 255],
+      mode: "multiply",
+    });
+  });
+
+  it("Should render switch 'Multiply Colors' off", async () => {
+    act(() => {
+      renderWithTheme(
+        <AttributeStats
+          attributeName={"HEIGHTROOF"}
+          statisticsInfo={{
+            key: "f_0",
+            name: "HEIGHTROOF",
+            href: "../testHref",
+          }}
+          tilesetName={"New York"}
+          tilesetBasePath={"https://test-base-path"}
+          colorsByAttribute={{
+            attributeName: "HEIGHTROOF",
+            minValue: 0,
+            maxValue: 100,
+            minColor: [146, 146, 252, 255],
+            maxColor: [44, 44, 175, 255],
+            mode: "multiply",
+          }}
+          onColorsByAttributeChange={onColorsByAttributeChange}
+        />
+      );
+    });
+    await sleep(100);
+    expect(
+      screen.getByTestId("colorsByAttributeFadeContainer")
+    ).toBeInTheDocument();
+
+    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
+
+    expect(onColorsByAttributeChange).toHaveBeenCalledWith({
+      attributeName: "HEIGHTROOF",
+      minValue: 0,
+      maxValue: 100,
+      minColor: [146, 146, 252, 255],
+      maxColor: [44, 44, 175, 255],
+      mode: "replace",
+    });
   });
 });

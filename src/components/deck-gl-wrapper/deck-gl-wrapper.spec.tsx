@@ -248,7 +248,7 @@ describe("Deck.gl I3S map component", () => {
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--colors-by-attribute-mode-undefined--0"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
@@ -315,7 +315,7 @@ describe("Deck.gl I3S map component", () => {
       callRender(render, { loadNumber: 1 });
       const { id } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--1"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--colors-by-attribute-mode-undefined--1"
       );
     });
 
@@ -463,7 +463,7 @@ describe("Deck.gl I3S map component", () => {
       expect(Tile3DLayer).toHaveBeenCalled();
       const { id, loadOptions } = Tile3DLayer.mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-HEIGHTROOF--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-HEIGHTROOF--colors-by-attribute-mode-undefined--0"
       );
       expect(loadOptions.i3s.colorsByAttribute).toEqual({
         attributeName: "HEIGHTROOF",

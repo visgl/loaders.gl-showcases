@@ -631,7 +631,7 @@ export const DeckGlWrapper = ({
       loadOptions.i3s.token = layer.token;
     }
     return new Tile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--${loadNumber}`,
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--colors-by-attribute-mode-${colorsByAttribute?.mode}--${loadNumber}`,
       data: layer.url,
       loader: I3SLoader,
       onTilesetLoad: onTilesetLoadHandler,
