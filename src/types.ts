@@ -354,3 +354,11 @@ export type TileSelectedColor = {
   g: number;
   b: number;
 };
+
+export type tilesetsDataType = {
+  id: string;
+  url: string;
+  token: string;
+  hasChildren: boolean;
+  type?: TilesetType;
+};

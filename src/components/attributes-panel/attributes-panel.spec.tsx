@@ -15,7 +15,6 @@ jest.mock("./attributes-stats/attribute-stats", () => ({
 
 describe("AttributesPanel", () => {
   const handleClosePanel = jest.fn();
-  const handleColorsByAttributeChange = jest.fn();
 
   it("Should render AttributesPanel", () => {
     const attributes = {
@@ -30,9 +29,7 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={null}
-        colorsByAttribute={null}
         onClose={handleClosePanel}
-        onColorsByAttributeChange={handleColorsByAttributeChange}
       />
     );
 
@@ -64,9 +61,7 @@ describe("AttributesPanel", () => {
         attributes={attributes}
         tilesetBasePath={""}
         statisticsInfo={statisticsInfo}
-        colorsByAttribute={null}
         onClose={handleClosePanel}
-        onColorsByAttributeChange={handleColorsByAttributeChange}
       />
     );
 

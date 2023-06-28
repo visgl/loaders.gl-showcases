@@ -1,8 +1,8 @@
-import React from "react";
-
+import React, { PropsWithChildren } from "react";
 import { render } from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
-
+import { Provider } from "react-redux";
+import { type AppStore } from "../../redux/store";
 
 const theme = {
   colors: {
@@ -32,3 +32,16 @@ const theme = {
 export const renderWithTheme = (children: React.ReactNode, renderFunc = render) => {
   return renderFunc(<ThemeProvider theme={theme}>{children}</ThemeProvider>);
 };
+
+export function renderWithThemeProviders(
+  ui: React.ReactElement,
+  store: AppStore
+) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
+    return <Provider store={store}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </Provider>;
+  }
+  return { store, ...render(ui, { wrapper: Wrapper }) };
+}

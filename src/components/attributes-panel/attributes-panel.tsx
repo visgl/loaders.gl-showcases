@@ -1,5 +1,5 @@
 import type { StatisticsInfo } from "@loaders.gl/i3s";
-import type { ColorsByAttribute, FeatureAttributes } from "../../types";
+import type { FeatureAttributes } from "../../types";
 
 import { useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
@@ -127,11 +127,7 @@ type AttributesPanelProps = {
   attributes: FeatureAttributes | null;
   tilesetBasePath: string;
   statisticsInfo: StatisticsInfo[] | null;
-  colorsByAttribute: ColorsByAttribute | null;
   onClose: () => void;
-  onColorsByAttributeChange: (
-    colorsByAttribute: ColorsByAttribute | null
-  ) => void;
 };
 
 export const AttributesPanel = ({
@@ -140,9 +136,7 @@ export const AttributesPanel = ({
   attributes,
   statisticsInfo,
   tilesetBasePath,
-  colorsByAttribute,
   onClose,
-  onColorsByAttributeChange,
 }: AttributesPanelProps) => {
   const theme = useTheme();
   const layout = useAppLayout();
@@ -231,8 +225,6 @@ export const AttributesPanel = ({
           statisticsInfo={selectedAttributeStatsInfo}
           tilesetName={tilesetName}
           tilesetBasePath={tilesetBasePath}
-          colorsByAttribute={colorsByAttribute}
-          onColorsByAttributeChange={onColorsByAttributeChange}
         />
       )}
     </Container>

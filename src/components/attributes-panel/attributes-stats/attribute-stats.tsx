@@ -22,12 +22,13 @@ import {
   CollapseDirection,
   ExpandState,
   ArrowDirection,
-  ColorsByAttribute,
 } from "../../../types";
 import { useExpand } from "../../../utils/hooks/use-expand";
 import { calculateAverageValue } from "../../../utils/calculate-average-value";
 import { COLORS_BY_ATTRIBUTE } from "../../../constants/colors";
 import { capitalize } from "../../../utils/format/capitalize";
+import { selectColorsByAttribute, setColorsByAttrubute } from "../../../redux/colors-by-attribute-slice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 type VisibilityProps = {
   visible: boolean;
@@ -163,10 +164,6 @@ type AttributeStatsProps = {
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
-  colorsByAttribute: ColorsByAttribute | null;
-  onColorsByAttributeChange: (
-    colorsByAttribute: ColorsByAttribute | null
-  ) => void;
 };
 
 export const AttributeStats = ({
@@ -174,8 +171,6 @@ export const AttributeStats = ({
   statisticsInfo,
   tilesetName,
   tilesetBasePath,
-  colorsByAttribute,
-  onColorsByAttributeChange,
 }: AttributeStatsProps) => {
   const theme = useTheme();
 
@@ -183,6 +178,9 @@ export const AttributeStats = ({
   const [statistics, setStatistics] = useState<StatsInfo | null>(null);
   const [histogramData, setHistogramData] = useState<Histogram | null>(null);
   const [expandState, expand] = useExpand(ExpandState.expanded);
+
+  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+  const dispatch = useAppDispatch();
 
   /**
    * Handle base uri and statistic uri
@@ -298,19 +296,19 @@ export const AttributeStats = ({
       colorsByAttribute.attributeName !== attributeName
     ) {
       if (!statistics || !("min" in statistics) || !("max" in statistics)) {
-        onColorsByAttributeChange(null);
+        dispatch(setColorsByAttrubute(null));
       } else {
-        onColorsByAttributeChange({
+        dispatch(setColorsByAttrubute({
           attributeName,
           minValue: statistics.min || 0,
           maxValue: statistics.max || 0,
           minColor: COLORS_BY_ATTRIBUTE.min.rgba,
           maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
           mode: MODE_REPLACE
-        });
+        }));
       }
     } else {
-      onColorsByAttributeChange(null);
+      dispatch(setColorsByAttrubute(null));
     }
   };
 
@@ -323,14 +321,14 @@ export const AttributeStats = ({
       if (colorsByAttribute?.mode === MODE_REPLACE) {
         newMode = MODE_MULTIPLY;
       }
-      onColorsByAttributeChange({
+      dispatch(setColorsByAttrubute({
         attributeName,
         minValue: statistics?.min || 0,
         maxValue: statistics?.max || 0,
         minColor: COLORS_BY_ATTRIBUTE.min.rgba,
         maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
         mode: newMode
-      });
+      }));
     }
   }
 
@@ -390,7 +388,7 @@ export const AttributeStats = ({
                 <ToggleSwitch
                   id={"colorize-by-attribute-mode"}
                   checked={colorsByAttribute?.attributeName === attributeName &&
-                            colorsByAttribute?.mode === MODE_MULTIPLY}
+                    colorsByAttribute?.mode === MODE_MULTIPLY}
                   onChange={handleColorizeByMultiplyingClick}
                 />
               </AttributeColorize>
