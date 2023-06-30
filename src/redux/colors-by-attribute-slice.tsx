@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ColorsByAttribute } from "../types";
 import { RootState } from "./store";
 
@@ -16,14 +16,18 @@ const colorsByAttributeSlice = createSlice({
   name: "colorsByAttribute",
   initialState,
   reducers: {
-    setColorsByAttrubute: (state, action) => {
+    setColorsByAttrubute: (
+      state: ColorsByAttributeState,
+      action: PayloadAction<ColorsByAttribute | null>
+    ) => {
       state.value = action.payload;
     },
   },
 });
 
-export const selectColorsByAttribute = (state: RootState) =>
-  state.colorsByAttribute.value;
+export const selectColorsByAttribute = (
+  state: RootState
+): ColorsByAttribute | null => state.colorsByAttribute.value;
 
 export const { setColorsByAttrubute } = colorsByAttributeSlice.actions;
 
