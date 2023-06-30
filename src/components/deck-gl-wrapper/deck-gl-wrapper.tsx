@@ -21,7 +21,6 @@ import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
   ViewStateSet,
-  DragMode,
   LoadOptions,
   TilesetType,
   BoundingVolumeType,
@@ -48,6 +47,7 @@ import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppSelector } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/colors-by-attribute-slice";
+import { selectDragMode } from "../../redux/drag-mode-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -152,8 +152,6 @@ type DeckGlI3sProps = {
   useDracoGeometry?: boolean;
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
-  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
-  dragMode?: DragMode;
   /** enables or disables viewport interactivity */
   disableController?: boolean;
   /** allows update a layer */
@@ -209,7 +207,6 @@ export const DeckGlWrapper = ({
   useDracoGeometry = true,
   useCompressedTextures = true,
   disableController = false,
-  dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
   minimapPosition,
@@ -223,7 +220,7 @@ export const DeckGlWrapper = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
-
+  const dragMode = useAppSelector(selectDragMode);
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -253,7 +250,7 @@ export const DeckGlWrapper = ({
             },
       }),
     ],
-    [disableController]
+    [disableController, dragMode]
   );
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,

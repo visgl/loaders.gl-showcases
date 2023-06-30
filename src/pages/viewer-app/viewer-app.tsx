@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import {
-  loadFeatureAttributes,
-  StatisticsInfo,
-} from "@loaders.gl/i3s";
+import { loadFeatureAttributes, StatisticsInfo } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
@@ -32,7 +29,7 @@ import {
   Bookmark,
   DragMode,
   PageId,
-  tilesetsDataType,
+  tilesetsData,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -61,8 +58,16 @@ import { MapControllPanel } from "../../components/map-control-panel/map-control
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
-import { getFlattenedSublayers, selectLayerCounter, selectLayers, selectSublayers, setFlattenedSublayers, updateLayerVisibility } from "../../redux/flattened-sublayers-slice";
+import {
+  getFlattenedSublayers,
+  selectLayerCounter,
+  selectLayers,
+  selectSublayers,
+  setFlattenedSublayers,
+  updateLayerVisibility,
+} from "../../redux/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setDragMode } from "../../redux/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -109,11 +114,12 @@ export const ViewerApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(useAppSelector(selectLayerCounter));
+  const fetchSublayersCounter = useRef<number>(
+    useAppSelector(selectLayerCounter)
+  );
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
@@ -143,6 +149,7 @@ export const ViewerApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
+    dispatch(setDragMode(DragMode.pan));
   }, []);
 
   /**
@@ -161,7 +168,7 @@ export const ViewerApp = () => {
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    const tilesetsData: tilesetsDataType[] = [];
+    const tilesetsData: tilesetsData[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -176,7 +183,13 @@ export const ViewerApp = () => {
       });
     }
 
-    dispatch(getFlattenedSublayers({tilesetsData: tilesetsData, currentLayer: fetchSublayersCounter.current, buildingExplorerOpened: buildingExplorerOpened}));
+    dispatch(
+      getFlattenedSublayers({
+        tilesetsData,
+        currentLayer: fetchSublayersCounter.current,
+        buildingExplorerOpened,
+      })
+    );
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
@@ -184,7 +197,9 @@ export const ViewerApp = () => {
 
   useEffect(() => {
     if (bslSublayers?.length > 0) {
-      setSublayers(bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true)));
+      setSublayers(
+        bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+      );
     } else {
       setSublayers([]);
     }
@@ -216,10 +231,10 @@ export const ViewerApp = () => {
     }
   };
 
-  const handleClosePanel = () => {
+  const handleClosePanel = useCallback(() => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
-  };
+  }, []);
 
   const handleClick = async (info) => {
     if (!info.object || info.index < 0 || !info.layer) {
@@ -355,7 +370,12 @@ export const ViewerApp = () => {
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (index >= 0 && flattenedSublayers[index]) {
-        dispatch(updateLayerVisibility({index: index, visibility: sublayer.visibility}));
+        dispatch(
+          updateLayerVisibility({
+            index: index,
+            visibility: sublayer.visibility,
+          })
+        );
       }
     }
   };
@@ -538,15 +558,6 @@ export const ViewerApp = () => {
     }));
   }, []);
 
-  const toggleDragMode = useCallback(() => {
-    setDragMode((prev) => {
-      if (prev === DragMode.pan) {
-        return DragMode.rotate;
-      }
-      return DragMode.pan;
-    });
-  }, []);
-
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
@@ -574,7 +585,6 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
-        dragMode={dragMode}
       />
 
       {layout !== Layout.Mobile && (
@@ -661,11 +671,9 @@ export const ViewerApp = () => {
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}
-        dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
       />
     </MapArea>
   );

@@ -285,9 +285,9 @@ export type Bookmark = {
 };
 
 export enum PageId {
-  viewer = 'Viewer',
-  debug = 'Debug',
-  comparison = 'Comparison'
+  viewer = "Viewer",
+  debug = "Debug",
+  comparison = "Comparison",
 }
 
 export enum SelectionState {
@@ -347,7 +347,7 @@ export type TileInfo = {
 export type MinimapPosition = {
   x: string;
   y: string;
-}
+};
 
 export type TileSelectedColor = {
   r: number;
@@ -355,7 +355,7 @@ export type TileSelectedColor = {
   b: number;
 };
 
-export type tilesetsDataType = {
+export type tilesetsData = {
   id: string;
   url: string;
   token: string;

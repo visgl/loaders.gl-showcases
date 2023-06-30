@@ -20,7 +20,7 @@ import {
   MinimapPosition,
   TileSelectedColor,
   PageId,
-  tilesetsDataType,
+  tilesetsData,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -73,8 +73,16 @@ import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
-import { getFlattenedSublayers, selectLayerCounter, selectLayers, selectSublayers, setFlattenedSublayers, updateLayerVisibility } from "../../redux/flattened-sublayers-slice";
+import {
+  getFlattenedSublayers,
+  selectLayerCounter,
+  selectLayers,
+  selectSublayers,
+  setFlattenedSublayers,
+  updateLayerVisibility,
+} from "../../redux/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setDragMode } from "../../redux/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -161,11 +169,12 @@ export const DebugApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(useAppSelector(selectLayerCounter));
+  const fetchSublayersCounter = useRef<number>(
+    useAppSelector(selectLayerCounter)
+  );
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
 
@@ -203,6 +212,7 @@ export const DebugApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
+    dispatch(setDragMode(DragMode.pan));
   }, []);
 
   /**
@@ -221,7 +231,7 @@ export const DebugApp = () => {
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    const tilesetsData: tilesetsDataType[] = [];
+    const tilesetsData: tilesetsData[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -236,7 +246,13 @@ export const DebugApp = () => {
       });
     }
 
-    dispatch(getFlattenedSublayers({tilesetsData: tilesetsData, currentLayer: fetchSublayersCounter.current, buildingExplorerOpened: buildingExplorerOpened}));
+    dispatch(
+      getFlattenedSublayers({
+        tilesetsData,
+        currentLayer: fetchSublayersCounter.current,
+        buildingExplorerOpened,
+      })
+    );
     handleClearWarnings();
     setNormalsDebugData(null);
     setLoadedTilesets([]);
@@ -248,7 +264,9 @@ export const DebugApp = () => {
 
   useEffect(() => {
     if (bslSublayers?.length > 0) {
-      setSublayers(bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true)));
+      setSublayers(
+        bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+      );
     } else {
       setSublayers([]);
     }
@@ -509,7 +527,12 @@ export const DebugApp = () => {
         (fSublayer) => fSublayer.id === sublayer.id
       );
       if (index >= 0 && flattenedSublayers[index]) {
-        dispatch(updateLayerVisibility({index: index, visibility: sublayer.visibility}));
+        dispatch(
+          updateLayerVisibility({
+            index: index,
+            visibility: sublayer.visibility,
+          })
+        );
       }
     }
   };
@@ -726,15 +749,6 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const toggleDragMode = useCallback(() => {
-    setDragMode((prev) => {
-      if (prev === DragMode.pan) {
-        return DragMode.rotate;
-      }
-      return DragMode.pan;
-    });
-  }, []);
-
   const {
     minimap,
     minimapViewport,
@@ -790,7 +804,6 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
-        dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
@@ -899,11 +912,9 @@ export const DebugApp = () => {
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}
-        dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
       />
     </MapArea>
   );
