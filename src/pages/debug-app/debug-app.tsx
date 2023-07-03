@@ -20,7 +20,7 @@ import {
   MinimapPosition,
   TileSelectedColor,
   PageId,
-  tilesetsData,
+  TilesetMetadata,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -75,14 +75,13 @@ import { TileColorSection } from "../../components/tile-details-panel/tile-color
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
   getFlattenedSublayers,
-  selectLayerCounter,
   selectLayers,
   selectSublayers,
   setFlattenedSublayers,
   updateLayerVisibility,
-} from "../../redux/flattened-sublayers-slice";
+} from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { setDragMode } from "../../redux/drag-mode-slice";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -169,9 +168,6 @@ export const DebugApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(
-    useAppSelector(selectLayerCounter)
-  );
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
@@ -224,14 +220,13 @@ export const DebugApp = () => {
   }, [loadedTilesets]);
 
   useEffect(() => {
-    fetchSublayersCounter.current++;
     if (!activeLayers.length) {
       dispatch(setFlattenedSublayers([]));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    const tilesetsData: tilesetsData[] = [];
+    const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -249,7 +244,6 @@ export const DebugApp = () => {
     dispatch(
       getFlattenedSublayers({
         tilesetsData,
-        currentLayer: fetchSublayersCounter.current,
         buildingExplorerOpened,
       })
     );

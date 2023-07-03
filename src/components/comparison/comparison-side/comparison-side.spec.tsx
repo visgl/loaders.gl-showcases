@@ -17,7 +17,7 @@ import { ComparisonSide } from "./comparison-side";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 import { setupStore } from "../../../redux/store";
-import { setDragMode } from "../../../redux/drag-mode-slice";
+import { setDragMode } from "../../../redux/slices/drag-mode-slice";
 
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");

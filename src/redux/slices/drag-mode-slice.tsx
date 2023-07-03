@@ -1,8 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DragMode } from "../types";
-import { RootState } from "./store";
+import { DragMode } from "../../types";
+import { RootState } from "../store";
 
+/** DragMode redux state for the decl.gl controller */
 interface DragModeState {
+  /** controller drag mode value https://deck.gl/docs/api-reference/core/controller#options */
   value: DragMode;
 }
 

@@ -46,8 +46,8 @@ import {
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/colors-by-attribute-slice";
-import { selectDragMode } from "../../redux/drag-mode-slice";
+import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
+import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {

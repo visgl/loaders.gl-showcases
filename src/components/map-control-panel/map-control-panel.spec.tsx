@@ -3,7 +3,7 @@ import { DragMode } from "../../types";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { MapControllPanel } from "./map-control-panel";
 import { setupStore } from "../../redux/store";
-import { setDragMode } from "../../redux/drag-mode-slice";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 describe("MapControllPanel", () => {
   let componentElement;

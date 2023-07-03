@@ -52,8 +52,8 @@ import { buildMinimapData } from "../../utils/debug/build-minimap-data";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
 import { setupStore } from "../../redux/store";
-import { setColorsByAttrubute } from "../../redux/colors-by-attribute-slice";
-import { setDragMode } from "../../redux/drag-mode-slice";
+import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */

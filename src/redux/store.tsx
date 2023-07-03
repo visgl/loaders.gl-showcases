@@ -3,9 +3,9 @@ import {
   combineReducers,
   configureStore,
 } from "@reduxjs/toolkit";
-import colorsByAttributeReducer from "./colors-by-attribute-slice";
-import flattenedSublayersSliceReducer from "./flattened-sublayers-slice";
-import dragModeSliceReducer from "./drag-mode-slice";
+import colorsByAttributeReducer from "./slices/colors-by-attribute-slice";
+import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
+import dragModeSliceReducer from "./slices/drag-mode-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({

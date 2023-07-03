@@ -6,7 +6,7 @@ import { AttributeStats } from "./attribute-stats";
 import { load } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
 import { setupStore } from "../../../redux/store";
-import { setColorsByAttrubute } from "../../../redux/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../../redux/slices/colors-by-attribute-slice";
 
 jest.mock("@loaders.gl/core");
 
@@ -132,7 +132,9 @@ describe("AttributeStats", () => {
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
     // Try to get already cached data
     act(() => {
@@ -192,14 +194,16 @@ describe("AttributeStats", () => {
   it("Should render colorize block", async () => {
     act(() => {
       const store = setupStore();
-      store.dispatch(setColorsByAttrubute({
-        attributeName: "HEIGHTROOF",
-        minValue: 0,
-        maxValue: 100,
-        minColor: [146, 146, 252, 255],
-        maxColor: [44, 44, 175, 255],
-        mode: "replace",
-      }));
+      store.dispatch(
+        setColorsByAttrubute({
+          attributeName: "HEIGHTROOF",
+          minValue: 0,
+          maxValue: 100,
+          minColor: [146, 146, 252, 255],
+          maxColor: [44, 44, 175, 255],
+          mode: "replace",
+        })
+      );
       renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
@@ -240,7 +244,9 @@ describe("AttributeStats", () => {
     await sleep(100);
     expect(screen.queryByTestId("colorsByAttributeFadeContainer")).toBeNull();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
     expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",
@@ -254,14 +260,16 @@ describe("AttributeStats", () => {
 
   it("Should render switch 'Colorize By Attribute' off", async () => {
     const store = setupStore();
-    store.dispatch(setColorsByAttrubute({
-      attributeName: "HEIGHTROOF",
-      minValue: 0,
-      maxValue: 100,
-      minColor: [146, 146, 252, 255],
-      maxColor: [44, 44, 175, 255],
-      mode: "replace",
-    }));
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "replace",
+      })
+    );
     act(() => {
       renderWithThemeProviders(
         <AttributeStats
@@ -282,21 +290,25 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
     expect(store.getState().colorsByAttribute.value).toEqual(null);
   });
 
   it("Should render switch 'Multiply Colors' on", async () => {
     const store = setupStore();
-    store.dispatch(setColorsByAttrubute({
-      attributeName: "HEIGHTROOF",
-      minValue: 0,
-      maxValue: 100,
-      minColor: [146, 146, 252, 255],
-      maxColor: [44, 44, 175, 255],
-      mode: "replace",
-    }));
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "replace",
+      })
+    );
     act(() => {
       renderWithThemeProviders(
         <AttributeStats
@@ -313,9 +325,13 @@ describe("AttributeStats", () => {
       );
     });
     await sleep(100);
-    
-    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
-    
+
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttributeMode")).getByText(
+        "ToggleSwitch"
+      )
+    );
+
     expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
@@ -328,14 +344,16 @@ describe("AttributeStats", () => {
 
   it("Should render switch 'Multiply Colors' off", async () => {
     const store = setupStore();
-    store.dispatch(setColorsByAttrubute({
-      attributeName: "HEIGHTROOF",
-      minValue: 0,
-      maxValue: 100,
-      minColor: [146, 146, 252, 255],
-      maxColor: [44, 44, 175, 255],
-      mode: "multiply",
-    }));
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "multiply",
+      })
+    );
     act(() => {
       renderWithThemeProviders(
         <AttributeStats
@@ -356,7 +374,11 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttributeMode")).getByText(
+        "ToggleSwitch"
+      )
+    );
 
     expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",

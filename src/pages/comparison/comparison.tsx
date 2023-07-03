@@ -34,7 +34,7 @@ import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
 import { useAppDispatch } from "../../redux/hooks";
-import { setDragMode } from "../../redux/drag-mode-slice";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;

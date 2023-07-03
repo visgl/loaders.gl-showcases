@@ -29,7 +29,7 @@ import {
   Bookmark,
   DragMode,
   PageId,
-  tilesetsData,
+  TilesetMetadata,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -60,14 +60,13 @@ import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import {
   getFlattenedSublayers,
-  selectLayerCounter,
   selectLayers,
   selectSublayers,
   setFlattenedSublayers,
   updateLayerVisibility,
-} from "../../redux/flattened-sublayers-slice";
+} from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { setDragMode } from "../../redux/drag-mode-slice";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -114,9 +113,6 @@ export const ViewerApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(
-    useAppSelector(selectLayerCounter)
-  );
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
@@ -161,14 +157,13 @@ export const ViewerApp = () => {
   }, [loadedTilesets]);
 
   useEffect(() => {
-    fetchSublayersCounter.current++;
     if (!activeLayers.length) {
       dispatch(setFlattenedSublayers([]));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    const tilesetsData: tilesetsData[] = [];
+    const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -186,7 +181,6 @@ export const ViewerApp = () => {
     dispatch(
       getFlattenedSublayers({
         tilesetsData,
-        currentLayer: fetchSublayersCounter.current,
         buildingExplorerOpened,
       })
     );

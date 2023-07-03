@@ -1,9 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ColorsByAttribute } from "../types";
-import { RootState } from "./store";
+import { ColorsByAttribute } from "../../types";
+import { RootState } from "../store";
 
 // Define a type for the slice state
 interface ColorsByAttributeState {
+  /** Values of color properties responsible for colorizig by attributes */
   value: ColorsByAttribute | null;
 }
 

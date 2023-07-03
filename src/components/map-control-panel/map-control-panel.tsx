@@ -22,7 +22,10 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectDragMode, setDragMode } from "../../redux/drag-mode-slice";
+import {
+  selectDragMode,
+  setDragMode,
+} from "../../redux/slices/drag-mode-slice";
 
 const Container = styled.div<LayoutProps & { bottom?: number; right?: number }>`
   position: absolute;
