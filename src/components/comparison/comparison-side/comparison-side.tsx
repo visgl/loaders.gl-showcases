@@ -16,7 +16,6 @@ import {
   Sublayer,
   ViewStateSet,
   CompareButtonMode,
-  DragMode,
   StatsMap,
   TilesetType,
   LayerViewState,
@@ -78,7 +77,6 @@ type ComparisonSideProps = {
   activeLayersIds: string[];
   preventTransitions: boolean;
   compareButtonMode: CompareButtonMode;
-  dragMode: DragMode;
   loadingTime: number;
   loadTileset?: boolean;
   hasBeenCompared: boolean;
@@ -113,7 +111,6 @@ export const ComparisonSide = ({
   activeLayersIds,
   preventTransitions,
   compareButtonMode,
-  dragMode,
   loadingTime,
   loadTileset = true,
   showBookmarks,
@@ -509,7 +506,6 @@ export const ComparisonSide = ({
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
-        dragMode={dragMode}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
         loadNumber={loadNumber}

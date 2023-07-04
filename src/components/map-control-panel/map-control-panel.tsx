@@ -1,5 +1,10 @@
 import styled, { useTheme } from "styled-components";
-import { CollapseDirection, ExpandState, DragMode, LayoutProps } from "../../types";
+import {
+  CollapseDirection,
+  ExpandState,
+  DragMode,
+  LayoutProps,
+} from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -12,9 +17,17 @@ import {
   color_canvas_primary_inverted,
 } from "../../constants/colors";
 import { useExpand } from "../../utils/hooks/use-expand";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  selectDragMode,
+  setDragMode,
+} from "../../redux/slices/drag-mode-slice";
 
-const Container = styled.div<LayoutProps & {bottom?: number; right?: number}>`
+const Container = styled.div<LayoutProps & { bottom?: number; right?: number }>`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -24,17 +37,19 @@ const Container = styled.div<LayoutProps & {bottom?: number; right?: number}>`
   padding: 8px;
   gap: 10px;
 
-  right: ${({right}) => getCurrentLayoutProperty({
-    desktop: `${(right || 24)}px`,
-    tablet: `${(right || 24)}px`,
-    mobile: `${(right || 8)}px`,
-  })};
+  right: ${({ right }) =>
+    getCurrentLayoutProperty({
+      desktop: `${right || 24}px`,
+      tablet: `${right || 24}px`,
+      mobile: `${right || 8}px`,
+    })};
 
-  bottom: ${({bottom}) => getCurrentLayoutProperty({
-    desktop: `${(bottom || 24)}px`,
-    tablet: `${(bottom || 80)}px`,
-    mobile: `${(bottom || 80)}px`,
-  })};
+  bottom: ${({ bottom }) =>
+    getCurrentLayoutProperty({
+      desktop: `${bottom || 24}px`,
+      tablet: `${bottom || 80}px`,
+      mobile: `${bottom || 80}px`,
+    })};
 `;
 
 const Button = styled.button<{ active?: boolean }>`
@@ -63,13 +78,11 @@ const Button = styled.button<{ active?: boolean }>`
 
 type MapControlPanelProps = {
   bearing: number;
-  dragMode: DragMode;
   bottom?: number;
   right?: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
-  onDragModeToggle: () => void;
 };
 
 type CompassProps = {
@@ -88,21 +101,34 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
 
 export const MapControllPanel = ({
   bearing,
-  dragMode,
   bottom,
   right,
   onZoomIn,
   onZoomOut,
   onCompassClick,
-  onDragModeToggle,
 }: MapControlPanelProps) => {
   const [expandState, expand] = useExpand(ExpandState.expanded);
+  const dragMode = useAppSelector(selectDragMode);
+  const dispatch = useAppDispatch();
 
   const theme = useTheme();
   const layout = useAppLayout();
 
+  const handleDragModeToggle = () => {
+    if (dragMode === DragMode.pan) {
+      dispatch(setDragMode(DragMode.rotate));
+      return;
+    }
+    dispatch(setDragMode(DragMode.pan));
+  };
+
   return (
-    <Container id="map-control-panel" layout={layout} bottom={bottom} right={right}>
+    <Container
+      id="map-control-panel"
+      layout={layout}
+      bottom={bottom}
+      right={right}
+    >
       <ExpandIcon
         expandState={expandState}
         collapseDirection={CollapseDirection.bottom}
@@ -118,12 +144,15 @@ export const MapControllPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          <Button active={dragMode === DragMode.pan} onClick={onDragModeToggle}>
+          <Button
+            active={dragMode === DragMode.pan}
+            onClick={handleDragModeToggle}
+          >
             <PanIcon />
           </Button>
           <Button
             active={dragMode === DragMode.rotate}
-            onClick={onDragModeToggle}
+            onClick={handleDragModeToggle}
           >
             <OrbitIcon />
           </Button>

@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
-import { load } from "@loaders.gl/core";
 import { lumaStats } from "@luma.gl/core";
-import {
-  I3SBuildingSceneLayerLoader,
-  loadFeatureAttributes,
-  StatisticsInfo,
-} from "@loaders.gl/i3s";
+import { loadFeatureAttributes, StatisticsInfo } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
@@ -20,23 +15,21 @@ import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper"
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
-import { buildSublayersTree } from "../../utils/sublayers";
 import {
   FeatureAttributes,
   Sublayer,
   LayerExample,
-  ColorsByAttribute,
   TilesetType,
   ActiveButton,
   LayerViewState,
   ViewStateSet,
   ListItemType,
   BaseMap,
-  BuildingSceneSublayerExtended,
   Layout,
   Bookmark,
   DragMode,
   PageId,
+  TilesetMetadata,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -65,6 +58,15 @@ import { MapControllPanel } from "../../components/map-control-panel/map-control
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
+import {
+  getFlattenedSublayers,
+  selectLayers,
+  selectSublayers,
+  setFlattenedSublayers,
+  updateLayerVisibility,
+} from "../../redux/slices/flattened-sublayers-slice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -87,8 +89,6 @@ export const ViewerApp = () => {
 
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState<FeatureAttributes | null>(null);
-  const [colorsByAttribute, setColorsByAttribute] =
-    useState<ColorsByAttribute | null>(null);
   const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
     StatisticsInfo[] | null
   >(null);
@@ -96,9 +96,8 @@ export const ViewerApp = () => {
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] =
     useState<string>("");
   const [isAttributesLoading, setAttributesLoading] = useState(false);
-  const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayerExtended[]
-  >([]);
+  const flattenedSublayers = useAppSelector(selectLayers);
+  const bslSublayers = useAppSelector(selectSublayers);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -114,14 +113,13 @@ export const ViewerApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(0);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -147,6 +145,7 @@ export const ViewerApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
+    dispatch(setDragMode(DragMode.pan));
   }, []);
 
   /**
@@ -158,44 +157,13 @@ export const ViewerApp = () => {
   }, [loadedTilesets]);
 
   useEffect(() => {
-    fetchSublayersCounter.current++;
     if (!activeLayers.length) {
-      setFlattenedSublayers([]);
+      dispatch(setFlattenedSublayers([]));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    async function fetchFlattenedSublayers(
-      tilesetsData: {
-        id: string;
-        url: string;
-        token: string;
-        hasChildren: boolean;
-      }[],
-      layerUpdateNumber: number
-    ) {
-      const promises: Promise<any>[] = [];
-
-      for (const data of tilesetsData) {
-        if (!data.hasChildren) {
-          promises.push(getFlattenedSublayers(data));
-        }
-      }
-
-      Promise.all(promises).then((results) => {
-        if (layerUpdateNumber === fetchSublayersCounter.current) {
-          setFlattenedSublayers(results.flat());
-        }
-      });
-    }
-
-    const tilesetsData: {
-      id: string;
-      url: string;
-      token: string;
-      hasChildren: boolean;
-      type?: TilesetType;
-    }[] = [];
+    const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -210,54 +178,26 @@ export const ViewerApp = () => {
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
-    setSublayers([]);
+    dispatch(
+      getFlattenedSublayers({
+        tilesetsData,
+        buildingExplorerOpened,
+      })
+    );
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
   }, [activeLayers, buildingExplorerOpened]);
 
-  /**
-   * Tries to get Building Scene Layer sublayer urls if exists.
-   * @param {string} tilesetUrl
-   * @returns {string[]} Sublayer urls or tileset url.
-   */
-  const getFlattenedSublayers = async (tilesetData: {
-    id: string;
-    url: string;
-    token: string;
-    type?: TilesetType;
-  }) => {
-    try {
-      const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
-      const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-      const childSublayers = sublayersTree?.sublayers || [];
+  useEffect(() => {
+    if (bslSublayers?.length > 0) {
       setSublayers(
-        childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+        bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
       );
-      const overviewLayer = tileset?.sublayers.find(
-        (sublayer) => sublayer.name === "Overview"
-      );
-      const sublayers = tileset?.sublayers
-        .filter((sublayer) => sublayer.name !== "Overview")
-        .map((item) => ({
-          ...item,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        }));
-      return buildingExplorerOpened ? sublayers : overviewLayer;
-    } catch (e) {
-      return [
-        {
-          id: tilesetData.id,
-          url: tilesetData.url,
-          visibility: true,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        },
-      ];
+    } else {
+      setSublayers([]);
     }
-  };
+  }, [bslSublayers]);
 
   const onTileLoad = () => {
     setTimeout(() => {
@@ -285,10 +225,10 @@ export const ViewerApp = () => {
     }
   };
 
-  const handleClosePanel = () => {
+  const handleClosePanel = useCallback(() => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
-  };
+  }, []);
 
   const handleClick = async (info) => {
     if (!info.object || info.index < 0 || !info.layer) {
@@ -340,8 +280,6 @@ export const ViewerApp = () => {
         attributes={selectedFeatureAttributes}
         statisticsInfo={tilesetStatisticsInfo}
         tilesetBasePath={selectedTilesetBasePath}
-        colorsByAttribute={colorsByAttribute}
-        onColorsByAttributeChange={setColorsByAttribute}
       />
     </AttributesSidePanelWrapper>
   );
@@ -422,12 +360,16 @@ export const ViewerApp = () => {
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
-      const flattenedSublayer = flattenedSublayers.find(
+      const index = flattenedSublayers.findIndex(
         (fSublayer) => fSublayer.id === sublayer.id
       );
-      if (flattenedSublayer) {
-        flattenedSublayer.visibility = sublayer.visibility;
-        setFlattenedSublayers([...flattenedSublayers]);
+      if (index >= 0 && flattenedSublayers[index]) {
+        dispatch(
+          updateLayerVisibility({
+            index: index,
+            visibility: sublayer.visibility,
+          })
+        );
       }
     }
   };
@@ -610,15 +552,6 @@ export const ViewerApp = () => {
     }));
   }, []);
 
-  const toggleDragMode = useCallback(() => {
-    setDragMode((prev) => {
-      if (prev === DragMode.pan) {
-        return DragMode.rotate;
-      }
-      return DragMode.pan;
-    });
-  }, []);
-
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
@@ -638,7 +571,6 @@ export const ViewerApp = () => {
         loadedTilesets={loadedTilesets}
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
-        colorsByAttribute={colorsByAttribute}
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
@@ -647,7 +579,6 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
-        dragMode={dragMode}
       />
 
       {layout !== Layout.Mobile && (
@@ -734,11 +665,9 @@ export const ViewerApp = () => {
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}
-        dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
       />
     </MapArea>
   );
