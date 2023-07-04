@@ -158,7 +158,7 @@ export const ViewerApp = () => {
 
   useEffect(() => {
     if (!activeLayers.length) {
-      dispatch(setFlattenedSublayers([]));
+      dispatch(setFlattenedSublayers({ layers: [] }));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
