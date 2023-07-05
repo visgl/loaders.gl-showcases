@@ -78,6 +78,45 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
     expect(tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source.image).toStrictEqual('Test texture');
   });
 
+  test("Should skip adding original texture to userData if already exist and apply debug texture", () => {
+    const tile = {
+      userData: {
+        originalTexture: {
+          material: {
+            pbrMetallicRoughness: {
+              baseColorTexture: {
+                texture: {
+                  source: {
+                    image: "Testing Image",
+                  },
+                },
+              },
+            },
+            texture: "Test texture",
+          },
+        },
+      },
+      content: {
+        material: {
+          pbrMetallicRoughness: {
+            baseColorTexture: {
+              texture: {
+                source: {
+                  image: "Testing Image",
+                },
+              },
+            },
+          },
+          texture: "Test texture",
+        },
+      },
+    };
+    const uvDebugTexture = "Test texture";
+    selectDebugTextureForTile(tile, uvDebugTexture);
+    expect(tile.userData.originalTexture.material.pbrMetallicRoughness.baseColorTexture.texture.source.image).toStrictEqual("Testing Image");
+    expect(tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source.image).toStrictEqual("Test texture");
+  });
+
   test("Should add original texture to userData and apply debug texture if no material", () => {
     const tile = {
       userData: {
