@@ -8,7 +8,6 @@ import {
   ActiveButton,
   BaseMap,
   ViewStateSet,
-  BuildingSceneSublayerExtended,
   LayerViewState,
   ListItemType,
   BoundingVolumeType,
@@ -21,6 +20,7 @@ import {
   MinimapPosition,
   TileSelectedColor,
   PageId,
+  TilesetMetadata,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -28,8 +28,6 @@ import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
 
-import { load } from "@loaders.gl/core";
-import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
 
@@ -46,7 +44,6 @@ import ColorMap, {
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
-import { buildSublayersTree } from "../../utils/sublayers";
 import { validateTile } from "../../utils/debug/tile-debug";
 import {
   BottomToolsPanelWrapper,
@@ -76,6 +73,15 @@ import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
+import {
+  getFlattenedSublayers,
+  selectLayers,
+  selectSublayers,
+  setFlattenedSublayers,
+  updateLayerVisibility,
+} from "../../redux/slices/flattened-sublayers-slice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -145,9 +151,8 @@ export const DebugApp = () => {
   const selectedTileRef = useRef<Tile3D | null>(selectedTile);
   const [coloredTilesMap, setColoredTilesMap] = useState({});
   const [warnings, setWarnings] = useState<TileWarning[]>([]);
-  const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayerExtended[]
-  >([]);
+  const flattenedSublayers = useAppSelector(selectLayers);
+  const bslSublayers = useAppSelector(selectSublayers);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -163,15 +168,14 @@ export const DebugApp = () => {
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
-  const fetchSublayersCounter = useRef<number>(0);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
-  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
 
   const [, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -204,6 +208,7 @@ export const DebugApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
+    dispatch(setDragMode(DragMode.pan));
   }, []);
 
   /**
@@ -215,44 +220,13 @@ export const DebugApp = () => {
   }, [loadedTilesets]);
 
   useEffect(() => {
-    fetchSublayersCounter.current++;
     if (!activeLayers.length) {
-      setFlattenedSublayers([]);
+      dispatch(setFlattenedSublayers([]));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });
 
-    async function fetchFlattenedSublayers(
-      tilesetsData: {
-        id: string;
-        url: string;
-        token: string;
-        hasChildren: boolean;
-      }[],
-      layerUpdateNumber: number
-    ) {
-      const promises: Promise<any>[] = [];
-
-      for (const data of tilesetsData) {
-        if (!data.hasChildren) {
-          promises.push(getFlattenedSublayers(data));
-        }
-      }
-
-      Promise.all(promises).then((results) => {
-        if (layerUpdateNumber === fetchSublayersCounter.current) {
-          setFlattenedSublayers(results.flat());
-        }
-      });
-    }
-
-    const tilesetsData: {
-      id: string;
-      url: string;
-      token: string;
-      hasChildren: boolean;
-      type?: TilesetType;
-    }[] = [];
+    const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -267,8 +241,12 @@ export const DebugApp = () => {
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
-    setSublayers([]);
+    dispatch(
+      getFlattenedSublayers({
+        tilesetsData,
+        buildingExplorerOpened,
+      })
+    );
     handleClearWarnings();
     setNormalsDebugData(null);
     setLoadedTilesets([]);
@@ -277,6 +255,16 @@ export const DebugApp = () => {
     setSelectedTile(null);
     setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
   }, [activeLayers, buildingExplorerOpened]);
+
+  useEffect(() => {
+    if (bslSublayers?.length > 0) {
+      setSublayers(
+        bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+      );
+    } else {
+      setSublayers([]);
+    }
+  }, [bslSublayers]);
 
   useEffect(() => {
     if (debugOptions.tileColorMode !== TileColoredBy.custom) {
@@ -288,48 +276,6 @@ export const DebugApp = () => {
   useEffect(() => {
     selectedTileRef.current = selectedTile;
   }, [selectedTile]);
-
-  /**
-   * Tries to get Building Scene Layer sublayer urls if exists.
-   * @param {string} tilesetUrl
-   * @returns {string[]} Sublayer urls or tileset url.
-   */
-  const getFlattenedSublayers = async (tilesetData: {
-    id: string;
-    url: string;
-    token: string;
-    type?: TilesetType;
-  }) => {
-    try {
-      const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
-      const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-      const childSublayers = sublayersTree?.sublayers || [];
-      setSublayers(
-        childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
-      );
-      const overviewLayer = tileset?.sublayers.find(
-        (sublayer) => sublayer.name === "Overview"
-      );
-      const sublayers = tileset?.sublayers
-        .filter((sublayer) => sublayer.name !== "Overview")
-        .map((item) => ({
-          ...item,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        }));
-      return buildingExplorerOpened ? sublayers : overviewLayer;
-    } catch (e) {
-      return [
-        {
-          id: tilesetData.id,
-          url: tilesetData.url,
-          visibility: true,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        },
-      ];
-    }
-  };
 
   const onTileLoad = (tile) => {
     setTimeout(() => {
@@ -571,12 +517,16 @@ export const DebugApp = () => {
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
-      const flattenedSublayer = flattenedSublayers.find(
+      const index = flattenedSublayers.findIndex(
         (fSublayer) => fSublayer.id === sublayer.id
       );
-      if (flattenedSublayer) {
-        flattenedSublayer.visibility = sublayer.visibility;
-        setFlattenedSublayers([...flattenedSublayers]);
+      if (index >= 0 && flattenedSublayers[index]) {
+        dispatch(
+          updateLayerVisibility({
+            index: index,
+            visibility: sublayer.visibility,
+          })
+        );
       }
     }
   };
@@ -793,15 +743,6 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const toggleDragMode = useCallback(() => {
-    setDragMode((prev) => {
-      if (prev === DragMode.pan) {
-        return DragMode.rotate;
-      }
-      return DragMode.pan;
-    });
-  }, []);
-
   const {
     minimap,
     minimapViewport,
@@ -857,7 +798,6 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
-        dragMode={dragMode}
       />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
@@ -966,11 +906,9 @@ export const DebugApp = () => {
       )}
       <MapControllPanel
         bearing={viewState.main.bearing}
-        dragMode={dragMode}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        onDragModeToggle={toggleDragMode}
       />
     </MapArea>
   );

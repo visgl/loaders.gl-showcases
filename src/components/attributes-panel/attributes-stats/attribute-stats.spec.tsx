@@ -1,10 +1,12 @@
 import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../../utils/testing-utils/render-with-theme";
 import { AttributeStats } from "./attribute-stats";
 
 import { load } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
+import { setupStore } from "../../../redux/store";
+import { setColorsByAttrubute } from "../../../redux/slices/colors-by-attribute-slice";
 
 jest.mock("@loaders.gl/core");
 
@@ -61,8 +63,6 @@ jest.mock("../../loading-spinner/loading-spinner", () => ({
 }));
 
 describe("AttributeStats", () => {
-  const onColorsByAttributeChange = jest.fn();
-
   beforeAll(() => {
     loadMock
       .mockImplementationOnce(
@@ -85,7 +85,8 @@ describe("AttributeStats", () => {
 
   it("Should render Attribute Stats", async () => {
     act(() => {
-      renderWithTheme(
+      const store = setupStore();
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"NAME"}
           statisticsInfo={{
@@ -95,9 +96,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={null}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
 
@@ -132,11 +132,14 @@ describe("AttributeStats", () => {
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
     // Try to get already cached data
     act(() => {
-      renderWithTheme(
+      const store = setupStore();
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"NAME"}
           statisticsInfo={{
@@ -146,9 +149,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={null}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
 
@@ -157,7 +159,8 @@ describe("AttributeStats", () => {
 
   it("Should no render Attribute Stats if loading statistics error", async () => {
     act(() => {
-      renderWithTheme(
+      const store = setupStore();
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"NAME"}
           statisticsInfo={{
@@ -167,9 +170,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-error-path"}
-          colorsByAttribute={null}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
 
@@ -191,7 +193,18 @@ describe("AttributeStats", () => {
 
   it("Should render colorize block", async () => {
     act(() => {
-      renderWithTheme(
+      const store = setupStore();
+      store.dispatch(
+        setColorsByAttrubute({
+          attributeName: "HEIGHTROOF",
+          minValue: 0,
+          maxValue: 100,
+          minColor: [146, 146, 252, 255],
+          maxColor: [44, 44, 175, 255],
+          mode: "replace",
+        })
+      );
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
           statisticsInfo={{
@@ -201,16 +214,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={{
-            attributeName: "HEIGHTROOF",
-            minValue: 0,
-            maxValue: 100,
-            minColor: [0, 0, 0, 0],
-            maxColor: [255, 255, 255, 255],
-            mode: "replace",
-          }}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
     await sleep(100);
@@ -220,8 +225,9 @@ describe("AttributeStats", () => {
   });
 
   it("Should render switch 'Colorize By Attribute' on", async () => {
+    const store = setupStore();
     act(() => {
-      renderWithTheme(
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
           statisticsInfo={{
@@ -231,24 +237,18 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={{
-            attributeName: "OLD_ATTRIBUTE",
-            minValue: 0,
-            maxValue: 100,
-            minColor: [0, 0, 0, 0],
-            maxColor: [255, 255, 255, 255],
-            mode: "replace",
-          }}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
     await sleep(100);
     expect(screen.queryByTestId("colorsByAttributeFadeContainer")).toBeNull();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
-    expect(onColorsByAttributeChange).toHaveBeenCalledWith({
+    expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -259,8 +259,19 @@ describe("AttributeStats", () => {
   });
 
   it("Should render switch 'Colorize By Attribute' off", async () => {
+    const store = setupStore();
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "replace",
+      })
+    );
     act(() => {
-      renderWithTheme(
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
           statisticsInfo={{
@@ -270,16 +281,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={{
-            attributeName: "HEIGHTROOF",
-            minValue: 0,
-            maxValue: 100,
-            minColor: [0, 0, 0, 0],
-            maxColor: [255, 255, 255, 255],
-            mode: "replace",
-          }}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
     await sleep(100);
@@ -287,14 +290,27 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
+    );
 
-    expect(onColorsByAttributeChange).toHaveBeenCalledWith(null);
+    expect(store.getState().colorsByAttribute.value).toEqual(null);
   });
 
   it("Should render switch 'Multiply Colors' on", async () => {
+    const store = setupStore();
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "replace",
+      })
+    );
     act(() => {
-      renderWithTheme(
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
           statisticsInfo={{
@@ -304,23 +320,19 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={{
-            attributeName: "HEIGHTROOF",
-            minValue: 0,
-            maxValue: 100,
-            minColor: [146, 146, 252, 255],
-            maxColor: [44, 44, 175, 255],
-            mode: "replace",
-          }}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
     await sleep(100);
-    
-    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
-    
-    expect(onColorsByAttributeChange).toHaveBeenCalledWith({
+
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttributeMode")).getByText(
+        "ToggleSwitch"
+      )
+    );
+
+    expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -331,8 +343,19 @@ describe("AttributeStats", () => {
   });
 
   it("Should render switch 'Multiply Colors' off", async () => {
+    const store = setupStore();
+    store.dispatch(
+      setColorsByAttrubute({
+        attributeName: "HEIGHTROOF",
+        minValue: 0,
+        maxValue: 100,
+        minColor: [146, 146, 252, 255],
+        maxColor: [44, 44, 175, 255],
+        mode: "multiply",
+      })
+    );
     act(() => {
-      renderWithTheme(
+      renderWithThemeProviders(
         <AttributeStats
           attributeName={"HEIGHTROOF"}
           statisticsInfo={{
@@ -342,16 +365,8 @@ describe("AttributeStats", () => {
           }}
           tilesetName={"New York"}
           tilesetBasePath={"https://test-base-path"}
-          colorsByAttribute={{
-            attributeName: "HEIGHTROOF",
-            minValue: 0,
-            maxValue: 100,
-            minColor: [146, 146, 252, 255],
-            maxColor: [44, 44, 175, 255],
-            mode: "multiply",
-          }}
-          onColorsByAttributeChange={onColorsByAttributeChange}
-        />
+        />,
+        store
       );
     });
     await sleep(100);
@@ -359,9 +374,13 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(within(screen.getByRole("colorizeByAttributeMode")).getByText("ToggleSwitch"));
+    userEvent.click(
+      within(screen.getByRole("colorizeByAttributeMode")).getByText(
+        "ToggleSwitch"
+      )
+    );
 
-    expect(onColorsByAttributeChange).toHaveBeenCalledWith({
+    expect(store.getState().colorsByAttribute.value).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,

@@ -21,8 +21,6 @@ import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
   ViewStateSet,
-  DragMode,
-  ColorsByAttribute,
   LoadOptions,
   TilesetType,
   BoundingVolumeType,
@@ -46,6 +44,10 @@ import {
   getNormalTargetPosition,
 } from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
+
+import { useAppSelector } from "../../redux/hooks";
+import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
+import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -100,8 +102,6 @@ type DeckGlI3sProps = {
   tileColorMode?: TileColoredBy;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
-  /** Property for I3SLoaderOptions. Properties for attribute driven visualization */
-  colorsByAttribute?: ColorsByAttribute | null;
   /** Bounding volume type: OBB of MBS. Set to "" to hide bounding volumes visualisation */
   boundingVolumeType?: BoundingVolumeType | null;
   /** Bounding volume color mode */
@@ -152,8 +152,6 @@ type DeckGlI3sProps = {
   useDracoGeometry?: boolean;
   /** I3S option to choose type of textures */
   useCompressedTextures?: boolean;
-  /** controller drag mode https://deck.gl/docs/api-reference/core/controller#options */
-  dragMode?: DragMode;
   /** enables or disables viewport interactivity */
   disableController?: boolean;
   /** allows update a layer */
@@ -187,7 +185,6 @@ export const DeckGlWrapper = ({
   mapStyle,
   tileColorMode,
   coloredTilesMap,
-  colorsByAttribute,
   boundingVolumeType,
   boundingVolumeColorMode,
   pickable = false,
@@ -210,7 +207,6 @@ export const DeckGlWrapper = ({
   useDracoGeometry = true,
   useCompressedTextures = true,
   disableController = false,
-  dragMode = DragMode.pan,
   loadNumber = 0,
   preventTransitions = false,
   minimapPosition,
@@ -224,7 +220,7 @@ export const DeckGlWrapper = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
-
+  const dragMode = useAppSelector(selectDragMode);
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -254,7 +250,7 @@ export const DeckGlWrapper = ({
             },
       }),
     ],
-    [disableController]
+    [disableController, dragMode]
   );
   const [viewState, setViewState] = useState<ViewStateSet>({
     main: INITIAL_VIEW_STATE,
@@ -276,6 +272,8 @@ export const DeckGlWrapper = ({
   showDebugTextureRef.current = showDebugTexture;
 
   let currentViewport: WebMercatorViewport = null;
+
+  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
 
   /** Load debug texture if necessary */
   useEffect(() => {
@@ -624,7 +622,7 @@ export const DeckGlWrapper = ({
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
         useDracoGeometry,
         useCompressedTextures,
-        colorsByAttribute,
+        colorsByAttribute: colorsByAttribute,
       },
     };
     if (layer.token) {

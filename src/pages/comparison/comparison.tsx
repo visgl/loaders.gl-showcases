@@ -33,6 +33,8 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
+import { useAppDispatch } from "../../redux/hooks";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -89,7 +91,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     new ComparisonLoadManager()
   );
 
-  const [dragMode, setDragMode] = useState<DragMode>(DragMode.pan);
   const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
   const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
@@ -130,6 +131,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(false);
   const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
     useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   const layout = useAppLayout();
 
@@ -138,6 +140,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayersRightSide([]);
     setDisableButton([true, true]);
     setBookmarks([]);
+    dispatch(setDragMode(DragMode.pan));
   }, [mode]);
 
   useEffect(() => {
@@ -264,15 +267,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         transitionDuration: 1000,
       },
     }));
-  }, []);
-
-  const toggleDragMode = useCallback(() => {
-    setDragMode((prev) => {
-      if (prev === DragMode.pan) {
-        return DragMode.rotate;
-      }
-      return DragMode.pan;
-    });
   }, []);
 
   const toggleCompareButtonMode = () => {
@@ -463,7 +457,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
-        dragMode={dragMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
         hasBeenCompared={hasBeenCompared}
         showLayerOptions
@@ -533,7 +526,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         selectedBaseMap={selectedBaseMap}
         baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
-        dragMode={dragMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
         hasBeenCompared={hasBeenCompared}
@@ -575,11 +567,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       {compareButtonMode === CompareButtonMode.Start && (
         <MapControllPanel
           bearing={viewState.main.bearing}
-          dragMode={dragMode}
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
-          onDragModeToggle={toggleDragMode}
           bottom={layout === Layout.Mobile ? 8 : 16}
         />
       )}
