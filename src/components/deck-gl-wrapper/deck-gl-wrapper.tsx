@@ -2,8 +2,6 @@ import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import { MapController } from "@deck.gl/core";
-import { load } from "@loaders.gl/core";
-import { ImageLoader } from "@loaders.gl/images";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
@@ -45,9 +43,13 @@ import {
 } from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
-import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
+import {
+  fetchUVDebugTexture,
+  selectUVDebugTexture,
+} from "../../redux/slices/uv-debug-texture-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -76,8 +78,7 @@ const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
 const TERRAIN_LAYER_MAX_ZOOM = 15;
 
 const DEFAULT_BG_OPACITY = 100;
-const UV_DEBUG_TEXTURE_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg";
+
 const NORMALS_COLOR = [255, 0, 0];
 
 const colorMap = new ColorMap();
@@ -263,8 +264,8 @@ export const DeckGlWrapper = ({
     },
   });
   const [terrainTiles, setTerrainTiles] = useState({});
-  const [uvDebugTexture, setUvDebugTexture] = useState(null);
-  const uvDebugTextureRef = useRef(null);
+  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
+  const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
   uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
 
@@ -274,15 +275,12 @@ export const DeckGlWrapper = ({
   let currentViewport: WebMercatorViewport = null;
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+  const dispatch = useAppDispatch();
 
   /** Load debug texture if necessary */
   useEffect(() => {
-    async function fetchUVDebugTexture() {
-      const image = await load(UV_DEBUG_TEXTURE_URL, ImageLoader);
-      setUvDebugTexture(image);
-    }
     if (loadDebugTextureImage && !uvDebugTexture) {
-      fetchUVDebugTexture();
+      dispatch(fetchUVDebugTexture());
     }
   }, [loadDebugTextureImage]);
 
