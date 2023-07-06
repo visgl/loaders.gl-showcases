@@ -24,7 +24,7 @@ export function selectOriginalTextureForTileset() {
 
 export function selectDebugTextureForTile(tile, uvDebugTexture) {
   tiles[tile.id] = tile;
-  if (!uvDebugTexture || tile.userData.originalTexture) {
+  if (!uvDebugTexture) {
     return;
   }
   const { texture, material } = tile.content || {};
@@ -38,13 +38,17 @@ export function selectDebugTextureForTile(tile, uvDebugTexture) {
     ) {
       return;
     }
-    tile.userData.originalTexture =
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image;
+    if (!tile.userData.originalTexture) {
+      tile.userData.originalTexture =
+        material.pbrMetallicRoughness.baseColorTexture.texture.source.image;
+    }
     material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
       uvDebugTexture;
     tile.content.material = { ...tile.content.material };
   } else if (texture) {
-    tile.userData.originalTexture = texture;
+    if (!tile.userData.originalTexture) {
+      tile.userData.originalTexture = texture;
+    }
     tile.content.texture = uvDebugTexture;
   }
 }
