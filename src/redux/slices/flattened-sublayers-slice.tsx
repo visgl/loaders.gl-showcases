@@ -12,7 +12,7 @@ import { load } from "@loaders.gl/core";
 import { RootState } from "../store";
 
 // Define a type for the slice states
-type sublayersState = {
+type SublayersState = {
   /** Array of layers for the currently selected scene */
   layers: BuildingSceneSublayerExtended[];
   /** Counter of the currently selected layer  */
@@ -23,11 +23,11 @@ type sublayersState = {
 
 interface flattenedSublayersState {
   /** Single layer state for viewer and debug components */
-  single: sublayersState;
+  single: SublayersState;
   /** Left side layer state for comparison mode */
-  left: sublayersState;
+  left: SublayersState;
   /** Right side layer state for comparison mode */
-  right: sublayersState;
+  right: SublayersState;
 }
 
 const initialState: flattenedSublayersState = {
@@ -47,16 +47,8 @@ const flattenedSublayersSlice = createSlice({
         side?: ComparisonSideMode;
       }>
     ) => {
-      switch (action.payload.side) {
-        case ComparisonSideMode.left:
-          state.left.layers = action.payload.layers;
-          break;
-        case ComparisonSideMode.right:
-          state.right.layers = action.payload.layers;
-          break;
-        default:
-          state.single.layers = action.payload.layers;
-      }
+      state[action.payload.side || "single"].layers = action.payload.layers;
+      state[action.payload.side || "single"].layerCounter++;
     },
     updateLayerVisibility: (
       state: flattenedSublayersState,
@@ -66,23 +58,10 @@ const flattenedSublayersSlice = createSlice({
         side?: ComparisonSideMode;
       }>
     ) => {
-      let destLayer: BuildingSceneSublayerExtended | undefined = undefined;
-      switch (action.payload.side) {
-        case ComparisonSideMode.left:
-          if (action.payload.index in state.left.layers) {
-            destLayer = state.left.layers[action.payload.index];
-          }
-          break;
-        case ComparisonSideMode.right:
-          if (action.payload.index in state.right.layers) {
-            destLayer = state.right.layers[action.payload.index];
-          }
-          break;
-        default:
-          destLayer = state.single.layers[action.payload.index];
-      }
-      if (destLayer) {
-        destLayer.visibility = action.payload.visibility;
+      const side = action.payload.side || "single";
+      const layers = state[side].layers;
+      if (action.payload.index in layers) {
+        layers[action.payload.index].visibility = action.payload.visibility;
       }
     },
   },
@@ -90,38 +69,23 @@ const flattenedSublayersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFlattenedSublayers.pending, (state, action) => {
-        if (action.meta.arg.side === ComparisonSideMode.left) {
-          state.left.layerCounter += 1;
-        } else if (action.meta.arg.side === ComparisonSideMode.right) {
-          state.right.layerCounter += 1;
-        } else {
-          state.single.layerCounter += 1;
-        }
+        const side = action.meta.arg.side || "single";
+        state[side].layerCounter++;
       })
       .addCase(
         getFlattenedSublayers.fulfilled,
         (
           state: flattenedSublayersState,
           action: PayloadAction<{
-            sublayers: sublayersState;
+            sublayers: SublayersState;
             side?: ComparisonSideMode;
           }>
         ) => {
+          const side = action.payload.side || "single";
           if (
-            action.payload.side === ComparisonSideMode.left &&
-            action.payload.sublayers.layerCounter === state.left.layerCounter
+            action.payload.sublayers.layerCounter === state[side].layerCounter
           ) {
-            return { ...state, left: action.payload.sublayers };
-          } else if (
-            action.payload.side === ComparisonSideMode.right &&
-            action.payload.sublayers.layerCounter === state.right.layerCounter
-          ) {
-            return { ...state, right: action.payload.sublayers };
-          } else if (
-            !action.payload.side &&
-            action.payload.sublayers.layerCounter === state.single.layerCounter
-          ) {
-            return { ...state, single: action.payload.sublayers };
+            return { ...state, [side]: action.payload.sublayers };
           }
         }
       );
@@ -130,7 +94,7 @@ const flattenedSublayersSlice = createSlice({
 
 export const getFlattenedSublayers = createAsyncThunk<
   {
-    sublayers: sublayersState;
+    sublayers: SublayersState;
     side?: ComparisonSideMode;
   },
   {
