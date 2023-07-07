@@ -67,6 +67,7 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -145,6 +146,7 @@ export const ViewerApp = () => {
       setExamples((prev) => [...prev, newActiveLayer]);
     }
     setActiveLayers([newActiveLayer]);
+    dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
   }, []);
 
@@ -158,7 +160,7 @@ export const ViewerApp = () => {
 
   useEffect(() => {
     if (!activeLayers.length) {
-      dispatch(setFlattenedSublayers([]));
+      dispatch(setFlattenedSublayers({ layers: [] }));
       return;
     }
     setSearchParams({ tileset: activeLayers[0].id }, { replace: true });

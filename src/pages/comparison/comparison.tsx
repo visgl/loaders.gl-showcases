@@ -35,6 +35,7 @@ import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
 import { useAppDispatch } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -140,6 +141,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setLayersRightSide([]);
     setDisableButton([true, true]);
     setBookmarks([]);
+    dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
   }, [mode]);
 

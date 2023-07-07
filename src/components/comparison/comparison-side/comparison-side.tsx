@@ -2,8 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
 import { Stats } from "@probe.gl/stats";
-import { load } from "@loaders.gl/core";
-import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { lumaStats } from "@luma.gl/core";
 
 import {
@@ -20,8 +18,8 @@ import {
   TilesetType,
   LayerViewState,
   Bookmark,
-  BuildingSceneSublayerExtended,
   PageId,
+  TilesetMetadata,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -34,7 +32,6 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../../utils/hooks/layout";
-import { buildSublayersTree } from "../../../utils/sublayers";
 import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import {
   findExampleAndUpdateWithViewState,
@@ -50,6 +47,16 @@ import {
 } from "../../common";
 import { initStats, sumTilesetsStats } from "../../../utils/stats";
 import { IS_LOADED_DELAY } from "../../../constants/common";
+import {
+  getFlattenedSublayers,
+  selectLeftLayers,
+  selectLeftSublayers,
+  selectRightLayers,
+  selectRightSublayers,
+  setFlattenedSublayers,
+  updateLayerVisibility,
+} from "../../../redux/slices/flattened-sublayers-slice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 type LayoutProps = {
   layout: string;
@@ -135,9 +142,14 @@ export const ComparisonSide = ({
   const layout = useAppLayout();
 
   const tilesetRef = useRef<Tileset3D | null>(null);
-  const [flattenedSublayers, setFlattenedSublayers] = useState<
-    BuildingSceneSublayerExtended[]
-  >([]);
+  const flattenedSublayers = useAppSelector(
+    side === ComparisonSideMode.left ? selectLeftLayers : selectRightLayers
+  );
+  const bslSublayers = useAppSelector(
+    side === ComparisonSideMode.left
+      ? selectLeftSublayers
+      : selectRightSublayers
+  );
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =
@@ -153,7 +165,7 @@ export const ComparisonSide = ({
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
-  const fetchSublayersCounter = useRef<number>(0);
+  const dispatch = useAppDispatch();
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -213,43 +225,12 @@ export const ComparisonSide = ({
   }, [forcedSublayers]);
 
   useEffect(() => {
-    fetchSublayersCounter.current++;
     if (!activeLayers.length) {
-      setFlattenedSublayers([]);
+      dispatch(setFlattenedSublayers({ layers: [], side }));
       return;
     }
 
-    async function fetchFlattenedSublayers(
-      tilesetsData: {
-        id: string;
-        url: string;
-        token: string;
-        hasChildren: boolean;
-      }[],
-      layerUpdateNumber: number
-    ) {
-      const promises: Promise<any>[] = [];
-
-      for (const data of tilesetsData) {
-        if (!data.hasChildren) {
-          promises.push(getFlattenedSublayers(data));
-        }
-      }
-
-      Promise.all(promises).then((results) => {
-        if (layerUpdateNumber === fetchSublayersCounter.current) {
-          setFlattenedSublayers(results.flat());
-        }
-      });
-    }
-
-    const tilesetsData: {
-      id: string;
-      url: string;
-      token: string;
-      hasChildren: boolean;
-      type?: TilesetType;
-    }[] = [];
+    const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
       const params = parseTilesetUrlParams(layer.url, layer);
@@ -264,9 +245,24 @@ export const ComparisonSide = ({
       });
     }
 
-    fetchFlattenedSublayers(tilesetsData, fetchSublayersCounter.current);
-    setSublayers([]);
+    dispatch(
+      getFlattenedSublayers({
+        tilesetsData,
+        buildingExplorerOpened,
+        side,
+      })
+    );
   }, [activeLayers, buildingExplorerOpened]);
+
+  useEffect(() => {
+    if (bslSublayers?.length > 0) {
+      setSublayers(
+        bslSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
+      );
+    } else {
+      setSublayers([]);
+    }
+  }, [bslSublayers]);
 
   /**
    * Init statistics for loaded tilesets every time if loaded tilesets have been changed.
@@ -300,43 +296,6 @@ export const ComparisonSide = ({
       prevTilesets.filter((tileset) => activeLayersUrls.includes(tileset.url))
     );
   }, [activeLayers]);
-
-  const getFlattenedSublayers = async (tilesetData: {
-    id: string;
-    url: string;
-    token: string;
-    type?: TilesetType;
-  }) => {
-    try {
-      const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
-      const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-      const childSublayers = sublayersTree?.sublayers || [];
-      setSublayers(
-        childSublayers.map((sublayer) => new ActiveSublayer(sublayer, true))
-      );
-      const overviewLayer = tileset?.sublayers.find(
-        (sublayer) => sublayer.name === "Overview"
-      );
-      const sublayers = tileset?.sublayers
-        .filter((sublayer) => sublayer.name !== "Overview")
-        .map((item) => ({
-          ...item,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        }));
-      return buildingExplorerOpened ? sublayers : overviewLayer;
-    } catch (e) {
-      return [
-        {
-          id: tilesetData.id,
-          url: tilesetData.url,
-          visibility: true,
-          token: tilesetData.token,
-          type: tilesetData.type,
-        },
-      ];
-    }
-  };
 
   const getLayers3d = () => {
     if (!loadTileset) {
@@ -470,12 +429,17 @@ export const ComparisonSide = ({
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     onUpdateSublayers?.([...sublayers]);
     if (sublayer.layerType === "3DObject") {
-      const flattenedSublayer = flattenedSublayers.find(
+      const index = flattenedSublayers.findIndex(
         (fSublayer) => fSublayer.id === sublayer.id
       );
-      if (flattenedSublayer) {
-        flattenedSublayer.visibility = sublayer.visibility;
-        setFlattenedSublayers([...flattenedSublayers]);
+      if (index >= 0 && flattenedSublayers[index]) {
+        dispatch(
+          updateLayerVisibility({
+            index: index,
+            visibility: sublayer.visibility,
+            side,
+          })
+        );
       }
     }
   };

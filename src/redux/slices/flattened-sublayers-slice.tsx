@@ -4,26 +4,36 @@ import {
   Sublayer,
   TilesetType,
   TilesetMetadata,
+  ComparisonSideMode,
 } from "../../types";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { load } from "@loaders.gl/core";
 import { RootState } from "../store";
 
-// Define a type for the slice state
-interface flattenedSublayersState {
+// Define a type for the slice states
+type SublayersState = {
   /** Array of layers for the currently selected scene */
   layers: BuildingSceneSublayerExtended[];
   /** Counter of the currently selected layer  */
   layerCounter: number;
   /** Array of BSL sublayer categories */
   sublayers: Sublayer[];
+};
+
+interface flattenedSublayersState {
+  /** Single layer state for viewer and debug components */
+  single: SublayersState;
+  /** Left side layer state for comparison mode */
+  left: SublayersState;
+  /** Right side layer state for comparison mode */
+  right: SublayersState;
 }
 
 const initialState: flattenedSublayersState = {
-  layers: [],
-  layerCounter: 0,
-  sublayers: [],
+  single: { layers: [], layerCounter: 0, sublayers: [] },
+  left: { layers: [], layerCounter: 0, sublayers: [] },
+  right: { layers: [], layerCounter: 0, sublayers: [] },
 };
 
 const flattenedSublayersSlice = createSlice({
@@ -32,36 +42,50 @@ const flattenedSublayersSlice = createSlice({
   reducers: {
     setFlattenedSublayers: (
       state: flattenedSublayersState,
-      action: PayloadAction<BuildingSceneSublayerExtended[]>
+      action: PayloadAction<{
+        layers: BuildingSceneSublayerExtended[];
+        side?: ComparisonSideMode;
+      }>
     ) => {
-      state.layers = action.payload;
+      state[action.payload.side || "single"].layers = action.payload.layers;
+      state[action.payload.side || "single"].layerCounter++;
     },
     updateLayerVisibility: (
       state: flattenedSublayersState,
-      action: PayloadAction<{ index: number; visibility: boolean | undefined }>
+      action: PayloadAction<{
+        index: number;
+        visibility: boolean | undefined;
+        side?: ComparisonSideMode;
+      }>
     ) => {
-      if (action.payload.index in state.layers) {
-        state.layers[action.payload.index].visibility =
-          action.payload.visibility;
+      const side = action.payload.side || "single";
+      const layers = state[side].layers;
+      if (action.payload.index in layers) {
+        layers[action.payload.index].visibility = action.payload.visibility;
       }
     },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(
-        getFlattenedSublayers.pending,
-        (state: flattenedSublayersState) => {
-          state.layerCounter += 1;
-        }
-      )
+      .addCase(getFlattenedSublayers.pending, (state, action) => {
+        const side = action.meta.arg.side || "single";
+        state[side].layerCounter++;
+      })
       .addCase(
         getFlattenedSublayers.fulfilled,
         (
           state: flattenedSublayersState,
-          action: PayloadAction<flattenedSublayersState>
+          action: PayloadAction<{
+            sublayers: SublayersState;
+            side?: ComparisonSideMode;
+          }>
         ) => {
-          if (action.payload.layerCounter === state.layerCounter) {
-            return { ...action.payload };
+          const side = action.payload.side || "single";
+          if (
+            action.payload.sublayers.layerCounter === state[side].layerCounter
+          ) {
+            return { ...state, [side]: action.payload.sublayers };
           }
         }
       );
@@ -69,17 +93,22 @@ const flattenedSublayersSlice = createSlice({
 });
 
 export const getFlattenedSublayers = createAsyncThunk<
-  flattenedSublayersState,
+  {
+    sublayers: SublayersState;
+    side?: ComparisonSideMode;
+  },
   {
     tilesetsData: TilesetMetadata[];
     buildingExplorerOpened: boolean;
+    side?: ComparisonSideMode;
   }
 >(
   "getFlattenedSublayers",
-  async ({ tilesetsData, buildingExplorerOpened }, { getState }) => {
+  async ({ tilesetsData, buildingExplorerOpened, side }, { getState }) => {
     const promises: Promise<any>[] = [];
     const state = getState() as RootState;
-    const currentLayer = state.flattenedSublayers.layerCounter;
+    const currentLayer =
+      state.flattenedSublayers[side || "single"].layerCounter;
 
     for (const data of tilesetsData) {
       if (!data.hasChildren) {
@@ -87,12 +116,21 @@ export const getFlattenedSublayers = createAsyncThunk<
       }
     }
 
-    const layers = await Promise.all(promises);
+    const result = await Promise.all(promises);
+    const layers: BuildingSceneSublayerExtended[] = [];
+    let sublayers: Sublayer[] = [];
+    for (const layer of result) {
+      layers.push(layer.layers);
+      sublayers = layer.sublayers;
+    }
 
     return {
-      layers: layers[0].layers.flat(),
-      layerCounter: currentLayer,
-      sublayers: layers[0].sublayers,
+      sublayers: {
+        layers: layers.flat(),
+        layerCounter: currentLayer,
+        sublayers,
+      },
+      side,
     };
   }
 );
@@ -148,9 +186,24 @@ const getLayersAndSublayers = async (
 
 export const selectLayers = (
   state: RootState
-): BuildingSceneSublayerExtended[] => state.flattenedSublayers.layers;
+): BuildingSceneSublayerExtended[] => state.flattenedSublayers.single.layers;
+
+export const selectLeftLayers = (
+  state: RootState
+): BuildingSceneSublayerExtended[] => state.flattenedSublayers.left.layers;
+
+export const selectRightLayers = (
+  state: RootState
+): BuildingSceneSublayerExtended[] => state.flattenedSublayers.right.layers;
+
 export const selectSublayers = (state: RootState): Sublayer[] =>
-  state.flattenedSublayers.sublayers;
+  state.flattenedSublayers.single.sublayers;
+
+export const selectLeftSublayers = (state: RootState): Sublayer[] =>
+  state.flattenedSublayers.left.sublayers;
+
+export const selectRightSublayers = (state: RootState): Sublayer[] =>
+  state.flattenedSublayers.right.sublayers;
 
 export const { setFlattenedSublayers, updateLayerVisibility } =
   flattenedSublayersSlice.actions;
