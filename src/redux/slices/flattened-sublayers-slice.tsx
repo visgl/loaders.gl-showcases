@@ -107,17 +107,8 @@ export const getFlattenedSublayers = createAsyncThunk<
   async ({ tilesetsData, buildingExplorerOpened, side }, { getState }) => {
     const promises: Promise<any>[] = [];
     const state = getState() as RootState;
-    let currentLayer = 0;
-    switch (side) {
-      case ComparisonSideMode.left:
-        currentLayer = state.flattenedSublayers.left.layerCounter;
-        break;
-      case ComparisonSideMode.right:
-        currentLayer = state.flattenedSublayers.right.layerCounter;
-        break;
-      default:
-        currentLayer = state.flattenedSublayers.single.layerCounter;
-    }
+    const currentLayer =
+      state.flattenedSublayers[side || "single"].layerCounter;
 
     for (const data of tilesetsData) {
       if (!data.hasChildren) {
@@ -125,13 +116,19 @@ export const getFlattenedSublayers = createAsyncThunk<
       }
     }
 
-    const layers = await Promise.all(promises);
+    const result = await Promise.all(promises);
+    const layers: BuildingSceneSublayerExtended[] = [];
+    let sublayers: Sublayer[] = [];
+    for (const layer of result) {
+      layers.push(layer.layers);
+      sublayers = layer.sublayers;
+    }
 
     return {
       sublayers: {
-        layers: layers[0].layers.flat(),
+        layers: layers.flat(),
         layerCounter: currentLayer,
-        sublayers: layers[0].sublayers,
+        sublayers,
       },
       side,
     };
