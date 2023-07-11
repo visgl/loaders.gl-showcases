@@ -62,30 +62,66 @@ jest.mock("../../loading-spinner/loading-spinner", () => ({
   LoadingSpinner: jest.fn().mockImplementation(() => <div>LoadingSpinner</div>),
 }));
 
-describe("AttributeStats", () => {
-  beforeAll(() => {
-    loadMock
-      .mockImplementationOnce(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => {
-              resolve({ stats });
-            }, 50)
-          )
-      )
-      .mockImplementationOnce(
-        () =>
-          new Promise((resolve, reject) =>
-            setTimeout(() => {
-              reject(new Error("Test Error"));
-            }, 50)
-          )
+describe("Attribute Stats Error test", () => {
+  it("Should no render Attribute Stats if loading statistics error", async () => {
+    loadMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve, reject) =>
+          setTimeout(() => {
+            reject(new Error("Test Error"));
+          }, 50)
+        )
+    );
+
+    act(() => {
+      const store = setupStore();
+      renderWithThemeProviders(
+        <AttributeStats
+          attributeName={"NAME"}
+          statisticsInfo={{
+            key: "f_0",
+            name: "NAME",
+            href: "../testHref",
+          }}
+          tilesetName={"New York"}
+          tilesetBasePath={"https://test-error-path"}
+        />,
+        store
       );
+    });
+
+    expect(screen.getByText("LoadingSpinner")).toBeInTheDocument();
+
+    await sleep(100);
+
+    for (const statKey in stats) {
+      if (statKey !== "histogram" && statKey !== "mostFrequentValues") {
+        const statValue = stats[statKey];
+
+        expect(screen.queryByText(statKey)).not.toBeInTheDocument();
+        expect(screen.queryByText(statValue)).not.toBeInTheDocument();
+      }
+    }
+
+    expect(screen.queryByText("HistogramChart")).not.toBeInTheDocument();
+  });
+});
+
+describe("AttributeStats", () => {
+  beforeEach(() => {
+    loadMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(() => {
+            resolve({ stats });
+          }, 50)
+        )
+    );
   });
 
   it("Should render Attribute Stats", async () => {
+    const store = setupStore();
     act(() => {
-      const store = setupStore();
       renderWithThemeProviders(
         <AttributeStats
           attributeName={"NAME"}
@@ -138,7 +174,6 @@ describe("AttributeStats", () => {
 
     // Try to get already cached data
     act(() => {
-      const store = setupStore();
       renderWithThemeProviders(
         <AttributeStats
           attributeName={"NAME"}
@@ -155,40 +190,6 @@ describe("AttributeStats", () => {
     });
 
     expect(loadMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("Should no render Attribute Stats if loading statistics error", async () => {
-    act(() => {
-      const store = setupStore();
-      renderWithThemeProviders(
-        <AttributeStats
-          attributeName={"NAME"}
-          statisticsInfo={{
-            key: "f_0",
-            name: "NAME",
-            href: "../testHref",
-          }}
-          tilesetName={"New York"}
-          tilesetBasePath={"https://test-error-path"}
-        />,
-        store
-      );
-    });
-
-    expect(screen.getByText("LoadingSpinner")).toBeInTheDocument();
-
-    await sleep(100);
-
-    for (const statKey in stats) {
-      if (statKey !== "histogram" && statKey !== "mostFrequentValues") {
-        const statValue = stats[statKey];
-
-        expect(screen.queryByText(statKey)).not.toBeInTheDocument();
-        expect(screen.queryByText(statValue)).not.toBeInTheDocument();
-      }
-    }
-
-    expect(screen.queryByText("HistogramChart")).not.toBeInTheDocument();
   });
 
   it("Should render colorize block", async () => {

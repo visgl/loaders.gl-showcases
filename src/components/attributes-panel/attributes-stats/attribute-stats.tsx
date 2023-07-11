@@ -9,8 +9,6 @@ import type {
 import { useEffect, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";
 
-import { load } from "@loaders.gl/core";
-import { JSONLoader } from "@loaders.gl/loader-utils";
 import { ToggleSwitch } from "../../toogle-switch/toggle-switch";
 import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
 import { HistogramChart } from "../histogram";
@@ -28,6 +26,10 @@ import {
   setColorsByAttrubute,
 } from "../../../redux/slices/colors-by-attribute-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import {
+  getAttributeStatsInfo,
+  selectStatisitcsMap,
+} from "../../../redux/slices/attribute-stats-slice";
 
 type VisibilityProps = {
   visible: boolean;
@@ -156,8 +158,6 @@ const COUNT_TITLE = "Count";
 const MODE_MULTIPLY = "multiply";
 const MODE_REPLACE = "replace";
 
-const statisitcsMap = new Map();
-
 type AttributeStatsProps = {
   attributeName: string;
   statisticsInfo: StatisticsInfo;
@@ -179,6 +179,7 @@ export const AttributeStats = ({
   const [expandState, expand] = useExpand(ExpandState.expanded);
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+  const statsMap = useAppSelector(selectStatisitcsMap);
   const dispatch = useAppDispatch();
 
   /**
@@ -193,43 +194,15 @@ export const AttributeStats = ({
   };
 
   useEffect(() => {
-    /**
-     * Load I3S attribute statistics
-     * Spec - https://github.com/Esri/i3s-spec/blob/master/docs/1.8/statisticsInfo.cmn.md
-     * Spec - https://github.com/Esri/i3s-spec/blob/master/docs/1.8/statsInfo.cmn.md
-     * @param statisticsInfo
-     * @param options
-     * @returns
-     */
-    const getAttributeStatsInfo = async (
-      tilesetUrl: string,
-      attributeUrl: string
-    ) => {
-      setIsLoading(true);
-      const statAttributeUrl = resolveUrl(attributeUrl, tilesetUrl);
-
-      if (statisitcsMap.has(statAttributeUrl)) {
-        const statistics = statisitcsMap.get(statAttributeUrl);
-        setStatistics(statistics);
-        setIsLoading(false);
-      } else {
-        try {
-          const data = await load(statAttributeUrl, JSONLoader);
-          const stats = data?.stats as StatsInfo;
-
-          statisitcsMap.set(statAttributeUrl, stats);
-          setStatistics(stats);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    getAttributeStatsInfo(tilesetBasePath, statisticsInfo.href);
-  }, [attributeName]);
+    setIsLoading(true);
+    const statAttributeUrl = resolveUrl(statisticsInfo.href, tilesetBasePath);
+    if (statsMap[statAttributeUrl] !== undefined) {
+      setStatistics(statsMap[statAttributeUrl]);
+      setIsLoading(false);
+    } else {
+      dispatch(getAttributeStatsInfo(statAttributeUrl));
+    }
+  }, [attributeName, statsMap]);
 
   const renderStatisticRows = () => {
     const statisticsRows: JSX.Element[] = [];
