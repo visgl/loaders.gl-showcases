@@ -143,7 +143,7 @@ const getLayersAndSublayers = async (
     id: string;
     url: string;
     visibility: boolean;
-    token: string | undefined;
+    token?: string;
     type: TilesetType | undefined;
   }[];
   sublayers: Sublayer[];
