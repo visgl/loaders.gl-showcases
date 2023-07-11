@@ -358,7 +358,7 @@ export type TileSelectedColor = {
 export type TilesetMetadata = {
   id: string;
   url: string;
-  token: string;
+  token: string | undefined;
   hasChildren: boolean;
   type?: TilesetType;
 };

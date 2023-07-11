@@ -3,7 +3,7 @@ import { DragMode } from "../../types";
 import { RootState } from "../store";
 
 /** DragMode redux state for the decl.gl controller */
-interface DragModeState {
+export interface DragModeState {
   /** controller drag mode value https://deck.gl/docs/api-reference/core/controller#options */
   value: DragMode;
 }
@@ -24,5 +24,7 @@ const dragModeSlice = createSlice({
 
 export const selectDragMode = (state: RootState): DragMode =>
   state.dragMode.value;
+
 export const { setDragMode } = dragModeSlice.actions;
+
 export default dragModeSlice.reducer;

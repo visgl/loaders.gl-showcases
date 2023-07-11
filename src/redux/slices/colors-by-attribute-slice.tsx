@@ -3,7 +3,7 @@ import { ColorsByAttribute } from "../../types";
 import { RootState } from "../store";
 
 // Define a type for the slice state
-interface ColorsByAttributeState {
+export interface ColorsByAttributeState {
   /** Values of color properties responsible for colorizig by attributes */
   value: ColorsByAttribute | null;
 }
