@@ -29,7 +29,7 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   getAttributeStatsInfo,
   selectStatisitcsMap,
-} from "../../../redux/slices/attribute-stats-slice";
+} from "../../../redux/slices/attribute-stats-map-slice";
 
 type VisibilityProps = {
   visible: boolean;

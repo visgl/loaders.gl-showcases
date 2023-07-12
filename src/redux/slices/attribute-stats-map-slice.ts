@@ -15,15 +15,19 @@ const initialState: statisitcsMapState = {
   statisitcsMap: {},
 };
 
-const statisitcsMapSlice = createSlice({
+const attributeStatsMapSlice = createSlice({
   name: "statisitcsMap",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getAttributeStatsInfo.fulfilled, (state, action) => {
-      state.statisitcsMap[action.payload.statAttributeUrl] =
-        action.payload.stats;
-    });
+    builder
+      .addCase(getAttributeStatsInfo.fulfilled, (state, action) => {
+        state.statisitcsMap[action.payload.statAttributeUrl] =
+          action.payload.stats;
+      })
+      .addCase(getAttributeStatsInfo.rejected, (state, action) => {
+        state.statisitcsMap[action.meta.arg] = null;
+      });
   },
 });
 
@@ -32,16 +36,12 @@ export const getAttributeStatsInfo = createAsyncThunk<
   string
 >("getAttributeStatsInfo", async (statAttributeUrl) => {
   let stats: StatsInfo | null = null;
-  try {
-    const data = await load(statAttributeUrl, JSONLoader);
-    stats = (data?.stats as StatsInfo) || null;
-  } catch (error) {
-    console.error(error);
-  }
+  const data = await load(statAttributeUrl, JSONLoader);
+  stats = (data?.stats as StatsInfo) || null;
   return { stats, statAttributeUrl };
 });
 export const selectStatisitcsMap = (
   state: RootState
 ): Record<string, StatsInfo | null> => state.attributeStatsMap.statisitcsMap;
 
-export default statisitcsMapSlice.reducer;
+export default attributeStatsMapSlice.reducer;

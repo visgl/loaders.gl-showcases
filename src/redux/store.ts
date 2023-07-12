@@ -7,7 +7,7 @@ import colorsByAttributeSliceReducer from "./slices/colors-by-attribute-slice";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
-import attributeStatsSliceReducer from "./slices/attribute-stats-slice";
+import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
   uvDebugTexture: uvDebugTextureSliceReducer,
-  attributeStatsMap: attributeStatsSliceReducer,
+  attributeStatsMap: attributeStatsMapSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
