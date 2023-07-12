@@ -21,7 +21,7 @@ type SublayersState = {
   sublayers: Sublayer[];
 };
 
-interface flattenedSublayersState {
+export interface flattenedSublayersState {
   /** Single layer state for viewer and debug components */
   single: SublayersState;
   /** Left side layer state for comparison mode */
@@ -143,7 +143,7 @@ const getLayersAndSublayers = async (
     id: string;
     url: string;
     visibility: boolean;
-    token: string;
+    token?: string;
     type: TilesetType | undefined;
   }[];
   sublayers: Sublayer[];
