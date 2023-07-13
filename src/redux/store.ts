@@ -3,17 +3,19 @@ import {
   combineReducers,
   configureStore,
 } from "@reduxjs/toolkit";
-import colorsByAttributeReducer from "./slices/colors-by-attribute-slice";
+import colorsByAttributeSliceReducer from "./slices/colors-by-attribute-slice";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
+import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
-  colorsByAttribute: colorsByAttributeReducer,
+  colorsByAttribute: colorsByAttributeSliceReducer,
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
   uvDebugTexture: uvDebugTextureSliceReducer,
+  attributeStatsMap: attributeStatsMapSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
