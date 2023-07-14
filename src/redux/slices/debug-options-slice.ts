@@ -42,7 +42,8 @@ const debugOptionsSlice = createSlice({
   reducers: {
     stDebugOptions: (state: debugOptionsState, action: PayloadAction<{}>) => {
       const keysOfPayload = Object.keys(action.payload);
-      for (const keyOfPayload of keysOfPayload) {
+      if (keysOfPayload?.length > 0) {
+        const keyOfPayload = keysOfPayload[0];
         state.value[keyOfPayload] = action.payload[keyOfPayload];
       }
     },
