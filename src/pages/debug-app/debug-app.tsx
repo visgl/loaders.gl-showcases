@@ -83,6 +83,19 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import {
+  stDebugOptions,
+  selectMiniMap,
+  selectMiniMapViewPort,
+  selectBoundingVolume,
+  selectPickable,
+  selectLoadTiles,
+  selectShowUVDebugTexture,
+  selectWireframe,
+  selectTileColorMode,
+  selectBoundingVolumeColorMode,
+  selectBoundingVolumeType,
+} from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -688,6 +701,7 @@ export const DebugApp = () => {
         | BoundingVolumeType
         | boolean
     ) => {
+      dispatch(stDebugOptions({ [optionName]: value }));
       setDebugOptions((prevValues) => ({
         ...prevValues,
         [optionName]: value,
@@ -745,26 +759,16 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const {
-    minimap,
-    minimapViewport,
-    tileColorMode,
-    boundingVolume,
-    boundingVolumeType,
-    boundingVolumeColorMode,
-    pickable,
-    wireframe,
-    showUVDebugTexture,
-    loadTiles,
-  } = debugOptions;
+  const boundingVolume = useAppSelector(selectBoundingVolume);
+  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
 
   return (
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
-        showMinimap={minimap}
-        createIndependentMinimapViewport={minimapViewport}
+        showMinimap={useAppSelector(selectMiniMap)}
+        createIndependentMinimapViewport={useAppSelector(selectMiniMapViewPort)}
         parentViewState={{
           ...viewState,
           main: {
@@ -773,19 +777,19 @@ export const DebugApp = () => {
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
-        tileColorMode={tileColorMode}
+        tileColorMode={useAppSelector(selectTileColorMode)}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
         boundingVolumeType={boundingVolume ? boundingVolumeType : null}
-        boundingVolumeColorMode={boundingVolumeColorMode}
-        pickable={pickable}
-        wireframe={wireframe}
+        boundingVolumeColorMode={useAppSelector(selectBoundingVolumeColorMode)}
+        pickable={useAppSelector(selectPickable)}
+        wireframe={useAppSelector(selectWireframe)}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadDebugTextureImage
-        showDebugTexture={showUVDebugTexture}
-        loadTiles={loadTiles}
+        showDebugTexture={useAppSelector(selectShowUVDebugTexture)}
+        loadTiles={useAppSelector(selectLoadTiles)}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
         selectedTile={selectedTile}
