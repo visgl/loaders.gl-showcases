@@ -40,7 +40,16 @@ const debugOptionsSlice = createSlice({
   name: "debugOptions",
   initialState,
   reducers: {
-    stDebugOptions: (state: debugOptionsState, action: PayloadAction<{}>) => {
+    stDebugOptions: (
+      state: debugOptionsState,
+      action: PayloadAction<{
+        [x: string]:
+          | boolean
+          | TileColoredBy
+          | BoundingVolumeColoredBy
+          | BoundingVolumeType;
+      }>
+    ) => {
       const keysOfPayload = Object.keys(action.payload);
       if (keysOfPayload?.length > 0) {
         const keyOfPayload = keysOfPayload[0];
