@@ -10,9 +10,6 @@ import {
   ViewStateSet,
   LayerViewState,
   ListItemType,
-  BoundingVolumeType,
-  DebugOptions,
-  BoundingVolumeColoredBy,
   TileColoredBy,
   Layout,
   Bookmark,
@@ -115,30 +112,6 @@ const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show norm
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
-
-const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
-  // Show minimap
-  minimap: true,
-  // Use separate traversal for the minimap viewport
-  minimapViewport: false,
-  // Show bounding volumes
-  boundingVolume: false,
-  // Select tiles with a mouse button
-  pickable: false,
-  // Load tiles after traversal.
-  // Use this to freeze loaded tiles and see on them from different perspective
-  loadTiles: true,
-  // Use "uv-debug-texture" texture to check UV coordinates
-  showUVDebugTexture: false,
-  // Enable/Disable wireframe mode
-  wireframe: false,
-  // Tile coloring mode selector
-  tileColorMode: TileColoredBy.original,
-  // Bounding volume coloring mode selector
-  boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-  // Bounding volume geometry shape selector
-  boundingVolumeType: BoundingVolumeType.mbs,
-};
 
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -261,7 +234,8 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
+    dispatch(setInitialDebugOptions());
+    dispatch(setDebugOptions({ minimap: true }));
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -632,7 +606,7 @@ export const DebugApp = () => {
 
     setTimeout(() => {
       if (bookmark?.debugOptions) {
-        setDebugOptions(bookmark.debugOptions);
+        dispatch(setDebugOptions(bookmark.debugOptions));
       }
     }, IS_LOADED_DELAY);
   };
@@ -827,7 +801,6 @@ export const DebugApp = () => {
         <RightSidePanelWrapper layout={layout}>
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
-            debugOptions={debugOptions}
           />
         </RightSidePanelWrapper>
       )}

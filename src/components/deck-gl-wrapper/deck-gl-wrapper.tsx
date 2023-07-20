@@ -21,9 +21,6 @@ import {
   ViewStateSet,
   LoadOptions,
   TilesetType,
-  BoundingVolumeType,
-  TileColoredBy,
-  BoundingVolumeColoredBy,
   MinimapPosition,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";

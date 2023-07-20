@@ -58,14 +58,13 @@ const RadioButtonWrapper = styled.div`
 `;
 
 type DebugPanelProps = {
-  debugOptions: DebugOptions;
   onClose: ReactEventHandler;
 };
 
-export const DebugPanel = ({ debugOptions, onClose }: DebugPanelProps) => {
+export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();
   const dispatch = useAppDispatch();
-  debugOptions = useAppSelector(selectDebugOptions);
+  const debugOptions = useAppSelector(selectDebugOptions);
 
   return (
     <PanelContainer layout={layout}>

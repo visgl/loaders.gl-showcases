@@ -28,18 +28,18 @@ const onCloseMock = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <DebugPanel
-      debugOptions={{
-        minimap: true,
-        minimapViewport: false,
-        boundingVolume: false,
-        tileColorMode: TileColoredBy.original,
-        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-        boundingVolumeType: BoundingVolumeType.mbs,
-        pickable: false,
-        loadTiles: false,
-        showUVDebugTexture: false,
-        wireframe: false,
-      }}
+      //      debugOptions={{
+      //        minimap: true,
+      //        minimapViewport: false,
+      //        boundingVolume: false,
+      //        tileColorMode: TileColoredBy.original,
+      //        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
+      //        boundingVolumeType: BoundingVolumeType.mbs,
+      //        pickable: false,
+      //        loadTiles: false,
+      //        showUVDebugTexture: false,
+      //        wireframe: false,
+      //      }}
       //      onChangeOption={onChangeOptionMock}
       onClose={onCloseMock}
       {...props}

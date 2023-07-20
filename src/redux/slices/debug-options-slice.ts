@@ -53,11 +53,7 @@ const debugOptionsSlice = createSlice({
           | BoundingVolumeType;
       }>
     ) => {
-      const keysOfPayload = Object.keys(action.payload);
-      if (keysOfPayload?.length > 0) {
-        const keyOfPayload = keysOfPayload[0];
-        state.value[keyOfPayload] = action.payload[keyOfPayload];
-      }
+      state.value = { ...state.value, ...action.payload };
     },
   },
 });
