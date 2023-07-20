@@ -4,7 +4,6 @@ import styled from "styled-components";
 import {
   BoundingVolumeColoredBy,
   BoundingVolumeType,
-  DebugOptions,
   ListItemType,
   SelectionState,
   TileColoredBy,
