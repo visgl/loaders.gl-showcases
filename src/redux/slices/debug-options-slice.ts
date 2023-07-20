@@ -14,7 +14,7 @@ interface debugOptionsState {
 const initialState: debugOptionsState = {
   value: {
     // Show minimap
-    minimap: true,
+    minimap: false,
     // Use separate traversal for the minimap viewport
     minimapViewport: false,
     // Show bounding volumes
@@ -23,7 +23,7 @@ const initialState: debugOptionsState = {
     pickable: false,
     // Load tiles after traversal.
     // Use this to freeze loaded tiles and see on them from different perspective
-    loadTiles: true,
+    loadTiles: false,
     // Use "uv-debug-texture" texture to check UV coordinates
     showUVDebugTexture: false,
     // Enable/Disable wireframe mode
@@ -40,7 +40,10 @@ const debugOptionsSlice = createSlice({
   name: "debugOptions",
   initialState,
   reducers: {
-    stDebugOptions: (
+    setInitialDebugOptions: (state: debugOptionsState) => {
+      state.value = initialState.value;
+    },
+    setDebugOptions: (
       state: debugOptionsState,
       action: PayloadAction<{
         [x: string]:
@@ -59,6 +62,8 @@ const debugOptionsSlice = createSlice({
   },
 });
 
+export const selectDebugOptions = (state: RootState): DebugOptions =>
+  state.debugOptions.value;
 export const selectMiniMap = (state: RootState): boolean =>
   state.debugOptions.value.minimap;
 export const selectMiniMapViewPort = (state: RootState): boolean =>
@@ -83,5 +88,6 @@ export const selectBoundingVolumeType = (
 ): BoundingVolumeType => state.debugOptions.value.boundingVolumeType;
 
 // todo: and other if needed
-export const { stDebugOptions } = debugOptionsSlice.actions;
+export const { setInitialDebugOptions } = debugOptionsSlice.actions;
+export const { setDebugOptions } = debugOptionsSlice.actions;
 export default debugOptionsSlice.reducer;

@@ -84,17 +84,9 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
-  stDebugOptions,
-  selectMiniMap,
-  selectMiniMapViewPort,
-  selectBoundingVolume,
-  selectPickable,
-  selectLoadTiles,
-  selectShowUVDebugTexture,
-  selectWireframe,
-  selectTileColorMode,
-  selectBoundingVolumeColorMode,
-  selectBoundingVolumeType,
+  setInitialDebugOptions,
+  setDebugOptions,
+  selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
@@ -151,10 +143,7 @@ const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
-
-  const [debugOptions, setDebugOptions] = useState<DebugOptions>(
-    INITIAL_DEBUG_OPTIONS_STATE
-  );
+  const debugOptions = useAppSelector(selectDebugOptions);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -224,6 +213,11 @@ export const DebugApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    dispatch(setDebugOptions({ minimap: true }));
+    dispatch(setDebugOptions({ loadTiles: true }));
+    return () => {
+      dispatch(setInitialDebugOptions());
+    };
   }, []);
 
   /**
@@ -692,24 +686,6 @@ export const DebugApp = () => {
     }
   };
 
-  const handleChangeDebugOptions = useCallback(
-    (
-      optionName: keyof DebugOptions,
-      value:
-        | TileColoredBy
-        | BoundingVolumeColoredBy
-        | BoundingVolumeType
-        | boolean
-    ) => {
-      dispatch(stDebugOptions({ [optionName]: value }));
-      setDebugOptions((prevValues) => ({
-        ...prevValues,
-        [optionName]: value,
-      }));
-    },
-    []
-  );
-
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
@@ -759,16 +735,11 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const boundingVolume = useAppSelector(selectBoundingVolume);
-  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
-
   return (
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
-        showMinimap={useAppSelector(selectMiniMap)}
-        createIndependentMinimapViewport={useAppSelector(selectMiniMapViewPort)}
         parentViewState={{
           ...viewState,
           main: {
@@ -777,19 +748,12 @@ export const DebugApp = () => {
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
-        tileColorMode={useAppSelector(selectTileColorMode)}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
-        boundingVolumeType={boundingVolume ? boundingVolumeType : null}
-        boundingVolumeColorMode={useAppSelector(selectBoundingVolumeColorMode)}
-        pickable={useAppSelector(selectPickable)}
-        wireframe={useAppSelector(selectWireframe)}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadDebugTextureImage
-        showDebugTexture={useAppSelector(selectShowUVDebugTexture)}
-        loadTiles={useAppSelector(selectLoadTiles)}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
         selectedTile={selectedTile}
@@ -865,7 +829,6 @@ export const DebugApp = () => {
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
             debugOptions={debugOptions}
-            onChangeOption={handleChangeDebugOptions}
           />
         </RightSidePanelWrapper>
       )}
