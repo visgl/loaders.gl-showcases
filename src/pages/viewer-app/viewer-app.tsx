@@ -152,7 +152,6 @@ export const ViewerApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
-    dispatch(setDebugOptions({ loadTiles: true }));
     dispatch(setDebugOptions({ pickable: isLayerPickable() }));
     return () => {
       dispatch(setInitialDebugOptions());

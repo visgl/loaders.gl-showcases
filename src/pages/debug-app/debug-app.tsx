@@ -214,7 +214,6 @@ export const DebugApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
-    dispatch(setDebugOptions({ loadTiles: true }));
     return () => {
       dispatch(setInitialDebugOptions());
     };

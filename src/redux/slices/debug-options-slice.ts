@@ -23,7 +23,7 @@ const initialState: debugOptionsState = {
     pickable: false,
     // Load tiles after traversal.
     // Use this to freeze loaded tiles and see on them from different perspective
-    loadTiles: false,
+    loadTiles: true,
     // Use "uv-debug-texture" texture to check UV coordinates
     showUVDebugTexture: false,
     // Enable/Disable wireframe mode
