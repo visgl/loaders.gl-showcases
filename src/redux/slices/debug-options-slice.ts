@@ -8,7 +8,7 @@ import {
 import { RootState } from "../store";
 
 // Define a type for the slice state
-interface debugOptionsState {
+export interface debugOptionsState {
   value: DebugOptions;
 }
 const initialState: debugOptionsState = {

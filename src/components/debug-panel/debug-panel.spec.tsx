@@ -1,5 +1,8 @@
 import { screen } from "@testing-library/react";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import {
+  renderWithTheme,
+  renderWithThemeProviders,
+} from "../../utils/testing-utils/render-with-theme";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { DebugPanel } from "./debug-panel";
 import {
@@ -8,6 +11,9 @@ import {
   TileColoredBy,
 } from "../../types";
 import userEvent from "@testing-library/user-event";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setupStore } from "../../redux/store";
+import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 
 jest.mock("../../utils/hooks/layout");
 jest.mock("../close-button/close-button", () => ({
@@ -22,29 +28,10 @@ jest.mock("../close-button/close-button", () => ({
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
-//const onChangeOptionMock = jest.fn();
 const onCloseMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
-  return renderFunc(
-    <DebugPanel
-      //      debugOptions={{
-      //        minimap: true,
-      //        minimapViewport: false,
-      //        boundingVolume: false,
-      //        tileColorMode: TileColoredBy.original,
-      //        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-      //        boundingVolumeType: BoundingVolumeType.mbs,
-      //        pickable: false,
-      //        loadTiles: false,
-      //        showUVDebugTexture: false,
-      //        wireframe: false,
-      //      }}
-      //      onChangeOption={onChangeOptionMock}
-      onClose={onCloseMock}
-      {...props}
-    />
-  );
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
+  return renderFunc(<DebugPanel onClose={onCloseMock} {...props} />, store);
 };
 
 const toggles = {
@@ -93,14 +80,28 @@ const checkToggleTitleAndEvent = ({ toggleId, titleText, calledWith }) => {
   if (toggle) {
     userEvent.click(toggle);
   }
-  //  expect(onChangeOptionMock).toHaveBeenCalledWith(...calledWith);
 };
 
 describe("Debug panel", () => {
   it("Should render debug panel and toggles should work", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    callRender(renderWithTheme);
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
+        minimap: true,
+        minimapViewport: false,
+        boundingVolume: false,
+        tileColorMode: TileColoredBy.original,
+        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
+        boundingVolumeType: BoundingVolumeType.mbs,
+        pickable: false,
+        loadTiles: false,
+        showUVDebugTexture: false,
+        wireframe: false,
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     // Check panel title
     const title = screen.getByText("Debug Panel");
@@ -121,8 +122,9 @@ describe("Debug panel", () => {
   it("Should hide different viewport toggle if minimap is turned off", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    callRender(renderWithTheme, {
-      debugOptions: {
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
         minimap: false,
         minimapViewport: false,
         boundingVolume: false,
@@ -133,8 +135,9 @@ describe("Debug panel", () => {
         loadTiles: false,
         showUVDebugTexture: false,
         wireframe: false,
-      },
-    });
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     expect(
       screen.queryByText("Use different Viewports")
@@ -144,9 +147,10 @@ describe("Debug panel", () => {
   it("Should be able to select different mesh color", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    callRender(renderWithTheme, {
-      debugOptions: {
-        minimap: false,
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
+        minimap: true,
         minimapViewport: false,
         boundingVolume: false,
         tileColorMode: TileColoredBy.original,
@@ -156,8 +160,9 @@ describe("Debug panel", () => {
         loadTiles: false,
         showUVDebugTexture: false,
         wireframe: false,
-      },
-    });
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     const colorItems = [
       {
@@ -181,15 +186,15 @@ describe("Debug panel", () => {
     for (const colorItem of colorItems) {
       const button = screen.getByText(colorItem.buttonText);
       userEvent.click(button);
-      //      expect(onChangeOptionMock).toHaveBeenCalledWith(...colorItem.calledWith);
     }
   });
 
   it("Should be able to select bounding volume color", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    callRender(renderWithTheme, {
-      debugOptions: {
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
         minimap: false,
         minimapViewport: false,
         boundingVolume: true,
@@ -200,24 +205,23 @@ describe("Debug panel", () => {
         loadTiles: false,
         showUVDebugTexture: false,
         wireframe: false,
-      },
-    });
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     const originalColorButton = screen.getAllByText("Original")[1];
     userEvent.click(originalColorButton);
 
-    //    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeColorMode', BoundingVolumeColoredBy.original);
-
     const byTileColorButton = screen.getByText("By tile");
     userEvent.click(byTileColorButton);
-    //    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeColorMode', BoundingVolumeColoredBy.tile);
   });
 
   it("Should be able to select bounding volume type", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
-    callRender(renderWithTheme, {
-      debugOptions: {
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
         minimap: false,
         minimapViewport: false,
         boundingVolume: true,
@@ -228,17 +232,14 @@ describe("Debug panel", () => {
         loadTiles: false,
         showUVDebugTexture: false,
         wireframe: false,
-      },
-    });
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     const OBBButton = screen.getByText("OBB");
     userEvent.click(OBBButton);
 
-    //    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeType', BoundingVolumeType.obb);
-
     const MBSButton = screen.getByText("MBS");
     userEvent.click(MBSButton);
-
-    //    expect(onChangeOptionMock).toHaveBeenCalledWith('boundingVolumeType', BoundingVolumeType.mbs);
   });
 });

@@ -1,7 +1,13 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
-import { DragMode, TilesetType } from "../../types";
+import {
+  DragMode,
+  TilesetType,
+  TileColoredBy,
+  BoundingVolumeType,
+  BoundingVolumeColoredBy,
+} from "../../types";
 
 // Mocks
 jest.mock("@loaders.gl/core");
@@ -54,6 +60,7 @@ import { renderWithProvider } from "../../utils/testing-utils/render-with-provid
 import { setupStore } from "../../redux/store";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -193,12 +200,13 @@ describe("Deck.gl I3S map component", () => {
   });
 
   it("Should show UV debug texture", () => {
-    const { rerender } = callRender(renderWithProvider, {
-      showDebugTexture: false,
-    });
+    const store = setupStore();
+    store.dispatch(setDebugOptions({ showUVDebugTexture: false }));
+    const { rerender } = callRender(renderWithProvider, undefined, store);
     expect(selectDebugTextureForTileset).not.toHaveBeenCalled();
     expect(selectOriginalTextureForTileset).toHaveBeenCalledTimes(1);
-    callRender(rerender, { showDebugTexture: true });
+    store.dispatch(setDebugOptions({ showUVDebugTexture: true }));
+    callRender(rerender, undefined, store);
     expect(selectDebugTextureForTileset).toHaveBeenCalledTimes(1);
     expect(selectOriginalTextureForTileset).toHaveBeenCalledTimes(1);
   });
@@ -221,9 +229,9 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should change view state for minimap", () => {
-      const { rerender } = callRender(renderWithProvider, {
-        showMinimap: true,
-      });
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ minimap: true }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       const { onViewStateChange } = DeckGL.mock.lastCall[0];
       act(() =>
         onViewStateChange({
@@ -232,7 +240,8 @@ describe("Deck.gl I3S map component", () => {
           viewId: "minimap",
         })
       );
-      callRender(rerender, { showMinimap: true });
+      store.dispatch(setDebugOptions({ minimap: true }));
+      callRender(rerender, undefined, store);
       const { viewState } = DeckGL.mock.lastCall[0];
       expect(viewState).toEqual({
         main: {
@@ -345,15 +354,18 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should render wireframe", () => {
-      const { rerender } = callRender(renderWithProvider);
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ wireframe: false }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       const {
         _subLayerProps: {
           mesh: { wireframe },
         },
       } = Tile3DLayer.mock.lastCall[0];
-      expect(wireframe).toBe(undefined);
+      expect(wireframe).toBe(false);
 
-      callRender(rerender, { wireframe: true });
+      store.dispatch(setDebugOptions({ wireframe: true }));
+      callRender(rerender, undefined, store);
       const {
         _subLayerProps: {
           mesh: { wireframe: wireframe2 },
@@ -413,16 +425,20 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should call Tile3DLayer color callback", () => {
+      const store = setupStore();
+      store.dispatch(
+        setDebugOptions({ tileColorMode: TileColoredBy.original })
+      );
       callRender(renderWithProvider, {
-        tileColorMode: 2,
         selectedTile: { id: "selected-tile-id" },
         coloredTilesMap: { "selected-tile-id": [33, 55, 66] },
+        store,
       });
       expect(Tile3DLayer).toHaveBeenCalled();
       const { _getMeshColor } = Tile3DLayer.mock.lastCall[0];
       _getMeshColor();
       expect(getColorMock).toHaveBeenCalledWith(undefined, {
-        coloredBy: 2,
+        coloredBy: "Original",
         selectedTileId: "selected-tile-id",
         coloredTilesMap: { "selected-tile-id": [33, 55, 66] },
       });
@@ -439,7 +455,9 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should update debug texture on a tile", () => {
-      const { rerender } = callRender(renderWithProvider);
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ showUVDebugTexture: false }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       expect(Tile3DLayer).toHaveBeenCalled();
       const { onTileLoad } = Tile3DLayer.mock.lastCall[0];
       const tile3d = getTile3d();
@@ -447,7 +465,8 @@ describe("Deck.gl I3S map component", () => {
       expect(selectOriginalTextureForTile).toHaveBeenCalledWith(tile3d);
       expect(selectDebugTextureForTile).not.toHaveBeenCalled();
 
-      callRender(rerender, { showDebugTexture: true });
+      store.dispatch(setDebugOptions({ showUVDebugTexture: true }));
+      callRender(rerender, undefined, store);
       const { onTileLoad: onTileLoadSecond } = Tile3DLayer.mock.lastCall[0];
       act(() => onTileLoadSecond(tile3d));
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
@@ -522,15 +541,27 @@ describe("Deck.gl I3S map component", () => {
 
   describe("Render BoundingVolumeLayer", () => {
     it("Should render bounding volume", () => {
-      callRender(renderWithProvider, { boundingVolumeType: "OBB" });
+      const store = setupStore();
+      store.dispatch(
+        setDebugOptions({
+          boundingVolume: true,
+          boundingVolumeType: BoundingVolumeType.obb,
+        })
+      );
+      callRender(renderWithProvider, undefined, store);
       expect(BoundingVolumeLayer).toHaveBeenCalled();
     });
 
     it("Should call getBoundingVolumeColor", () => {
-      callRender(renderWithProvider, {
-        boundingVolumeType: "OBB",
-        boundingVolumeColorMode: "tile",
-      });
+      const store = setupStore();
+      store.dispatch(
+        setDebugOptions({
+          boundingVolume: true,
+          boundingVolumeType: BoundingVolumeType.obb,
+          boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
+        })
+      );
+      callRender(renderWithProvider, undefined, store);
       const { getBoundingVolumeColor } = (
         BoundingVolumeLayer as unknown as jest.Mock<BoundingVolumeLayer>
       ).mock.calls[0][0];
@@ -539,7 +570,7 @@ describe("Deck.gl I3S map component", () => {
         {
           id: "custom-tile",
         },
-        { coloredBy: "tile" }
+        { coloredBy: "By tile" }
       );
     });
   });
@@ -587,16 +618,19 @@ describe("Deck.gl I3S map component", () => {
 
   describe("Render minimap", () => {
     it("Should render minimap", () => {
-      const { rerender } = callRender(renderWithProvider);
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ minimap: false }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       let lastCallArgs = DeckGL.mock.lastCall[0];
       expect(lastCallArgs.views.length).toBe(1);
       expect(Object.keys(lastCallArgs.viewState)).toEqual(["main"]);
       expect(getFrustumBounds).not.toHaveBeenCalled();
-      callRender(rerender, { showMinimap: true });
+      store.dispatch(setDebugOptions({ minimap: true }));
+      callRender(rerender, undefined, store);
       lastCallArgs = DeckGL.mock.lastCall[0];
       expect(lastCallArgs.views.length).toBe(2);
       expect(Object.keys(lastCallArgs.viewState)).toEqual(["main", "minimap"]);
-      expect(getFrustumBounds).toHaveBeenCalledTimes(1);
+      expect(getFrustumBounds).toHaveBeenCalledTimes(2);
 
       const { id, data, getWidth } = LineLayer.mock.lastCall[0];
       expect(id).toBe("frustum");
@@ -605,7 +639,9 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should call frustum callbacks", () => {
-      callRender(renderWithProvider, { showMinimap: true });
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ minimap: true }));
+      callRender(renderWithProvider, undefined, store);
       const { getSourcePosition, getTargetPosition, getColor } =
         LineLayer.mock.lastCall[0];
       const line = {
@@ -621,36 +657,36 @@ describe("Deck.gl I3S map component", () => {
 
   describe("Render main viewport tiles on minimap", () => {
     it("Should render independent viewport for the minimap", async () => {
-      const { rerender } = callRender(renderWithProvider, {
-        createIndependentMinimapViewport: true,
-      });
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ minimapViewport: true }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       expect(setPropsMock).toHaveBeenCalledWith({
         viewportTraversersMap: { main: "main", minimap: "minimap" },
         loadTiles: true,
       });
-      callRender(rerender, { createIndependentMinimapViewport: false });
+      store.dispatch(setDebugOptions({ minimapViewport: false }));
+      callRender(rerender, undefined, store);
       expect(setPropsMock).toHaveBeenCalledWith({
         viewportTraversersMap: { main: "main", minimap: "main" },
         loadTiles: true,
       });
       expect(buildMinimapData).toHaveBeenCalledTimes(2);
 
-      callRender(rerender, {
-        loadedTilesets: [],
-        createIndependentMinimapViewport: true,
-      });
+      store.dispatch(setDebugOptions({ minimapViewport: false }));
+      callRender(rerender, { loadedTilesets: [] }, store);
       expect(buildMinimapData).toHaveBeenCalledTimes(2);
     });
 
     it("Should render main viewport as Scatterplot", () => {
-      callRender(renderWithProvider, {
-        createIndependentMinimapViewport: true,
-      });
+      const store = setupStore();
+      store.dispatch(
+        setDebugOptions({ minimapViewport: true, pickable: false })
+      );
+      callRender(renderWithProvider, undefined, store);
       expect(ScatterplotLayer).toHaveBeenCalled();
       const {
         id,
         data,
-        //        pickable,
         opacity,
         stroked,
         filled,
@@ -665,7 +701,6 @@ describe("Deck.gl I3S map component", () => {
       } = ScatterplotLayer.mock.lastCall[0];
       const circle = { coordinates: [44, 55, 66], radius: 15 };
       expect(id).toBe("main-on-minimap");
-      //      expect(pickable).toBe(false);
       expect(data).toBe(undefined);
       expect(opacity).toBe(0.8);
       expect(stroked).toBe(true);
@@ -700,7 +735,9 @@ describe("Deck.gl I3S map component", () => {
     });
 
     it("Should not show bounding volumes on minimap", () => {
-      callRender(renderWithProvider, { showMinimap: true });
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ minimap: true }));
+      callRender(renderWithProvider, undefined, store);
       const { layerFilter } = DeckGL.mock.lastCall[0];
       expect(
         layerFilter({
