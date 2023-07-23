@@ -1,8 +1,5 @@
 import { screen } from "@testing-library/react";
-import {
-  renderWithTheme,
-  renderWithThemeProviders,
-} from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { DebugPanel } from "./debug-panel";
 import {
@@ -11,7 +8,6 @@ import {
   TileColoredBy,
 } from "../../types";
 import userEvent from "@testing-library/user-event";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setupStore } from "../../redux/store";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 
@@ -72,7 +68,7 @@ const toggles = {
   },
 };
 
-const checkToggleTitleAndEvent = ({ toggleId, titleText, calledWith }) => {
+const checkToggleTitleAndEvent = ({ toggleId, titleText }) => {
   const title = screen.getByText(titleText);
   expect(title).toBeInTheDocument();
 
