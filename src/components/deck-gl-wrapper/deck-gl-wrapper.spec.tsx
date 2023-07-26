@@ -673,7 +673,7 @@ describe("Deck.gl I3S map component", () => {
       });
       expect(buildMinimapData).toHaveBeenCalledTimes(2);
 
-      store.dispatch(setDebugOptions({ minimapViewport: false }));
+      store.dispatch(setDebugOptions({ minimapViewport: true }));
       callRender(rerender, { loadedTilesets: [] }, store);
       expect(buildMinimapData).toHaveBeenCalledTimes(3);
     });
