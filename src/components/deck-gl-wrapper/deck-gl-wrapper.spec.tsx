@@ -626,12 +626,12 @@ describe("Deck.gl I3S map component", () => {
       expect(lastCallArgs.views.length).toBe(1);
       expect(Object.keys(lastCallArgs.viewState)).toEqual(["main"]);
       expect(getFrustumBounds).not.toHaveBeenCalled();
-      store.dispatch(setDebugOptions({ minimap: true }));
       callRender(rerender, undefined, store);
+      store.dispatch(setDebugOptions({ minimap: true }));
       lastCallArgs = DeckGL.mock.lastCall[0];
       expect(lastCallArgs.views.length).toBe(2);
       expect(Object.keys(lastCallArgs.viewState)).toEqual(["main", "minimap"]);
-      expect(getFrustumBounds).toHaveBeenCalledTimes(2);
+      expect(getFrustumBounds).toHaveBeenCalledTimes(1);
 
       const { id, data, getWidth } = LineLayer.mock.lastCall[0];
       expect(id).toBe("frustum");
@@ -673,9 +673,9 @@ describe("Deck.gl I3S map component", () => {
       });
       expect(buildMinimapData).toHaveBeenCalledTimes(2);
 
-      store.dispatch(setDebugOptions({ minimapViewport: true }));
       callRender(rerender, { loadedTilesets: [] }, store);
-      expect(buildMinimapData).toHaveBeenCalledTimes(3);
+      store.dispatch(setDebugOptions({ minimapViewport: true }));
+      expect(buildMinimapData).toHaveBeenCalledTimes(2);
     });
 
     it("Should render main viewport as Scatterplot", () => {
