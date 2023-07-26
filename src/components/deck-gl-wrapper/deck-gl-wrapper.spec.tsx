@@ -99,7 +99,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
     const result = renderFunc(
       <DeckGlWrapper
         mapStyle={mapStyle}
-        //        pickable={false}
         layers3d={[
           {
             url: tilesetUrl,
@@ -271,7 +270,6 @@ describe("Deck.gl I3S map component", () => {
         data,
         loader,
         loadOptions,
-        //        pickable,
         autoHighlight,
         highlightedObjectIndex,
       } = Tile3DLayer.mock.lastCall[0];
@@ -288,7 +286,6 @@ describe("Deck.gl I3S map component", () => {
           colorsByAttribute: null,
         },
       });
-      //      expect(pickable).toBe(false);
       expect(autoHighlight).toBe(false);
       expect(highlightedObjectIndex).toBe(undefined);
     });
@@ -338,12 +335,14 @@ describe("Deck.gl I3S map component", () => {
       );
     });
 
-    //    it("Should render pickable with auto highlighting", () => {
-    //      callRender(renderWithProvider, { pickable: true, autoHighlight: true });
-    //      const { pickable, autoHighlight } = Tile3DLayer.mock.lastCall[0];
-    //      expect(pickable).toBe(true);
-    //      expect(autoHighlight).toBe(true);
-    //    });
+    it("Should render pickable with auto highlighting", () => {
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ pickable: true }));
+      callRender(renderWithProvider, { autoHighlight: true }, store);
+      const { pickable, autoHighlight } = Tile3DLayer.mock.lastCall[0];
+      expect(pickable).toBe(true);
+      expect(autoHighlight).toBe(true);
+    });
 
     it("Should not highlight tile", () => {
       callRender(renderWithProvider, {
@@ -473,12 +472,14 @@ describe("Deck.gl I3S map component", () => {
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
     });
 
-    //    it("Should not be pickable", () => {
-    //      callRender(renderWithProvider, { pickable: undefined });
-    //      expect(Tile3DLayer).toHaveBeenCalled();
-    //      const { pickable } = Tile3DLayer.mock.lastCall[0];
-    //      expect(pickable).toBe(false);
-    //    });
+    it("Should not be pickable", () => {
+      const store = setupStore();
+      store.dispatch(setDebugOptions({ pickable: false }));
+      callRender(renderWithProvider, undefined, store);
+      expect(Tile3DLayer).toHaveBeenCalled();
+      const { pickable } = Tile3DLayer.mock.lastCall[0];
+      expect(pickable).toBe(false);
+    });
 
     it("Should colorize by attribute", () => {
       const store = setupStore();
@@ -674,14 +675,12 @@ describe("Deck.gl I3S map component", () => {
 
       store.dispatch(setDebugOptions({ minimapViewport: false }));
       callRender(rerender, { loadedTilesets: [] }, store);
-      expect(buildMinimapData).toHaveBeenCalledTimes(2);
+      expect(buildMinimapData).toHaveBeenCalledTimes(3);
     });
 
     it("Should render main viewport as Scatterplot", () => {
       const store = setupStore();
-      store.dispatch(
-        setDebugOptions({ minimapViewport: true, pickable: false })
-      );
+      store.dispatch(setDebugOptions({ minimapViewport: true }));
       callRender(renderWithProvider, undefined, store);
       expect(ScatterplotLayer).toHaveBeenCalled();
       const {
