@@ -73,9 +73,20 @@ const toggles = {
   },
 };
 
-const checkToggleTitle = ({ titleText }) => {
+const checkToggleTitleAndEvent = (
+  { toggleId, titleText, calledWith },
+  store
+) => {
   const title = screen.getByText(titleText);
   expect(title).toBeInTheDocument();
+
+  const toggle = document.querySelector(`#${toggleId}`) || null;
+  if (toggle) {
+    userEvent.click(toggle);
+  }
+  expect(store.getState().debugOptions.value[calledWith[0]]).toEqual(
+    calledWith[1]
+  );
 };
 
 describe("Debug panel", () => {
@@ -111,7 +122,7 @@ describe("Debug panel", () => {
     // Check all toggles
     for (const key of Object.keys(toggles)) {
       const toggleData = toggles[key];
-      checkToggleTitle(toggleData);
+      checkToggleTitleAndEvent(toggleData, store);
     }
   });
 
@@ -190,12 +201,20 @@ describe("Debug panel", () => {
         wireframe: false,
       })
     );
-    callRender(renderWithThemeProviders, undefined, store);
     const state = store.getState();
+    callRender(renderWithThemeProviders, undefined, store);
     const boundingVolumeColorMode = selectBoundingVolumeColorMode(state);
     expect(boundingVolumeColorMode).toEqual(BoundingVolumeColoredBy.original);
-    const boundingVolumeType = selectBoundingVolumeType(state);
-    expect(boundingVolumeType).toEqual(BoundingVolumeType.mbs);
+    const OBBButton = screen.getByText("OBB");
+    userEvent.click(OBBButton);
+    const stateObb = store.getState();
+    const boundingVolumeTypeObb = selectBoundingVolumeType(stateObb);
+    expect(boundingVolumeTypeObb).toEqual(BoundingVolumeType.obb);
+    const MBSButton = screen.getByText("MBS");
+    userEvent.click(MBSButton);
+    const stateMbs = store.getState();
+    const boundingVolumeTypeMbs = selectBoundingVolumeType(stateMbs);
+    expect(boundingVolumeTypeMbs).toEqual(BoundingVolumeType.mbs);
   });
 
   it("Should be able to select bounding volume color and type. Another items", () => {
@@ -208,7 +227,7 @@ describe("Debug panel", () => {
         minimapViewport: false,
         boundingVolume: true,
         tileColorMode: TileColoredBy.original,
-        boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
+        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
         boundingVolumeType: BoundingVolumeType.obb,
         pickable: false,
         loadTiles: false,
@@ -219,8 +238,14 @@ describe("Debug panel", () => {
     callRender(renderWithThemeProviders, undefined, store);
     const state = store.getState();
     const boundingVolumeColorMode = selectBoundingVolumeColorMode(state);
-    expect(boundingVolumeColorMode).toEqual(BoundingVolumeColoredBy.tile);
+    expect(boundingVolumeColorMode).toEqual(BoundingVolumeColoredBy.original);
     const boundingVolumeType = selectBoundingVolumeType(state);
     expect(boundingVolumeType).toEqual(BoundingVolumeType.obb);
+    const tileButton = screen.getByText("By tile");
+    userEvent.click(tileButton);
+    const stateTile = store.getState();
+    const boundingVolumeColorModeTile =
+      selectBoundingVolumeColorMode(stateTile);
+    expect(boundingVolumeColorModeTile).toEqual(BoundingVolumeColoredBy.tile);
   });
 });
