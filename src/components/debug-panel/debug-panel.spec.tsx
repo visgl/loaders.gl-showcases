@@ -155,31 +155,33 @@ describe("Debug panel", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const colorItems = [
-      TileColoredBy.original,
-      TileColoredBy.random,
-      TileColoredBy.depth,
-      TileColoredBy.custom,
+      { buttonText: "Original", tileColorMode: TileColoredBy.original },
+      { buttonText: "Random by tile", tileColorMode: TileColoredBy.random },
+      { buttonText: "By depth", tileColorMode: TileColoredBy.depth },
+      { buttonText: "User selected", tileColorMode: TileColoredBy.custom },
     ];
+    const store = setupStore();
+    store.dispatch(
+      setDebugOptions({
+        minimap: true,
+        minimapViewport: false,
+        boundingVolume: false,
+        tileColorMode: TileColoredBy.custom,
+        boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
+        boundingVolumeType: BoundingVolumeType.mbs,
+        pickable: false,
+        loadTiles: false,
+        showUVDebugTexture: false,
+        wireframe: false,
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
     for (const colorItem of colorItems) {
-      const store = setupStore();
-      store.dispatch(
-        setDebugOptions({
-          minimap: true,
-          minimapViewport: false,
-          boundingVolume: false,
-          tileColorMode: colorItem,
-          boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-          boundingVolumeType: BoundingVolumeType.mbs,
-          pickable: false,
-          loadTiles: false,
-          showUVDebugTexture: false,
-          wireframe: false,
-        })
-      );
-      callRender(renderWithThemeProviders, undefined, store);
+      const button = screen.getByText(colorItem.buttonText);
+      userEvent.click(button);
       const state = store.getState();
       const tileColorMode = selectTileColorMode(state);
-      expect(tileColorMode).toEqual(colorItem);
+      expect(tileColorMode).toEqual(colorItem.tileColorMode);
     }
   });
 
