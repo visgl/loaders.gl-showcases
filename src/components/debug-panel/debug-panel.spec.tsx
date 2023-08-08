@@ -84,9 +84,7 @@ const checkToggleTitleAndEvent = (
   if (toggle) {
     userEvent.click(toggle);
   }
-  expect(store.getState().debugOptions.value[calledWith[0]]).toEqual(
-    calledWith[1]
-  );
+  expect(store.getState().debugOptions[calledWith[0]]).toEqual(calledWith[1]);
 };
 
 describe("Debug panel", () => {

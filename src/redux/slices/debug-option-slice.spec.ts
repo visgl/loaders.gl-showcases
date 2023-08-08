@@ -17,57 +17,51 @@ import reducer, {
   selectTileColorMode,
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
-  setInitialDebugOptions,
+  resetDebugOptions,
   setDebugOptions,
 } from "./debug-options-slice";
 
 describe("slice: debug-options", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
-      value: {
-        minimap: false,
-        minimapViewport: false,
-        boundingVolume: false,
-        pickable: false,
-        loadTiles: true,
-        showUVDebugTexture: false,
-        wireframe: false,
-        tileColorMode: TileColoredBy.original,
-        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-        boundingVolumeType: BoundingVolumeType.mbs,
-      },
+      minimap: false,
+      minimapViewport: false,
+      boundingVolume: false,
+      pickable: false,
+      loadTiles: true,
+      showUVDebugTexture: false,
+      wireframe: false,
+      tileColorMode: TileColoredBy.original,
+      boundingVolumeColorMode: BoundingVolumeColoredBy.original,
+      boundingVolumeType: BoundingVolumeType.mbs,
     });
   });
 
-  it("Reducer setInitialDebugOptions should set initial state", () => {
+  it("Reducer resetDebugOptions should set initial state", () => {
     const previousState: debugOptionsState = {
-      value: {
-        minimap: true,
-        minimapViewport: true,
-        boundingVolume: true,
-        pickable: true,
-        loadTiles: false,
-        showUVDebugTexture: false,
-        wireframe: true,
-        tileColorMode: TileColoredBy.random,
-        boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
-        boundingVolumeType: BoundingVolumeType.obb,
-      },
+      minimap: true,
+      minimapViewport: true,
+      boundingVolume: true,
+      pickable: true,
+      loadTiles: false,
+      showUVDebugTexture: false,
+      wireframe: true,
+      tileColorMode: TileColoredBy.random,
+      boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
+      boundingVolumeType: BoundingVolumeType.obb,
     };
 
-    expect(reducer(previousState, setInitialDebugOptions())).toEqual({
-      value: {
-        minimap: false,
-        minimapViewport: false,
-        boundingVolume: false,
-        pickable: false,
-        loadTiles: true,
-        showUVDebugTexture: false,
-        wireframe: false,
-        tileColorMode: TileColoredBy.original,
-        boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-        boundingVolumeType: BoundingVolumeType.mbs,
-      },
+    expect(reducer(previousState, resetDebugOptions())).toEqual({
+      minimap: false,
+      minimapViewport: false,
+      boundingVolume: false,
+      pickable: false,
+      loadTiles: true,
+      showUVDebugTexture: false,
+      wireframe: false,
+      tileColorMode: TileColoredBy.original,
+      boundingVolumeColorMode: BoundingVolumeColoredBy.original,
+      boundingVolumeType: BoundingVolumeType.mbs,
     });
   });
 
