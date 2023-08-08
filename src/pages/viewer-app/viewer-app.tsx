@@ -68,10 +68,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import {
-  setDebugOptions,
-  resetDebugOptions,
-} from "../../redux/slices/debug-options-slice";
+import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {

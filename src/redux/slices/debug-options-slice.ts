@@ -47,8 +47,8 @@ const debugOptionsSlice = createSlice({
   name: "debugOptions",
   initialState,
   reducers: {
-    resetDebugOptions: (state: debugOptionsState) => {
-      state = initialState;
+    resetDebugOptions: () => {
+      return initialState;
     },
     setDebugOptions: (
       state: debugOptionsState,
