@@ -81,7 +81,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
-  setInitialDebugOptions,
+  resetDebugOptions,
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
@@ -188,7 +188,7 @@ export const DebugApp = () => {
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
     return () => {
-      dispatch(setInitialDebugOptions());
+      dispatch(resetDebugOptions());
     };
   }, []);
 
@@ -234,7 +234,7 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    dispatch(setInitialDebugOptions());
+    dispatch(resetDebugOptions());
     dispatch(setDebugOptions({ minimap: true }));
   }, [activeLayers, buildingExplorerOpened]);
 

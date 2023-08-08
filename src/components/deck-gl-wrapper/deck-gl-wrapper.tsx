@@ -213,9 +213,6 @@ export const DeckGlWrapper = ({
   const tileColorMode = useAppSelector(selectTileColorMode);
   const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
   const wireframe = useAppSelector(selectWireframe);
-  const boundingVolume = useAppSelector(selectBoundingVolume);
-  const boundingVolumeTemp = useAppSelector(selectBoundingVolumeType);
-  const boundingVolumeType = boundingVolume ? boundingVolumeTemp : null;
 
   const VIEWS = useMemo(
     () => [
@@ -526,14 +523,17 @@ export const DeckGlWrapper = ({
   };
 
   const renderBoundingVolumeLayer = () => {
-    if (!boundingVolumeType) {
+    const boundingVolume = useAppSelector(selectBoundingVolume);
+    const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
+
+    if (!boundingVolume) {
       return null;
     }
     const tiles = getAllTilesFromTilesets(loadedTilesets);
     // @ts-expect-error - Expected 0 arguments, but got 1.
     return new BoundingVolumeLayer({
       id: "bounding-volume-layer",
-      visible: Boolean(boundingVolumeType),
+      visible: boundingVolume,
       tiles,
       getBoundingVolumeColor,
       boundingVolumeType,

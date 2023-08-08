@@ -70,7 +70,7 @@ import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
   setDebugOptions,
-  setInitialDebugOptions,
+  resetDebugOptions,
 } from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
@@ -154,7 +154,7 @@ export const ViewerApp = () => {
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ pickable: isLayerPickable() }));
     return () => {
-      dispatch(setInitialDebugOptions());
+      dispatch(setDebugOptions({ pickable: false }));
     };
   }, []);
 

@@ -22,7 +22,7 @@ import reducer, {
 } from "./debug-options-slice";
 
 describe("slice: debug-options", () => {
-  it("Reducer shall return the initial state", () => {
+  it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
       value: {
         minimap: false,
@@ -39,7 +39,7 @@ describe("slice: debug-options", () => {
     });
   });
 
-  it("Reducer setInitialDebugOptions shall set initial state", () => {
+  it("Reducer setInitialDebugOptions should set initial state", () => {
     const previousState: debugOptionsState = {
       value: {
         minimap: true,
@@ -71,7 +71,7 @@ describe("slice: debug-options", () => {
     });
   });
 
-  it("Selectors shall return the initial state", () => {
+  it("Selectors should return the initial state", () => {
     const store = setupStore();
     const state = store.getState();
     expect(selectMiniMap(state)).toEqual(false);
@@ -88,7 +88,7 @@ describe("slice: debug-options", () => {
     expect(selectBoundingVolumeType(state)).toEqual(BoundingVolumeType.mbs);
   });
 
-  it("Selectors shall return the updated value", () => {
+  it("Selectors should return the updated value", () => {
     const store = setupStore();
     store.dispatch(
       setDebugOptions({
