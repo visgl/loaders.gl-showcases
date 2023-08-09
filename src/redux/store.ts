@@ -9,6 +9,7 @@ import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
+import baseMapsSliceReducer from "./slices/base-maps-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   uvDebugTexture: uvDebugTextureSliceReducer,
   debugOptions: debugOptionsSliceReducer,
   attributeStatsMap: attributeStatsMapSliceReducer,
+  baseMap: baseMapsSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

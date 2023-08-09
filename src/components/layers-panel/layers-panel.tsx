@@ -35,6 +35,8 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
+import { useAppDispatch } from "../../redux/hooks";
+import { setBaseMaps } from "../../redux/slices/base-maps-slice";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -142,14 +144,9 @@ type LayersPanelProps = {
   sublayers: ActiveSublayer[];
   selectedLayerIds: string[];
   type: ListItemType;
-  baseMaps: BaseMap[];
-  selectedBaseMapId: string;
   isAddingBookmarksAllowed?: boolean;
   viewWidth?: number;
   viewHeight?: number;
-  insertBaseMap: (baseMap: BaseMap) => void;
-  selectBaseMap: (id: string) => void;
-  deleteBaseMap: (id: string) => void;
   onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
@@ -169,19 +166,15 @@ export const LayersPanel = ({
   onLayerInsert,
   onLayerSelect,
   onLayerDelete,
-  baseMaps,
-  selectedBaseMapId,
   isAddingBookmarksAllowed = true,
   viewWidth = 1024,
   viewHeight = 768,
-  insertBaseMap,
-  selectBaseMap,
-  deleteBaseMap,
   onUpdateSublayerVisibility,
   onClose,
   onPointToLayer,
-  onBuildingExplorerOpened
+  onBuildingExplorerOpened,
 }: LayersPanelProps) => {
+  const dispatch = useAppDispatch();
   const layout = useAppLayout();
 
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
@@ -336,7 +329,7 @@ export const LayersPanel = ({
       custom: true,
     };
 
-    insertBaseMap(newMap);
+    dispatch(setBaseMaps(newMap));
     setShowInsertMapPanel(false);
   };
 
@@ -381,11 +374,7 @@ export const LayersPanel = ({
             )}
             {tab === Tabs.MapOptions && (
               <MapOptionPanel
-                baseMaps={baseMaps}
-                selectedBaseMapId={selectedBaseMapId}
-                selectBaseMap={selectBaseMap}
                 insertBaseMap={() => setShowInsertMapPanel(true)}
-                deleteBaseMap={deleteBaseMap}
               />
             )}
           </PanelContent>
