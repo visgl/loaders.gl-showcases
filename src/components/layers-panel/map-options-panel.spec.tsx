@@ -40,11 +40,11 @@ const onSelectBaseMapMock = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <MapOptionPanel
-      baseMaps={[]}
-      selectedBaseMapId={""}
-      selectBaseMap={onSelectBaseMapMock}
+      //      baseMaps={[]}
+      //selectedBaseMapId={""}
+      //selectBaseMap={onSelectBaseMapMock}
       insertBaseMap={onInsertBaseMapMock}
-      deleteBaseMap={onDeleteBaseMapMock}
+      //deleteBaseMap={onDeleteBaseMapMock}
       {...props}
     />
   );

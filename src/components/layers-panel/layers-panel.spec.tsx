@@ -28,10 +28,10 @@ jest.mock("./layer-settings-panel");
 jest.mock("react-router-dom", () => ({
   useLocation: jest.fn().mockImplementation(() => ({
     location: {
-      pathname: '/viewer'
-    }
-  }))
-}))
+      pathname: "/viewer",
+    },
+  })),
+}));
 
 jest.mock("../close-button/close-button", () => ({
   CloseButton: ({ onClick }) => {
@@ -45,7 +45,7 @@ jest.mock("../close-button/close-button", () => ({
 }));
 
 jest.mock("../../utils/bookmarks-utils", () => ({
-  convertArcGisSlidesToBookmars: jest.fn()
+  convertArcGisSlidesToBookmars: jest.fn(),
 }));
 
 const LayersControlPanelMock =
@@ -89,11 +89,11 @@ const callRender = (renderFunc, props = {}) => {
       sublayers={[]}
       selectedLayerIds={[]}
       type={0}
-      baseMaps={[]}
-      selectedBaseMapId={""}
-      insertBaseMap={insertBaseMapMock}
-      selectBaseMap={selectBaseMapMock}
-      deleteBaseMap={deleteBaseMapMock}
+      //      baseMaps={[]}
+      //selectedBaseMapId={""}
+      //      insertBaseMap={insertBaseMapMock}
+      //      selectBaseMap={selectBaseMapMock}
+      //      deleteBaseMap={deleteBaseMapMock}
       onLayerInsert={layerInsertMock}
       onLayerSelect={layerSelectMock}
       onLayerDelete={layerDeleteMock}
@@ -539,11 +539,8 @@ describe("Layers Panel", () => {
       Promise.resolve({
         header: {
           presentation: {
-            slides: [
-              {id: 'slide-1'},
-              {id: 'slide-2'}
-            ]
-          }
+            slides: [{ id: "slide-1" }, { id: "slide-2" }],
+          },
         },
         layers: [
           {
@@ -557,7 +554,7 @@ describe("Layers Panel", () => {
 
     callRender(renderWithTheme, {
       layers: [{ id: "test", name: "first", url: "https://test.url" }],
-      isAddingBookmarksAllowed: false
+      isAddingBookmarksAllowed: false,
     });
 
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];

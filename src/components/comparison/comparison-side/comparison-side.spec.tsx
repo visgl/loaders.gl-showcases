@@ -108,8 +108,8 @@ describe("ComparisonSide", () => {
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
         viewState={viewState}
-        selectedBaseMap={baseMap}
-        baseMaps={BASE_MAPS}
+        //selectedBaseMap={baseMap}
+        //        baseMaps={BASE_MAPS}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -123,9 +123,9 @@ describe("ComparisonSide", () => {
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
-        onInsertBaseMap={onInsertBaseMapMock}
-        onSelectBaseMap={onSelectBaseMapMock}
-        onDeleteBaseMap={onDeleteBaseMapMock}
+        //        onInsertBaseMap={onInsertBaseMapMock}
+        //        onSelectBaseMap={onSelectBaseMapMock}
+        //        onDeleteBaseMap={onDeleteBaseMapMock}
         onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
         onBuildingExplorerOpened={onBuildingExplorerOpened}

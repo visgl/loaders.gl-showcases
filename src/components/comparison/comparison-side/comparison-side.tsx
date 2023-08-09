@@ -6,7 +6,6 @@ import { lumaStats } from "@luma.gl/core";
 
 import {
   ActiveButton,
-  BaseMap,
   ComparisonMode,
   ComparisonSideMode,
   LayerExample,
@@ -57,6 +56,10 @@ import {
   updateLayerVisibility,
 } from "../../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import {
+  selectBaseMaps,
+  selectSelectedBaseMaps,
+} from "../../../redux/slices/base-maps-slice";
 
 type LayoutProps = {
   layout: string;
@@ -76,8 +79,6 @@ type ComparisonSideProps = {
   mode: ComparisonMode;
   side: ComparisonSideMode;
   viewState: ViewStateSet;
-  selectedBaseMap: BaseMap;
-  baseMaps: BaseMap[];
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
@@ -96,9 +97,6 @@ type ComparisonSideProps = {
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
   onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
-  onInsertBaseMap: (baseMap: BaseMap) => void;
-  onSelectBaseMap: (baseMapId: string) => void;
-  onDeleteBaseMap: (baseMapId: string) => void;
   onLoadingStateChange: (isLoading: boolean) => void;
   onTilesetLoaded: (stats: StatsMap) => void;
   onShowBookmarksChange: () => void;
@@ -110,8 +108,6 @@ export const ComparisonSide = ({
   mode,
   side,
   viewState,
-  selectedBaseMap,
-  baseMaps,
   showLayerOptions,
   showComparisonSettings,
   staticLayers,
@@ -129,9 +125,6 @@ export const ComparisonSide = ({
   onViewStateChange,
   pointToTileset,
   onChangeLayers,
-  onInsertBaseMap,
-  onSelectBaseMap,
-  onDeleteBaseMap,
   onLoadingStateChange,
   onTilesetLoaded,
   onShowBookmarksChange,
@@ -139,6 +132,9 @@ export const ComparisonSide = ({
   onInsertBookmarks,
   onUpdateSublayers,
 }: ComparisonSideProps) => {
+  const baseMaps = useAppSelector(selectBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMaps);
+  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const layout = useAppLayout();
 
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -468,8 +464,8 @@ export const ComparisonSide = ({
             ...viewState.main,
           },
         }}
-        showTerrain={selectedBaseMap.id === "Terrain"}
-        mapStyle={selectedBaseMap.mapUrl}
+        showTerrain={selectedBaseMap?.id === "Terrain"}
+        mapStyle={selectedBaseMap?.mapUrl}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
         loadNumber={loadNumber}
@@ -517,12 +513,7 @@ export const ComparisonSide = ({
                   onChangeMainToolsPanelHandler(ActiveButton.options)
                 }
                 onBuildingExplorerOpened={onBuildingExplorerOpened}
-                baseMaps={baseMaps}
-                selectedBaseMapId={selectedBaseMap.id}
                 isAddingBookmarksAllowed={mode === ComparisonMode.withinLayer}
-                insertBaseMap={onInsertBaseMap}
-                selectBaseMap={onSelectBaseMap}
-                deleteBaseMap={onDeleteBaseMap}
               />
             </OptionsPanelWrapper>
           )}
