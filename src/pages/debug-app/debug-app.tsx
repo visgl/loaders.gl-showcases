@@ -707,7 +707,7 @@ export const DebugApp = () => {
 
         showTerrain={selectedBaseMap?.id === "Terrain"}
         mapStyle={selectedBaseMap?.mapUrl}
-        tileColorMode={useAppSelector(selectTileColorMode)}
+        tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
