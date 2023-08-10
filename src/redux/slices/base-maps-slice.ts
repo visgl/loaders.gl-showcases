@@ -34,9 +34,9 @@ const baseMapsSlice = createSlice({
     },
     deleteBaseMaps: (state: BaseMapsState, action: PayloadAction<string>) => {
       state.baseMap = state.baseMap.filter(
-        (deleteMap) => deleteMap.id !== action.payload
+        (keepMap) => keepMap.id !== action.payload
       );
-      state.selectedBaseMap = BASE_MAPS[0].id;
+      state.selectedBaseMap = state.baseMap[0].id;
     },
   },
 });
