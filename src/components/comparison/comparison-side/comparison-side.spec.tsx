@@ -1,6 +1,5 @@
 import { act, screen } from "@testing-library/react";
 import { load } from "@loaders.gl/core";
-import { BASE_MAPS } from "../../../constants/map-styles";
 import {
   ActiveButton,
   ComparisonMode,
@@ -79,9 +78,6 @@ jest.mock("../../../constants/i3s-examples", () => ({
 const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
 const onChangeLayersMock = jest.fn();
-const onInsertBaseMapMock = jest.fn();
-const onSelectBaseMapMock = jest.fn();
-const onDeleteBaseMapMock = jest.fn();
 const onTilesetLoaded = jest.fn();
 const onLoadingStateChange = jest.fn();
 const onShowBookmarksChange = jest.fn();
@@ -99,7 +95,6 @@ const parseTilesetUrlParamsMock =
 
 describe("ComparisonSide", () => {
   let viewState;
-  let baseMap;
 
   const callRender = (renderFunc, props = {}, store = setupStore()) => {
     return renderFunc(
@@ -108,8 +103,6 @@ describe("ComparisonSide", () => {
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
         viewState={viewState}
-        //selectedBaseMap={baseMap}
-        //        baseMaps={BASE_MAPS}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -123,9 +116,6 @@ describe("ComparisonSide", () => {
         onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
-        //        onInsertBaseMap={onInsertBaseMapMock}
-        //        onSelectBaseMap={onSelectBaseMapMock}
-        //        onDeleteBaseMap={onDeleteBaseMapMock}
         onLoadingStateChange={onLoadingStateChange}
         onTilesetLoaded={onTilesetLoaded}
         onBuildingExplorerOpened={onBuildingExplorerOpened}
@@ -161,12 +151,6 @@ describe("ComparisonSide", () => {
         transitionDuration: 0,
         transitionInterpolator: null,
       },
-    };
-    baseMap = {
-      id: "Dark",
-      name: "Dark",
-      mapUrl:
-        "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
     };
   });
 

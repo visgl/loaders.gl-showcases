@@ -1,6 +1,6 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersPanel } from "./layers-panel";
 
 // Mocked compnents
@@ -11,6 +11,11 @@ import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
 import { PageId } from "../../types";
+import { setupStore } from "../../redux/store";
+import {
+  setInitialBaseMaps,
+  selectSelectedBaseMaps,
+} from "../../redux/slices/base-maps-slice";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
@@ -69,9 +74,6 @@ beforeAll(() => {
   ));
 });
 
-const insertBaseMapMock = jest.fn();
-const deleteBaseMapMock = jest.fn();
-const selectBaseMapMock = jest.fn();
 const layerInsertMock = jest.fn();
 const layerSelectMock = jest.fn();
 const layerDeleteMock = jest.fn();
@@ -80,7 +82,7 @@ const onCloseMock = jest.fn();
 const onPointToLayerMock = jest.fn();
 const onBuildingExplorerOpened = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
     <LayersPanel
       id={""}
@@ -89,11 +91,6 @@ const callRender = (renderFunc, props = {}) => {
       sublayers={[]}
       selectedLayerIds={[]}
       type={0}
-      //      baseMaps={[]}
-      //selectedBaseMapId={""}
-      //      insertBaseMap={insertBaseMapMock}
-      //      selectBaseMap={selectBaseMapMock}
-      //      deleteBaseMap={deleteBaseMapMock}
       onLayerInsert={layerInsertMock}
       onLayerSelect={layerSelectMock}
       onLayerDelete={layerDeleteMock}
@@ -102,13 +99,20 @@ const callRender = (renderFunc, props = {}) => {
       onPointToLayer={onPointToLayerMock}
       onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
-    />
+    />,
+    store
   );
 };
 
 describe("Layers Panel", () => {
   it("Should render LayersPanel", () => {
-    const { container } = callRender(renderWithTheme);
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
     expect(container).toBeInTheDocument();
 
     // Check Tabs
@@ -136,9 +140,15 @@ describe("Layers Panel", () => {
   });
 
   it("Should be able to insert new Layer", () => {
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+      },
+      store
+    );
     const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -157,9 +167,15 @@ describe("Layers Panel", () => {
   });
 
   it("Should be able to cancel insert new Layer", () => {
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+      },
+      store
+    );
     const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -179,9 +195,15 @@ describe("Layers Panel", () => {
   });
 
   it("Should show duplication layer error in Insert Panel", () => {
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      },
+      store
+    );
     const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -211,9 +233,15 @@ describe("Layers Panel", () => {
   });
 
   it("Should close duplication warining on click outside", () => {
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      },
+      store
+    );
     const { onLayerInsertClick } = LayersControlPanelMock.mock.lastCall[0];
     act(() => {
       onLayerInsertClick();
@@ -232,7 +260,9 @@ describe("Layers Panel", () => {
   });
 
   it("Should be able to insert baseMap", () => {
-    callRender(renderWithTheme);
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
     userEvent.click(screen.getByText("Map Options"));
 
@@ -253,11 +283,15 @@ describe("Layers Panel", () => {
       });
     });
 
-    expect(insertBaseMapMock).toHaveBeenCalled();
+    const state = store.getState();
+    const baseMapId = selectSelectedBaseMaps(state);
+    expect(baseMapId).toEqual("https://test-base-map.url");
   });
 
   it("Should be able to cancel insert baseMap", () => {
-    callRender(renderWithTheme);
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
     userEvent.click(screen.getByText("Map Options"));
 
@@ -279,7 +313,9 @@ describe("Layers Panel", () => {
   });
 
   it("Should show layer settings panel", () => {
-    callRender(renderWithTheme);
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(renderWithThemeProviders, undefined, store);
     const { onLayerSettingsClick } = LayersControlPanelMock.mock.lastCall[0];
     // Call show layer settings
     act(() => {
@@ -318,9 +354,16 @@ describe("Layers Panel", () => {
       })
     );
 
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+      },
+      store
+    );
+
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -366,9 +409,16 @@ describe("Layers Panel", () => {
       })
     );
 
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://first-test.url" }],
+      },
+      store
+    );
+
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -400,9 +450,16 @@ describe("Layers Panel", () => {
         ],
       })
     );
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      },
+      store
+    );
+
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -451,9 +508,16 @@ describe("Layers Panel", () => {
       Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
     );
 
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      },
+      store
+    );
+
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -495,9 +559,16 @@ describe("Layers Panel", () => {
       Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
     );
 
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+      },
+      store
+    );
+
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
     act(() => {
@@ -552,10 +623,16 @@ describe("Layers Panel", () => {
       })
     );
 
-    callRender(renderWithTheme, {
-      layers: [{ id: "test", name: "first", url: "https://test.url" }],
-      isAddingBookmarksAllowed: false,
-    });
+    const store = setupStore();
+    store.dispatch(setInitialBaseMaps());
+    callRender(
+      renderWithThemeProviders,
+      {
+        layers: [{ id: "test", name: "first", url: "https://test.url" }],
+        isAddingBookmarksAllowed: false,
+      },
+      store
+    );
 
     const { onSceneInsertClick } = LayersControlPanelMock.mock.lastCall[0];
 
