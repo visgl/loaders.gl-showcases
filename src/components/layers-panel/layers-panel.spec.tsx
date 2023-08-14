@@ -13,8 +13,7 @@ import { load } from "@loaders.gl/core";
 import { PageId } from "../../types";
 import { setupStore } from "../../redux/store";
 import {
-  setInitialBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 
 jest.mock("@loaders.gl/core", () => ({
@@ -107,7 +106,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 describe("Layers Panel", () => {
   it("Should render LayersPanel", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     const { container } = callRender(
       renderWithThemeProviders,
       undefined,
@@ -141,7 +139,6 @@ describe("Layers Panel", () => {
 
   it("Should be able to insert new Layer", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -168,7 +165,6 @@ describe("Layers Panel", () => {
 
   it("Should be able to cancel insert new Layer", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -196,7 +192,6 @@ describe("Layers Panel", () => {
 
   it("Should show duplication layer error in Insert Panel", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -234,7 +229,6 @@ describe("Layers Panel", () => {
 
   it("Should close duplication warining on click outside", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -261,7 +255,6 @@ describe("Layers Panel", () => {
 
   it("Should be able to insert baseMap", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
     userEvent.click(screen.getByText("Map Options"));
@@ -284,13 +277,12 @@ describe("Layers Panel", () => {
     });
 
     const state = store.getState();
-    const baseMapId = selectSelectedBaseMaps(state);
+    const baseMapId =   selectSelectedBaseMapId(state);
     expect(baseMapId).toEqual("https://test-base-map.url");
   });
 
   it("Should be able to cancel insert baseMap", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
     userEvent.click(screen.getByText("Map Options"));
@@ -314,7 +306,6 @@ describe("Layers Panel", () => {
 
   it("Should show layer settings panel", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(renderWithThemeProviders, undefined, store);
     const { onLayerSettingsClick } = LayersControlPanelMock.mock.lastCall[0];
     // Call show layer settings
@@ -355,7 +346,6 @@ describe("Layers Panel", () => {
     );
 
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -410,7 +400,6 @@ describe("Layers Panel", () => {
     );
 
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -451,7 +440,6 @@ describe("Layers Panel", () => {
       })
     );
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -509,7 +497,6 @@ describe("Layers Panel", () => {
     );
 
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -560,7 +547,6 @@ describe("Layers Panel", () => {
     );
 
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {
@@ -624,7 +610,6 @@ describe("Layers Panel", () => {
     );
 
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     callRender(
       renderWithThemeProviders,
       {

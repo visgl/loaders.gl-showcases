@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   uvDebugTexture: uvDebugTextureSliceReducer,
   debugOptions: debugOptionsSliceReducer,
   attributeStatsMap: attributeStatsMapSliceReducer,
-  baseMap: baseMapsSliceReducer,
+  baseMaps: baseMapsSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
