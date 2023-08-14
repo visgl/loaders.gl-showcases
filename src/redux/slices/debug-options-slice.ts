@@ -8,7 +8,7 @@ import {
 import { RootState } from "../store";
 
 // Define a type for the slice state
-export interface debugOptionsState {
+export interface DebugOptionsState {
   minimap: boolean;
   minimapViewport: boolean;
   boundingVolume: boolean;
@@ -20,7 +20,7 @@ export interface debugOptionsState {
   showUVDebugTexture: boolean;
   wireframe: boolean;
 }
-const initialState: debugOptionsState = {
+const initialState: DebugOptionsState = {
   // Show minimap
   minimap: false,
   // Use separate traversal for the minimap viewport
@@ -51,8 +51,8 @@ const debugOptionsSlice = createSlice({
       return initialState;
     },
     setDebugOptions: (
-      state: debugOptionsState,
-      action: PayloadAction<Partial<debugOptionsState>>
+      state: DebugOptionsState,
+      action: PayloadAction<Partial<DebugOptionsState>>
     ) => {
       return { ...state, ...action.payload };
     },

@@ -84,6 +84,7 @@ import {
   resetDebugOptions,
   setDebugOptions,
   selectDebugOptions,
+  selectPickable,
 } from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
@@ -724,6 +725,7 @@ export const DebugApp = () => {
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
+        pickable={useAppSelector(selectPickable)}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadDebugTextureImage

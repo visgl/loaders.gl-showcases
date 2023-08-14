@@ -68,7 +68,6 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -149,10 +148,6 @@ export const ViewerApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
-    dispatch(setDebugOptions({ pickable: isLayerPickable() }));
-    return () => {
-      dispatch(setDebugOptions({ pickable: false }));
-    };
   }, []);
 
   /**
@@ -572,6 +567,7 @@ export const ViewerApp = () => {
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
+        pickable={isLayerPickable()}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadedTilesets={loadedTilesets}

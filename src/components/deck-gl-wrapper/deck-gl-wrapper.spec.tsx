@@ -337,8 +337,7 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should render pickable with auto highlighting", () => {
       const store = setupStore();
-      store.dispatch(setDebugOptions({ pickable: true }));
-      callRender(renderWithProvider, { autoHighlight: true }, store);
+      callRender(renderWithProvider, { pickable: true, autoHighlight: true }, store);
       const { pickable, autoHighlight } = Tile3DLayer.mock.lastCall[0];
       expect(pickable).toBe(true);
       expect(autoHighlight).toBe(true);
@@ -474,8 +473,7 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should not be pickable", () => {
       const store = setupStore();
-      store.dispatch(setDebugOptions({ pickable: false }));
-      callRender(renderWithProvider, undefined, store);
+      callRender(renderWithProvider, { pickable: false }, store);
       expect(Tile3DLayer).toHaveBeenCalled();
       const { pickable } = Tile3DLayer.mock.lastCall[0];
       expect(pickable).toBe(false);

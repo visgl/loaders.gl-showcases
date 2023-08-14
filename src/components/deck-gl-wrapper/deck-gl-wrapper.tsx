@@ -51,7 +51,6 @@ import {
   selectMiniMap,
   selectMiniMapViewPort,
   selectBoundingVolume,
-  selectPickable,
   selectLoadTiles,
   selectShowUVDebugTexture,
   selectWireframe,
@@ -106,6 +105,8 @@ type DeckGlI3sProps = {
   mapStyle?: string;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
+  /** Allows layers picking to handle mouse events */
+  pickable?: boolean;
   /** Layers loading data  */
   layers3d: {
     id?: number;
@@ -173,6 +174,7 @@ export const DeckGlWrapper = ({
   showTerrain = false,
   mapStyle,
   coloredTilesMap,
+  pickable = false,
   layers3d,
   lastLayerSelectedId,
   loadDebugTextureImage = false,
@@ -205,7 +207,6 @@ export const DeckGlWrapper = ({
   const dragMode = useAppSelector(selectDragMode);
   const showMinimap = useAppSelector(selectMiniMap);
   const loadTiles = useAppSelector(selectLoadTiles);
-  const pickable = useAppSelector(selectPickable);
   const showDebugTexture = useAppSelector(selectShowUVDebugTexture);
   const createIndependentMinimapViewport = useAppSelector(
     selectMiniMapViewPort

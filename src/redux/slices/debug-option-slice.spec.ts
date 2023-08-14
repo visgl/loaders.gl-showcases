@@ -5,7 +5,7 @@ import {
 } from "../../types";
 import { setupStore } from "../store";
 import reducer, {
-  debugOptionsState,
+  DebugOptionsState,
   selectDebugOptions,
   selectMiniMap,
   selectMiniMapViewPort,
@@ -38,7 +38,7 @@ describe("slice: debug-options", () => {
   });
 
   it("Reducer resetDebugOptions should set initial state", () => {
-    const previousState: debugOptionsState = {
+    const previousState: DebugOptionsState = {
       minimap: true,
       minimapViewport: true,
       boundingVolume: true,

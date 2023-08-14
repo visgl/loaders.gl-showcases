@@ -217,7 +217,7 @@ describe("Debug panel", () => {
     expect(boundingVolumeTypeMbs).toEqual(BoundingVolumeType.mbs);
   });
 
-  it("Should be able to select bounding volume color and type. Another items", () => {
+  it("Should be able to select bounding volume color and type. Other items", () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const store = setupStore();
