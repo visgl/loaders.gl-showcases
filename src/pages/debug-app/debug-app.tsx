@@ -83,7 +83,7 @@ import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
   selectBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
   setInitialBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 
@@ -179,7 +179,7 @@ export const DebugApp = () => {
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
 
   const selectedLayerIds = useMemo(

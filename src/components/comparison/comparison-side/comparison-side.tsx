@@ -58,7 +58,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   selectBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
 } from "../../../redux/slices/base-maps-slice";
 
 type LayoutProps = {
@@ -133,7 +133,7 @@ export const ComparisonSide = ({
   onUpdateSublayers,
 }: ComparisonSideProps) => {
   const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const layout = useAppLayout();
 

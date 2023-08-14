@@ -36,7 +36,7 @@ import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
-import { setBaseMaps } from "../../redux/slices/base-maps-slice";
+import { addBaseMap } from "../../redux/slices/base-maps-slice";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -329,7 +329,7 @@ export const LayersPanel = ({
       custom: true,
     };
 
-    dispatch(setBaseMaps(newMap));
+    dispatch(addBaseMap(newMap));
     setShowInsertMapPanel(false);
   };
 

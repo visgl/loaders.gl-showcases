@@ -19,7 +19,7 @@ const baseMapsSlice = createSlice({
     setInitialBaseMaps: () => {
       return initialState;
     },
-    setBaseMaps: (state: BaseMapsState, action: PayloadAction<BaseMap>) => {
+    addBaseMap: (state: BaseMapsState, action: PayloadAction<BaseMap>) => {
       state.baseMap.push(action.payload);
       state.selectedBaseMap = action.payload.id;
     },
@@ -42,13 +42,12 @@ const baseMapsSlice = createSlice({
 });
 
 export const selectBaseMaps = (state: RootState): BaseMap[] =>
-  state.baseMap.baseMap;
-export const selectSelectedBaseMaps = (state: RootState): string =>
-  state.baseMap.selectedBaseMap;
+  state.baseMaps.baseMap;
+export const selectSelectedBaseMapId = (state: RootState): string =>
+  state.baseMaps.selectedBaseMap;
 
-// todo: and other if needed
 export const { setInitialBaseMaps } = baseMapsSlice.actions;
-export const { setBaseMaps } = baseMapsSlice.actions;
+export const { addBaseMap } = baseMapsSlice.actions;
 export const { setSelectedBaseMaps } = baseMapsSlice.actions;
 export const { deleteBaseMaps } = baseMapsSlice.actions;
 export default baseMapsSlice.reducer;

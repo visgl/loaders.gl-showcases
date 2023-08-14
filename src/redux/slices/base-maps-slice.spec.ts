@@ -2,9 +2,9 @@ import { setupStore } from "../store";
 import reducer, {
   BaseMapsState,
   selectBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
   setInitialBaseMaps,
-  setBaseMaps,
+  addBaseMap,
   setSelectedBaseMaps,
   deleteBaseMaps,
 } from "./base-maps-slice";
@@ -54,7 +54,7 @@ describe("slice: base-maps", () => {
     expect(
       reducer(
         previousState,
-        setBaseMaps({
+        addBaseMap({
           id: "first",
           mapUrl: "https://first-url.com",
           name: "first name",
@@ -184,7 +184,7 @@ describe("slice: base-maps", () => {
   it("Selectors should return initial value", () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectSelectedBaseMaps(state)).toEqual("Dark");
+    expect(selectSelectedBaseMapId(state)).toEqual("Dark");
     expect(selectBaseMaps(state)).toEqual([
       {
         id: "Dark",
@@ -206,7 +206,7 @@ describe("slice: base-maps", () => {
     const store = setupStore();
     store.dispatch(deleteBaseMaps("Dark"));
     store.dispatch(
-      setBaseMaps({
+      addBaseMap({
         id: "first",
         mapUrl: "https://first-url.com",
         name: "first name",
@@ -214,7 +214,7 @@ describe("slice: base-maps", () => {
     );
     store.dispatch(setSelectedBaseMaps("Terrain"));
     const state = store.getState();
-    expect(selectSelectedBaseMaps(state)).toEqual("Terrain");
+    expect(selectSelectedBaseMapId(state)).toEqual("Terrain");
     expect(selectBaseMaps(state)).toEqual([
       {
         id: "Light",
@@ -229,5 +229,10 @@ describe("slice: base-maps", () => {
         name: "first name",
       },
     ]);
+    // set wrong id of basemap
+    store.dispatch(setSelectedBaseMaps("Dark"));
+    const newState = store.getState();
+    // it doesn't use wrong id and keeps previous one
+    expect(selectSelectedBaseMapId(newState)).toEqual("Terrain");
   });
 });

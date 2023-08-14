@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   selectBaseMaps,
   deleteBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
   setSelectedBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 
@@ -59,7 +59,7 @@ const InsertButtons = styled.div`
 export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
   const dispatch = useAppDispatch();
   const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const [settingsMapId, setSettingsMapId] = useState<string>("");
   const [showMapSettings, setShowMapSettings] = useState<boolean>(false);
   const [mapToDeleteId, setMapToDeleteId] = useState<string>("");

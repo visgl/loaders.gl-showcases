@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
   dragMode: dragModeSliceReducer,
   uvDebugTexture: uvDebugTextureSliceReducer,
   attributeStatsMap: attributeStatsMapSliceReducer,
-  baseMap: baseMapsSliceReducer,
+  baseMaps: baseMapsSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

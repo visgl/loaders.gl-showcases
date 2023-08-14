@@ -9,10 +9,9 @@ import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 import { setupStore } from "../../redux/store";
 import {
-  setInitialBaseMaps,
-  setBaseMaps,
+  addBaseMap,
   selectBaseMaps,
-  selectSelectedBaseMaps,
+  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 
 jest.mock("./base-map-list-item/base-map-list-item");
@@ -52,7 +51,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 describe("Map Options Panel", () => {
   it("Should render without basemaps", () => {
     const store = setupStore();
-    store.dispatch(setInitialBaseMaps());
     const { container } = callRender(
       renderWithThemeProviders,
       undefined,
@@ -72,14 +70,14 @@ describe("Map Options Panel", () => {
   it("Should render base maps", () => {
     const store = setupStore();
     store.dispatch(
-      setBaseMaps({
+      addBaseMap({
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
       })
     );
     store.dispatch(
-      setBaseMaps({
+      addBaseMap({
         id: "second",
         name: "second name",
         mapUrl: "https://second-url.com",
@@ -99,7 +97,7 @@ describe("Map Options Panel", () => {
   it("Should be able to call functions", () => {
     const store = setupStore();
     store.dispatch(
-      setBaseMaps({
+      addBaseMap({
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
@@ -126,7 +124,7 @@ describe("Map Options Panel", () => {
     });
 
     const state = store.getState();
-    const baseMapId = selectSelectedBaseMaps(state);
+    const baseMapId = selectSelectedBaseMapId(state);
     expect(baseMapId).toEqual("first");
 
     act(() => {
@@ -137,7 +135,7 @@ describe("Map Options Panel", () => {
   it("Should render conformation panel", () => {
     const store = setupStore();
     store.dispatch(
-      setBaseMaps({
+      addBaseMap({
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
@@ -145,7 +143,7 @@ describe("Map Options Panel", () => {
     );
     store.dispatch(
       // Candidate to delete
-      setBaseMaps({
+      addBaseMap({
         id: "",
         name: "second name",
         mapUrl: "https://second-url.com",
