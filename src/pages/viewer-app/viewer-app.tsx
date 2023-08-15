@@ -67,8 +67,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
   setInitialBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 
@@ -122,9 +120,6 @@ export const ViewerApp = () => {
     useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -551,8 +546,6 @@ export const ViewerApp = () => {
             ...viewState.main,
           },
         }}
-        showTerrain={selectedBaseMap?.id === "Terrain"}
-        mapStyle={selectedBaseMap?.mapUrl}
         pickable={isLayerPickable()}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}

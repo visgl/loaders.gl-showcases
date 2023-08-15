@@ -154,9 +154,6 @@ export const DebugApp = () => {
 
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -704,9 +701,6 @@ export const DebugApp = () => {
             ...viewState.main,
           },
         }}
-
-        showTerrain={selectedBaseMap?.id === "Terrain"}
-        mapStyle={selectedBaseMap?.mapUrl}
         tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}

@@ -56,10 +56,6 @@ import {
   updateLayerVisibility,
 } from "../../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
-} from "../../../redux/slices/base-maps-slice";
 
 type LayoutProps = {
   layout: string;
@@ -132,9 +128,6 @@ export const ComparisonSide = ({
   onInsertBookmarks,
   onUpdateSublayers,
 }: ComparisonSideProps) => {
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const layout = useAppLayout();
 
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -464,8 +457,6 @@ export const ComparisonSide = ({
             ...viewState.main,
           },
         }}
-        showTerrain={selectedBaseMap?.id === "Terrain"}
-        mapStyle={selectedBaseMap?.mapUrl}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
         loadNumber={loadNumber}
