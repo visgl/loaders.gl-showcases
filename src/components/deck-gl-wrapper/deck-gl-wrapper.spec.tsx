@@ -54,6 +54,7 @@ import { renderWithProvider } from "../../utils/testing-utils/render-with-provid
 import { setupStore } from "../../redux/store";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { addBaseMap } from "../../redux/slices/base-maps-slice"
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -62,8 +63,6 @@ const tilesetUrl =
   "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0";
 const cesiumUrl = "https://assets.cesium.com/687891/tileset.json";
 const tiles3DUrl = "https://path.to.tileset/tileset.json";
-const mapStyle =
-  "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 const imageStubObject = { width: 1024, height: 1024, data: new ArrayBuffer(0) };
 (load as unknown as jest.Mock<any>).mockReturnValue(
   Promise.resolve(imageStubObject)
@@ -91,7 +90,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
   act(() => {
     const result = renderFunc(
       <DeckGlWrapper
-        mapStyle={mapStyle}
         pickable={false}
         layers3d={[
           {
@@ -491,15 +489,19 @@ describe("Deck.gl I3S map component", () => {
   });
 
   describe("Render TerrainLayer", () => {
+    const store = setupStore();
+    store.dispatch(
+      addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" }));
     it("Should render terrain", () => {
-      callRender(renderWithProvider, { showTerrain: true });
+      callRender(renderWithProvider, undefined, store);
       expect(TerrainLayer).toHaveBeenCalled();
     });
 
     it("Should call onTerrainTileLoad", () => {
-      const { rerender } = callRender(renderWithProvider, {
-        showTerrain: true,
-      });
+      const store = setupStore();
+      store.dispatch(
+        addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" }));
+      const { rerender } = callRender(renderWithProvider, undefined, store);
       const { onTileLoad } = TerrainLayer.mock.lastCall[0];
       const terrainTile = {
         bbox: { east: 10, north: 20, south: 30, west: 40 },

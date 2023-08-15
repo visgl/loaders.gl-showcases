@@ -50,6 +50,7 @@ import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
+import { selectBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -95,10 +96,6 @@ type DeckGlI3sProps = {
   showMinimap?: boolean;
   /** If should create independent viewport for minimap */
   createIndependentMinimapViewport?: boolean;
-  /** Terrain visibility */
-  showTerrain?: boolean;
-  /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
-  mapStyle?: string;
   /** Color mode for tiles */
   tileColorMode?: TileColoredBy;
   /** User selected tiles colors */
@@ -182,8 +179,6 @@ export const DeckGlWrapper = ({
   parentViewState,
   showMinimap,
   createIndependentMinimapViewport = false,
-  showTerrain = false,
-  mapStyle,
   tileColorMode,
   coloredTilesMap,
   boundingVolumeType,
@@ -222,6 +217,11 @@ export const DeckGlWrapper = ({
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
   const dragMode = useAppSelector(selectDragMode);
+  const baseMaps = useAppSelector(selectBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
+  const showTerrain=selectedBaseMap?.id === "Terrain";
+  const mapStyle=selectedBaseMap?.mapUrl;
   const VIEWS = useMemo(
     () => [
       new MapView({
