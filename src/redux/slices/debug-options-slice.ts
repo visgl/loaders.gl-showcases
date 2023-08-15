@@ -9,38 +9,38 @@ import { RootState } from "../store";
 
 // Define a type for the slice state
 export interface DebugOptionsState {
+  /** Show minimap */
   minimap: boolean;
+  /** Use separate traversal for the minimap viewport */
   minimapViewport: boolean;
+  /** Show bounding volumes */
   boundingVolume: boolean;
+  /** Tile coloring mode selector */
   tileColorMode: TileColoredBy;
+  /** Bounding volume coloring mode selector */
   boundingVolumeColorMode: BoundingVolumeColoredBy;
+  /** Bounding volume geometry shape selector */
   boundingVolumeType: BoundingVolumeType;
+  /** Select tiles with a mouse button */
   pickable: boolean;
+  /** Load tiles after traversal */
+  /** Use this to freeze loaded tiles and see on them from different perspective */
   loadTiles: boolean;
+  /** Use "uv-debug-texture" texture to check UV coordinates */
   showUVDebugTexture: boolean;
+  /**  Enable/Disable wireframe mode */
   wireframe: boolean;
 }
 const initialState: DebugOptionsState = {
-  // Show minimap
   minimap: false,
-  // Use separate traversal for the minimap viewport
   minimapViewport: false,
-  // Show bounding volumes
   boundingVolume: false,
-  // Select tiles with a mouse button
   pickable: false,
-  // Load tiles after traversal.
-  // Use this to freeze loaded tiles and see on them from different perspective
   loadTiles: true,
-  // Use "uv-debug-texture" texture to check UV coordinates
   showUVDebugTexture: false,
-  // Enable/Disable wireframe mode
   wireframe: false,
-  // Tile coloring mode selector
   tileColorMode: TileColoredBy.original,
-  // Bounding volume coloring mode selector
   boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-  // Bounding volume geometry shape selector
   boundingVolumeType: BoundingVolumeType.mbs,
 };
 const debugOptionsSlice = createSlice({
