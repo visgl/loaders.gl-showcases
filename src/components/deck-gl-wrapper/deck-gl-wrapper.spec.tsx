@@ -97,7 +97,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
   act(() => {
     const result = renderFunc(
       <DeckGlWrapper
-        mapStyle={mapStyle}
         pickable={false}
         layers3d={[
           {

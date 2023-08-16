@@ -85,8 +85,6 @@ import {
   selectPickable,
 } from "../../redux/slices/debug-options-slice";
 import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
   setInitialBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 
@@ -701,7 +699,6 @@ export const DebugApp = () => {
             ...viewState.main,
           },
         }}
-        tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
