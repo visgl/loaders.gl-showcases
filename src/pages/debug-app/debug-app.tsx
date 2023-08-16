@@ -10,9 +10,6 @@ import {
   ViewStateSet,
   LayerViewState,
   ListItemType,
-  BoundingVolumeType,
-  DebugOptions,
-  BoundingVolumeColoredBy,
   TileColoredBy,
   Layout,
   Bookmark,
@@ -83,6 +80,12 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import {
+  resetDebugOptions,
+  setDebugOptions,
+  selectDebugOptions,
+  selectPickable,
+} from "../../redux/slices/debug-options-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -111,37 +114,10 @@ const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
 
-const INITIAL_DEBUG_OPTIONS_STATE: DebugOptions = {
-  // Show minimap
-  minimap: true,
-  // Use separate traversal for the minimap viewport
-  minimapViewport: false,
-  // Show bounding volumes
-  boundingVolume: false,
-  // Select tiles with a mouse button
-  pickable: false,
-  // Load tiles after traversal.
-  // Use this to freeze loaded tiles and see on them from different perspective
-  loadTiles: true,
-  // Use "uv-debug-texture" texture to check UV coordinates
-  showUVDebugTexture: false,
-  // Enable/Disable wireframe mode
-  wireframe: false,
-  // Tile coloring mode selector
-  tileColorMode: TileColoredBy.original,
-  // Bounding volume coloring mode selector
-  boundingVolumeColorMode: BoundingVolumeColoredBy.original,
-  // Bounding volume geometry shape selector
-  boundingVolumeType: BoundingVolumeType.mbs,
-};
-
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
-
-  const [debugOptions, setDebugOptions] = useState<DebugOptions>(
-    INITIAL_DEBUG_OPTIONS_STATE
-  );
+  const debugOptions = useAppSelector(selectDebugOptions);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -211,6 +187,10 @@ export const DebugApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    dispatch(setDebugOptions({ minimap: true }));
+    return () => {
+      dispatch(resetDebugOptions());
+    };
   }, []);
 
   /**
@@ -255,7 +235,8 @@ export const DebugApp = () => {
     colorMap._resetColorsMap();
     setColoredTilesMap({});
     setSelectedTile(null);
-    setDebugOptions(INITIAL_DEBUG_OPTIONS_STATE);
+    dispatch(resetDebugOptions());
+    dispatch(setDebugOptions({ minimap: true }));
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -626,7 +607,7 @@ export const DebugApp = () => {
 
     setTimeout(() => {
       if (bookmark?.debugOptions) {
-        setDebugOptions(bookmark.debugOptions);
+        dispatch(setDebugOptions(bookmark.debugOptions));
       }
     }, IS_LOADED_DELAY);
   };
@@ -679,23 +660,6 @@ export const DebugApp = () => {
     }
   };
 
-  const handleChangeDebugOptions = useCallback(
-    (
-      optionName: keyof DebugOptions,
-      value:
-        | TileColoredBy
-        | BoundingVolumeColoredBy
-        | BoundingVolumeType
-        | boolean
-    ) => {
-      setDebugOptions((prevValues) => ({
-        ...prevValues,
-        [optionName]: value,
-      }));
-    },
-    []
-  );
-
   const onZoomIn = useCallback(() => {
     setViewState((viewStatePrev) => {
       const { zoom, maxZoom } = viewStatePrev.main;
@@ -745,26 +709,11 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const {
-    minimap,
-    minimapViewport,
-    tileColorMode,
-    boundingVolume,
-    boundingVolumeType,
-    boundingVolumeColorMode,
-    pickable,
-    wireframe,
-    showUVDebugTexture,
-    loadTiles,
-  } = debugOptions;
-
   return (
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
-        showMinimap={minimap}
-        createIndependentMinimapViewport={minimapViewport}
         parentViewState={{
           ...viewState,
           main: {
@@ -773,19 +722,13 @@ export const DebugApp = () => {
         }}
         showTerrain={selectedBaseMap.id === "Terrain"}
         mapStyle={selectedBaseMap.mapUrl}
-        tileColorMode={tileColorMode}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
-        boundingVolumeType={boundingVolume ? boundingVolumeType : null}
-        boundingVolumeColorMode={boundingVolumeColorMode}
-        pickable={pickable}
-        wireframe={wireframe}
+        pickable={useAppSelector(selectPickable)}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
         loadDebugTextureImage
-        showDebugTexture={showUVDebugTexture}
-        loadTiles={loadTiles}
         featurePicking={false}
         normalsDebugData={normalsDebugData}
         selectedTile={selectedTile}
@@ -860,8 +803,6 @@ export const DebugApp = () => {
         <RightSidePanelWrapper layout={layout}>
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
-            debugOptions={debugOptions}
-            onChangeOption={handleChangeDebugOptions}
           />
         </RightSidePanelWrapper>
       )}

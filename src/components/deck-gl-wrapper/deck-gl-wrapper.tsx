@@ -21,9 +21,6 @@ import {
   ViewStateSet,
   LoadOptions,
   TilesetType,
-  BoundingVolumeType,
-  TileColoredBy,
-  BoundingVolumeColoredBy,
   MinimapPosition,
 } from "../../types";
 import { BoundingVolumeLayer } from "../../layers";
@@ -50,6 +47,17 @@ import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
+import {
+  selectMiniMap,
+  selectMiniMapViewPort,
+  selectBoundingVolume,
+  selectLoadTiles,
+  selectShowUVDebugTexture,
+  selectWireframe,
+  selectTileColorMode,
+  selectBoundingVolumeColorMode,
+  selectBoundingVolumeType,
+} from "../../redux/slices/debug-options-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -91,26 +99,14 @@ type DeckGlI3sProps = {
    * if is not set `viewState` state variable will be used
    */
   parentViewState?: ViewStateSet;
-  /** Minimap visibility */
-  showMinimap?: boolean;
-  /** If should create independent viewport for minimap */
-  createIndependentMinimapViewport?: boolean;
   /** Terrain visibility */
   showTerrain?: boolean;
   /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
   mapStyle?: string;
-  /** Color mode for tiles */
-  tileColorMode?: TileColoredBy;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
-  /** Bounding volume type: OBB of MBS. Set to "" to hide bounding volumes visualisation */
-  boundingVolumeType?: BoundingVolumeType | null;
-  /** Bounding volume color mode */
-  boundingVolumeColorMode?: BoundingVolumeColoredBy;
   /** Allows layers picking to handle mouse events */
   pickable?: boolean;
-  /** Show wireframe representation of layers */
-  wireframe?: boolean;
   /** Layers loading data  */
   layers3d: {
     id?: number;
@@ -122,11 +118,6 @@ type DeckGlI3sProps = {
   lastLayerSelectedId: string;
   /** Load debug texture image */
   loadDebugTextureImage?: boolean;
-  /** Replace original texture with debug texture */
-  showDebugTexture?: boolean;
-  /** If `true` tileset will make traversal and load/unload tiles.
-   * If `false` - the traversal is stopped, tiles are `frosen`, map doesn't react on viewState change */
-  loadTiles?: boolean;
   /** If `true` picking will select I3S features
    * If `false` picking will select the whole tile
    */
@@ -180,21 +171,13 @@ type DeckGlI3sProps = {
 export const DeckGlWrapper = ({
   id,
   parentViewState,
-  showMinimap,
-  createIndependentMinimapViewport = false,
   showTerrain = false,
   mapStyle,
-  tileColorMode,
   coloredTilesMap,
-  boundingVolumeType,
-  boundingVolumeColorMode,
   pickable = false,
-  wireframe,
   layers3d,
   lastLayerSelectedId,
   loadDebugTextureImage = false,
-  showDebugTexture = false,
-  loadTiles = true,
   featurePicking = true,
   normalsDebugData,
   normalsTrianglesPercentage = 100,
@@ -222,6 +205,16 @@ export const DeckGlWrapper = ({
   onTileUnload = () => {},
 }: DeckGlI3sProps) => {
   const dragMode = useAppSelector(selectDragMode);
+  const showMinimap = useAppSelector(selectMiniMap);
+  const loadTiles = useAppSelector(selectLoadTiles);
+  const showDebugTexture = useAppSelector(selectShowUVDebugTexture);
+  const createIndependentMinimapViewport = useAppSelector(
+    selectMiniMapViewPort
+  );
+  const tileColorMode = useAppSelector(selectTileColorMode);
+  const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
+  const wireframe = useAppSelector(selectWireframe);
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -531,14 +524,17 @@ export const DeckGlWrapper = ({
   };
 
   const renderBoundingVolumeLayer = () => {
-    if (!boundingVolumeType) {
+    const boundingVolume = useAppSelector(selectBoundingVolume);
+    const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
+
+    if (!boundingVolume) {
       return null;
     }
     const tiles = getAllTilesFromTilesets(loadedTilesets);
     // @ts-expect-error - Expected 0 arguments, but got 1.
     return new BoundingVolumeLayer({
       id: "bounding-volume-layer",
-      visible: Boolean(boundingVolumeType),
+      visible: boundingVolume,
       tiles,
       getBoundingVolumeColor,
       boundingVolumeType,
