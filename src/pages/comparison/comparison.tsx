@@ -6,7 +6,6 @@ import { color_brand_primary } from "../../constants/colors";
 import {
   ComparisonMode,
   LayerExample,
-  BaseMap,
   ViewStateSet,
   DragMode,
   ComparisonSideMode,
@@ -20,7 +19,6 @@ import {
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
 import { CompareButton } from "../../components/comparison/compare-button/compare-button";
-import { BASE_MAPS } from "../../constants/map-styles";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
@@ -36,6 +34,7 @@ import { Layout } from "../../utils/enums";
 import { useAppDispatch } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -92,8 +91,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     new ComparisonLoadManager()
   );
 
-  const [baseMaps, setBaseMaps] = useState<BaseMap[]>(BASE_MAPS);
-  const [selectedBaseMap, setSelectedBaseMap] = useState<BaseMap>(BASE_MAPS[0]);
   const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
@@ -143,6 +140,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setBookmarks([]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    return () => {
+      dispatch(setInitialBaseMaps());
+    };
   }, [mode]);
 
   useEffect(() => {
@@ -340,27 +340,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
   };
 
-  const onInsertBaseMapHandler = (baseMap: BaseMap) => {
-    setBaseMaps((prevValues) => [...prevValues, baseMap]);
-    setSelectedBaseMap(baseMap);
-  };
-
-  const onSelectBaseMapHandler = (baseMapId: string) => {
-    const baseMap = baseMaps.find((map) => map.id === baseMapId);
-
-    if (baseMap) {
-      setSelectedBaseMap(baseMap);
-    }
-  };
-
-  const onDeleteBaseMapHandler = (baseMapId: string) => {
-    setBaseMaps((prevValues) =>
-      prevValues.filter((baseMap) => baseMap.id !== baseMapId)
-    );
-
-    setSelectedBaseMap(BASE_MAPS[0]);
-  };
-
   const onBookmarkClick = useCallback(() => {
     setShowBookmarksPanel((prev) => !prev);
   }, []);
@@ -456,8 +435,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         mode={mode}
         side={ComparisonSideMode.left}
         viewState={viewState}
-        selectedBaseMap={selectedBaseMap}
-        baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
         hasBeenCompared={hasBeenCompared}
@@ -474,9 +451,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onChangeLayers={(layers, activeIds) =>
           onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
         }
-        onInsertBaseMap={onInsertBaseMapHandler}
-        onSelectBaseMap={onSelectBaseMapHandler}
-        onDeleteBaseMap={onDeleteBaseMapHandler}
         onLoadingStateChange={disableButtonHandlerLeft}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
@@ -525,8 +499,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         mode={mode}
         side={ComparisonSideMode.right}
         viewState={viewState}
-        selectedBaseMap={selectedBaseMap}
-        baseMaps={baseMaps}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
@@ -553,9 +525,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onChangeLayers={(layers, activeIds) =>
           onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
         }
-        onInsertBaseMap={onInsertBaseMapHandler}
-        onSelectBaseMap={onSelectBaseMapHandler}
-        onDeleteBaseMap={onDeleteBaseMapHandler}
         onLoadingStateChange={disableButtonHandlerRight}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);

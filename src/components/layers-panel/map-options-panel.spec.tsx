@@ -1,12 +1,18 @@
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { MapOptionPanel } from "./map-options-panel";
 
 import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
 import { PlusButton } from "../plus-button/plus-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
+import { setupStore } from "../../redux/store";
+import {
+  addBaseMap,
+  selectBaseMaps,
+  selectSelectedBaseMapId,
+} from "../../redux/slices/base-maps-slice";
 
 jest.mock("./base-map-list-item/base-map-list-item");
 jest.mock("../plus-button/plus-button");
@@ -34,25 +40,22 @@ beforeAll(() => {
 });
 
 const onInsertBaseMapMock = jest.fn();
-const onDeleteBaseMapMock = jest.fn();
-const onSelectBaseMapMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
-    <MapOptionPanel
-      baseMaps={[]}
-      selectedBaseMapId={""}
-      selectBaseMap={onSelectBaseMapMock}
-      insertBaseMap={onInsertBaseMapMock}
-      deleteBaseMap={onDeleteBaseMapMock}
-      {...props}
-    />
+    <MapOptionPanel insertBaseMap={onInsertBaseMapMock} {...props} />,
+    store
   );
 };
 
 describe("Map Options Panel", () => {
   it("Should render without basemaps", () => {
-    const { container } = callRender(renderWithTheme);
+    const store = setupStore();
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
     expect(container).toBeInTheDocument();
     // Title shold be present
     expect(screen.getByText("Base Map")).toBeInTheDocument();
@@ -65,13 +68,26 @@ describe("Map Options Panel", () => {
   });
 
   it("Should render base maps", () => {
-    const { container } = callRender(renderWithTheme, {
-      baseMaps: [
-        { id: "first", name: "first name", mapUrl: "https://first-url.com" },
-        { id: "second", name: "second name", mapUrl: "https://second-url.com" },
-      ],
-    });
-
+    const store = setupStore();
+    store.dispatch(
+      addBaseMap({
+        id: "first",
+        name: "first name",
+        mapUrl: "https://first-url.com",
+      })
+    );
+    store.dispatch(
+      addBaseMap({
+        id: "second",
+        name: "second name",
+        mapUrl: "https://second-url.com",
+      })
+    );
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("BaseMap ListItem-first")).toBeInTheDocument();
@@ -79,12 +95,19 @@ describe("Map Options Panel", () => {
   });
 
   it("Should be able to call functions", () => {
-    const { container } = callRender(renderWithTheme, {
-      baseMaps: [
-        { id: "first", name: "first name", mapUrl: "https://first-url.com" },
-      ],
-    });
-
+    const store = setupStore();
+    store.dispatch(
+      addBaseMap({
+        id: "first",
+        name: "first name",
+        mapUrl: "https://first-url.com",
+      })
+    );
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("BaseMap ListItem-first")).toBeInTheDocument();
@@ -99,7 +122,10 @@ describe("Map Options Panel", () => {
     act(() => {
       onMapsSelect();
     });
-    expect(onSelectBaseMapMock).toHaveBeenCalled();
+
+    const state = store.getState();
+    const baseMapId = selectSelectedBaseMapId(state);
+    expect(baseMapId).toEqual("first");
 
     act(() => {
       onClickOutside();
@@ -107,14 +133,23 @@ describe("Map Options Panel", () => {
   });
 
   it("Should render conformation panel", () => {
-    callRender(renderWithTheme, {
-      baseMaps: [
-        { id: "first", name: "first name", mapUrl: "https://first-url.com" },
-        // Candidate to delete
-        { id: "", name: "second name", mapUrl: "https://second-url.com" },
-      ],
-    });
-
+    const store = setupStore();
+    store.dispatch(
+      addBaseMap({
+        id: "first",
+        name: "first name",
+        mapUrl: "https://first-url.com",
+      })
+    );
+    store.dispatch(
+      // Candidate to delete
+      addBaseMap({
+        id: "",
+        name: "second name",
+        mapUrl: "https://second-url.com",
+      })
+    );
+    callRender(renderWithThemeProviders, undefined, store);
     expect(screen.getByText("Delete Conformation")).toBeInTheDocument();
 
     const { onDeleteHandler, onKeepHandler } =
@@ -124,7 +159,24 @@ describe("Map Options Panel", () => {
       onDeleteHandler();
     });
 
-    expect(onDeleteBaseMapMock).toHaveBeenCalled();
+    const state = store.getState();
+    const baseMap = selectBaseMaps(state);
+    expect(baseMap).toEqual([
+      {
+        id: "Dark",
+        mapUrl:
+          "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+        name: "Dark",
+      },
+      {
+        id: "Light",
+        mapUrl:
+          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+        name: "Light",
+      },
+      { id: "Terrain", mapUrl: "", name: "Terrain" },
+      { id: "first", mapUrl: "https://first-url.com", name: "first name" },
+    ]);
 
     act(() => {
       onKeepHandler();

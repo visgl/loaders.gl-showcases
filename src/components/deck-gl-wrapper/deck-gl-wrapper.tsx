@@ -58,6 +58,7 @@ import {
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
+import { selectBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -99,10 +100,6 @@ type DeckGlI3sProps = {
    * if is not set `viewState` state variable will be used
    */
   parentViewState?: ViewStateSet;
-  /** Terrain visibility */
-  showTerrain?: boolean;
-  /** Map style: https://deck.gl/docs/api-reference/carto/basemap  */
-  mapStyle?: string;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
   /** Allows layers picking to handle mouse events */
@@ -171,8 +168,6 @@ type DeckGlI3sProps = {
 export const DeckGlWrapper = ({
   id,
   parentViewState,
-  showTerrain = false,
-  mapStyle,
   coloredTilesMap,
   pickable = false,
   layers3d,
@@ -214,7 +209,11 @@ export const DeckGlWrapper = ({
   const tileColorMode = useAppSelector(selectTileColorMode);
   const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
   const wireframe = useAppSelector(selectWireframe);
-
+  const baseMaps = useAppSelector(selectBaseMaps);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
+  const showTerrain=selectedBaseMap?.id === "Terrain";
+  const mapStyle=selectedBaseMap?.mapUrl;
   const VIEWS = useMemo(
     () => [
       new MapView({
