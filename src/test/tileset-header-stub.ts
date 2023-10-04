@@ -1,5 +1,4 @@
 import { SceneLayer3D } from "@loaders.gl/i3s";
-import { DATA_TYPE } from "@loaders.gl/i3s/dist/types";
 
 export const getTilesetJson = (): SceneLayer3D => {
   const i3sProperties: SceneLayer3D = {
@@ -172,35 +171,35 @@ export const getTilesetJson = (): SceneLayer3D => {
         header: [
           {
             property: "vertexCount",
-            type: DATA_TYPE.UInt32,
+            type: "UInt32",
           },
           {
             property: "featureCount",
-            type: DATA_TYPE.UInt32,
+            type: "UInt32",
           },
         ],
         topology: "PerAttributeArray",
         ordering: ["position", "normal", "uv0", "color", "region"],
         vertexAttributes: {
           position: {
-            valueType: DATA_TYPE.Float32,
+            valueType: "Float32",
             valuesPerElement: 3,
           },
           normal: {
-            valueType: DATA_TYPE.Float32,
+            valueType: "Float32",
             valuesPerElement: 3,
           },
           uv0: {
-            valueType: DATA_TYPE.Float32,
+            valueType: "Float32",
             valuesPerElement: 2,
           },
           color: {
-            valueType: DATA_TYPE.UInt8,
+            valueType: "UInt8",
             valuesPerElement: 4,
           },
           region: {
             valuesPerElement: 4,
-            valueType: DATA_TYPE.UInt16,
+            valueType: "UInt16",
           },
         },
         featureAttributeOrder: ["id", "faceRange"],

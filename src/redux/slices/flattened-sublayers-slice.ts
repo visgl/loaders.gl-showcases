@@ -10,6 +10,7 @@ import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { load } from "@loaders.gl/core";
 import { RootState } from "../store";
+import { BuildingSceneLayerTileset } from "@loaders.gl/i3s/src/types";
 
 // Define a type for the slice states
 type SublayersState = {
@@ -139,17 +140,22 @@ const getLayersAndSublayers = async (
   tilesetData: TilesetMetadata,
   buildingExplorerOpened: boolean
 ): Promise<{
-  layers: {
-    id: string;
-    url: string;
-    visibility: boolean;
-    token?: string;
-    type: TilesetType | undefined;
-  }[];
+  layers:
+    | BuildingSceneSublayerExtended[]
+    | {
+        id: string;
+        url: string;
+        visibility: boolean;
+        token?: string;
+        type: TilesetType | undefined;
+      }[];
   sublayers: Sublayer[];
 }> => {
   try {
-    const tileset = await load(tilesetData.url, I3SBuildingSceneLayerLoader);
+    const tileset = (await load(
+      tilesetData.url,
+      I3SBuildingSceneLayerLoader
+    )) as BuildingSceneLayerTileset;
     const sublayersTree = buildSublayersTree(tileset.header.sublayers);
     const childSublayers = sublayersTree?.sublayers || [];
     const overviewLayer = tileset?.sublayers.find(
@@ -164,7 +170,11 @@ const getLayersAndSublayers = async (
       }));
 
     return {
-      layers: buildingExplorerOpened ? sublayers : [overviewLayer],
+      layers: buildingExplorerOpened
+        ? sublayers
+        : overviewLayer
+        ? [overviewLayer]
+        : [],
       sublayers: childSublayers,
     };
   } catch (e) {

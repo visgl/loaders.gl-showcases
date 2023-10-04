@@ -1,4 +1,4 @@
-import type { ArcGisWebScene } from "@loaders.gl/i3s/src/types";
+import type { ArcGISWebScene } from "@loaders.gl/i3s/src/types";
 import { Proj4Projection } from "@math.gl/proj4";
 import { WebMercatorViewport } from "@deck.gl/core";
 
@@ -17,7 +17,7 @@ const PSEUDO_MERCATOR_CRS_WKIDS = [102100, 3857];
  * @returns
  */
 export const convertArcGisSlidesToBookmars = (
-  webScene: ArcGisWebScene,
+  webScene: ArcGISWebScene,
   webSceneLayerExamples: LayerExample[],
   layersLeftSide: LayerExample[],
   pageId: PageId,

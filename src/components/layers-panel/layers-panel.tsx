@@ -1,5 +1,5 @@
 import type {
-  ArcGisWebSceneData,
+  ArcGISWebSceneData,
   OperationalLayer,
 } from "@loaders.gl/i3s/src/types";
 
@@ -30,7 +30,7 @@ import { color_brand_senary } from "../../constants/colors";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
-import { ArcGisWebSceneLoader } from "@loaders.gl/i3s";
+import { ArcGISWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType } from "../../utils/url-utils";
@@ -261,10 +261,10 @@ export const LayersPanel = ({
     }
 
     try {
-      const webScene: ArcGisWebSceneData = await load(
+      const webScene: ArcGISWebSceneData = (await load(
         scene.url,
-        ArcGisWebSceneLoader
-      );
+        ArcGISWebSceneLoader
+      )) as ArcGISWebSceneData;
       const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
