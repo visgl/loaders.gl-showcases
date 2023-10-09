@@ -1,4 +1,4 @@
-import type { Histogram } from "@loaders.gl/i3s/dist/types";
+import type { Histogram } from "@loaders.gl/i3s";
 
 import { useMemo } from "react";
 import styled, { useTheme } from "styled-components";

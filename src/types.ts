@@ -1,4 +1,4 @@
-import { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/dist/types";
+import { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/src/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import { DefaultTheme } from "styled-components";
 import { Vector3, Matrix4 } from "@math.gl/core";

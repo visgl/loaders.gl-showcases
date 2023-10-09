@@ -36,7 +36,10 @@ const uvDebugTextureSlice = createSlice({
 export const fetchUVDebugTexture = createAsyncThunk<uvDebugTextureState>(
   "fetchUVDebugTexture",
   async () => {
-    const image = await load(UV_DEBUG_TEXTURE_URL, ImageLoader);
+    const image = (await load(
+      UV_DEBUG_TEXTURE_URL,
+      ImageLoader
+    )) as ImageBitmap;
 
     return { value: image };
   }

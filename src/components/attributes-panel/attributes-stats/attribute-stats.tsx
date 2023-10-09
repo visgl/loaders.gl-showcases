@@ -4,7 +4,7 @@ import type {
   StatsInfo,
   Histogram,
   ValueCount,
-} from "@loaders.gl/i3s/dist/types";
+} from "@loaders.gl/i3s";
 
 import { useEffect, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";
