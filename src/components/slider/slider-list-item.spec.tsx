@@ -49,7 +49,7 @@ describe("BookmarksListItem", () => {
       editingSelected: true,
     });
     const listItem = container.firstChild;
-    expect(listItem).toHaveStyle("border: 2px solid #FBFCFE");
+    expect(listItem).toHaveStyle("border: 2px solid #605dec");
   });
 
   it("Should render mobile content", () => {
