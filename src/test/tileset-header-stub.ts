@@ -1,4 +1,5 @@
 import { SceneLayer3D } from "@loaders.gl/i3s";
+import { getTileHeader } from "./tile-header-stub";
 
 export const getTilesetJson = (): SceneLayer3D => {
   const i3sProperties: SceneLayer3D = {
@@ -859,7 +860,7 @@ export const getTilesetHeader = () => {
       nodesInNodePages: 0,
       textureLoaderOptions: {},
     },
-    root: {},
+    root: getTileHeader(),
     basePath:
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
     type: "I3S",
