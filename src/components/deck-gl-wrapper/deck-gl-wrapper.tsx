@@ -62,6 +62,7 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
+import CustomTile3DLayer from "./custom-tile-3d-layer";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -628,8 +629,8 @@ export const DeckGlWrapper = ({
       urlObject.searchParams.append("token", layer.token);
       url = urlObject.href;
     }
-    return new Tile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--colors-by-attribute-mode-${colorsByAttribute?.mode}--${loadNumber}`,
+    return new CustomTile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
       data: url,
       loader: I3SLoader,
       onTilesetLoad: onTilesetLoadHandler,

@@ -1,3 +1,4 @@
+import { Color } from "@deck.gl/core";
 import { BoundingVolumeColoredBy, TileColoredBy } from "../../types";
 
 export const DEPTH_COLOR_MAP = {
@@ -20,8 +21,8 @@ const DEFAULT_COLOR = [255, 255, 255];
 const DEFAULT_HIGLIGHT_COLOR = [0, 100, 255];
 
 export default class ColorMap {
-  randomColorMap: { [id: string]: number[] };
-  colorMap: { [id: string]: number[] };
+  randomColorMap: { [id: string]: Color };
+  colorMap: { [id: string]: Color };
 
   constructor() {
     this.randomColorMap = {};
@@ -42,15 +43,15 @@ export default class ColorMap {
       case TileColoredBy.custom:
         return this._getCustomColor(tile.id, options);
       default:
-        return this._getDefaultColor(tile.id)
+        return this._getDefaultColor(tile.id);
     }
   }
 
   /**
-  * Returns bounding volume color in RGB format depends on coloredBy param.
-  * @param {object} tile
-  * @param {object} options
-  */
+   * Returns bounding volume color in RGB format depends on coloredBy param.
+   * @param {object} tile
+   * @param {object} options
+   */
   getBoundingVolumeColor(tile, options) {
     switch (options.coloredBy) {
       case BoundingVolumeColoredBy.tile:
@@ -58,7 +59,7 @@ export default class ColorMap {
       case BoundingVolumeColoredBy.original:
         return this._getDefaultColor(tile.id);
       default:
-        return this._getDefaultColor(tile.id)
+        return this._getDefaultColor(tile.id);
     }
   }
 
@@ -98,7 +99,7 @@ export default class ColorMap {
   }
 
   _getDefaultColor(tileId) {
-    this.colorMap[tileId] = DEFAULT_COLOR
+    this.colorMap[tileId] = DEFAULT_COLOR;
     return this.colorMap[tileId];
   }
 
