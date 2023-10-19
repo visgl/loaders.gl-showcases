@@ -10,6 +10,16 @@ import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
+import { APP_FEATURE_KEY, appReducer } from "./slices/app.slice";
+import {
+  LAYER_PROPS_FEATURE_KEY,
+  layerPropsReducer,
+} from "./slices/layer-props.slice";
+import {
+  NOTIFICATIONS_FEATURE_KEY,
+  notificationsReducer,
+} from "./slices/notifications.slice";
+import { MAP_FEATURE_KEY, mapReducer } from "./slices/map.slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
@@ -20,6 +30,10 @@ const rootReducer = combineReducers({
   debugOptions: debugOptionsSliceReducer,
   attributeStatsMap: attributeStatsMapSliceReducer,
   baseMaps: baseMapsSliceReducer,
+  [APP_FEATURE_KEY]: appReducer,
+  [LAYER_PROPS_FEATURE_KEY]: layerPropsReducer,
+  [MAP_FEATURE_KEY]: mapReducer,
+  [NOTIFICATIONS_FEATURE_KEY]: notificationsReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

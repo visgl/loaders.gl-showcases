@@ -14,7 +14,7 @@ import {
   View,
 } from "@deck.gl/core";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { StaticMap } from "react-map-gl";
+// import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
@@ -58,7 +58,26 @@ import {
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
-import { selectBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import {
+  selectBaseMaps,
+  selectSelectedBaseMapId,
+} from "../../redux/slices/base-maps-slice";
+import {
+  BaseMapProviderId,
+  MAP_PROVIDER_PROPERTIES,
+} from "../../constants/base-map-providers";
+import {
+  Source as MaplibreSource,
+  MapRef as MaplibreMapRef,
+} from "react-map-gl/maplibre";
+import { Source as MapboxSource, MapRef as MapboxMapRef } from "react-map-gl";
+import {
+  appActions,
+  selectBaseMapMode,
+  selectMapProvider,
+} from "../../redux/slices/app.slice";
+import { mapActions } from "../../redux/slices/map.slice";
+import { selectTerrainState } from "../../redux/slices/layer-props.slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -212,8 +231,57 @@ export const DeckGlWrapper = ({
   const baseMaps = useAppSelector(selectBaseMaps);
   const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
-  const showTerrain=selectedBaseMap?.id === "Terrain";
-  const mapStyle=selectedBaseMap?.mapUrl;
+  const showTerrain = selectedBaseMap?.id === "Terrain";
+  const mapStyle = selectedBaseMap?.mapUrl;
+  ///
+  const baseMapProvider = useAppSelector(selectMapProvider);
+  const baseMapProviderId = baseMapProvider.id;
+  const mapRef = useRef<MaplibreMapRef | MapboxMapRef>(null);
+  const terrainState = useAppSelector(selectTerrainState);
+  ///
+  const mapProviderProps = useMemo(
+    () => MAP_PROVIDER_PROPERTIES[baseMapProviderId],
+    [baseMapProviderId]
+  );
+
+  const getTerrainElevation = (
+    baseMapProviderId: BaseMapProviderId.maplibre | BaseMapProviderId.mapbox2,
+    terrainState: boolean,
+    mapRef: MaplibreMapRef | MapboxMapRef | null
+  ) => {
+    let extraElevation = 0;
+    if (terrainState) {
+      if (baseMapProviderId === BaseMapProviderId.mapbox2) {
+        const center = mapRef?.getCenter();
+        if (center) {
+          const result = mapRef?.queryTerrainElevation(center);
+          if (typeof result === "number") {
+            extraElevation = result;
+          }
+        }
+      } else if (baseMapProviderId === BaseMapProviderId.maplibre) {
+        const map = mapRef?.getMap();
+        // @ts-expect-error transform is not typed
+        extraElevation = map?.transform.elevation || 0;
+      }
+    }
+    return extraElevation;
+  };
+
+  const onSourceDataHandler = () => {
+    const extraElevation = getTerrainElevation(
+      baseMapProviderId,
+      terrainState,
+      mapRef.current
+    );
+    dispatch(
+      mapActions.setMapState({
+        ...viewState,
+        position: [0, 0, extraElevation],
+      })
+    );
+  };
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -757,27 +825,40 @@ export const DeckGlWrapper = ({
       getTooltip={getTooltip}
       onClick={onClick}
     >
-      {({ viewport }) => {
-        currentViewport = viewport;
-      }}
-      {!showTerrain && (
-        <StaticMap
-          reuseMaps
-          mapStyle={mapStyle}
-          preventStyleDiffing
-          preserveDrawingBuffer
-        />
-      )}
-      {mapStyle && (
-        <View id="minimap">
-          <StaticMap
-            reuseMaps
-            mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
-            preventStyleDiffing
-            preserveDrawingBuffer
+      <mapProviderProps.Map
+        // @ ts-expect-error Maplibre & Mapbox types are different
+        ref={mapRef}
+        mapboxAccessToken={mapProviderProps.accessToken}
+        mapStyle={mapProviderProps.mapStyle}
+        terrain={
+          terrainState
+            ? { source: "dem-data-source", exaggeration: 1 }
+            : undefined
+        }
+        onSourceData={onSourceDataHandler}
+      >
+        {baseMapProviderId === BaseMapProviderId.maplibre && (
+          <MaplibreSource
+            id={mapProviderProps.terrainProps.id}
+            type={mapProviderProps.terrainProps.type}
+            tiles={[
+              "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+            ]}
+            encoding="terrarium"
+            tileSize={256}
+            maxzoom={12}
           />
-        </View>
-      )}
+        )}
+        {baseMapProviderId === BaseMapProviderId.mapbox2 && (
+          <MapboxSource
+            id={mapProviderProps.terrainProps.id}
+            type={mapProviderProps.terrainProps.type}
+            url="mapbox://mapbox.mapbox-terrain-dem-v1"
+            tileSize={512}
+            maxzoom={14}
+          />
+        )}
+      </mapProviderProps.Map>
     </DeckGL>
   );
 };
