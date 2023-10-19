@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { StaticMap } from "react-map-gl";
+// import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
@@ -27,6 +27,7 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 import { LayoutProps } from "../../types";
+import MapWrapper from "../../components/map-wrapper/map-wrapper";
 
 const TILESET_URL = `https://tiles.arcgis.com/tiles/UE5k7ygNe76vVJgy/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
@@ -149,7 +150,7 @@ const Title = styled.div<LayoutProps>`
     desktop: "73px",
     tablet: "73px",
     mobile: "45px",
-  })};  
+  })};
 `;
 
 const GreenText = styled.span`
@@ -179,7 +180,7 @@ const IphoneImage = styled.img`
   left: 1670px;
   z-index: 4;
   width: 198px;
- 
+
   @media (max-width: 1670px) {
     left: calc(100% - 184px);
   }
@@ -310,7 +311,7 @@ export const Dashboard = () => {
 
   return (
     <DashboardContainer id="dashboard-container" layout={layout}>
-      <DeckWithTitleWrapper  layout={layout}>
+      <DeckWithTitleWrapper layout={layout}>
         <Title id="dashboard-title" layout={layout}>
           Explore and Debug I3S Data with one
           <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
@@ -322,7 +323,8 @@ export const Dashboard = () => {
           layers={[tile3DLayer]}
           initialViewState={viewState}
         >
-          <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+          {/*          <StaticMap mapStyle={DEFAULT_MAP_STYLE} /> */}
+          <MapWrapper />
         </DeckGL>
       </DeckWithTitleWrapper>
       <Wrapper id="tools-wrapper" layout={layout}>
@@ -333,17 +335,13 @@ export const Dashboard = () => {
             src={AppShowcase}
           />
         )}
-        {layout === Layout.Desktop &&
-          (
-            <>
-              <MacImage id="mac-image" src={Mac} />
-              <IphoneImage id="iphone-image" src={Iphone} />
-            </>
-          )}
-        <ToolsContainer
-          id="tools-description-container"
-          layout={layout}
-        >
+        {layout === Layout.Desktop && (
+          <>
+            <MacImage id="mac-image" src={Mac} />
+            <IphoneImage id="iphone-image" src={Iphone} />
+          </>
+        )}
+        <ToolsContainer id="tools-description-container" layout={layout}>
           <ToolsItem id="tools-item-viewer" layout={layout}>
             <ViewerImage />
             <ToolItemDescription layout={layout}>
