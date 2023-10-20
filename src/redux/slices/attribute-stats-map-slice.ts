@@ -1,5 +1,6 @@
 import { StatsInfo } from "@loaders.gl/i3s";
 
+import { fetchFile } from "@loaders.gl/core";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
@@ -34,7 +35,7 @@ export const getAttributeStatsInfo = createAsyncThunk<
   string
 >("getAttributeStatsInfo", async (statAttributeUrl) => {
   let stats: StatsInfo | null = null;
-  const dataResponse = await fetch(statAttributeUrl);
+  const dataResponse = await fetchFile(statAttributeUrl);
   const data = JSON.parse(await dataResponse.text());
   stats = (data?.stats as StatsInfo) || null;
   return { stats, statAttributeUrl };
