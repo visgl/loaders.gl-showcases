@@ -29,6 +29,14 @@ const LOADERS_LINK_ALIASES = {
     __dirname,
     "../loaders.gl/modules/textures/src"
   ),
+  "@loaders.gl/compression": path.resolve(
+    __dirname,
+    "../loaders.gl/modules/compression/src"
+  ),
+  "@loaders.gl/worker-threads": path.resolve(
+    __dirname,
+    "../loaders.gl/modules/worker-threads/src"
+  ),
 };
 
 const LUMA_LINK_ALIASES = {

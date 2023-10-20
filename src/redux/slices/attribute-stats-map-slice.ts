@@ -2,8 +2,6 @@ import { StatsInfo } from "@loaders.gl/i3s";
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { load } from "@loaders.gl/core";
-import { JSONLoader } from "@loaders.gl/loader-utils";
 
 // Define a type for the slice state
 interface statisitcsMapState {
@@ -36,7 +34,8 @@ export const getAttributeStatsInfo = createAsyncThunk<
   string
 >("getAttributeStatsInfo", async (statAttributeUrl) => {
   let stats: StatsInfo | null = null;
-  const data = await load(statAttributeUrl, JSONLoader);
+  const dataResponse = await fetch(statAttributeUrl);
+  const data = JSON.parse(await dataResponse.text());
   stats = (data?.stats as StatsInfo) || null;
   return { stats, statAttributeUrl };
 });
