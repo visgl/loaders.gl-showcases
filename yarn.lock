@@ -2323,7 +2323,7 @@
     "@loaders.gl/worker-utils" "3.2.12"
     "@probe.gl/stats" "^3.5.0"
 
-"@loaders.gl/loader-utils@4.0.0-beta.2", "@loaders.gl/loader-utils@^4.0.0-beta.2":
+"@loaders.gl/loader-utils@4.0.0-beta.2":
   version "4.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/@loaders.gl/loader-utils/-/loader-utils-4.0.0-beta.2.tgz#a6fd75ea2fd74e9686e8a71cce219ce9345cbfb6"
   integrity sha512-+6l7xVlJglj1mnNnbwl9Z7+HzRh5xT1TRZUCWUoJvqyTHPrn7ImoRfnyCXPpBiZvmeWoV23m6V4EI3fk8pSCJg==
