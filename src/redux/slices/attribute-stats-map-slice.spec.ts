@@ -1,4 +1,4 @@
-import { load } from "@loaders.gl/core";
+import { fetchFile } from "@loaders.gl/core";
 import { setupStore } from "../store";
 import {
   getAttributeStatsInfo,
@@ -16,7 +16,7 @@ describe("slice: attribute-stats-map", () => {
   });
 
   it("Should handle `getAttributeStatsInfo.rejected` action", async () => {
-    (load as unknown as jest.Mock<any>).mockRejectedValue("Error");
+    (fetchFile as unknown as jest.Mock<any>).mockRejectedValue("Error");
 
     const store = setupStore();
     const state = store.getState();
@@ -28,8 +28,15 @@ describe("slice: attribute-stats-map", () => {
   });
 
   it("Should handle `getAttributeStatsInfo.fulfilled` action for non-empty stats", async () => {
-    (load as unknown as jest.Mock<any>).mockReturnValue(
-      Promise.resolve({ stats })
+    (fetchFile as unknown as jest.Mock<any>).mockReturnValue(
+      new Promise((resolve) => {
+        resolve({
+          text: async () =>
+            JSON.stringify({
+              stats,
+            }),
+        });
+      })
     );
 
     const store = setupStore();
@@ -42,7 +49,14 @@ describe("slice: attribute-stats-map", () => {
   });
 
   it("Should handle `getAttributeStatsInfo.fulfilled` action for empty stats", async () => {
-    (load as unknown as jest.Mock<any>).mockReturnValue(Promise.resolve({}));
+    (fetchFile as unknown as jest.Mock<any>).mockReturnValue(
+      new Promise((resolve) => {
+        resolve({
+          text: async () =>
+            JSON.stringify({}),
+        });
+      })
+    );
 
     const store = setupStore();
     const state = store.getState();
