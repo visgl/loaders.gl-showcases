@@ -109,7 +109,7 @@ module.exports = (env) => {
     module: {
       parser: {
         javascript: {
-          exportsPresence: 'warn',
+          exportsPresence: "warn",
         },
       },
       rules: [
