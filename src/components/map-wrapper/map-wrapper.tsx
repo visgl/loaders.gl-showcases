@@ -44,6 +44,7 @@ import Loading from "../loading/loading";
 interface DeckglWrapperProps {
   //  vehicles: Vehicle[];
 }
+// @ts-expect-error Maplibre & Mapbox types are different
 const DeckglWrapper = lazy(() => import("../deck-gl-wrapper/deck-gl-wrapper"));
 export const createDeckglWith = (
   baseMapProviderId: BaseMapProviderId.mapbox2 | BaseMapProviderId.maplibre

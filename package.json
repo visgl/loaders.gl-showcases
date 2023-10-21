@@ -20,7 +20,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@arcgis/core": "^4.27.6",
     "@deck.gl/arcgis": "^8.9.31",
+    "@deck.gl/core": "^8.9.31",
     "@deck.gl/google-maps": "^8.9.31",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",

@@ -235,7 +235,10 @@ export const DeckGlWrapper = ({
   const mapStyle = selectedBaseMap?.mapUrl;
   ///
   const baseMapProvider = useAppSelector(selectMapProvider);
-  const baseMapProviderId = baseMapProvider.id;
+  const baseMapProviderId =
+    baseMapProvider.id === BaseMapProviderId.maplibre
+      ? BaseMapProviderId.maplibre
+      : BaseMapProviderId.mapbox2;
   const mapRef = useRef<MaplibreMapRef | MapboxMapRef>(null);
   const terrainState = useAppSelector(selectTerrainState);
   ///
@@ -826,7 +829,7 @@ export const DeckGlWrapper = ({
       onClick={onClick}
     >
       <mapProviderProps.Map
-        // @ ts-expect-error Maplibre & Mapbox types are different
+        // @ts-expect-error Maplibre & Mapbox types are different
         ref={mapRef}
         mapboxAccessToken={mapProviderProps.accessToken}
         mapStyle={mapProviderProps.mapStyle}
