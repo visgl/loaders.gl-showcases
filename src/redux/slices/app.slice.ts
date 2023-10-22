@@ -34,7 +34,7 @@ export interface AppState {
 }
 
 export const initialState: AppState = {
-  baseMapProvider: BASE_MAP_PROVIDERS[0],
+  baseMapProvider: BASE_MAP_PROVIDERS[3],
   baseMapMode: BaseMapMode.OVERLAID,
   //  fps: 60,
   //  openedPopoverId: null,

@@ -17,7 +17,8 @@ export const BASE_MAP_PROVIDERS: BaseMapProvider[] = [
 ];
 
 const mapboxAccessToken = "";
-//import.meta.env.VITE_MAPBOX_API_KEY;
+// import.meta.env.VITE_MAPBOX_API_KEY;
+console.log("vite: ", import.meta.env);
 
 export const MAP_PROVIDER_PROPERTIES: Record<
   BaseMapProviderId.mapbox2 | BaseMapProviderId.maplibre,
