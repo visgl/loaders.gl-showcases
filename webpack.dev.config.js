@@ -111,6 +111,11 @@ module.exports = (env) => {
       },
     },
     module: {
+      parser: {
+        javascript: {
+          exportsPresence: "warn",
+        },
+      },
       rules: [
         {
           test: [/\.(js)$/],
