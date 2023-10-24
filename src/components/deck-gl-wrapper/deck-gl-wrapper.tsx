@@ -58,7 +58,10 @@ import {
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
-import { selectBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import {
+  selectBaseMaps,
+  selectSelectedBaseMapId,
+} from "../../redux/slices/base-maps-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -212,8 +215,8 @@ export const DeckGlWrapper = ({
   const baseMaps = useAppSelector(selectBaseMaps);
   const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
-  const showTerrain=selectedBaseMap?.id === "Terrain";
-  const mapStyle=selectedBaseMap?.mapUrl;
+  const showTerrain = selectedBaseMap?.id === "Terrain";
+  const mapStyle = selectedBaseMap?.mapUrl;
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -618,12 +621,16 @@ export const DeckGlWrapper = ({
         colorsByAttribute: colorsByAttribute,
       },
     };
+    let url = layer.url;
     if (layer.token) {
       loadOptions.i3s.token = layer.token;
+      const urlObject = new URL(url);
+      urlObject.searchParams.append("token", layer.token);
+      url = urlObject.href;
     }
     return new Tile3DLayer({
       id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--colors-by-attribute-mode-${colorsByAttribute?.mode}--${loadNumber}`,
-      data: layer.url,
+      data: url,
       loader: I3SLoader,
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
