@@ -8,6 +8,11 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
   },
   module: {
+    parser: {
+      javascript: {
+        exportsPresence: "warn",
+      },
+    },
     rules: [
       {
         test: [/\.(js)$/],
