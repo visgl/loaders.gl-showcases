@@ -13,7 +13,7 @@ jest.mock("@math.gl/geospatial", () => ({
   },
 }));
 
-describe.skip("generateBinaryNormalsDebugData", () => {
+describe("generateBinaryNormalsDebugData", () => {
   test("Should return empty object if no tile content", () => {
     const tile = getTile3d();
     tile.unloadContent();
