@@ -105,6 +105,10 @@ module.exports = (env) => {
         },
       },
       historyApiFallback: true,
+      // For testing workers from local loaders.gl repo
+      static: {
+        directory: path.join(__dirname, '../loaders.gl'),
+      },
     },
     module: {
       parser: {
