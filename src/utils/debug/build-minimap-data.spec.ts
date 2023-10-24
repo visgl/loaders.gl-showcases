@@ -43,7 +43,7 @@ describe("Build Minimap Data", () => {
     const expectedResult = [
       {
         coordinates: new Vector3([
-          63.43494882292201, 53.48500010847735, -6364361.246505878,
+          63.43494882292201, 53.48500010847735, -6364361.246505877,
         ]),
         radius: 10,
       },
@@ -70,7 +70,7 @@ describe("Build Minimap Data", () => {
     const expectedResult = [
       {
         coordinates: new Vector3([
-          63.43494882292201, 53.48500010847735, -6364361.246505878,
+          63.43494882292201, 53.48500010847735, -6364361.246505877,
         ]),
         radius: 10,
       },
