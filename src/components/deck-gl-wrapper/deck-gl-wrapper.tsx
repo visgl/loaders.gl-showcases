@@ -14,8 +14,6 @@ import {
   View,
 } from "@deck.gl/core";
 import { useEffect, useMemo, useState, useRef } from "react";
-// import { StaticMap } from "react-map-gl";
-import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
   ViewStateSet,
@@ -71,16 +69,13 @@ import {
   MapRef as MaplibreMapRef,
 } from "react-map-gl/maplibre";
 import { Source as MapboxSource, MapRef as MapboxMapRef } from "react-map-gl";
-import {
-  appActions,
-  selectBaseMapMode,
-  selectMapProvider,
-} from "../../redux/slices/app.slice";
+import { selectMapProvider } from "../../redux/slices/app.slice";
 import { mapActions } from "../../redux/slices/map.slice";
-import { selectTerrainState } from "../../redux/slices/layer-props.slice";
+import { MapWrapper } from "../map-wrapper/map-wrapper";
+import { GoogleMapsWrapper } from "../google-maps-wrapper/google-maps-wrapper";
 
 const TRANSITION_DURAITON = 4000;
-const INITIAL_VIEW_STATE = {
+export const INITIAL_VIEW_STATE = {
   longitude: -120,
   latitude: 34,
   pitch: 45,
@@ -233,22 +228,27 @@ export const DeckGlWrapper = ({
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const showTerrain = selectedBaseMap?.id === "Terrain";
   const mapStyle = selectedBaseMap?.mapUrl;
-  ///
   const baseMapProvider = useAppSelector(selectMapProvider);
-  const baseMapProviderId =
-    baseMapProvider.id === BaseMapProviderId.maplibre
-      ? BaseMapProviderId.maplibre
-      : BaseMapProviderId.mapbox2;
+  const baseMapProviderId = baseMapProvider.id;
   const mapRef = useRef<MaplibreMapRef | MapboxMapRef>(null);
-  const terrainState = useAppSelector(selectTerrainState);
-  ///
+  let terrainState = showTerrain;
+  if (
+    baseMapProvider.id === BaseMapProviderId.arcgis ||
+    baseMapProvider.id === BaseMapProviderId.googleMaps
+  ) {
+    terrainState = false;
+  }
   const mapProviderProps = useMemo(
     () => MAP_PROVIDER_PROPERTIES[baseMapProviderId],
     [baseMapProviderId]
   );
 
   const getTerrainElevation = (
-    baseMapProviderId: BaseMapProviderId.maplibre | BaseMapProviderId.mapbox2,
+    baseMapProviderId:
+      | BaseMapProviderId.maplibre
+      | BaseMapProviderId.mapbox2
+      | BaseMapProviderId.googleMaps
+      | BaseMapProviderId.arcgis,
     terrainState: boolean,
     mapRef: MaplibreMapRef | MapboxMapRef | null
   ) => {
@@ -280,7 +280,11 @@ export const DeckGlWrapper = ({
     dispatch(
       mapActions.setMapState({
         ...viewState,
-        position: [0, 0, extraElevation],
+        position: [
+          viewState.main.latitude,
+          viewState.main.longitude,
+          viewState.main.zoom,
+        ],
       })
     );
   };
@@ -829,7 +833,7 @@ export const DeckGlWrapper = ({
       onClick={onClick}
     >
       <mapProviderProps.Map
-        // @ts-expect-error Maplibre & Mapbox types are different
+        // @ ts-expect-error Maplibre & Mapbox types are different
         ref={mapRef}
         mapboxAccessToken={mapProviderProps.accessToken}
         mapStyle={mapProviderProps.mapStyle}

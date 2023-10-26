@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
+const webpack = require("webpack");
+require("dotenv").config({ path: "./.env" });
 const LOADERS_LOCAL_DEPENDENCY = "loaders";
 const DECK_LOCAL_DEPENDENCY = "deck";
 const LUMA_LOCAL_DEPENDENCY = "luma";
@@ -165,6 +166,9 @@ module.exports = (env) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.join(__dirname, "src", "index.html"),
+      }),
+      new webpack.DefinePlugin({
+        "process.env": JSON.stringify(process.env),
       }),
     ],
   };

@@ -12,8 +12,7 @@
     "esModuleInterop": true,
     "sourceMap": true,
     // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
-    "noImplicitAny": false,
-    "types": ["node", "vite/client"]
+    "noImplicitAny": false
   },
   "exclude": ["src/**/*.spec.ts"],
   "include": ["./jest-setup.ts", "src", "index.d.ts", "styled.d.ts"]

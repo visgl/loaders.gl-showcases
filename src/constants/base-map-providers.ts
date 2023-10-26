@@ -16,12 +16,10 @@ export const BASE_MAP_PROVIDERS: BaseMapProvider[] = [
   { name: "ArcGIS", id: BaseMapProviderId.arcgis },
 ];
 
-const mapboxAccessToken = "";
-// import.meta.env.VITE_MAPBOX_API_KEY;
-console.log("vite: ", import.meta.env);
+const mapboxAccessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 export const MAP_PROVIDER_PROPERTIES: Record<
-  BaseMapProviderId.mapbox2 | BaseMapProviderId.maplibre,
+  BaseMapProviderId.maplibre | BaseMapProviderId.mapbox2,
   BaseMapProviderProps
 > = {
   [BaseMapProviderId.maplibre]: {

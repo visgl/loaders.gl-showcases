@@ -8,8 +8,7 @@ import {
   MAP_PROVIDER_PROPERTIES,
 } from "../../constants/base-map-providers";
 
-mapboxgl.accessToken = "";
-// import.meta.env.VITE_MAPBOX_API_KEY;
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 export const useMapbox = (
   mapContainer: MutableRefObject<null | HTMLDivElement>,

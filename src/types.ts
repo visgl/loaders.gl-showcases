@@ -6,6 +6,7 @@ import { ViewState } from "@deck.gl/core";
 import { Stats } from "@probe.gl/stats";
 import { type Map as MaplibreMap } from "react-map-gl/maplibre";
 import { type Map as MapboxMap } from "react-map-gl";
+import { BaseMapProviderId } from "./constants/base-map-providers";
 
 export enum Theme {
   Dark,
@@ -367,7 +368,7 @@ export type TilesetMetadata = {
 
 export type BaseMapProvider = {
   name: string;
-  id: string;
+  id: BaseMapProviderId;
 };
 
 export type MapboxTerrainProfile = {
@@ -394,45 +395,12 @@ export type BaseMapProviderProps = {
   terrainProps: MapboxTerrainProfile | MaplibreTerrainProfile;
 };
 
-export enum BaseMapMode {
-  OVERLAID = "overlaid",
-  INTERLEAVED = "interleaved",
-}
-
 export enum UseCaseId {
   SF_TRANSIT,
   ANFIELD,
 }
 
 export interface LayerPropsEdited {
-  //  useCase: UseCaseId;
-
-  // Scene properties
-  /** Number of vehicles to put on the map */
-  //  vehiclesCountValue: number;
-  //  vehiclesCountMinMax: [number, number];
-  /** Is animation switched on */
-  //  animated: boolean;
-  /** Is picking of vehicles enabled */
-  //  pickable: boolean;
   /** Add terrain if possible */
   terrain: boolean;
-
-  // Vehicle properties
-  /** A way to define vehicles size */
-  //  sizeMode: SizeMode;
-  /** Size in pixels for pixel size mode */
-  //  size: number;
-  /** Vehicle model scale */
-  //  scale: number;
-  /** 2D or 3D mode */
-  //  dimensionMode: DimensionMode;
-  /** Color for useColor Accessor */
-  //  commonColor?: [number, number, number];
-  /** Color for get3dColor Accessor */
-  //  color3D?: [number, number, number];
-  /** Color for get2dForegroundColor Accessor */
-  //  foregroundColor2d?: [number, number, number];
-  /** Color for get2dBackgroundColor Accessor */
-  //  backgroundColor2d?: [number, number, number];
 }

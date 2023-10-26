@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-// import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
@@ -28,6 +27,8 @@ import {
 } from "../../utils/hooks/layout";
 import { LayoutProps } from "../../types";
 import MapWrapper from "../../components/map-wrapper/map-wrapper";
+import { mapActions } from "../../redux/slices/map.slice";
+import { useAppDispatch } from "../../redux/hooks";
 
 const TILESET_URL = `https://tiles.arcgis.com/tiles/UE5k7ygNe76vVJgy/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
@@ -281,6 +282,7 @@ const ArrowContainer = styled(Link)`
  * TODO: Add types to component
  */
 export const Dashboard = () => {
+  const dispatch = useAppDispatch();
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   const transitionInterpolator = new LinearInterpolator(["bearing"]);
@@ -323,7 +325,6 @@ export const Dashboard = () => {
           layers={[tile3DLayer]}
           initialViewState={viewState}
         >
-          {/*          <StaticMap mapStyle={DEFAULT_MAP_STYLE} /> */}
           <MapWrapper />
         </DeckGL>
       </DeckWithTitleWrapper>
