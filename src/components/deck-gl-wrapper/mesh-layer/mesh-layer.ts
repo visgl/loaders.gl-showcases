@@ -1,3 +1,4 @@
+// The file has been moved from deck.gl without changes to handle the fork of Tile3DLayer
 /* eslint-disable @typescript-eslint/ban-types */
 import type { NumericArray } from "@math.gl/core";
 import { GLTFMaterialParser } from "@luma.gl/experimental";

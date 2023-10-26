@@ -1,3 +1,4 @@
+// The file has been moved from deck.gl without changes to handle the fork of Tile3DLayer
 export default `#version 300 es
 #define SHADER_NAME simple-mesh-layer-fs
 
