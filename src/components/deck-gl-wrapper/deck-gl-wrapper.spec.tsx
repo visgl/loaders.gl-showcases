@@ -283,7 +283,6 @@ describe("Deck.gl I3S map component", () => {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
           useCompressedTextures: true,
           useDracoGeometry: true,
-          colorsByAttribute: null,
         },
       });
       expect(autoHighlight).toBe(false);
@@ -393,7 +392,6 @@ describe("Deck.gl I3S map component", () => {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
           useCompressedTextures: true,
           useDracoGeometry: true,
-          colorsByAttribute: null,
           token: "<abcdefg123456>",
         },
       });
@@ -503,11 +501,12 @@ describe("Deck.gl I3S map component", () => {
       );
       callRender(renderWithProvider, undefined, store);
       expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { id, loadOptions } = (CustomTile3DLayer as any).mock.lastCall[0];
+      const { id, colorsByAttribute } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       expect(id).toBe(
         "tile-layer-undefined-draco-true-compressed-textures-true--0"
       );
-      expect(loadOptions.i3s.colorsByAttribute).toEqual({
+      expect(colorsByAttribute).toEqual({
         attributeName: "HEIGHTROOF",
         maxColor: [44, 44, 175, 255],
         maxValue: 1400,
