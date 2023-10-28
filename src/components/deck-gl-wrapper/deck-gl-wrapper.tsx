@@ -1,3 +1,7 @@
+import {
+  Source as MaplibreSource,
+  Map as MaplibreMap,
+} from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
@@ -14,7 +18,6 @@ import {
   View,
 } from "@deck.gl/core";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { StaticMap } from "react-map-gl";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
@@ -58,7 +61,10 @@ import {
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
-import { selectBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import {
+  selectBaseMaps,
+  selectSelectedBaseMapId,
+} from "../../redux/slices/base-maps-slice";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -212,8 +218,8 @@ export const DeckGlWrapper = ({
   const baseMaps = useAppSelector(selectBaseMaps);
   const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
-  const showTerrain=selectedBaseMap?.id === "Terrain";
-  const mapStyle=selectedBaseMap?.mapUrl;
+  const showTerrain = selectedBaseMap?.id === "Terrain";
+  const mapStyle = selectedBaseMap?.mapUrl;
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -761,21 +767,36 @@ export const DeckGlWrapper = ({
         currentViewport = viewport;
       }}
       {!showTerrain && (
-        <StaticMap
-          reuseMaps
+        <MaplibreMap
           mapStyle={mapStyle}
-          preventStyleDiffing
-          preserveDrawingBuffer
-        />
+          terrain={
+            showTerrain
+              ? { source: "dem-data-source", exaggeration: 1 }
+              : undefined
+          }
+        >
+          <MaplibreSource
+            id="dem-data-source"
+            type="raster-dem"
+            tiles={[MAPZEN_TERRAIN_IMAGES]}
+            encoding="terrarium"
+            tileSize={256}
+            maxzoom={INITIAL_VIEW_STATE.maxZoom}
+          />
+        </MaplibreMap>
       )}
       {mapStyle && (
         <View id="minimap">
-          <StaticMap
-            reuseMaps
-            mapStyle={CONTRAST_MAP_STYLES[mapStyle]}
-            preventStyleDiffing
-            preserveDrawingBuffer
-          />
+          <MaplibreMap mapStyle={CONTRAST_MAP_STYLES[mapStyle]}>
+            <MaplibreSource
+              id="dem-data-source"
+              type="raster-dem"
+              tiles={[MAPZEN_TERRAIN_IMAGES]}
+              encoding="terrarium"
+              tileSize={256}
+              maxzoom={12}
+            />
+          </MaplibreMap>
         </View>
       )}
     </DeckGL>
