@@ -325,18 +325,7 @@ export const Dashboard = () => {
           layers={[tile3DLayer]}
           initialViewState={viewState}
         >
-          <MaplibreMap mapStyle={DEFAULT_MAP_STYLE}>
-            <MaplibreSource
-              id="dem-data-source"
-              type="raster-dem"
-              tiles={[
-                "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
-              ]}
-              encoding="terrarium"
-              tileSize={256}
-              maxzoom={INITIAL_VIEW_STATE.maxZoom}
-            />
-          </MaplibreMap>
+          <MaplibreMap mapStyle={DEFAULT_MAP_STYLE}></MaplibreMap>
         </DeckGL>
       </DeckWithTitleWrapper>
       <Wrapper id="tools-wrapper" layout={layout}>

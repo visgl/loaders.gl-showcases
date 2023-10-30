@@ -767,36 +767,11 @@ export const DeckGlWrapper = ({
         currentViewport = viewport;
       }}
       {!showTerrain && (
-        <MaplibreMap
-          mapStyle={mapStyle}
-          terrain={
-            showTerrain
-              ? { source: "dem-data-source", exaggeration: 1 }
-              : undefined
-          }
-        >
-          <MaplibreSource
-            id="dem-data-source"
-            type="raster-dem"
-            tiles={[MAPZEN_TERRAIN_IMAGES]}
-            encoding="terrarium"
-            tileSize={256}
-            maxzoom={INITIAL_VIEW_STATE.maxZoom}
-          />
-        </MaplibreMap>
+        <MaplibreMap mapStyle={mapStyle} terrain={undefined}></MaplibreMap>
       )}
       {mapStyle && (
         <View id="minimap">
-          <MaplibreMap mapStyle={CONTRAST_MAP_STYLES[mapStyle]}>
-            <MaplibreSource
-              id="dem-data-source"
-              type="raster-dem"
-              tiles={[MAPZEN_TERRAIN_IMAGES]}
-              encoding="terrarium"
-              tileSize={256}
-              maxzoom={12}
-            />
-          </MaplibreMap>
+          <MaplibreMap mapStyle={CONTRAST_MAP_STYLES[mapStyle]}></MaplibreMap>
         </View>
       )}
     </DeckGL>
