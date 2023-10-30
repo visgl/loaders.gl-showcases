@@ -547,7 +547,7 @@ export const DeckGlWrapper = ({
     if (!showMinimap) {
       return false;
     }
-    const viewport = new WebMercatorViewport(viewState.main);
+    const viewport = new WebMercatorViewport(getViewState().main);
     const frustumBounds = getFrustumBounds(viewport);
     return new LineLayer({
       id: "frustum",
