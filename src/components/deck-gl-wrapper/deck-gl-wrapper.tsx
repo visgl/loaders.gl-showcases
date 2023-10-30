@@ -1,7 +1,4 @@
-import {
-  Source as MaplibreSource,
-  Map as MaplibreMap,
-} from "react-map-gl/maplibre";
+import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";

@@ -1,7 +1,4 @@
-import {
-  Source as MaplibreSource,
-  Map as MaplibreMap,
-} from "react-map-gl/maplibre";
+import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import { useState, useCallback } from "react";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
