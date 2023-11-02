@@ -5,7 +5,9 @@ import reducer, {
   selectDragMode,
   setDragMode,
 } from "./drag-mode-slice";
-
+jest.mock("@loaders.gl/i3s", () => ({
+  load: jest.fn(),
+}));
 describe("slice: drag-mode", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({

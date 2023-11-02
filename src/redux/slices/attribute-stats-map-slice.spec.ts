@@ -7,6 +7,9 @@ import {
 import { StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => ({
+  load: jest.fn(),
+}));
 
 describe("slice: attribute-stats-map", () => {
   it("Selector should return the initial state", () => {

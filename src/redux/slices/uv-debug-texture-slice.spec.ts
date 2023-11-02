@@ -7,6 +7,9 @@ import {
 import { ImageLoader } from "@loaders.gl/images";
 
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => ({
+  load: jest.fn(),
+}));
 
 const imageStubObject = { width: 1024, height: 1024, data: new ArrayBuffer(0) };
 

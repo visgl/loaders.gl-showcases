@@ -25,6 +25,9 @@ import {
 } from "./test-data/fluttened-sublayers-slice-test-data";
 
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => ({
+  load: jest.fn(),
+}));
 
 const previousState: flattenedSublayersState = {
   single: {
