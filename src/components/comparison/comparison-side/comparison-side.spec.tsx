@@ -48,7 +48,6 @@ jest.mock("@deck.gl/geo-layers", () => {
     return null;
   });
 });
-jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../../layers-panel/layers-panel");
