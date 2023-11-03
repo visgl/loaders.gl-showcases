@@ -5,6 +5,12 @@ import reducer, {
   setColorsByAttrubute,
 } from "./colors-by-attribute-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+
 describe("slice: colors-by-attribute", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({ value: null });

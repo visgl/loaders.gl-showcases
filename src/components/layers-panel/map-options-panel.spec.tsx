@@ -14,6 +14,11 @@ import {
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("./base-map-list-item/base-map-list-item");
 jest.mock("../plus-button/plus-button");
 jest.mock("./delete-confirmation");
