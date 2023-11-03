@@ -18,21 +18,36 @@ import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 import { setupStore } from "../../../redux/store";
 import { setDragMode } from "../../../redux/slices/drag-mode-slice";
 
-jest.mock("@deck.gl/geo-layers", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@deck.gl/layers", () => ({
-  load: jest.fn(),
-}));
-jest.mock("maplibre-gl", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@loaders.gl/i3s", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@loaders.gl/3d-tiles", () => ({
-  load: jest.fn(),
-}));
+jest.mock("react-map-gl/maplibre", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/core", () => {
+  return {
+    load: jest.fn(),
+  };
+});
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/3d-tiles", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/geo-layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("@loaders.gl/core");
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");

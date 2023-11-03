@@ -2,10 +2,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ColorsByAttribute } from "../../types";
 import { RootState } from "../store";
 
-jest.mock("@loaders.gl/i3s", () => ({
-  load: jest.fn(),
-}));
-
 // Define a type for the slice state
 export interface ColorsByAttributeState {
   /** Values of color properties responsible for colorizig by attributes */

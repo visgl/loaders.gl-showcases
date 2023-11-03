@@ -11,6 +11,19 @@ import {
 
 // Mocks
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => {
+  return {
+    COORDINATE_SYSTEM: {
+      METER_OFFSETS: 2,
+      LNGLAT_OFFSETS: 3,
+    },
+  };
+});
+jest.mock("@loaders.gl/3d-tiles", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("@loaders.gl/images");
 jest.mock("@loaders.gl/tiles");
 jest.mock("@deck.gl/react", () => {
@@ -18,22 +31,25 @@ jest.mock("@deck.gl/react", () => {
     return null;
   });
 });
-jest.mock("@deck.gl/geo-layers", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@deck.gl/layers", () => ({
-  load: jest.fn(),
-}));
-jest.mock("maplibre-gl", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@loaders.gl/i3s", () => ({
-  load: jest.fn(),
-}));
-jest.mock("@loaders.gl/3d-tiles", () => ({
-  load: jest.fn(),
-}));
+jest.mock("react-map-gl/maplibre", () => {
+  return {
+    Map: jest.fn().mockImplementation(() => <div></div>),
+  };
+});
 jest.mock("@deck.gl/core");
+jest.mock("@deck.gl/layers", () => {
+  return {
+    LineLayer: jest.fn(),
+    ScatterplotLayer: jest.fn(),
+  };
+});
+
+jest.mock("@deck.gl/geo-layers", () => {
+  return {
+    Tile3DLayer: jest.fn(),
+    TerrainLayer: jest.fn(),
+  };
+});
 jest.mock("../../utils/debug/build-minimap-data");
 jest.mock("../../utils/debug/texture-selector-utils");
 jest.mock("../../utils/debug/frustum-utils");
