@@ -9,6 +9,12 @@ import reducer, {
   deleteBaseMaps,
 } from "./base-maps-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+
 describe("slice: base-maps", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({

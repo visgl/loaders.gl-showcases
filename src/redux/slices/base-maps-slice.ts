@@ -4,7 +4,7 @@ import { BASE_MAPS } from "../../constants/map-styles";
 import { RootState } from "../store";
 
 // Define a type for the slice state
-interface BaseMapsState {
+export interface BaseMapsState {
   baseMap: BaseMap[];
   selectedBaseMap: string;
 }

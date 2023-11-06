@@ -11,6 +11,19 @@ import {
 
 // Mocks
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => {
+  return {
+    COORDINATE_SYSTEM: {
+      METER_OFFSETS: 2,
+      LNGLAT_OFFSETS: 3,
+    },
+  };
+});
+jest.mock("@loaders.gl/3d-tiles", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("@loaders.gl/images");
 jest.mock("@loaders.gl/tiles");
 jest.mock("@deck.gl/react", () => {
@@ -18,10 +31,25 @@ jest.mock("@deck.gl/react", () => {
     return null;
   });
 });
+jest.mock("react-map-gl/maplibre", () => {
+  return {
+    Map: jest.fn().mockImplementation(() => <div></div>),
+  };
+});
 jest.mock("@deck.gl/core");
-jest.mock("@deck.gl/layers");
-jest.mock("@deck.gl/geo-layers");
-jest.mock("react-map-gl");
+jest.mock("@deck.gl/layers", () => {
+  return {
+    LineLayer: jest.fn(),
+    ScatterplotLayer: jest.fn(),
+  };
+});
+
+jest.mock("@deck.gl/geo-layers", () => {
+  return {
+    Tile3DLayer: jest.fn(),
+    TerrainLayer: jest.fn(),
+  };
+});
 jest.mock("../../utils/debug/build-minimap-data");
 jest.mock("../../utils/debug/texture-selector-utils");
 jest.mock("../../utils/debug/frustum-utils");
@@ -61,7 +89,7 @@ import { setupStore } from "../../redux/store";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
-import { addBaseMap } from "../../redux/slices/base-maps-slice"
+import { addBaseMap } from "../../redux/slices/base-maps-slice";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -336,7 +364,11 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should render pickable with auto highlighting", () => {
       const store = setupStore();
-      callRender(renderWithProvider, { pickable: true, autoHighlight: true }, store);
+      callRender(
+        renderWithProvider,
+        { pickable: true, autoHighlight: true },
+        store
+      );
       const { pickable, autoHighlight } = Tile3DLayer.mock.lastCall[0];
       expect(pickable).toBe(true);
       expect(autoHighlight).toBe(true);
@@ -509,8 +541,7 @@ describe("Deck.gl I3S map component", () => {
 
   describe("Render TerrainLayer", () => {
     const store = setupStore();
-    store.dispatch(
-      addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" }));
+    store.dispatch(addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" }));
     it("Should render terrain", () => {
       callRender(renderWithProvider, undefined, store);
       expect(TerrainLayer).toHaveBeenCalled();
@@ -519,7 +550,8 @@ describe("Deck.gl I3S map component", () => {
     it("Should call onTerrainTileLoad", () => {
       const store = setupStore();
       store.dispatch(
-        addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" }));
+        addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain" })
+      );
       const { rerender } = callRender(renderWithProvider, undefined, store);
       const { onTileLoad } = TerrainLayer.mock.lastCall[0];
       const terrainTile = {

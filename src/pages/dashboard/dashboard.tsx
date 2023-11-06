@@ -1,5 +1,5 @@
+import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import { useState, useCallback } from "react";
-import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
@@ -149,7 +149,7 @@ const Title = styled.div<LayoutProps>`
     desktop: "73px",
     tablet: "73px",
     mobile: "45px",
-  })};  
+  })};
 `;
 
 const GreenText = styled.span`
@@ -179,7 +179,7 @@ const IphoneImage = styled.img`
   left: 1670px;
   z-index: 4;
   width: 198px;
- 
+
   @media (max-width: 1670px) {
     left: calc(100% - 184px);
   }
@@ -310,7 +310,7 @@ export const Dashboard = () => {
 
   return (
     <DashboardContainer id="dashboard-container" layout={layout}>
-      <DeckWithTitleWrapper  layout={layout}>
+      <DeckWithTitleWrapper layout={layout}>
         <Title id="dashboard-title" layout={layout}>
           Explore and Debug I3S Data with one
           <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
@@ -322,7 +322,7 @@ export const Dashboard = () => {
           layers={[tile3DLayer]}
           initialViewState={viewState}
         >
-          <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+          <MaplibreMap mapStyle={DEFAULT_MAP_STYLE}></MaplibreMap>
         </DeckGL>
       </DeckWithTitleWrapper>
       <Wrapper id="tools-wrapper" layout={layout}>
@@ -333,17 +333,13 @@ export const Dashboard = () => {
             src={AppShowcase}
           />
         )}
-        {layout === Layout.Desktop &&
-          (
-            <>
-              <MacImage id="mac-image" src={Mac} />
-              <IphoneImage id="iphone-image" src={Iphone} />
-            </>
-          )}
-        <ToolsContainer
-          id="tools-description-container"
-          layout={layout}
-        >
+        {layout === Layout.Desktop && (
+          <>
+            <MacImage id="mac-image" src={Mac} />
+            <IphoneImage id="iphone-image" src={Iphone} />
+          </>
+        )}
+        <ToolsContainer id="tools-description-container" layout={layout}>
           <ToolsItem id="tools-item-viewer" layout={layout}>
             <ViewerImage />
             <ToolItemDescription layout={layout}>

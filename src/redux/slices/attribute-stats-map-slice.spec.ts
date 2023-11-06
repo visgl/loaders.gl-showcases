@@ -4,9 +4,13 @@ import {
   getAttributeStatsInfo,
   selectStatisitcsMap,
 } from "./attribute-stats-map-slice";
-import { StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 
 describe("slice: attribute-stats-map", () => {
   it("Selector should return the initial state", () => {
@@ -54,7 +58,7 @@ describe("slice: attribute-stats-map", () => {
   });
 });
 
-const stats: StatsInfo = {
+const stats = {
   avg: 27.159085097827166,
   max: 1408.377901,
   min: 0,
