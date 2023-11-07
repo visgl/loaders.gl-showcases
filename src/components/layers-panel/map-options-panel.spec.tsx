@@ -180,6 +180,7 @@ describe("Map Options Panel", () => {
         name: "Light",
       },
       { id: "Terrain", mapUrl: "", name: "Terrain" },
+      { id: "ArcGis", name: "ArcGis", mapUrl: "" },
       { id: "first", mapUrl: "https://first-url.com", name: "first name" },
     ]);
 
