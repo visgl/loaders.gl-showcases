@@ -14,6 +14,11 @@ export const BASE_MAPS: BaseMap[] = [
       "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
   },
   { id: "Terrain", name: "Terrain", mapUrl: "" },
+  {
+    id: "ArcGis",
+    name: "ArcGis",
+    mapUrl: "",
+  },
 ];
 
 export const CONTRAST_MAP_STYLES = {
