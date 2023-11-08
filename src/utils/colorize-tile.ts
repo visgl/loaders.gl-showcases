@@ -1,6 +1,6 @@
 import { customizeColors } from "@loaders.gl/i3s";
 import { Tile3D } from "@loaders.gl/tiles";
-import { ColorsByAttribute } from "../../types";
+import { ColorsByAttribute } from "../types";
 
 /**
  * Update tile colors with the custom colors assigned to the I3S Loader

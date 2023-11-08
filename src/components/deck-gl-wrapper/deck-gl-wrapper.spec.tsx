@@ -39,7 +39,7 @@ import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { ImageLoader } from "@loaders.gl/images";
 import { Tileset3D } from "@loaders.gl/tiles";
-import { BoundingVolumeLayer } from "../../layers";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
 import ColorMap from "../../utils/debug/colors-map";
 import {
@@ -62,7 +62,6 @@ import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-sli
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
-import CustomTile3DLayer from "./custom-tile-3d-layer";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */

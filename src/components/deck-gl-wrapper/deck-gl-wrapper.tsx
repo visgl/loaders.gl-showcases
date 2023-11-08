@@ -23,7 +23,7 @@ import {
   TilesetType,
   MinimapPosition,
 } from "../../types";
-import { BoundingVolumeLayer } from "../../layers";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -62,8 +62,7 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
-import CustomTile3DLayer from "./custom-tile-3d-layer";
-import { colorizeTile } from "./colorize-tile";
+import { colorizeTile } from "../../utils/colorize-tile";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
