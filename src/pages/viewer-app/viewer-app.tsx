@@ -66,9 +66,9 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import {
-  setInitialBaseMaps,
-} from "../../redux/slices/base-maps-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -100,6 +100,7 @@ export const ViewerApp = () => {
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const flattenedSublayers = useAppSelector(selectLayers);
   const bslSublayers = useAppSelector(selectSublayers);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -538,29 +539,32 @@ export const ViewerApp = () => {
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
-      <DeckGlWrapper
-        id="viewer-deck-container"
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
-        pickable={isLayerPickable()}
-        layers3d={layers3d}
-        lastLayerSelectedId={selectedLayerIds[0] || ""}
-        loadedTilesets={loadedTilesets}
-        selectedTilesetBasePath={selectedTilesetBasePath}
-        selectedIndex={selectedFeatureIndex}
-        onAfterRender={handleOnAfterRender}
-        getTooltip={getTooltip}
-        onClick={handleClick}
-        onViewStateChange={onViewStateChangeHandler}
-        onTilesetLoad={onTilesetLoad}
-        onTileLoad={onTileLoad}
-        onWebGLInitialized={onWebGLInitialized}
-        preventTransitions={preventTransitions}
-      />
+      {selectedBaseMapId !== "ArcGis" && (
+        <DeckGlWrapper
+          id="viewer-deck-container"
+          parentViewState={{
+            ...viewState,
+            main: {
+              ...viewState.main,
+            },
+          }}
+          pickable={isLayerPickable()}
+          layers3d={layers3d}
+          lastLayerSelectedId={selectedLayerIds[0] || ""}
+          loadedTilesets={loadedTilesets}
+          selectedTilesetBasePath={selectedTilesetBasePath}
+          selectedIndex={selectedFeatureIndex}
+          onAfterRender={handleOnAfterRender}
+          getTooltip={getTooltip}
+          onClick={handleClick}
+          onViewStateChange={onViewStateChangeHandler}
+          onTilesetLoad={onTilesetLoad}
+          onTileLoad={onTileLoad}
+          onWebGLInitialized={onWebGLInitialized}
+          preventTransitions={preventTransitions}
+        />
+      )}
+      {selectedBaseMapId === "ArcGis" && <ArcgisWrapper />}
 
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>

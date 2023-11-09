@@ -65,8 +65,8 @@ export const checkLayersPanel = async (
     `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > div`,
     (nodes) => nodes.map((node) => node.innerText)
   );
-  expect(baseMapsNames.length).toBe(3);
-  expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain"]);
+  expect(baseMapsNames.length).toBe(4);
+  expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain", "ArcGis"]);
 
   // Dark is selected
   const darkMapBackground = await page.$eval(
