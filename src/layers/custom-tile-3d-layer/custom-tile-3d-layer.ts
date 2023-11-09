@@ -1,106 +1,23 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-empty-function */
-import GL from "@luma.gl/constants";
-import { Geometry } from "@luma.gl/core";
-
-import {
-  Accessor,
-  Color,
-  CompositeLayer,
-  CompositeLayerProps,
-  COORDINATE_SYSTEM,
-  FilterContext,
-  GetPickingInfoParams,
-  Layer,
-  LayersList,
-  log,
-  PickingInfo,
-  UpdateParameters,
-  Viewport,
-  DefaultProps,
-} from "@deck.gl/core/typed"; // import changed from core to core/typed to avoid errors
-import { PointCloudLayer } from "@deck.gl/layers";
-import { ScenegraphLayer } from "@deck.gl/mesh-layers";
-import MeshLayer from "./mesh-layer/mesh-layer";
+import { Tile3DLayer, Tile3DLayerProps } from "@deck.gl/geo-layers/typed";
+import { UpdateParameters, Viewport, DefaultProps } from "@deck.gl/core/typed";
+import { TILE_TYPE, Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { load } from "@loaders.gl/core";
-import { MeshAttributes } from "@loaders.gl/schema";
-import { Tileset3D, Tile3D, TILE_TYPE } from "@loaders.gl/tiles";
-import { Tiles3DLoader } from "@loaders.gl/3d-tiles";
-
-const SINGLE_DATA = [0];
 
 const defaultProps: DefaultProps<CustomTile3DLayerProps> = {
-  getPointColor: { type: "accessor", value: [0, 0, 0, 255] },
-  pointSize: 1.0,
-
-  data: "", // changed from null to '' to fix types incompatibility error
-  loader: Tiles3DLoader,
-
-  onTilesetLoad: { type: "function", value: (tileset3d) => {}, compare: false },
-  onTileLoad: { type: "function", value: (tileHeader) => {}, compare: false },
-  onTileUnload: { type: "function", value: (tileHeader) => {}, compare: false },
-  onTileError: {
-    type: "function",
-    value: (tile, message, url) => {},
-    compare: false,
-  },
-  _getMeshColor: {
-    type: "function",
-    value: (tileHeader) => [255, 255, 255],
-    compare: false,
-  },
-  // New code -------------------
-  customizeColors: {
-    type: "function",
-    value: (tile, colorsByAttribute) =>
-      Promise.resolve({ isColored: false, id: "" }),
-    compare: false,
-  },
-  // ----------------------------
+  colorsByAttribute: null,
 };
 
-/** All properties supported by Tile3DLayer */
-type CustomTile3DLayerProps<DataT = any> = _CustomTile3DLayerProps<DataT> &
-  CompositeLayerProps;
+type CustomTile3DLayerProps<DataT = any> = _CustomTile3DLayerProps &
+  Tile3DLayerProps<DataT>;
 
-/** Props added by the Tile3DLayer */
-type _CustomTile3DLayerProps<DataT> = {
-  /** Color Accessor for point clouds. **/
-  getPointColor?: Accessor<DataT, Color>;
-
-  /** Global radius of all points in pixels. **/
-  pointSize?: number;
-
-  /** A loader which is used to decode the fetched tiles.
-   * @deprecated Use `loaders` instead
-   */
-  loader?: typeof Tiles3DLoader;
-
-  /** Called when Tileset JSON file is loaded. **/
-  onTilesetLoad?: (tile: Tileset3D) => void;
-
-  /** Called when a tile in the tileset hierarchy is loaded. **/
-  onTileLoad?: (tile: Tile3D) => void;
-
-  /** Called when a tile is unloaded. **/
-  onTileUnload?: (tile: Tile3D) => void;
-
-  /** Called when a tile fails to load. **/
-  onTileError?: (tile: Tile3D, url: string, message: string) => void;
-
-  /** (Experimental) Accessor to change color of mesh based on properties. **/
-  _getMeshColor?: (tile: Tile3D) => Color;
-
-  // New code ------------------------
+type _CustomTile3DLayerProps = {
   colorsByAttribute?: ColorsByAttribute | null;
   customizeColors?: (
     tiles: Tile3D,
     colorsByAttribute: ColorsByAttribute | null
   ) => Promise<{ isColored: boolean; id: string }>;
-  // ---------------------------------
 };
 
-// New code --------------------------
 type ColorsByAttribute = {
   /** Feature attribute name */
   attributeName: string;
@@ -115,130 +32,66 @@ type ColorsByAttribute = {
   /** Colorization mode. `replace` - replace vertex colors with a new colors, `multiply` - multiply vertex colors with new colors */
   mode: string;
 };
-// ----------------------------------
 
-/** Render 3d tiles data formatted according to the [3D Tiles Specification](https://www.opengeospatial.org/standards/3DTiles) and [`ESRI I3S`](https://github.com/Esri/i3s-spec) */
+//@ts-expect-error call of private method of the base class
 export default class CustomTile3DLayer<
   DataT = any,
-  ExtraPropsT extends {} = {}
-> extends CompositeLayer<
-  ExtraPropsT & Required<_CustomTile3DLayerProps<DataT>>
-> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  ExtraProps extends {} = {}
+> extends Tile3DLayer<DataT, Required<_CustomTile3DLayerProps> & ExtraProps> {
+  static layerName = "CustomLayer";
   static defaultProps = defaultProps as any;
-  static layerName = "CustomTile3DLayer";
 
   state!: {
-    activeViewports: {};
+    activeViewports: any;
     frameNumber?: number;
     lastUpdatedViewports: { [viewportId: string]: Viewport } | null;
     layerMap: { [layerId: string]: any };
     tileset3d: Tileset3D | null;
-    // New code -------------------------
+
     colorsByAttribute: ColorsByAttribute | null;
-    isCustomColors: boolean;
     loadingCounter: number;
-    // ----------------------------------
   };
 
   initializeState() {
-    if ("onTileLoadFail" in this.props) {
-      log.removed("onTileLoadFail", "onTileError")();
-    }
-    // prop verification
-    this.state = {
-      layerMap: {},
-      tileset3d: null,
-      activeViewports: {},
-      lastUpdatedViewports: null,
-      // New code -----------------------
+    super.initializeState();
+
+    this.setState({
       colorsByAttribute: null,
-      isCustomColors: false,
       loadingCounter: 0,
-      // --------------------------------
-    };
+    });
   }
 
-  get isLoaded(): boolean {
-    const { tileset3d } = this.state;
-    return tileset3d !== null && tileset3d.isLoaded();
-  }
+  updateState(params: UpdateParameters<this>): void {
+    const { props, oldProps, changeFlags } = params;
 
-  shouldUpdateState({ changeFlags }: UpdateParameters<this>): boolean {
-    return changeFlags.somethingChanged;
-  }
-
-  updateState({ props, oldProps, changeFlags }: UpdateParameters<this>): void {
     if (props.data && props.data !== oldProps.data) {
       this._loadTileset(props.data);
-    }
-    // New code ------------------------
-    else if (
-      this.state.colorsByAttribute !== props.colorsByAttribute &&
+    } else if (
+      props.colorsByAttribute !== oldProps.colorsByAttribute &&
       this.state.tileset3d?.selectedTiles[0]?.type === TILE_TYPE.MESH
     ) {
       this.setState({
         colorsByAttribute: props.colorsByAttribute,
       });
       this._colorizeTileset();
-    }
-    // ---------------------------------
-
-    if (changeFlags.viewportChanged) {
+    } else if (changeFlags.viewportChanged) {
       const { activeViewports } = this.state;
       const viewportsNumber = Object.keys(activeViewports).length;
       if (viewportsNumber) {
-        this._updateTileset(activeViewports);
+        if (!this.state.loadingCounter) {
+          //@ts-expect-error call of private method of the base class
+          super._updateTileset(activeViewports);
+        }
         this.state.lastUpdatedViewports = activeViewports;
         this.state.activeViewports = {};
       }
-    }
-    if (changeFlags.propsChanged) {
-      const { layerMap } = this.state;
-      for (const key in layerMap) {
-        layerMap[key].needsUpdate = true;
-      }
+    } else {
+      super.updateState(params);
     }
   }
 
-  activateViewport(viewport: Viewport): void {
-    const { activeViewports, lastUpdatedViewports } = this.state;
-    this.internalState!.viewport = viewport;
-
-    activeViewports[viewport.id] = viewport;
-    const lastViewport = lastUpdatedViewports?.[viewport.id];
-    if (!lastViewport || !viewport.equals(lastViewport)) {
-      this.setChangeFlags({ viewportChanged: true });
-      this.setNeedsUpdate();
-    }
-  }
-
-  getPickingInfo({ info, sourceLayer }: GetPickingInfoParams) {
-    const { layerMap } = this.state;
-    const layerId = sourceLayer && sourceLayer.id;
-    if (layerId) {
-      // layerId: this.id-[scenegraph|pointcloud]-tileId
-      const substr = layerId.substring(this.id.length + 1);
-      const tileId = substr.substring(substr.indexOf("-") + 1);
-      info.object = layerMap[tileId] && layerMap[tileId].tile;
-    }
-
-    return info;
-  }
-
-  filterSubLayer({ layer, viewport }: FilterContext): boolean {
-    // All sublayers will have a tile prop
-    const { tile } = layer.props as unknown as { tile: Tile3D };
-    const { id: viewportId } = viewport;
-    return tile.selected && tile.viewportIds.includes(viewportId);
-  }
-
-  protected _updateAutoHighlight(info: PickingInfo): void {
-    if (info.sourceLayer) {
-      info.sourceLayer.updateAutoHighlight(info);
-    }
-  }
-
-  private async _loadTileset(tilesetUrl) {
+  private override async _loadTileset(tilesetUrl) {
     const { loadOptions = {} } = this.props;
 
     // TODO: deprecate `loader` in v9.0
@@ -259,11 +112,13 @@ export default class CustomTile3DLayer<
       }
       Object.assign(options, preloadOptions);
     }
+    //@ts-expect-error loader
     const tilesetJson = await load(tilesetUrl, loader, options.loadOptions);
 
     const tileset3d = new Tileset3D(tilesetJson, {
       onTileLoad: this._onTileLoad.bind(this),
-      onTileUnload: this._onTileUnload.bind(this),
+      //@ts-expect-error call of private method of the base class
+      onTileUnload: super._onTileUnload.bind(this),
       onTileError: this.props.onTileError,
       // New code ------------------
       onTraversalComplete: this._onTraversalComplete.bind(this),
@@ -276,300 +131,68 @@ export default class CustomTile3DLayer<
       layerMap: {},
     });
 
-    this._updateTileset(this.state.activeViewports);
+    //@ts-expect-error call of private method of the base class
+    super._updateTileset(this.state.activeViewports);
     this.props.onTilesetLoad(tileset3d);
   }
 
-  private _onTileLoad(tileHeader: Tile3D): void {
+  private override _onTileLoad(tileHeader: Tile3D): void {
     const { lastUpdatedViewports } = this.state;
     // New code ------------------
-    if (this.state.isCustomColors) {
-      this._colorizeTiles([tileHeader]);
-    }
+    this._colorizeTiles([tileHeader]);
     // ---------------------------
     this.props.onTileLoad(tileHeader);
     // New code ------------------ condition is added
     if (!this.state.colorsByAttribute) {
       // ---------------------------
-      this._updateTileset(lastUpdatedViewports);
+      //@ts-expect-error call of private method of the base class
+      super._updateTileset(lastUpdatedViewports);
       this.setNeedsUpdate();
       // New code ------------------
     }
     // ------------------
   }
 
-  private _onTileUnload(tileHeader: Tile3D): void {
-    // Was cleaned up from tileset cache. We no longer need to track it.
-    delete this.state.layerMap[tileHeader.id];
-    this.props.onTileUnload(tileHeader);
-  }
-
-  private _updateTileset(
-    viewports: { [viewportId: string]: Viewport } | null
-  ): void {
-    if (!viewports) {
-      return;
-    }
-    const { tileset3d } = this.state;
-    const { timeline } = this.context;
-    const viewportsNumber = Object.keys(viewports).length;
-    if (!timeline || !viewportsNumber || !tileset3d) {
-      return;
-    }
-    tileset3d.selectTiles(Object.values(viewports)).then((frameNumber) => {
-      const tilesetChanged = this.state.frameNumber !== frameNumber;
-      if (tilesetChanged) {
-        this.setState({ frameNumber });
-      }
-    });
-  }
-
-  // New code -------------------------------------------
   private _onTraversalComplete(selectedTiles: Tile3D[]): Tile3D[] {
-    if (
-      this.state.isCustomColors &&
-      selectedTiles[0]?.type === TILE_TYPE.MESH
-    ) {
-      this._colorizeTiles(selectedTiles);
-    }
+    this._colorizeTiles(selectedTiles);
     return selectedTiles;
   }
 
   private _colorizeTiles(tiles: Tile3D[]): void {
-    const { layerMap, colorsByAttribute } = this.state;
-    const promises: Promise<{ isColored: boolean; id: string }>[] = [];
-    tiles.forEach((tile) =>
-      promises.push(this.props.customizeColors(tile, colorsByAttribute))
-    );
-    this.setState({
-      loadingCounter: this.state.loadingCounter + 1,
-    });
-    Promise.allSettled(promises).then((result) => {
+    if (this.props.customizeColors && tiles[0]?.type === TILE_TYPE.MESH) {
+      const { layerMap, colorsByAttribute } = this.state;
+      const promises: Promise<{ isColored: boolean; id: string }>[] = [];
+      for (const tile of tiles) {
+        promises.push(this.props.customizeColors(tile, colorsByAttribute));
+      }
       this.setState({
-        loadingCounter: this.state.loadingCounter - 1,
+        loadingCounter: this.state.loadingCounter + 1,
       });
-      let isTileChanged = false;
-      result.forEach((item) => {
-        if (item.status === "fulfilled" && item.value.isColored) {
-          isTileChanged = true;
-          delete layerMap[item.value.id];
+      Promise.allSettled(promises).then((result) => {
+        this.setState({
+          loadingCounter: this.state.loadingCounter - 1,
+        });
+        let isTileChanged = false;
+        for (const item of result) {
+          if (item.status === "fulfilled" && item.value.isColored) {
+            isTileChanged = true;
+            delete layerMap[item.value.id];
+          }
+        }
+        if (isTileChanged && !this.state.loadingCounter) {
+          //@ts-expect-error call of private method of the base class
+          super._updateTileset(this.state.activeViewports);
+          this.setNeedsUpdate();
         }
       });
-      if (isTileChanged && !this.state.loadingCounter) {
-        this._updateTileset(this.state.activeViewports);
-        this.setNeedsUpdate();
-      }
-    });
+    }
   }
 
   private _colorizeTileset(): void {
     const { tileset3d } = this.state;
 
-    this.setState({ isCustomColors: true });
     if (tileset3d) {
       this._colorizeTiles(tileset3d.selectedTiles);
     }
   }
-  // ---------------------------------------------------------
-
-  private _getSubLayer(
-    tileHeader: Tile3D,
-    oldLayer?: Layer
-  ): MeshLayer<DataT> | PointCloudLayer<DataT> | ScenegraphLayer<DataT> | null {
-    if (!tileHeader.content) {
-      return null;
-    }
-
-    switch (tileHeader.type) {
-      case TILE_TYPE.POINTCLOUD:
-        return this._makePointCloudLayer(
-          tileHeader,
-          oldLayer as PointCloudLayer<DataT>
-        );
-      case TILE_TYPE.SCENEGRAPH:
-        return this._make3DModelLayer(tileHeader);
-      case TILE_TYPE.MESH:
-        return this._makeSimpleMeshLayer(
-          tileHeader,
-          oldLayer as MeshLayer<DataT>
-        );
-      default:
-        throw new Error(
-          `Tile3DLayer: Failed to render layer of type ${tileHeader.content.type}`
-        );
-    }
-  }
-
-  private _makePointCloudLayer(
-    tileHeader: Tile3D,
-    oldLayer?: PointCloudLayer<DataT>
-  ): PointCloudLayer<DataT> | null {
-    const {
-      attributes,
-      pointCount,
-      constantRGBA,
-      cartographicOrigin,
-      modelMatrix,
-    } = tileHeader.content;
-    const { positions, normals, colors } = attributes;
-
-    if (!positions) {
-      return null;
-    }
-    const data = (oldLayer && oldLayer.props.data) || {
-      header: {
-        vertexCount: pointCount,
-      },
-      attributes: {
-        POSITION: positions,
-        NORMAL: normals,
-        COLOR_0: colors,
-      },
-    };
-
-    const { pointSize, getPointColor } = this.props;
-    const SubLayerClass = this.getSubLayerClass("pointcloud", PointCloudLayer);
-    return new SubLayerClass(
-      {
-        pointSize,
-      },
-      this.getSubLayerProps({
-        id: "pointcloud",
-      }),
-      {
-        id: `${this.id}-pointcloud-${tileHeader.id}`,
-        tile: tileHeader,
-        data,
-        coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
-        coordinateOrigin: cartographicOrigin,
-        modelMatrix,
-        getColor: constantRGBA || getPointColor,
-        _offset: 0,
-      }
-    );
-  }
-
-  private _make3DModelLayer(tileHeader: Tile3D): ScenegraphLayer<DataT> {
-    const { gltf, instances, cartographicOrigin, modelMatrix } =
-      tileHeader.content;
-
-    const SubLayerClass = this.getSubLayerClass("scenegraph", ScenegraphLayer);
-
-    return new SubLayerClass(
-      {
-        _lighting: "pbr",
-      },
-      this.getSubLayerProps({
-        id: "scenegraph",
-      }),
-      {
-        id: `${this.id}-scenegraph-${tileHeader.id}`,
-        tile: tileHeader,
-        data: instances || SINGLE_DATA,
-        scenegraph: gltf,
-
-        coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
-        coordinateOrigin: cartographicOrigin,
-        modelMatrix,
-        getTransformMatrix: (instance) => instance.modelMatrix,
-        getPosition: [0, 0, 0],
-        _offset: 0,
-      }
-    );
-  }
-
-  private _makeSimpleMeshLayer(
-    tileHeader: Tile3D,
-    oldLayer?: MeshLayer<DataT>
-  ): MeshLayer<DataT> {
-    const content = tileHeader.content;
-    const {
-      attributes,
-      indices,
-      modelMatrix,
-      cartographicOrigin,
-      coordinateSystem = COORDINATE_SYSTEM.METER_OFFSETS,
-      material,
-      featureIds,
-    } = content;
-    const { _getMeshColor } = this.props;
-
-    const geometry =
-      (oldLayer && oldLayer.props.mesh) ||
-      new Geometry({
-        drawMode: GL.TRIANGLES,
-        attributes: getMeshGeometry(attributes),
-        indices,
-      });
-
-    const SubLayerClass = this.getSubLayerClass("mesh", MeshLayer);
-
-    return new SubLayerClass(
-      this.getSubLayerProps({
-        id: "mesh",
-      }),
-      {
-        id: `${this.id}-mesh-${tileHeader.id}`,
-        tile: tileHeader,
-        mesh: geometry,
-        data: SINGLE_DATA,
-        getColor: _getMeshColor(tileHeader),
-        pbrMaterial: material,
-        modelMatrix,
-        coordinateOrigin: cartographicOrigin,
-        coordinateSystem,
-        featureIds,
-        _offset: 0,
-      }
-    );
-  }
-
-  renderLayers(): Layer | null | LayersList {
-    const { tileset3d, layerMap } = this.state;
-    if (!tileset3d) {
-      return null;
-    }
-
-    // loaders.gl doesn't provide a type for tileset3d.tiles
-    return (tileset3d.tiles as Tile3D[])
-      .map((tile) => {
-        const layerCache = (layerMap[tile.id] = layerMap[tile.id] || { tile });
-        let { layer } = layerCache;
-        if (tile.selected) {
-          // render selected tiles
-          if (!layer) {
-            // create layer
-            layer = this._getSubLayer(tile);
-          } else if (layerCache.needsUpdate) {
-            // props have changed, rerender layer
-            layer = this._getSubLayer(tile, layer);
-            layerCache.needsUpdate = false;
-          }
-        }
-        layerCache.layer = layer;
-        return layer;
-      })
-      .filter(Boolean);
-  }
-}
-
-function getMeshGeometry(contentAttributes: MeshAttributes): MeshAttributes {
-  const attributes: MeshAttributes = {};
-  attributes.positions = {
-    ...contentAttributes.positions,
-    value: new Float32Array(contentAttributes.positions.value),
-  };
-  if (contentAttributes.normals) {
-    attributes.normals = contentAttributes.normals;
-  }
-  if (contentAttributes.texCoords) {
-    attributes.texCoords = contentAttributes.texCoords;
-  }
-  if (contentAttributes.colors) {
-    attributes.colors = contentAttributes.colors;
-  }
-  if (contentAttributes.uvRegions) {
-    attributes.uvRegions = contentAttributes.uvRegions;
-  }
-  return attributes;
 }

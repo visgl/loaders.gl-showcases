@@ -631,6 +631,7 @@ export const DeckGlWrapper = ({
     return new CustomTile3DLayer({
       id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
       data: url,
+      // @ts-expect-error loader
       loader: I3SLoader,
       colorsByAttribute,
       customizeColors: colorizeTile,
