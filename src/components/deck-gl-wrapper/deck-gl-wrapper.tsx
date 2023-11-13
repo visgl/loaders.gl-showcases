@@ -23,7 +23,7 @@ import {
   TilesetType,
   MinimapPosition,
 } from "../../types";
-import { BoundingVolumeLayer } from "../../layers";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -62,6 +62,7 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
+import { colorizeTile } from "../../utils/colorize-tile";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -618,7 +619,6 @@ export const DeckGlWrapper = ({
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
         useDracoGeometry,
         useCompressedTextures,
-        colorsByAttribute: colorsByAttribute,
       },
     };
     let url = layer.url;
@@ -628,10 +628,13 @@ export const DeckGlWrapper = ({
       urlObject.searchParams.append("token", layer.token);
       url = urlObject.href;
     }
-    return new Tile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--colors-by-attribute-mode-${colorsByAttribute?.mode}--${loadNumber}`,
+    return new CustomTile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
       data: url,
+      // @ts-expect-error loader
       loader: I3SLoader,
+      colorsByAttribute,
+      customizeColors: colorizeTile,
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,

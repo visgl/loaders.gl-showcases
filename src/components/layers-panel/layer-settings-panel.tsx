@@ -1,4 +1,4 @@
-import { ReactEventHandler } from "react";
+import { ReactEventHandler, useEffect } from "react";
 import styled, { useTheme } from "styled-components";
 
 import ArrowLeftIcon from "../../../public/icons/arrow-left.svg";
@@ -6,6 +6,8 @@ import { CloseButton } from "../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
 import { PanelHorizontalLine } from "../common";
 import { ActiveSublayer } from "../../utils/active-sublayer";
+import { useAppDispatch } from "../../redux/hooks";
+import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 
 const Container = styled.div`
   display: flex;
@@ -47,7 +49,7 @@ export const LayerSettingsPanel = ({
   onUpdateSublayerVisibility,
   onBackClick,
   onCloseClick,
-  onBuildingExplorerOpened
+  onBuildingExplorerOpened,
 }: {
   sublayers: ActiveSublayer[];
   onUpdateSublayerVisibility: (Sublayer) => void;
@@ -56,6 +58,15 @@ export const LayerSettingsPanel = ({
   onBuildingExplorerOpened: (opended: boolean) => void;
 }) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setColorsByAttrubute(null));
+    return () => {
+      dispatch(setColorsByAttrubute(null));
+    };
+  }, []);
+
   return (
     <Container>
       <Header>
