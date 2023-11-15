@@ -1,42 +1,94 @@
-import { Map as ArcGisMap } from "@esri/react-arcgis";
 import { loadArcGISModules } from "@deck.gl/arcgis";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import styled from "styled-components";
+import { INITIAL_EXAMPLE } from "../../constants/i3s-examples";
 
-function DeckGLLayer(props) {
-  const [layer, setLayer] = useState(null);
+export const StyledMapContainer = styled.div`
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+`;
+
+const INITIAL_VIEW_STATE = {
+  longitude: -122.44,
+  latitude: 37.78,
+  bearing: 0,
+};
+
+export const ArcgisWrapper = () => {
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const [sceneView, setSceneView] = useState<unknown | null>(null);
+  const { longitude, latitude, bearing } = {
+    longitude: INITIAL_VIEW_STATE.longitude,
+    latitude: INITIAL_VIEW_STATE.latitude,
+    bearing: INITIAL_VIEW_STATE.bearing,
+  };
+  const isLoadingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    let deckLayer;
-    loadArcGISModules().then(({ DeckLayer }) => {
-      deckLayer = new DeckLayer({});
-      setLayer(deckLayer);
-      props.map.add(deckLayer);
-    });
-    return () => deckLayer && props.map.remove(deckLayer);
-  }, []);
+    if (!sceneView) {
+      return;
+    }
+    // @ts-expect-error no ArcGIS types
+    sceneView.goTo([longitude, latitude], { animate: false });
+  }, [longitude, latitude, sceneView]);
 
-  if (layer) {
-    // @ts-expect-error @deck.gl/arcgis has no types
-    layer.deck.set(props);
-  }
+  useEffect(() => {
+    if (mapContainer.current == null) {
+      return;
+    }
+    if (sceneView || isLoadingRef.current) {
+      return;
+    }
+    isLoadingRef.current = true;
+    let deckRenderer: unknown;
+    loadArcGISModules([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/views/3d/externalRenderers",
+      "esri/layers/SceneLayer",
+    ]).then(
+      ({
+        DeckRenderer,
+        modules: [ArcGISMap, SceneView, externalRenderers, SceneLayer],
+      }) => {
+        const map = new ArcGISMap({
+          basemap: "dark-gray-vector",
+        });
 
-  return null;
-}
+        const sceneView = new SceneView({
+          container: mapContainer.current,
+          map: map,
+          environment: {
+            atmosphereEnabled: false,
+            starsEnabled: false,
+          },
+          qualityProfile: "high",
+          camera: {
+            position: { x: longitude, y: latitude, z: 100 },
+            heading: 10,
+            tilt: 71,
+          },
+          ui: { components: ["attribution"] },
+          viewingMode: "local",
+        });
+        setSceneView(sceneView);
+        const sceneLayer = new SceneLayer({
+          url: INITIAL_EXAMPLE.url,
+          popupEnabled: false,
+        });
+        map.add(sceneLayer);
 
-export function ArcgisWrapper() {
-  const layers = [];
+        deckRenderer = new DeckRenderer(sceneView, sceneLayer);
+        externalRenderers.add(sceneView, deckRenderer);
+      }
+    );
+  }, [sceneView, mapContainer, bearing, latitude, longitude]);
 
-  return (
-    <ArcGisMap
-      mapProperties={{ basemap: "dark-gray-vector" }}
-      viewProperties={{
-        center: [-122.44, 37.75],
-        zoom: 12,
-      }}
-    >
-      <DeckGLLayer layers={layers} />
-    </ArcGisMap>
-  );
-}
+  return <StyledMapContainer ref={mapContainer} />;
+};
 
 export default ArcgisWrapper;
