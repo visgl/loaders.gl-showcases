@@ -66,9 +66,8 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import {
-  setInitialBaseMaps,
-} from "../../redux/slices/base-maps-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import { getBSLStatisticsSummary } from "../../redux/slices/bsl-statistics-summary-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -191,6 +190,9 @@ export const ViewerApp = () => {
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
+    if (buildingExplorerOpened && tilesetsData[0]) {
+      dispatch(getBSLStatisticsSummary(tilesetsData[0].url));
+    }
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {

@@ -10,6 +10,8 @@ import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
+import filtersByAttributeSliceReducer from "./slices/filters-by-attribute-slice";
+import bslStatisitcsSummarySliceReducer from "./slices/bsl-statistics-summary-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
@@ -20,6 +22,8 @@ const rootReducer = combineReducers({
   debugOptions: debugOptionsSliceReducer,
   attributeStatsMap: attributeStatsMapSliceReducer,
   baseMaps: baseMapsSliceReducer,
+  filtersByAttribute: filtersByAttributeSliceReducer,
+  bslStatisitcsSummary: bslStatisitcsSummarySliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

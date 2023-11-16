@@ -8,6 +8,7 @@ import { PanelHorizontalLine } from "../common";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppDispatch } from "../../redux/hooks";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setFiltersByAttrubute } from "../../redux/slices/filters-by-attribute-slice";
 
 const Container = styled.div`
   display: flex;
@@ -64,6 +65,7 @@ export const LayerSettingsPanel = ({
     dispatch(setColorsByAttrubute(null));
     return () => {
       dispatch(setColorsByAttrubute(null));
+      dispatch(setFiltersByAttrubute(null));
     };
   }, []);
 

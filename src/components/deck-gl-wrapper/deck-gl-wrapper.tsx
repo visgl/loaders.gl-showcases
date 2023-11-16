@@ -63,6 +63,8 @@ import {
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import { colorizeTile } from "../../utils/colorize-tile";
+import { selectFiltersByAttribute } from "../../redux/slices/filters-by-attribute-slice";
+import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -271,6 +273,7 @@ export const DeckGlWrapper = ({
   let currentViewport: WebMercatorViewport = null;
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+  const filtersByAttribute = useAppSelector(selectFiltersByAttribute);
   const dispatch = useAppDispatch();
 
   /** Load debug texture if necessary */
@@ -635,6 +638,8 @@ export const DeckGlWrapper = ({
       loader: I3SLoader,
       colorsByAttribute,
       customizeColors: colorizeTile,
+      filtersByAttribute,
+      filterTile,
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,

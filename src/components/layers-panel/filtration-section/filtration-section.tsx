@@ -4,6 +4,11 @@ import { Slider } from "../../slider/slider";
 import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
 import { SliderType } from "../../../types";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setFiltersByAttrubute } from "../../../redux/slices/filters-by-attribute-slice";
+import { selectFieldValues } from "../../../redux/slices/bsl-statistics-summary-slice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 const FiltrationContainer = styled.div`
   display: flex;
@@ -71,14 +76,6 @@ const SliderContainer = styled.div<{ sliderType: number }>`
   gap: 20px;
 `;
 
-const floors = [
-  { id: "floor1", floorNumber: "Floor 1" },
-  { id: "floor2", floorNumber: "Floor 2" },
-  { id: "floor3", floorNumber: "Floor 3" },
-  { id: "floor4", floorNumber: "Floor 4" },
-  { id: "floor5", floorNumber: "Floor 5" },
-];
-
 const phases = [
   { id: "phase1", phaseNumber: "1" },
   { id: "phase2", phaseNumber: "2" },
@@ -90,14 +87,39 @@ const phases = [
 export const FiltrationSection = () => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("");
+  const bldgLevels = useSelector((state: RootState) =>
+    selectFieldValues(state, "BldgLevel")
+  );
+  const dispatch = useAppDispatch();
+
+  const floors = bldgLevels
+    ? bldgLevels.mostFrequentValues
+        .slice()
+        .sort((a, b) => a - b)
+        .map((level, index) => ({
+          id: "level" + index,
+          floorNumber: level,
+        }))
+    : [];
 
   const theme = useTheme();
 
   const onSelectFloorHandler = (floorId: string) => {
+    if (floorId === selectedFloorId) {
+      setSelectedFloorId("");
+      dispatch(setFiltersByAttrubute(null));
+      return;
+    }
     const floor = floors.find(({ id }) => id === floorId);
     if (!floor) {
       return;
     }
+    dispatch(
+      setFiltersByAttrubute({
+        attributeName: "BldgLevel",
+        value: floor.floorNumber,
+      })
+    );
     setSelectedFloorId(floor.id);
   };
 
