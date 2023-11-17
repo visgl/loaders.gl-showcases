@@ -1,7 +1,8 @@
 import { screen } from "@testing-library/react";
 import { ActiveSublayer } from "../../utils/active-sublayer";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { BuildingExplorer } from "./building-explorer";
+import { setupStore } from "../../redux/store";
 
 // Mocked Component
 import { SublayerWidget } from "./sublayer-widget";
@@ -26,13 +27,14 @@ const callRender = (renderFunc, props = {}) => {
       onUpdateSublayerVisibility={onUpdateSublayerVisibilityMock}
       onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
-    />
+    />,
+    setupStore()
   );
 };
 
 describe("Building Explorer", () => {
   it("Should render multiple sublayers", () => {
-    const { container } = callRender(renderWithTheme, {
+    const { container } = callRender(renderWithThemeProviders, {
       sublayers: [
         {
           id: 0,
@@ -59,7 +61,7 @@ describe("Building Explorer", () => {
           layerType: "group" as "group" | "3DObject" | "Point",
           sublayers: [],
         },
-      ].map(sublayer => new ActiveSublayer(sublayer)),
+      ].map((sublayer) => new ActiveSublayer(sublayer)),
     });
 
     expect(container).toBeInTheDocument();
