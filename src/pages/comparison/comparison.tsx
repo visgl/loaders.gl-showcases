@@ -519,7 +519,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           mode === ComparisonMode.withinLayer ? sublayersLeftSide : null
         }
         loadNumber={loadNumber}
-        buildingExplorerOpened={buildingExplorerOpenedRight}
+        buildingExplorerOpened={
+          buildingExplorerOpenedRight ||
+          (mode === ComparisonMode.withinLayer && buildingExplorerOpenedLeft)
+        }
         onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>

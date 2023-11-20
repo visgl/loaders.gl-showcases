@@ -18,14 +18,15 @@ export const filterTile = async (
 ): Promise<{ isFiltered: boolean; id: string }> => {
   const result = { isFiltered: false, id: tile.id };
 
-  if (tile.content.customfilters !== filtersByAttribute) {
+  if (tile.content.userData?.customFilters !== filtersByAttribute) {
     if (tile.content && filtersByAttribute) {
-      if (tile.content.originalIndices === undefined) {
+      if (tile.content.userData?.originalIndices === undefined) {
+        tile.content.userData = {};
         //save original indices for filtring cancellation
-        tile.content.originalIndices = tile.content.indices;
+        tile.content.userData.originalIndices = tile.content.indices;
       }
-      tile.content.indices = tile.content.originalIndices;
-      tile.content.customfilters = filtersByAttribute;
+      tile.content.indices = tile.content.userData?.originalIndices;
+      tile.content.userData.customFilters = filtersByAttribute;
 
       const { indices } = await filterTileIndices(
         tile,
@@ -33,13 +34,19 @@ export const filterTile = async (
         (tile.tileset.loadOptions as any).i3s.token
       );
       // Make sure custom filters is not changed during async filtring execution
-      if (indices && tile.content.customfilters === filtersByAttribute) {
+      if (
+        indices &&
+        tile.content.userData.customFilters === filtersByAttribute
+      ) {
         tile.content.indices = indices;
         result.isFiltered = true;
       }
-    } else if (tile.content && tile.content.originalIndices !== undefined) {
-      tile.content.indices = tile.content.originalIndices;
-      tile.content.customfilters = null;
+    } else if (
+      tile.content &&
+      tile.content.userData.originalIndices !== undefined
+    ) {
+      tile.content.indices = tile.content.userData.originalIndices;
+      tile.content.userData.customFilters = null;
       result.isFiltered = true;
     }
   }

@@ -55,7 +55,9 @@ describe("FiltrationSection", () => {
       })
     );
     const store = setupStore();
-    await store.dispatch(getBSLStatisticsSummary("mockUrl"));
+    await store.dispatch(
+      getBSLStatisticsSummary({ statSummaryUrl: "mockUrl" })
+    );
     const { container, getByText, getAllByRole } = callRender(
       renderWithThemeProviders,
       undefined,

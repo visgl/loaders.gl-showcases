@@ -6,12 +6,14 @@ import { FiltersByAttribute } from "../../types";
 
 const defaultProps: DefaultProps<CustomTile3DLayerProps> = {
   colorsByAttribute: null,
+  filtersByAttribute: null,
 };
 
 type CustomTile3DLayerProps<DataT = any> = _CustomTile3DLayerProps &
   Tile3DLayerProps<DataT>;
 
 type _CustomTile3DLayerProps = {
+  onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
   colorsByAttribute?: ColorsByAttribute | null;
   customizeColors?: (
     tile: Tile3D,
@@ -173,7 +175,9 @@ export default class CustomTile3DLayer<
   private _onTraversalComplete(selectedTiles: Tile3D[]): Tile3D[] {
     this._colorizeTiles(selectedTiles);
     this._filterTiles(selectedTiles);
-    return selectedTiles;
+    return this.props.onTraversalComplete
+      ? this.props.onTraversalComplete(selectedTiles)
+      : selectedTiles;
   }
 
   private _colorizeTiles(tiles: Tile3D[]): void {

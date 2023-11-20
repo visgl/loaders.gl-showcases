@@ -191,7 +191,9 @@ export const ViewerApp = () => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
     if (buildingExplorerOpened && tilesetsData[0]) {
-      dispatch(getBSLStatisticsSummary(tilesetsData[0].url));
+      dispatch(
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url })
+      );
     }
   }, [activeLayers, buildingExplorerOpened]);
 

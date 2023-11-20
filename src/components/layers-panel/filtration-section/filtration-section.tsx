@@ -3,7 +3,7 @@ import styled, { css, useTheme } from "styled-components";
 import { Slider } from "../../slider/slider";
 import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
-import { SliderType } from "../../../types";
+import { ComparisonSideMode, SliderType } from "../../../types";
 import { useAppDispatch } from "../../../redux/hooks";
 import { setFiltersByAttrubute } from "../../../redux/slices/filters-by-attribute-slice";
 import { selectFieldValues } from "../../../redux/slices/bsl-statistics-summary-slice";
@@ -84,11 +84,11 @@ const phases = [
   { id: "phase5", phaseNumber: "5" },
 ];
 
-export const FiltrationSection = () => {
+export const FiltrationSection = ({ side }: { side?: ComparisonSideMode }) => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("");
   const bldgLevels = useSelector((state: RootState) =>
-    selectFieldValues(state, "BldgLevel")
+    selectFieldValues(state, "BldgLevel", side)
   );
   const dispatch = useAppDispatch();
 
@@ -97,7 +97,7 @@ export const FiltrationSection = () => {
         .slice()
         .sort((a, b) => a - b)
         .map((level, index) => ({
-          id: "level" + index,
+          id: `level${index}`,
           floorNumber: level,
         }))
     : [];
@@ -107,7 +107,7 @@ export const FiltrationSection = () => {
   const onSelectFloorHandler = (floorId: string) => {
     if (floorId === selectedFloorId) {
       setSelectedFloorId("");
-      dispatch(setFiltersByAttrubute(null));
+      dispatch(setFiltersByAttrubute({ filter: null, side }));
       return;
     }
     const floor = floors.find(({ id }) => id === floorId);
@@ -116,8 +116,11 @@ export const FiltrationSection = () => {
     }
     dispatch(
       setFiltersByAttrubute({
-        attributeName: "BldgLevel",
-        value: floor.floorNumber,
+        filter: {
+          attributeName: "BldgLevel",
+          value: floor.floorNumber,
+        },
+        side,
       })
     );
     setSelectedFloorId(floor.id);

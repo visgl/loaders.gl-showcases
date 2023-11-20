@@ -84,9 +84,9 @@ import {
   selectDebugOptions,
   selectPickable,
 } from "../../redux/slices/debug-options-slice";
-import {
-  setInitialBaseMaps,
-} from "../../redux/slices/base-maps-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import { setFiltersByAttrubute } from "../../redux/slices/filters-by-attribute-slice";
+import { clearBSLStatisitcsSummary } from "../../redux/slices/bsl-statistics-summary-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -237,6 +237,8 @@ export const DebugApp = () => {
     setSelectedTile(null);
     dispatch(resetDebugOptions());
     dispatch(setDebugOptions({ minimap: true }));
+    dispatch(clearBSLStatisitcsSummary());
+    dispatch(setFiltersByAttrubute({ filter: null }));
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {

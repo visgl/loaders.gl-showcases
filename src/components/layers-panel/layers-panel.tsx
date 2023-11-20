@@ -14,6 +14,7 @@ import {
   LayerViewState,
   Bookmark,
   PageId,
+  ComparisonSideMode,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
@@ -147,6 +148,7 @@ type LayersPanelProps = {
   isAddingBookmarksAllowed?: boolean;
   viewWidth?: number;
   viewHeight?: number;
+  side?: ComparisonSideMode;
   onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
@@ -169,6 +171,7 @@ export const LayersPanel = ({
   isAddingBookmarksAllowed = true,
   viewWidth = 1024,
   viewHeight = 768,
+  side,
   onUpdateSublayerVisibility,
   onClose,
   onPointToLayer,
@@ -444,6 +447,7 @@ export const LayersPanel = ({
           onBackClick={() => setShowLayerSettings(false)}
           onBuildingExplorerOpened={onBuildingExplorerOpened}
           onCloseClick={onClose}
+          side={side}
         />
       )}
 

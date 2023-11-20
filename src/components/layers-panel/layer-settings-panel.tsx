@@ -9,6 +9,7 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppDispatch } from "../../redux/hooks";
 import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import { setFiltersByAttrubute } from "../../redux/slices/filters-by-attribute-slice";
+import { ComparisonSideMode } from "../../types";
 
 const Container = styled.div`
   display: flex;
@@ -47,12 +48,14 @@ const Icon = styled.div`
 
 export const LayerSettingsPanel = ({
   sublayers,
+  side,
   onUpdateSublayerVisibility,
   onBackClick,
   onCloseClick,
   onBuildingExplorerOpened,
 }: {
   sublayers: ActiveSublayer[];
+  side?: ComparisonSideMode;
   onUpdateSublayerVisibility: (Sublayer) => void;
   onBackClick: ReactEventHandler;
   onCloseClick: ReactEventHandler;
@@ -65,7 +68,7 @@ export const LayerSettingsPanel = ({
     dispatch(setColorsByAttrubute(null));
     return () => {
       dispatch(setColorsByAttrubute(null));
-      dispatch(setFiltersByAttrubute(null));
+      dispatch(setFiltersByAttrubute({ filter: null, side }));
     };
   }, []);
 
@@ -85,6 +88,7 @@ export const LayerSettingsPanel = ({
         sublayers={sublayers}
         onUpdateSublayerVisibility={onUpdateSublayerVisibility}
         onBuildingExplorerOpened={onBuildingExplorerOpened}
+        side={side}
       ></BuildingExplorer>
     </Container>
   );

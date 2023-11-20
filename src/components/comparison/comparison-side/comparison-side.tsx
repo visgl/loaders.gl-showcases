@@ -56,6 +56,7 @@ import {
   updateLayerVisibility,
 } from "../../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { getBSLStatisticsSummary } from "../../../redux/slices/bsl-statistics-summary-slice";
 
 type LayoutProps = {
   layout: string;
@@ -241,6 +242,11 @@ export const ComparisonSide = ({
         side,
       })
     );
+    if (buildingExplorerOpened && tilesetsData[0]) {
+      dispatch(
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url, side })
+      );
+    }
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -311,7 +317,6 @@ export const ComparisonSide = ({
   };
 
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
-    newTileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     onLoadingStateChange(true);
     setLoadedTilesets((prevTilesets) => [...prevTilesets, newTileset]);
     setExamples((prevExamples) =>
@@ -464,10 +469,14 @@ export const ComparisonSide = ({
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
+        side={
+          mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
+        }
         onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
+        onTraversalComplete={onTraversalCompleteHandler}
         onAfterRender={handleOnAfterRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
@@ -493,6 +502,11 @@ export const ComparisonSide = ({
                 selectedLayerIds={selectedLayerIds}
                 viewWidth={viewState?.main?.width}
                 viewHeight={viewState?.main?.height}
+                side={
+                  mode === ComparisonMode.withinLayer
+                    ? ComparisonSideMode.left
+                    : side
+                }
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}
