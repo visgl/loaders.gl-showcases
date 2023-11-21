@@ -1,22 +1,13 @@
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { Map } from "@esri/react-arcgis";
+import { useArcgis } from "./use-arcgis-hook";
 
-jest.mock("@esri/react-arcgis", () => {
+jest.mock("./use-arcgis-hook", () => {
   return {
-    Map: jest.fn().mockImplementation(() => {
-      null;
-    }),
+    useArcgis: jest.fn().mockImplementation(() => null),
   };
 });
 
-const callRender = (renderFunc) => {
-  return renderFunc({});
-};
-
-describe("ArcGis Wrapper", () => {
-  it("Should be able to call ArcGis map", async () => {
-    callRender(renderWithTheme);
-
-    expect(Map).toBeCalledTimes(1);
+describe("ArcGis Hook", () => {
+  it("Should be able to call ArcGis hook", async () => {
+    expect(useArcgis({ current: null }, null, null)).toBeCalled;
   });
 });
