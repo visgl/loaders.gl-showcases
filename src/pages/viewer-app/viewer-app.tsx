@@ -564,7 +564,27 @@ export const ViewerApp = () => {
           preventTransitions={preventTransitions}
         />
       )}
-      {selectedBaseMapId === "ArcGis" && <ArcgisWrapper />}
+      {selectedBaseMapId === "ArcGis" && (
+        <ArcgisWrapper
+          parentViewState={{
+            ...viewState,
+            main: {
+              ...viewState.main,
+            },
+          }}
+          pickable={isLayerPickable()}
+          layers3d={layers3d}
+          lastLayerSelectedId={selectedLayerIds[0] || ""}
+          loadedTilesets={loadedTilesets}
+          selectedTilesetBasePath={selectedTilesetBasePath}
+          selectedIndex={selectedFeatureIndex}
+          onClick={handleClick}
+          onViewStateChange={onViewStateChangeHandler}
+          onTilesetLoad={onTilesetLoad}
+          onTileLoad={onTileLoad}
+          preventTransitions={preventTransitions}
+        />
+      )}
 
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
@@ -648,6 +668,7 @@ export const ViewerApp = () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
+        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
       />
     </MapArea>
   );
