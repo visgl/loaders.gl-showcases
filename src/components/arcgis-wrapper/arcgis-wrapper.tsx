@@ -19,6 +19,7 @@ import {
   TilesetType,
   MinimapPosition,
 } from "../../types";
+import { BoundingVolumeLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -45,10 +46,13 @@ import {
 import {
   selectMiniMap,
   selectMiniMapViewPort,
+  selectBoundingVolume,
   selectLoadTiles,
   selectShowUVDebugTexture,
   selectWireframe,
   selectTileColorMode,
+  selectBoundingVolumeColorMode,
+  selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
 import {
   selectBaseMaps,
@@ -91,11 +95,15 @@ const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
 };
 const TERRAIN_LAYER_MAX_ZOOM = 15;
 
+const DEFAULT_BG_OPACITY = 100;
+
 const NORMALS_COLOR = [255, 0, 0];
 
 const colorMap = new ColorMap();
 
 type ArcGisMapProps = {
+  /** DeckGL component id */
+  id?: string;
   /**
    * View state controlled by parent component
    * if is not set `viewState` state variable will be used
@@ -151,6 +159,11 @@ type ArcGisMapProps = {
   /** calculate position of minimap */
   minimapPosition?: MinimapPosition;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
+  onWebGLInitialized?: (gl: any) => void;
+  /** DeckGL after render callback */
+  onAfterRender?: () => void;
+  /** DeckGL callback. On layer hover behavior */
+  getTooltip?: (info: { object: Tile3D; index: number; layer: any }) => void;
   /** DeckGL callback. On layer click behavior */
   onClick?: (info: PickingInfo) => void;
   /** Tile3DLayer callback. Triggers after a tileset was initialized */
@@ -161,6 +174,8 @@ type ArcGisMapProps = {
   onTileUnload?: (tile: Tile3D) => void;
 };
 export const ArcgisWrapper = ({
+  // eslint-disable-next-line
+  id,
   parentViewState,
   coloredTilesMap,
   pickable = false,
@@ -184,6 +199,12 @@ export const ArcgisWrapper = ({
   preventTransitions = false,
   minimapPosition,
   onViewStateChange,
+  // eslint-disable-next-line
+  onWebGLInitialized,
+  // eslint-disable-next-line
+  onAfterRender,
+  // eslint-disable-next-line
+  getTooltip,
   onClick,
   onTilesetLoad,
   onTileLoad,
@@ -198,6 +219,7 @@ export const ArcgisWrapper = ({
     selectMiniMapViewPort
   );
   const tileColorMode = useAppSelector(selectTileColorMode);
+  const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
   const wireframe = useAppSelector(selectWireframe);
   const baseMaps = useAppSelector(selectBaseMaps);
   const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
@@ -310,6 +332,9 @@ export const ArcgisWrapper = ({
 
   const getViewState = () =>
     parentViewState || (showMinimap && viewState) || { main: viewState.main };
+
+  // eslint-disable-next-line
+  const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
 
   const onViewStateChangeHandler = ({
     interactionState,
@@ -448,7 +473,13 @@ export const ArcgisWrapper = ({
       }
     }
 
+    // eslint-disable-next-line
+    const viewportTraversersMap = {
+      main: "main",
+      minimap: createIndependentMinimapViewport ? "minimap" : "main",
+    };
     tileset.setProps({
+      //todo: viewportTraversersMap,
       loadTiles,
     });
     onTilesetLoad(tileset);
@@ -485,6 +516,14 @@ export const ArcgisWrapper = ({
     return allTiles.flat();
   };
 
+  const getBoundingVolumeColor = (tile) => {
+    const color = colorMap.getBoundingVolumeColor(tile, {
+      coloredBy: boundingVolumeColorMode,
+    });
+
+    return [...color, DEFAULT_BG_OPACITY];
+  };
+
   const getMeshColor = (tile) => {
     const result = colorMap.getTileColor(tile, {
       coloredBy: tileColorMode,
@@ -493,6 +532,25 @@ export const ArcgisWrapper = ({
     });
 
     return result;
+  };
+
+  // eslint-disable-next-line
+  const renderBoundingVolumeLayer = () => {
+    const boundingVolume = useAppSelector(selectBoundingVolume);
+    const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
+
+    if (!boundingVolume) {
+      return null;
+    }
+    const tiles = getAllTilesFromTilesets(loadedTilesets);
+    // @ts-expect-error - Expected 0 arguments, but got 1.
+    return new BoundingVolumeLayer({
+      id: "bounding-volume-layer",
+      visible: boundingVolume,
+      tiles,
+      getBoundingVolumeColor,
+      boundingVolumeType,
+    });
   };
 
   const renderFrustum = () => {
@@ -647,20 +705,52 @@ export const ArcgisWrapper = ({
     return [
       ...tile3dLayers,
       renderFrustum(),
+      // todo: renderBoundingVolumeLayer(),
       renderNormals(),
       renderMainOnMinimap(),
     ];
   };
 
+  // eslint-disable-next-line
+  const layerFilter = ({ layer, viewport }) => {
+    const { id: viewportId } = viewport;
+    const {
+      id: layerId,
+      props: { viewportIds = null },
+    } = layer;
+    if (
+      viewportId !== "minimap" &&
+      (layerId === "frustum" || layerId === "main-on-minimap")
+    ) {
+      // only display frustum in the minimap
+      return false;
+    }
+    if (
+      showMinimap &&
+      viewportId === "minimap" &&
+      layerId.indexOf("obb-debug-") !== -1
+    ) {
+      return false;
+    }
+    if (viewportIds && !viewportIds.includes(viewportId)) {
+      return false;
+    }
+    if (viewportId === "minimap" && layerId === "normals-debug") {
+      return false;
+    }
+    if (viewportId === "minimap" && layerId.indexOf("terrain") !== -1) {
+      return false;
+    }
+    return true;
+  };
+
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useArcgis(mapContainer, getViewState(), onViewStateChangeHandler);
-
   if (map) {
     const layers = renderLayers();
     // @ts-expect-error @deck.gl/arcgis has no types
     map.deck.set({ layers });
   }
-
   return <StyledMapContainer ref={mapContainer} />;
 };
 

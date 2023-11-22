@@ -121,6 +121,8 @@ export const ViewerApp = () => {
     useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -539,53 +541,29 @@ export const ViewerApp = () => {
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
-      {selectedBaseMapId !== "ArcGis" && (
-        <DeckGlWrapper
-          id="viewer-deck-container"
-          parentViewState={{
-            ...viewState,
-            main: {
-              ...viewState.main,
-            },
-          }}
-          pickable={isLayerPickable()}
-          layers3d={layers3d}
-          lastLayerSelectedId={selectedLayerIds[0] || ""}
-          loadedTilesets={loadedTilesets}
-          selectedTilesetBasePath={selectedTilesetBasePath}
-          selectedIndex={selectedFeatureIndex}
-          onAfterRender={handleOnAfterRender}
-          getTooltip={getTooltip}
-          onClick={handleClick}
-          onViewStateChange={onViewStateChangeHandler}
-          onTilesetLoad={onTilesetLoad}
-          onTileLoad={onTileLoad}
-          onWebGLInitialized={onWebGLInitialized}
-          preventTransitions={preventTransitions}
-        />
-      )}
-      {selectedBaseMapId === "ArcGis" && (
-        <ArcgisWrapper
-          parentViewState={{
-            ...viewState,
-            main: {
-              ...viewState.main,
-            },
-          }}
-          pickable={isLayerPickable()}
-          layers3d={layers3d}
-          lastLayerSelectedId={selectedLayerIds[0] || ""}
-          loadedTilesets={loadedTilesets}
-          selectedTilesetBasePath={selectedTilesetBasePath}
-          selectedIndex={selectedFeatureIndex}
-          onClick={handleClick}
-          onViewStateChange={onViewStateChangeHandler}
-          onTilesetLoad={onTilesetLoad}
-          onTileLoad={onTileLoad}
-          preventTransitions={preventTransitions}
-        />
-      )}
-
+      <MapWrapper
+        id="viewer-deck-container"
+        parentViewState={{
+          ...viewState,
+          main: {
+            ...viewState.main,
+          },
+        }}
+        pickable={isLayerPickable()}
+        layers3d={layers3d}
+        lastLayerSelectedId={selectedLayerIds[0] || ""}
+        loadedTilesets={loadedTilesets}
+        selectedTilesetBasePath={selectedTilesetBasePath}
+        selectedIndex={selectedFeatureIndex}
+        onAfterRender={handleOnAfterRender}
+        getTooltip={getTooltip}
+        onClick={handleClick}
+        onViewStateChange={onViewStateChangeHandler}
+        onTilesetLoad={onTilesetLoad}
+        onTileLoad={onTileLoad}
+        onWebGLInitialized={onWebGLInitialized}
+        preventTransitions={preventTransitions}
+      />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
           <MainToolsPanel

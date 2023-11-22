@@ -8,20 +8,13 @@ export function useArcgis(
 ): unknown | null {
   const [renderer, setRenderer] = useState<unknown>(null);
   const [sceneView, setSceneView] = useState<unknown | null>(null);
-  const { longitude, latitude, pitch, bearing, zoom } = {
-    longitude: viewState.main.longitude,
-    latitude: viewState.main.latitude,
-    bearing: viewState.main.bearing,
-    pitch: viewState.main.pitch,
-    zoom: viewState.main.zoom,
-  };
+  const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
   const isLoadingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!sceneView) {
       return;
     }
-
     // @ts-expect-error no ArcGIS types
     sceneView.goTo(
       {
@@ -77,6 +70,7 @@ export function useArcgis(
             onViewStateChangeHandler({
               interactionState: { isZooming: false },
               viewState: {
+                ...viewState.main,
                 bearing: sceneView.camera.heading,
                 pitch: sceneView.camera.tilt,
                 zoom: sceneView.zoom,
@@ -90,6 +84,7 @@ export function useArcgis(
           onViewStateChangeHandler({
             interactionState: { isZooming: false },
             viewState: {
+              ...viewState.main,
               bearing: sceneView.camera.heading,
               pitch: sceneView.camera.tilt,
               zoom: sceneView.zoom,

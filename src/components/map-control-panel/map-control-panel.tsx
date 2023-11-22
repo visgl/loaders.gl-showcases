@@ -147,20 +147,20 @@ export const MapControllPanel = ({
             <MinusIcon />
           </Button>
           {isDragModeVisible === true && (
-            <Button
-              active={dragMode === DragMode.pan}
-              onClick={handleDragModeToggle}
-            >
-              <PanIcon />
-            </Button>
-          )}
-          {isDragModeVisible === true && (
-            <Button
-              active={dragMode === DragMode.rotate}
-              onClick={handleDragModeToggle}
-            >
-              <OrbitIcon />
-            </Button>
+            <>
+              <Button
+                active={dragMode === DragMode.pan}
+                onClick={handleDragModeToggle}
+              >
+                <PanIcon />
+              </Button>
+              <Button
+                active={dragMode === DragMode.rotate}
+                onClick={handleDragModeToggle}
+              >
+                <OrbitIcon />
+              </Button>
+            </>
           )}
         </>
       )}
