@@ -225,6 +225,9 @@ export const ArcgisWrapper = ({
   const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const showTerrain = selectedBaseMap?.id === "Terrain";
+  const boundingVolume = useAppSelector(selectBoundingVolume);
+  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -534,11 +537,7 @@ export const ArcgisWrapper = ({
     return result;
   };
 
-  // eslint-disable-next-line
   const renderBoundingVolumeLayer = () => {
-    const boundingVolume = useAppSelector(selectBoundingVolume);
-    const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
-
     if (!boundingVolume) {
       return null;
     }
@@ -705,7 +704,7 @@ export const ArcgisWrapper = ({
     return [
       ...tile3dLayers,
       renderFrustum(),
-      // todo: renderBoundingVolumeLayer(),
+      renderBoundingVolumeLayer(),
       renderNormals(),
       renderMainOnMinimap(),
     ];
@@ -750,6 +749,8 @@ export const ArcgisWrapper = ({
     const layers = renderLayers();
     // @ts-expect-error @deck.gl/arcgis has no types
     map.deck.set({ layers });
+    // @ts-expect-error @deck.gl/arcgis has no types
+    map.deck.layerFilter = layerFilter;
   }
   return <StyledMapContainer ref={mapContainer} />;
 };
