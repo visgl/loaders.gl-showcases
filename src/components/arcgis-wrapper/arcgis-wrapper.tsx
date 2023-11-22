@@ -655,15 +655,11 @@ export const ArcgisWrapper = ({
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useArcgis(mapContainer, getViewState(), onViewStateChangeHandler);
 
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
+  if (map) {
     const layers = renderLayers();
     // @ts-expect-error @deck.gl/arcgis has no types
     map.deck.set({ layers });
-  }, [map]);
+  }
 
   return <StyledMapContainer ref={mapContainer} />;
 };
