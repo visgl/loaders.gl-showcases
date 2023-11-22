@@ -362,3 +362,10 @@ export type TilesetMetadata = {
   hasChildren: boolean;
   type?: TilesetType;
 };
+
+export type ArcgisContent = {
+  id: string;
+  name: string;
+  mapUrl: string;
+  created: number;
+};

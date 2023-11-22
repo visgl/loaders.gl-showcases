@@ -362,6 +362,25 @@ export const ComparisonSide = ({
     );
   };
 
+  const onArcGisInsertHandler = (
+    newLayer: LayerExample,
+    bookmarks?: Bookmark[]
+  ) => {
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
+    const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
+    const newActiveLayersIds = newActiveLayers.map((layer) => layer.id);
+    setActiveLayers(newActiveLayers);
+    onChangeLayers && onChangeLayers(newExamples, newActiveLayersIds);
+
+    /**
+     * There is no sense to use webscene bookmarks in across layers mode.
+     */
+    if (bookmarks?.length) {
+      onInsertBookmarks && onInsertBookmarks(bookmarks);
+    }
+  };
+
   const onLayerInsertHandler = (
     newLayer: LayerExample,
     bookmarks?: Bookmark[]
@@ -493,6 +512,7 @@ export const ComparisonSide = ({
                 selectedLayerIds={selectedLayerIds}
                 viewWidth={viewState?.main?.width}
                 viewHeight={viewState?.main?.height}
+                onArcGisImport={onArcGisInsertHandler}
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}

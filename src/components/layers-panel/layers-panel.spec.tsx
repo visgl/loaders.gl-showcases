@@ -90,6 +90,8 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
       sublayers={[]}
       selectedLayerIds={[]}
       type={0}
+      // TODO: implement myArcGisInsertMock
+      onArcGisImport={layerInsertMock}
       onLayerInsert={layerInsertMock}
       onLayerSelect={layerSelectMock}
       onLayerDelete={layerDeleteMock}

@@ -97,7 +97,8 @@ module.exports = (env) => {
     devtool: "inline-source-map",
     devServer: {
       open: true,
-      port: 3000,
+      server: 'https',
+      port: 8443,
       client: {
         overlay: {
           errors: true,

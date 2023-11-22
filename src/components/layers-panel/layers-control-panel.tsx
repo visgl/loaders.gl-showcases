@@ -10,6 +10,12 @@ import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
+import {
+  PanelHorizontalLine,
+} from "../common";
+
+import { arcgisLogin, selectUser, ArcGisAuthState } from "../../redux/slices/arcgis-auth-slice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -19,6 +25,9 @@ type LayersControlPanelProps = {
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
+  onArcGisLoginClick: () => void;
+  onArcGisImportClick: () => void;
+  onArcGisLogoutClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
@@ -65,6 +74,9 @@ export const LayersControlPanel = ({
   hasSettings = false,
   onLayerInsertClick,
   onSceneInsertClick,
+  onArcGisLoginClick,
+  onArcGisImportClick,
+  onArcGisLogoutClick,
   onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
@@ -72,6 +84,12 @@ export const LayersControlPanel = ({
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
+
+  const username = useAppSelector(selectUser);
+
+  const [showLogin, setShowLogin] = useState<boolean>(!username);
+  const [showLogout, setShowLogout] = useState<boolean>(!!username);
+  const [showImport, setShowImport] = useState<boolean>(!!username);
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -184,7 +202,23 @@ export const LayersControlPanel = ({
         <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
         </PlusButton>
-      </InsertButtons>
+        <PanelHorizontalLine />
+        { showLogin && (
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
+          Login to ArcGIS
+        </PlusButton>
+        ) }
+        { showImport && (
+          <PlusButton buttonSize={ButtonSize.Small} onClick={onArcGisImportClick}>
+          Import from ArcGIS
+        </PlusButton>
+        ) }
+        { showLogout && (
+        <PlusButton buttonSize={ButtonSize.Small} onClick={onArcGisLogoutClick}>
+          {username} Logout
+        </PlusButton>
+        ) }
+        </InsertButtons>
     </LayersContainer>
   );
 };

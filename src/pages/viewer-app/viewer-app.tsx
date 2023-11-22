@@ -299,6 +299,21 @@ export const ViewerApp = () => {
     onSelectBookmarkHandler(bookmarks?.[0].id, bookmarks);
   };
 
+  const onArcGisInsertHandler = (
+    newLayer: LayerExample,
+    bookmarks?: Bookmark[]
+  ) => {
+    const newExamples = [...examples, newLayer];
+    setExamples(newExamples);
+    const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
+    setActiveLayers(newActiveLayers);
+    setPreventTransitions(false);
+
+    if (bookmarks?.length) {
+      updateBookmarks(bookmarks);
+    }
+  };
+
   const onLayerInsertHandler = (
     newLayer: LayerExample,
     bookmarks?: Bookmark[]
@@ -594,6 +609,7 @@ export const ViewerApp = () => {
             pageId={PageId.viewer}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
+            onArcGisImport={onArcGisInsertHandler}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
             onLayerDelete={(id) => onLayerDeleteHandler(id)}

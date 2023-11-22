@@ -49,6 +49,12 @@ const callRender = (renderFunc, props = {}) => {
       hasSettings={false}
       onLayerSelect={onSelectLayerMock}
       onLayerInsertClick={onInsertLayerMock}
+
+      // TODO: implement onInsertArcGisMock
+      onArcGisLoginClick={onInsertLayerMock}
+      onArcGisImportClick={onInsertLayerMock}
+      onArcGisLogoutClick={onInsertLayerMock}
+
       onLayerSettingsClick={onLayerSettingsClickMock}
       onPointToLayer={onPointToLayerMock}
       deleteLayer={onDeleteLayerMock}
