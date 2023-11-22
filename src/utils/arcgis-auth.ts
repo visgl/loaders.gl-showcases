@@ -2,8 +2,8 @@ import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
 import { getUserContent, getItem } from "@esri/arcgis-rest-portal";
 import { ArcgisContent } from "../types";
 
-const ARCGIS_REST_REDIRECT_URL = 'https://localhost:8443/auth';
 const ARCGIS_REST_USER_SESSION = '__ARCGIS_REST_USER_SESSION__';
+const ARCGIS_REST_REDIRECT_URL = 'https://localhost:8443/auth';
 const ARCGIS_REST_CLIENT_ID = '...';
 
 export function getArcGisSession(): ArcGISIdentityManager | undefined {

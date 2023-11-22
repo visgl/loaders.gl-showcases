@@ -7,6 +7,9 @@ import {
 
 import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
 
+const ARCGIS_REST_REDIRECT_URL = 'https://localhost:8443/auth';
+const ARCGIS_REST_CLIENT_ID = '...';
+
 export type LayoutProps = {
   layout: string;
 };
@@ -70,23 +73,15 @@ function handleAuthError(e) {
 
 export const AuthApp = () => {
   let session: any = null;
-  const config = {
-    clientId: '...',
-    // Client secret: 9f4ebd45cd3041eb97ef75a53f9f0252
-    //        redirectUri: 'https://localhost:8443/dashboard',
-    redirectUri: 'https://localhost:8443/auth',
-  };
   const layout = useAppLayout();
-  let opts = {
-    clientId: config.clientId,
-    redirectUri: config.redirectUri,
+  let options = {
+    clientId: ARCGIS_REST_CLIENT_ID,
+    redirectUri: ARCGIS_REST_REDIRECT_URL,
     popup: true,
+    pkce: true
   }
-  //   if (config.portal) {
-  //     opts.portal = config.portal
-  //   }
-  debugger;
-  const sessionCompleted = ArcGISIdentityManager.completeOAuth2(opts).then(newSession => {
+//  debugger;
+  const sessionCompleted = ArcGISIdentityManager.completeOAuth2(options).then(newSession => {
     session = newSession;
     if (session) {
       //            updateSessionInfo(session);
