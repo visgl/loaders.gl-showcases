@@ -77,18 +77,12 @@ export default class CustomTile3DLayer<
 
     if (props.data && props.data !== oldProps.data) {
       this._loadTileset(props.data);
-    } else if (
-      props.colorsByAttribute !== oldProps.colorsByAttribute &&
-      this.state.tileset3d?.selectedTiles[0]?.type === TILE_TYPE.MESH
-    ) {
+    } else if (props.colorsByAttribute !== oldProps.colorsByAttribute) {
       this.setState({
         colorsByAttribute: props.colorsByAttribute,
       });
       this._colorizeTileset();
-    } else if (
-      props.filtersByAttribute !== oldProps.filtersByAttribute &&
-      this.state.tileset3d?.selectedTiles[0]?.type === TILE_TYPE.MESH
-    ) {
+    } else if (props.filtersByAttribute !== oldProps.filtersByAttribute) {
       this.setState({
         filtersByAttribute: props.filtersByAttribute,
       });

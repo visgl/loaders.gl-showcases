@@ -35,6 +35,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "deck.gl": "^8.8.3",
     "html2canvas": "^1.4.1",
+    "isomorphic-fetch": "^3.0.0",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",

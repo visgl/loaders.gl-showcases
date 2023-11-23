@@ -10,7 +10,7 @@ type BSLStatisitcsSummary = {
 };
 
 // Define a type for the slice state
-interface BSLStatisitcsSummaryState {
+export interface BSLStatisitcsSummaryState {
   /** Single layer state for viewer component */
   single: BSLStatisitcsSummary;
   /** Left side layer state for comparison mode */
@@ -44,7 +44,7 @@ const bslStatisitcsSummarySlice = createSlice({
       .addCase(getBSLStatisticsSummary.fulfilled, (state, action) => {
         const side = action.payload.side || "single";
         state[side] = { fields: {} };
-        if (action?.payload?.summary.length > 0) {
+        if (action?.payload?.summary?.length > 0) {
           for (const item of action.payload.summary) {
             const field = {
               mostFrequentValues: item.mostFrequentValues,

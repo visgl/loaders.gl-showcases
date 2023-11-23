@@ -43,7 +43,7 @@ export const filterTile = async (
       }
     } else if (
       tile.content &&
-      tile.content.userData.originalIndices !== undefined
+      tile.content.userData?.originalIndices !== undefined
     ) {
       tile.content.indices = tile.content.userData.originalIndices;
       tile.content.userData.customFilters = null;
