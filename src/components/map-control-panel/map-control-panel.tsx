@@ -83,6 +83,7 @@ type MapControlPanelProps = {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
+  isDragModeVisible?: boolean;
 };
 
 type CompassProps = {
@@ -106,6 +107,7 @@ export const MapControllPanel = ({
   onZoomIn,
   onZoomOut,
   onCompassClick,
+  isDragModeVisible = true,
 }: MapControlPanelProps) => {
   const [expandState, expand] = useExpand(ExpandState.expanded);
   const dragMode = useAppSelector(selectDragMode);
@@ -144,18 +146,22 @@ export const MapControllPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          <Button
-            active={dragMode === DragMode.pan}
-            onClick={handleDragModeToggle}
-          >
-            <PanIcon />
-          </Button>
-          <Button
-            active={dragMode === DragMode.rotate}
-            onClick={handleDragModeToggle}
-          >
-            <OrbitIcon />
-          </Button>
+          {isDragModeVisible === true && (
+            <>
+              <Button
+                active={dragMode === DragMode.pan}
+                onClick={handleDragModeToggle}
+              >
+                <PanIcon />
+              </Button>
+              <Button
+                active={dragMode === DragMode.rotate}
+                onClick={handleDragModeToggle}
+              >
+                <OrbitIcon />
+              </Button>
+            </>
+          )}
         </>
       )}
       <Button onClick={onCompassClick}>
