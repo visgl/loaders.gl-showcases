@@ -742,7 +742,8 @@ export const ArcgisWrapper = ({
     }
     return true;
   };
-
+  // Trying to keep code alligned to deck-gl-wrapper above this line
+  // All Arcgis specific code is allocated below this line
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useArcgis(mapContainer, getViewState(), onViewStateChangeHandler);
   if (map) {

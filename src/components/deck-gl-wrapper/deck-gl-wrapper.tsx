@@ -217,6 +217,9 @@ export const DeckGlWrapper = ({
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const showTerrain = selectedBaseMap?.id === "Terrain";
   const mapStyle = selectedBaseMap?.mapUrl;
+  const boundingVolume = useAppSelector(selectBoundingVolume);
+  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -526,9 +529,6 @@ export const DeckGlWrapper = ({
   };
 
   const renderBoundingVolumeLayer = () => {
-    const boundingVolume = useAppSelector(selectBoundingVolume);
-    const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
-
     if (!boundingVolume) {
       return null;
     }
