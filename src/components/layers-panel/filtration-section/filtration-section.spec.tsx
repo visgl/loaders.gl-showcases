@@ -2,7 +2,7 @@ import { renderWithThemeProviders } from "../../../utils/testing-utils/render-wi
 import userEvent from "@testing-library/user-event";
 import { FiltrationSection } from "./filtration-section";
 import { setupStore } from "../../../redux/store";
-import { getBSLStatisticsSummary } from "../../../redux/slices/bsl-statistics-summary-slice";
+import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
 import { fetchFile } from "@loaders.gl/core";
 
 jest.mock("@loaders.gl/core");

@@ -22,7 +22,7 @@ import {
   LoadOptions,
   TilesetType,
   MinimapPosition,
-  ComparisonSideMode,
+  FiltersByAttribute,
 } from "../../types";
 import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -42,7 +42,7 @@ import {
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
+import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 import {
   fetchUVDebugTexture,
@@ -64,10 +64,7 @@ import {
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import { colorizeTile } from "../../utils/colorize-tile";
-import { selectFiltersByAttribute } from "../../redux/slices/filters-by-attribute-slice";
 import { filterTile } from "../../utils/tiles-filtering/filter-tile";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -159,7 +156,7 @@ type DeckGlI3sProps = {
   /** calculate position of minimap */
   minimapPosition?: MinimapPosition;
   /** side for compare mode */
-  side?: ComparisonSideMode;
+  filtersByAttribute?: FiltersByAttribute | null;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -202,7 +199,7 @@ export const DeckGlWrapper = ({
   loadNumber = 0,
   preventTransitions = false,
   minimapPosition,
-  side,
+  filtersByAttribute,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -282,9 +279,6 @@ export const DeckGlWrapper = ({
   let currentViewport: WebMercatorViewport = null;
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
-  const filtersByAttribute = useSelector((state: RootState) =>
-    selectFiltersByAttribute(state, side)
-  );
 
   const dispatch = useAppDispatch();
 

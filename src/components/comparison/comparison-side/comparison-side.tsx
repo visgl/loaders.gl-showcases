@@ -56,7 +56,10 @@ import {
   updateLayerVisibility,
 } from "../../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { getBSLStatisticsSummary } from "../../../redux/slices/bsl-statistics-summary-slice";
+import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
 
 type LayoutProps = {
   layout: string;
@@ -156,6 +159,12 @@ export const ComparisonSide = ({
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const dispatch = useAppDispatch();
+  const filtersByAttribute = useSelector((state: RootState) =>
+    selectFiltersByAttribute(
+      state,
+      mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
+    )
+  );
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -469,9 +478,7 @@ export const ComparisonSide = ({
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
-        side={
-          mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
-        }
+        filtersByAttribute={filtersByAttribute}
         onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}

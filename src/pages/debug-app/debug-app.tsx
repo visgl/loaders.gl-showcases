@@ -77,7 +77,7 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
   resetDebugOptions,
   setDebugOptions,
@@ -85,8 +85,8 @@ import {
   selectPickable,
 } from "../../redux/slices/debug-options-slice";
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
-import { setFiltersByAttrubute } from "../../redux/slices/filters-by-attribute-slice";
-import { clearBSLStatisitcsSummary } from "../../redux/slices/bsl-statistics-summary-slice";
+import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
+import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {

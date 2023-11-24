@@ -5,8 +5,8 @@ import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
 import { ComparisonSideMode, SliderType } from "../../../types";
 import { useAppDispatch } from "../../../redux/hooks";
-import { setFiltersByAttrubute } from "../../../redux/slices/filters-by-attribute-slice";
-import { selectFieldValues } from "../../../redux/slices/bsl-statistics-summary-slice";
+import { setFiltersByAttrubute } from "../../../redux/slices/symbolization-slice";
+import { selectFieldValues } from "../../../redux/slices/i3s-stats-slice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 

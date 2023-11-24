@@ -3,27 +3,23 @@ import {
   combineReducers,
   configureStore,
 } from "@reduxjs/toolkit";
-import colorsByAttributeSliceReducer from "./slices/colors-by-attribute-slice";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
-import attributeStatsMapSliceReducer from "./slices/attribute-stats-map-slice";
+import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
-import filtersByAttributeSliceReducer from "./slices/filters-by-attribute-slice";
-import bslStatisitcsSummarySliceReducer from "./slices/bsl-statistics-summary-slice";
+import symbolizationSliceReducer from "./slices/symbolization-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
-  colorsByAttribute: colorsByAttributeSliceReducer,
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
   uvDebugTexture: uvDebugTextureSliceReducer,
   debugOptions: debugOptionsSliceReducer,
-  attributeStatsMap: attributeStatsMapSliceReducer,
   baseMaps: baseMapsSliceReducer,
-  filtersByAttribute: filtersByAttributeSliceReducer,
-  bslStatisitcsSummary: bslStatisitcsSummarySliceReducer,
+  symbolization: symbolizationSliceReducer,
+  i3sStats: i3sStatsSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

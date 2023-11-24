@@ -33,7 +33,7 @@ import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
 import { useAppDispatch } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 
 type ComparisonPageProps = {

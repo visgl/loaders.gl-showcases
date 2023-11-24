@@ -2,11 +2,13 @@ import { fetchFile } from "@loaders.gl/core";
 import { ComparisonSideMode } from "../../types";
 import { setupStore } from "../store";
 import reducer, {
-  BSLStatisitcsSummaryState,
   clearBSLStatisitcsSummary,
+  getAttributeStatsInfo,
   getBSLStatisticsSummary,
   selectFieldValues,
-} from "./bsl-statistics-summary-slice";
+  selectStatisitcsMap,
+} from "./i3s-stats-slice";
+import { StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
 
@@ -23,9 +25,12 @@ const mockData = {
 describe("slice: bsl-statistics-summary", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
-      single: { fields: {} },
-      left: { fields: {} },
-      right: { fields: {} },
+      statisitcsMap: {},
+      bslStats: {
+        single: { fields: {} },
+        left: { fields: {} },
+        right: { fields: {} },
+      },
     });
   });
 
@@ -35,12 +40,15 @@ describe("slice: bsl-statistics-summary", () => {
       getBSLStatisticsSummary({ statSummaryUrl: "testUrl" })
     );
     const state = store.getState();
-    expect(state.bslStatisitcsSummary).toEqual({
-      single: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+    expect(state.i3sStats).toEqual({
+      statisitcsMap: {},
+      bslStats: {
+        single: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
+        left: { fields: {} },
+        right: { fields: {} },
       },
-      left: { fields: {} },
-      right: { fields: {} },
     });
 
     await store.dispatch(
@@ -50,14 +58,17 @@ describe("slice: bsl-statistics-summary", () => {
       })
     );
     const state2 = store.getState();
-    expect(state2.bslStatisitcsSummary).toEqual({
-      single: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+    expect(state2.i3sStats).toEqual({
+      statisitcsMap: {},
+      bslStats: {
+        single: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
+        left: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
+        right: { fields: {} },
       },
-      left: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
-      },
-      right: { fields: {} },
     });
 
     await store.dispatch(
@@ -67,36 +78,45 @@ describe("slice: bsl-statistics-summary", () => {
       })
     );
     const state3 = store.getState();
-    expect(state3.bslStatisitcsSummary).toEqual({
-      single: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
-      },
-      left: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
-      },
-      right: {
-        fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+    expect(state3.i3sStats).toEqual({
+      statisitcsMap: {},
+      bslStats: {
+        single: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
+        left: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
+        right: {
+          fields: { BldgLevel: { mostFrequentValues: [0, 10, 20] } },
+        },
       },
     });
   });
 
   it("Reducer clearBSLStatisitcsSummary should clear state", () => {
-    const previousState: BSLStatisitcsSummaryState = {
-      single: {
-        fields: { Attr1: { mostFrequentValues: [1, 2, 3] } },
-      },
-      left: {
-        fields: { Attr2: { mostFrequentValues: [4, 5, 6] } },
-      },
-      right: {
-        fields: { Attr3: { mostFrequentValues: [7, 8, 9] } },
+    const previousState = {
+      statisitcsMap: {},
+      bslStats: {
+        single: {
+          fields: { Attr1: { mostFrequentValues: [1, 2, 3] } },
+        },
+        left: {
+          fields: { Attr2: { mostFrequentValues: [4, 5, 6] } },
+        },
+        right: {
+          fields: { Attr3: { mostFrequentValues: [7, 8, 9] } },
+        },
       },
     };
 
     expect(reducer(previousState, clearBSLStatisitcsSummary())).toEqual({
-      single: { fields: {} },
-      left: { fields: {} },
-      right: { fields: {} },
+      statisitcsMap: {},
+      bslStats: {
+        single: { fields: {} },
+        left: { fields: {} },
+        right: { fields: {} },
+      },
     });
   });
 
@@ -213,6 +233,66 @@ describe("slice: bsl-statistics-summary", () => {
       getBSLStatisticsSummary({ statSummaryUrl: "testUrl" })
     );
     const state2 = store.getState();
-    expect(state2.bslStatisitcsSummary.single).toEqual({ fields: {} });
+    expect(state2.i3sStats.bslStats.single).toEqual({ fields: {} });
+  });
+
+  it("Should handle `getAttributeStatsInfo.rejected` action", async () => {
+    (fetchFile as unknown as jest.Mock<any>).mockRejectedValue("Error");
+
+    const store = setupStore();
+    const state = store.getState();
+    expect(selectStatisitcsMap(state)).toEqual({});
+
+    await store.dispatch(getAttributeStatsInfo("testUrl"));
+    const newState = store.getState();
+    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(null);
+  });
+
+  it("Should handle `getAttributeStatsInfo.fulfilled` action for non-empty stats", async () => {
+    (fetchFile as unknown as jest.Mock<any>).mockReturnValue(
+      new Promise((resolve) => {
+        resolve({
+          text: async () =>
+            JSON.stringify({
+              stats,
+            }),
+        });
+      })
+    );
+
+    const store = setupStore();
+    const state = store.getState();
+    expect(selectStatisitcsMap(state)).toEqual({});
+
+    await store.dispatch(getAttributeStatsInfo("testUrl"));
+    const newState = store.getState();
+    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(stats);
+  });
+
+  it("Should handle `getAttributeStatsInfo.fulfilled` action for empty stats", async () => {
+    (fetchFile as unknown as jest.Mock<any>).mockReturnValue(
+      new Promise((resolve) => {
+        resolve({
+          text: async () => JSON.stringify({}),
+        });
+      })
+    );
+
+    const store = setupStore();
+    const state = store.getState();
+    expect(selectStatisitcsMap(state)).toEqual({});
+
+    await store.dispatch(getAttributeStatsInfo("testUrl"));
+    const newState = store.getState();
+    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(null);
   });
 });
+
+const stats: StatsInfo = {
+  avg: 27.159085097827166,
+  max: 1408.377901,
+  min: 0,
+  stddev: 20.134263122323357,
+  sum: 29395364.164782256,
+  variance: 405.3885514789503,
+};

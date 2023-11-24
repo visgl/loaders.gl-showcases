@@ -7,8 +7,8 @@ import { BuildingExplorer } from "./building-explorer";
 import { PanelHorizontalLine } from "../common";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppDispatch } from "../../redux/hooks";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import { setFiltersByAttrubute } from "../../redux/slices/filters-by-attribute-slice";
+import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
+import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import { ComparisonSideMode } from "../../types";
 
 const Container = styled.div`
