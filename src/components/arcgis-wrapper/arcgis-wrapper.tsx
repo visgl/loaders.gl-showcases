@@ -18,8 +18,9 @@ import {
   LoadOptions,
   TilesetType,
   MinimapPosition,
+  FiltersByAttribute,
 } from "../../types";
-import { BoundingVolumeLayer } from "../../layers";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -37,7 +38,7 @@ import {
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
+import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 import {
   fetchUVDebugTexture,
@@ -58,6 +59,8 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
+import { colorizeTile } from "../../utils/colorize-tile";
+import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 import styled from "styled-components";
 
 export const StyledMapContainer = styled.div`
@@ -158,6 +161,8 @@ type ArcGisMapProps = {
   preventTransitions?: boolean;
   /** calculate position of minimap */
   minimapPosition?: MinimapPosition;
+  /** side for compare mode */
+  filtersByAttribute?: FiltersByAttribute | null;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -172,7 +177,10 @@ type ArcGisMapProps = {
   onTileLoad?: (tile: Tile3D) => void;
   /** Tile3DLayer callback. Triggers after tile contenst was unloaded */
   onTileUnload?: (tile: Tile3D) => void;
+  /** Tile3DLayer callback. Triggers post traversal completion */
+  onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
 };
+
 export const ArcgisWrapper = ({
   // eslint-disable-next-line
   id,
@@ -198,6 +206,7 @@ export const ArcgisWrapper = ({
   loadNumber = 0,
   preventTransitions = false,
   minimapPosition,
+  filtersByAttribute,
   onViewStateChange,
   // eslint-disable-next-line
   onWebGLInitialized,
@@ -210,6 +219,7 @@ export const ArcgisWrapper = ({
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
+  onTraversalComplete = (selectedTiles) => selectedTiles,
 }: ArcGisMapProps) => {
   const dragMode = useAppSelector(selectDragMode);
   const showMinimap = useAppSelector(selectMiniMap);
@@ -281,6 +291,7 @@ export const ArcgisWrapper = ({
   const currentViewport: WebMercatorViewport = null;
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+
   const dispatch = useAppDispatch();
 
   /** Load debug texture if necessary */
@@ -349,6 +360,7 @@ export const ArcgisWrapper = ({
       latitude,
       position: [, , oldElevation],
     } = viewState;
+
     const viewportCenterTerrainElevation =
       getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
     let cameraTerrainElevation: number | null = null;
@@ -556,7 +568,7 @@ export const ArcgisWrapper = ({
     if (!showMinimap) {
       return false;
     }
-    const viewport = new WebMercatorViewport(viewState.main);
+    const viewport = new WebMercatorViewport(getViewState().main);
     const frustumBounds = getFrustumBounds(viewport);
     return new LineLayer({
       id: "frustum",
@@ -627,20 +639,29 @@ export const ArcgisWrapper = ({
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
         useDracoGeometry,
         useCompressedTextures,
-        colorsByAttribute: colorsByAttribute,
       },
     };
+    let url = layer.url;
     if (layer.token) {
       loadOptions.i3s.token = layer.token;
+      const urlObject = new URL(url);
+      urlObject.searchParams.append("token", layer.token);
+      url = urlObject.href;
     }
-    return new Tile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--colors-by-attribute-${colorsByAttribute?.attributeName}--colors-by-attribute-mode-${colorsByAttribute?.mode}--${loadNumber}`,
-      data: layer.url,
+    return new CustomTile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
+      data: url,
+      // @ts-expect-error loader
       loader: I3SLoader,
+      colorsByAttribute,
+      customizeColors: colorizeTile,
+      filtersByAttribute,
+      filterTile,
       onClick: onClick,
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,
+      onTraversalComplete,
       loadOptions,
       pickable,
       autoHighlight,
@@ -673,6 +694,7 @@ export const ArcgisWrapper = ({
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,
+      onTraversalComplete,
     });
   };
 
@@ -710,7 +732,6 @@ export const ArcgisWrapper = ({
     ];
   };
 
-  // eslint-disable-next-line
   const layerFilter = ({ layer, viewport }) => {
     const { id: viewportId } = viewport;
     const {

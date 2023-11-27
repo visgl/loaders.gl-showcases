@@ -65,8 +65,6 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
-import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import {
