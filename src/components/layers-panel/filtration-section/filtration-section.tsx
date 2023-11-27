@@ -3,7 +3,12 @@ import styled, { css, useTheme } from "styled-components";
 import { Slider } from "../../slider/slider";
 import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
-import { SliderType } from "../../../types";
+import { ComparisonSideMode, SliderType } from "../../../types";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setFiltersByAttrubute } from "../../../redux/slices/symbolization-slice";
+import { selectFieldValues } from "../../../redux/slices/i3s-stats-slice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 const FiltrationContainer = styled.div`
   display: flex;
@@ -71,14 +76,6 @@ const SliderContainer = styled.div<{ sliderType: number }>`
   gap: 20px;
 `;
 
-const floors = [
-  { id: "floor1", floorNumber: "Floor 1" },
-  { id: "floor2", floorNumber: "Floor 2" },
-  { id: "floor3", floorNumber: "Floor 3" },
-  { id: "floor4", floorNumber: "Floor 4" },
-  { id: "floor5", floorNumber: "Floor 5" },
-];
-
 const phases = [
   { id: "phase1", phaseNumber: "1" },
   { id: "phase2", phaseNumber: "2" },
@@ -87,17 +84,45 @@ const phases = [
   { id: "phase5", phaseNumber: "5" },
 ];
 
-export const FiltrationSection = () => {
+export const FiltrationSection = ({ side }: { side?: ComparisonSideMode }) => {
   const [selectedFloorId, setSelectedFloorId] = useState<string>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("");
+  const bldgLevels = useSelector((state: RootState) =>
+    selectFieldValues(state, "BldgLevel", side)
+  );
+  const dispatch = useAppDispatch();
+
+  const floors = bldgLevels
+    ? bldgLevels.mostFrequentValues
+        .slice()
+        .sort((a, b) => a - b)
+        .map((level, index) => ({
+          id: `level${index}`,
+          floorNumber: level,
+        }))
+    : [];
 
   const theme = useTheme();
 
   const onSelectFloorHandler = (floorId: string) => {
+    if (floorId === selectedFloorId) {
+      setSelectedFloorId("");
+      dispatch(setFiltersByAttrubute({ filter: null, side }));
+      return;
+    }
     const floor = floors.find(({ id }) => id === floorId);
     if (!floor) {
       return;
     }
+    dispatch(
+      setFiltersByAttrubute({
+        filter: {
+          attributeName: "BldgLevel",
+          value: floor.floorNumber,
+        },
+        side,
+      })
+    );
     setSelectedFloorId(floor.id);
   };
 

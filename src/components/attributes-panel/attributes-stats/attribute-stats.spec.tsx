@@ -3,10 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../../utils/testing-utils/render-with-theme";
 import { AttributeStats } from "./attribute-stats";
 
-import { load } from "@loaders.gl/core";
+import { fetchFile } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
 import { setupStore } from "../../../redux/store";
-import { setColorsByAttrubute } from "../../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../../redux/slices/symbolization-slice";
 
 jest.mock("@loaders.gl/core");
 jest.mock("@loaders.gl/i3s", () => {
@@ -18,7 +18,7 @@ jest.mock("../histogram", () => ({
   HistogramChart: jest.fn().mockImplementation(() => <div>HistogramChart</div>),
 }));
 
-const loadMock = load as unknown as jest.Mocked<any>;
+const fetchMock = fetchFile as unknown as jest.Mocked<any>;
 
 const stats = {
   totalValuesCount: 1,
@@ -50,10 +50,6 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-jest.mock("@loaders.gl/loader-utils", () => ({
-  JSONLoader: jest.fn(),
-}));
-
 jest.mock("../../toogle-switch/toggle-switch", () => ({
   ToggleSwitch: jest
     .fn()
@@ -68,7 +64,7 @@ jest.mock("../../loading-spinner/loading-spinner", () => ({
 
 describe("Attribute Stats Error test", () => {
   it("Should no render Attribute Stats if loading statistics error", async () => {
-    loadMock.mockImplementationOnce(
+    fetchMock.mockImplementationOnce(
       () =>
         new Promise((resolve, reject) =>
           setTimeout(() => {
@@ -113,11 +109,16 @@ describe("Attribute Stats Error test", () => {
 
 describe("AttributeStats", () => {
   beforeEach(() => {
-    loadMock.mockImplementationOnce(
+    fetchMock.mockImplementationOnce(
       () =>
         new Promise((resolve) =>
           setTimeout(() => {
-            resolve({ stats });
+            resolve({
+              text: async () =>
+                JSON.stringify({
+                  stats,
+                }),
+            });
           }, 50)
         )
     );
@@ -193,7 +194,7 @@ describe("AttributeStats", () => {
       );
     });
 
-    expect(loadMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("Should render colorize block", async () => {
@@ -253,7 +254,7 @@ describe("AttributeStats", () => {
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -299,7 +300,7 @@ describe("AttributeStats", () => {
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual(null);
+    expect(store.getState().symbolization.colorsByAttribute).toEqual(null);
   });
 
   it("Should render switch 'Multiply Colors' on", async () => {
@@ -337,7 +338,7 @@ describe("AttributeStats", () => {
       )
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -385,7 +386,7 @@ describe("AttributeStats", () => {
       )
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,

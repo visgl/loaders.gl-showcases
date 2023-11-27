@@ -69,6 +69,14 @@ import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-sli
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
+import {
+  selectFiltersByAttribute,
+  setColorsByAttrubute,
+} from "../../redux/slices/symbolization-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import { getBSLStatisticsSummary } from "../../redux/slices/i3s-stats-slice";
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -123,6 +131,9 @@ export const ViewerApp = () => {
   const dispatch = useAppDispatch();
   const MapWrapper =
     selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+  const filtersByAttribute = useSelector((state: RootState) =>
+    selectFiltersByAttribute(state)
+  );
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -194,6 +205,11 @@ export const ViewerApp = () => {
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
+    if (buildingExplorerOpened && tilesetsData[0]) {
+      dispatch(
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url })
+      );
+    }
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -555,6 +571,7 @@ export const ViewerApp = () => {
         loadedTilesets={loadedTilesets}
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
+        filtersByAttribute={filtersByAttribute}
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}

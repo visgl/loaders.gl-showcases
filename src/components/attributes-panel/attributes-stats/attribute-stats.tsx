@@ -24,12 +24,12 @@ import { capitalize } from "../../../utils/format/capitalize";
 import {
   selectColorsByAttribute,
   setColorsByAttrubute,
-} from "../../../redux/slices/colors-by-attribute-slice";
+} from "../../../redux/slices/symbolization-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   getAttributeStatsInfo,
   selectStatisitcsMap,
-} from "../../../redux/slices/attribute-stats-map-slice";
+} from "../../../redux/slices/i3s-stats-slice";
 
 type VisibilityProps = {
   visible: boolean;

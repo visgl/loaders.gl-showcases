@@ -67,7 +67,7 @@ import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { ImageLoader } from "@loaders.gl/images";
 import { Tileset3D } from "@loaders.gl/tiles";
-import { BoundingVolumeLayer } from "../../layers";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
 import ColorMap from "../../utils/debug/colors-map";
 import {
@@ -86,7 +86,7 @@ import { buildMinimapData } from "../../utils/debug/build-minimap-data";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
 import { setupStore } from "../../redux/store";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
@@ -291,7 +291,7 @@ describe("Deck.gl I3S map component", () => {
   describe("Render Tile3DLayer", () => {
     it("Should render Tile3DLayer", () => {
       callRender(renderWithProvider);
-      expect(Tile3DLayer).toHaveBeenCalled();
+      expect(CustomTile3DLayer).toHaveBeenCalled();
       const {
         id,
         data,
@@ -299,9 +299,9 @@ describe("Deck.gl I3S map component", () => {
         loadOptions,
         autoHighlight,
         highlightedObjectIndex,
-      } = Tile3DLayer.mock.lastCall[0];
+      } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--colors-by-attribute-mode-undefined--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--0"
       );
       expect(data).toBe(tilesetUrl);
       expect(loader).toBe(I3SLoader);
@@ -310,7 +310,6 @@ describe("Deck.gl I3S map component", () => {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
           useCompressedTextures: true,
           useDracoGeometry: true,
-          colorsByAttribute: null,
         },
       });
       expect(autoHighlight).toBe(false);
@@ -356,9 +355,9 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should update layer", () => {
       callRender(renderWithProvider, { loadNumber: 1 });
-      const { id } = Tile3DLayer.mock.lastCall[0];
+      const { id } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-undefined--colors-by-attribute-mode-undefined--1"
+        "tile-layer-undefined-draco-true-compressed-textures-true--1"
       );
     });
 
@@ -369,7 +368,8 @@ describe("Deck.gl I3S map component", () => {
         { pickable: true, autoHighlight: true },
         store
       );
-      const { pickable, autoHighlight } = Tile3DLayer.mock.lastCall[0];
+      const { pickable, autoHighlight } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       expect(pickable).toBe(true);
       expect(autoHighlight).toBe(true);
     });
@@ -378,7 +378,8 @@ describe("Deck.gl I3S map component", () => {
       callRender(renderWithProvider, {
         selectedTilesetBasePath: "http://another.tileset.local",
       });
-      const { highlightedObjectIndex } = Tile3DLayer.mock.lastCall[0];
+      const { highlightedObjectIndex } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       expect(highlightedObjectIndex).toBe(-1);
     });
 
@@ -390,7 +391,7 @@ describe("Deck.gl I3S map component", () => {
         _subLayerProps: {
           mesh: { wireframe },
         },
-      } = Tile3DLayer.mock.lastCall[0];
+      } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(wireframe).toBe(false);
 
       store.dispatch(setDebugOptions({ wireframe: true }));
@@ -399,7 +400,7 @@ describe("Deck.gl I3S map component", () => {
         _subLayerProps: {
           mesh: { wireframe: wireframe2 },
         },
-      } = Tile3DLayer.mock.lastCall[0];
+      } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(wireframe2).toBe(true);
     });
 
@@ -412,13 +413,12 @@ describe("Deck.gl I3S map component", () => {
           },
         ],
       });
-      const { loadOptions } = Tile3DLayer.mock.lastCall[0];
+      const { loadOptions } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(loadOptions).toEqual({
         i3s: {
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
           useCompressedTextures: true,
           useDracoGeometry: true,
-          colorsByAttribute: null,
           token: "<abcdefg123456>",
         },
       });
@@ -426,9 +426,10 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should call Tile3DLayer tileset callbacks", () => {
       const { rerender } = callRender(renderWithProvider);
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { onTileLoad, onTilesetLoad, onTileUnload } =
-        Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { onTileLoad, onTilesetLoad, onTileUnload } = (
+        CustomTile3DLayer as any
+      ).mock.lastCall[0];
       const tile3d = getTile3d();
       act(() => onTileLoad(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(1);
@@ -443,12 +444,14 @@ describe("Deck.gl I3S map component", () => {
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileLoad: undefined });
-      const { onTileLoad: onTileLoad2 } = Tile3DLayer.mock.lastCall[0];
+      const { onTileLoad: onTileLoad2 } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       act(() => onTileLoad2(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileUnload: undefined });
-      const { onTileUnload: onTileUnload2 } = Tile3DLayer.mock.lastCall[0];
+      const { onTileUnload: onTileUnload2 } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       expect(() => act(() => onTileUnload2(tile3d))).not.toThrow();
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
     });
@@ -463,8 +466,8 @@ describe("Deck.gl I3S map component", () => {
         coloredTilesMap: { "selected-tile-id": [33, 55, 66] },
         store,
       });
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { _getMeshColor } = Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { _getMeshColor } = (CustomTile3DLayer as any).mock.lastCall[0];
       _getMeshColor();
       expect(getColorMock).toHaveBeenCalledWith(undefined, {
         coloredBy: "Original",
@@ -475,8 +478,8 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should remove featureIds", () => {
       callRender(renderWithProvider, { featurePicking: false });
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { onTileLoad } = Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
       tile3d.content.featureIds = new Uint32Array([10, 20, 30]);
       act(() => onTileLoad(tile3d));
@@ -487,8 +490,8 @@ describe("Deck.gl I3S map component", () => {
       const store = setupStore();
       store.dispatch(setDebugOptions({ showUVDebugTexture: false }));
       const { rerender } = callRender(renderWithProvider, undefined, store);
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { onTileLoad } = Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
       act(() => onTileLoad(tile3d));
       expect(selectOriginalTextureForTile).toHaveBeenCalledWith(tile3d);
@@ -496,7 +499,8 @@ describe("Deck.gl I3S map component", () => {
 
       store.dispatch(setDebugOptions({ showUVDebugTexture: true }));
       callRender(rerender, undefined, store);
-      const { onTileLoad: onTileLoadSecond } = Tile3DLayer.mock.lastCall[0];
+      const { onTileLoad: onTileLoadSecond } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       act(() => onTileLoadSecond(tile3d));
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
@@ -505,8 +509,8 @@ describe("Deck.gl I3S map component", () => {
     it("Should not be pickable", () => {
       const store = setupStore();
       callRender(renderWithProvider, { pickable: false }, store);
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { pickable } = Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { pickable } = (CustomTile3DLayer as any).mock.lastCall[0];
       expect(pickable).toBe(false);
     });
 
@@ -523,12 +527,13 @@ describe("Deck.gl I3S map component", () => {
         })
       );
       callRender(renderWithProvider, undefined, store);
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { id, loadOptions } = Tile3DLayer.mock.lastCall[0];
+      expect(CustomTile3DLayer).toHaveBeenCalled();
+      const { id, colorsByAttribute } = (CustomTile3DLayer as any).mock
+        .lastCall[0];
       expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--colors-by-attribute-HEIGHTROOF--colors-by-attribute-mode-replace--0"
+        "tile-layer-undefined-draco-true-compressed-textures-true--0"
       );
-      expect(loadOptions.i3s.colorsByAttribute).toEqual({
+      expect(colorsByAttribute).toEqual({
         attributeName: "HEIGHTROOF",
         maxColor: [44, 44, 175, 255],
         maxValue: 1400,
