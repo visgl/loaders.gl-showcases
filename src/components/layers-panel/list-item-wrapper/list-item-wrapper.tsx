@@ -3,7 +3,7 @@ import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
 import { SelectionState, ExpandState } from "../../../types";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
-import {OptionsIcon, Panels} from '../../common'
+import { OptionsIcon, Panels } from "../../common";
 
 type BaseMapsItemProps = {
   children: React.ReactNode;
@@ -47,11 +47,13 @@ const Container = styled.div<ContainerProps>`
 const ItemContentWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
+  min-width: 0;
   align-items: center;
 `;
 
 const OptionsButton = styled.div`
   width: 16px;
+  min-width: 16px;
   height: 16px;
   display: flex;
   justify-content: center;
@@ -95,7 +97,7 @@ export const ListItemWrapper = ({
               onOptionsClick(id);
             }}
           >
-            <OptionsIcon panel={Panels.Layers}/>
+            <OptionsIcon panel={Panels.Layers} />
           </OptionsButton>
         </Popover>
       )}

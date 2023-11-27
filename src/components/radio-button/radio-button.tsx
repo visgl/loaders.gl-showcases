@@ -21,6 +21,7 @@ type CheckmarkProps = {
 const CheckboxContainer = styled.div<CheckmarkProps>`
   height: 24px;
   width: 24px;
+  min-width: 24px;
   position: relative;
   cursor: pointer;
   font-size: 22px;
