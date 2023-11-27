@@ -1,79 +1,80 @@
-import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
-
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-//export type ArcgisContent = {
-import { ArcgisContent } from "../../types";
+import { ArcGisContent } from "../../types";
 import { RootState } from "../store";
-import { arcGisContent } from '../../utils/arcgis-auth';
+import { getArcGisUserContent } from '../../utils/arcgis-auth';
 
 // Define a type for the slice state
-interface ArcgisContentState {
-  arcgisContent: ArcgisContent[];
-  selectedArcgisContent: string;
+interface ArcGisContentState {
+  arcGisContent: ArcGisContent[];
+  arcGisContentSelected: string;
 }
-const initialState: ArcgisContentState = {
-  arcgisContent: [],
-  selectedArcgisContent: '',
+const initialState: ArcGisContentState = {
+  arcGisContent: [],
+  arcGisContentSelected: '',
 };
 
-export const arcgisContent = createAsyncThunk<
-ArcgisContent[]
->
-(
-  'arcgis/content',
-  async (): Promise<ArcgisContent[]> => {
-    const response: ArcgisContent[] = await arcGisContent();
-    return response;
-  }
-);
-
-const arcgisContentSlice = createSlice({
-  name: "arcgisContent",
+const arcGisContentSlice = createSlice({
+  name: "arcGisContent",
   initialState,
   reducers: {
-    setInitialArcgisContent: () => {
+    setInitialArcGisContent: () => {
       return initialState;
     },
-    addArcgisContent: (state: ArcgisContentState, action: PayloadAction<ArcgisContent>) => {
-      state.arcgisContent.push(action.payload);
-      state.selectedArcgisContent = action.payload.id;
+
+    // Content
+    addArcGisContent: (state: ArcGisContentState, action: PayloadAction<ArcGisContent>) => {
+      state.arcGisContent.push(action.payload);
     },
-    setSelectedArcgisContent: (
-      state: ArcgisContentState,
-      action: PayloadAction<string>
-    ) => {
-      const newMap = state.arcgisContent.find((map) => map.id === action.payload);
-      if (newMap) {
-        state.selectedArcgisContent = action.payload;
+    deleteArcGisContent: (state: ArcGisContentState, action: PayloadAction<string>) => {
+      state.arcGisContent = state.arcGisContent.filter( (map) => map.id !== action.payload );
+      if (state.arcGisContentSelected === action.payload) {
+        state.arcGisContentSelected = '';
       }
     },
-    deleteArcgisContent: (state: ArcgisContentState, action: PayloadAction<string>) => {
-      state.arcgisContent = state.arcgisContent.filter(
-        (keepMap) => keepMap.id !== action.payload
-      );
-      state.selectedArcgisContent = state.arcgisContent[0].id;
+
+    // Content Selected
+    setArcGisContentSelected: (
+      state: ArcGisContentState,
+      action: PayloadAction<string>
+    ) => {
+      const item = state.arcGisContent.find((item) => item.id === action.payload);
+      if (item) {
+        state.arcGisContentSelected = action.payload;
+      }
+    },
+    resetArcGisContentSelected: (
+      state: ArcGisContentState
+    ) => {
+      state.arcGisContentSelected = '';
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(arcgisContent.fulfilled, (state, action) => {
-      const content = action.payload;
-      state.arcgisContent = [];
-      for (let c of content) {
-        state.arcgisContent.push(c); //push(action.payload || '');
-      }
-//      return { ...state, ...action.payload };
+    builder.addCase(getArcGisContent.fulfilled, (state, action) => {
+      state.arcGisContent = [...action.payload];
     })
   },
 
 });
 
-export const selectArcgisContent = (state: RootState): ArcgisContent[] =>
-  state.arcgisContent.arcgisContent;
-export const selectSelectedArcgisContentId = (state: RootState): string =>
-  state.arcgisContent.selectedArcgisContent;
+export const getArcGisContent = createAsyncThunk<
+ArcGisContent[]
+>
+(
+  'getArcGisContent',
+  async (): Promise<ArcGisContent[]> => {
+    const response: ArcGisContent[] = await getArcGisUserContent();
+    return response;
+  }
+);
 
-export const { setInitialArcgisContent } = arcgisContentSlice.actions;
-export const { addArcgisContent } = arcgisContentSlice.actions;
-export const { setSelectedArcgisContent } = arcgisContentSlice.actions;
-export const { deleteArcgisContent } = arcgisContentSlice.actions;
-export default arcgisContentSlice.reducer;
+export const selectArcGisContent = (state: RootState): ArcGisContent[] =>
+  state.arcGisContent.arcGisContent;
+export const selectArcGisContentSelected = (state: RootState): string =>
+  state.arcGisContent.arcGisContentSelected;
+
+export const { setInitialArcGisContent } = arcGisContentSlice.actions;
+export const { addArcGisContent } = arcGisContentSlice.actions;
+export const { setArcGisContentSelected } = arcGisContentSlice.actions;
+export const { resetArcGisContentSelected } = arcGisContentSlice.actions;
+export const { deleteArcGisContent } = arcGisContentSlice.actions;
+export default arcGisContentSlice.reducer;

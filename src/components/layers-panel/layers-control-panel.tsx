@@ -1,4 +1,4 @@
-import { Fragment, ReactEventHandler, useState } from "react";
+import { Fragment, ReactEventHandler, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
@@ -14,7 +14,7 @@ import {
   PanelHorizontalLine,
 } from "../common";
 
-import { arcgisLogin, selectUser, ArcGisAuthState } from "../../redux/slices/arcgis-auth-slice";
+import { arcGisLogin, arcGisLogout, selectUser } from "../../redux/slices/arcgis-auth-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 type LayersControlPanelProps = {
@@ -25,9 +25,7 @@ type LayersControlPanelProps = {
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
-  onArcGisLoginClick: () => void;
   onArcGisImportClick: () => void;
-  onArcGisLogoutClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
@@ -74,22 +72,36 @@ export const LayersControlPanel = ({
   hasSettings = false,
   onLayerInsertClick,
   onSceneInsertClick,
-  onArcGisLoginClick,
   onArcGisImportClick,
-  onArcGisLogoutClick,
   onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
+  const dispatch = useAppDispatch();
+
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
   const username = useAppSelector(selectUser);
 
-  const [showLogin, setShowLogin] = useState<boolean>(!username);
-  const [showLogout, setShowLogout] = useState<boolean>(!!username);
-  const [showImport, setShowImport] = useState<boolean>(!!username);
+  const [showLogin, setShowLoginButton] = useState<boolean>(!username);
+  const [showLogout, setShowLogoutButton] = useState<boolean>(!!username);
+  const [showImport, setShowImportButton] = useState<boolean>(!!username);
+
+  useEffect(() => {
+    setShowLoginButton(!username);
+    setShowLogoutButton(!!username);
+    setShowImportButton(!!username);
+  }, [username]);
+
+  const handleArcGisLogin = () => {
+    dispatch(arcGisLogin());
+  };
+
+  const handleArcGisLogout = () => {
+    dispatch(arcGisLogout());
+  };
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -204,7 +216,7 @@ export const LayersControlPanel = ({
         </PlusButton>
         <PanelHorizontalLine />
         { showLogin && (
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={handleArcGisLogin}>
           Login to ArcGIS
         </PlusButton>
         ) }
@@ -214,7 +226,7 @@ export const LayersControlPanel = ({
         </PlusButton>
         ) }
         { showLogout && (
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onArcGisLogoutClick}>
+        <PlusButton buttonSize={ButtonSize.Small} onClick={handleArcGisLogout}>
           {username} Logout
         </PlusButton>
         ) }

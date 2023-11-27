@@ -1,12 +1,13 @@
 import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
-import { getUserContent, getItem } from "@esri/arcgis-rest-portal";
-import { ArcgisContent } from "../types";
+import { getUserContent } from "@esri/arcgis-rest-portal";
+import { ArcGisContent } from "../types";
 
 const ARCGIS_REST_USER_SESSION = '__ARCGIS_REST_USER_SESSION__';
-const ARCGIS_REST_REDIRECT_URL = 'https://localhost:8443/auth';
-const ARCGIS_REST_CLIENT_ID = '...';
 
-export function getArcGisSession(): ArcGISIdentityManager | undefined {
+const ARCGIS_REST_REDIRECT_URL = process.env.REACT_APP_ARCGIS_REST_REDIRECT_URL || '';
+const ARCGIS_REST_CLIENT_ID = process.env.REACT_APP_ARCGIS_REST_CLIENT_ID || '';
+
+function getArcGisSession(): ArcGISIdentityManager | undefined {
   let session;
   const itemString = localStorage.getItem(ARCGIS_REST_USER_SESSION);
   if (itemString) {
@@ -17,17 +18,7 @@ export function getArcGisSession(): ArcGISIdentityManager | undefined {
 
 export function getAuthenticatedUser() {
   const session = getArcGisSession();
-  let username = session ? session.username : '';
-  const itemString = localStorage.getItem(ARCGIS_REST_USER_SESSION);
-  if (itemString) {
-  //    const session = ArcGISIdentityManager.deserialize(item);
-  //    const user = await session.getUser();
-    try {
-      const item = JSON.parse(itemString);
-      username = item.username;
-    } catch(e) {
-    }
-  }
+  const username = session ? session.username : '';
   return username;
 }
 
@@ -39,22 +30,12 @@ function updateSessionInfo(session?: ArcGISIdentityManager) {
   }
 }
 
-function handleAuthError(e) {
-  switch (e.code) {
-    case "no-auth-state":
-      console.log("No auth state found to complete sign in. This error can be ignored.");
-      break;
-    case "access-denied-error":
-      console.log("The user hit cancel on the authorization screen.");
-      break;
-    default:
-      console.error(e);
-      break;
+export const arcGisRequestLogin = async () => {
+  if (!ARCGIS_REST_CLIENT_ID || !ARCGIS_REST_REDIRECT_URL) {
+    console.error("The ClientId or the RedirectUrl is not defined in .env file.");
+    return '';
   }
-}
-
-export const myArcGisLogin = async () => {
-  let options = {
+  const options = {
     clientId: ARCGIS_REST_CLIENT_ID,
     redirectUri: ARCGIS_REST_REDIRECT_URL,
     popup: true,
@@ -69,48 +50,38 @@ export const myArcGisLogin = async () => {
       username = await session.getUsername();
     }
   }
-  catch(e) {
-    handleAuthError(e);
-  };
+  finally {
+    // In case of an exception the session is not set.
+    // So the following call will remove any session stored in the local storage.
+    updateSessionInfo(session);
+  }
 
-  updateSessionInfo(session);
   return username;
 };
 
-export const myArcGisLogout = async () => {
+export const arcGisRequestLogout = async () => {
   updateSessionInfo();
   return '';
 };
 
-export const arcGisContent = async (): Promise<ArcgisContent[]> => {
-  const contentItems: ArcgisContent[] = [];
+export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
+  const contentItems: ArcGisContent[] = [];
   const authentication = getArcGisSession();
   if (authentication) {
     const content = await getUserContent({
-    // folderId: 'bao7',
-    // start: 1,
-    // num: 20,
     authentication
     });
 
-    for (let i in content.items) {
-      const item = content.items[i];
+    for (const item of content.items) {
       if (item.url && item.type === 'Scene Service' && item.typeKeywords && item.typeKeywords.includes('Hosted Service')) {
-        const contentItem: ArcgisContent = {
+        const contentItem: ArcGisContent = {
           id: item.id,
           name: item.title,
-          mapUrl: item.url,
+          url: item.url,
           created: item.created
         };
         contentItems.push(contentItem);
       }
-      // id: string;
-      // name: string;
-      // mapUrl: string;
-      // created: string;
-
-      //      const item = await getItem(id, authentication);
-      // items.push(id);
     }
   }
   return contentItems;

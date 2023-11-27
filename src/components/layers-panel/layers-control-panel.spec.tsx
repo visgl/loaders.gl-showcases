@@ -33,6 +33,7 @@ beforeAll(() => {
 });
 
 const onInsertLayerMock = jest.fn();
+const onArcGisImportMock = jest.fn();
 const onInsertSceneMock = jest.fn();
 const onDeleteLayerMock = jest.fn();
 const onSelectLayerMock = jest.fn();
@@ -49,12 +50,7 @@ const callRender = (renderFunc, props = {}) => {
       hasSettings={false}
       onLayerSelect={onSelectLayerMock}
       onLayerInsertClick={onInsertLayerMock}
-
-      // TODO: implement onInsertArcGisMock
-      onArcGisLoginClick={onInsertLayerMock}
-      onArcGisImportClick={onInsertLayerMock}
-      onArcGisLogoutClick={onInsertLayerMock}
-
+      onArcGisImportClick={onArcGisImportMock}
       onLayerSettingsClick={onLayerSettingsClickMock}
       onPointToLayer={onPointToLayerMock}
       deleteLayer={onDeleteLayerMock}

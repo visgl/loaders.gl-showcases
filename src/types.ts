@@ -363,9 +363,10 @@ export type TilesetMetadata = {
   type?: TilesetType;
 };
 
-export type ArcgisContent = {
+export type ArcGisContent = {
   id: string;
+  url: string;
   name: string;
-  mapUrl: string;
+  token?: string;
   created: number;
 };

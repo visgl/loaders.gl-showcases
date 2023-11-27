@@ -1,53 +1,76 @@
 import styled from "styled-components";
-import { SelectionState } from "../../../types";
-import { BaseMapIcon } from "../base-map-icon/base-map-icon";
-import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
-
-type ArcgisItemProps = {
-  id: string;
-  title: string;
-  optionsContent?: JSX.Element;
-  selected: SelectionState;
-//   isOptionsPanelOpen: boolean;
-  onMapsSelect: (id) => void;
-//   onOptionsClick: (id: string) => void;
-  onClickOutside?: () => void;
-};
+import { SelectionState, ListItemType } from "../../../types";
+import { Checkbox } from "../../checkbox/checkbox";
+import { ArcGisListItemWrapper } from "../arcgis-list-item-wrapper/arcgis-list-item-wrapper";
+import { RadioButton } from "../../radio-button/radio-button";
 
 const Title = styled.div`
-  margin-left: 16px;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
+  overflow: hidden;
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-export const ArcgisListItem = ({
+const ItemContent = styled.div`
+  margin-left: 16px;
+`;
+
+const ItemTitle = styled(Title)`
+  color: ${({ theme }) => theme.colors.mainDimColorInverted};
+  overflow: hidden; 
+  white-space: nowrap;
+  max-width: 90%;
+  text-overflow: ellipsis;
+  font-weight: 400;
+  align-items: center;
+`;
+
+const ItemContainer = styled.div<{ bottom?: number }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 8px 0;
+  margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
+`;
+
+type ArcGisListItemProps = {
+  id: string;
+  title: string;
+  type: ListItemType;
+  selected: SelectionState;
+  onChangeSelection: (id: string) => void;
+};
+
+export const ArcGisListItem = ({
   id,
   title,
-  optionsContent,
-//   isOptionsPanelOpen,
+  type,
   selected,
-//   onOptionsClick,
-  onClickOutside,
-  onMapsSelect,
-}: ArcgisItemProps) => {
+  onChangeSelection,
+}: ArcGisListItemProps) => {
   const handleClick = () => {
-    onMapsSelect(id);
+    onChangeSelection(id);
   };
+
   return (
-    <ListItemWrapper
+    <ArcGisListItemWrapper
       id={id}
       selected={selected}
       onClick={handleClick}
-    //   onOptionsClick={onOptionsClick}
-    //   isOptionsPanelOpen={isOptionsPanelOpen}
-      optionsContent={optionsContent}
-      onClickOutside={onClickOutside}
     >
-      <BaseMapIcon baseMapId={id} />
-      <Title>{title}</Title>
-    </ListItemWrapper>
+      {type === ListItemType.Checkbox && (
+        <Checkbox id={id} checked={selected} onChange={() => onChangeSelection(id)} />
+      )}
+      {type === ListItemType.Radio && (
+        <RadioButton id={id} checked={selected === SelectionState.selected} onChange={() => onChangeSelection(id)} />
+      )}
+      <ItemContent data-testid="list-item-content">
+        <ItemContainer key={title}>
+          <ItemTitle>{title}</ItemTitle>
+        </ItemContainer>
+      </ItemContent>
+    </ArcGisListItemWrapper>
   );
 };

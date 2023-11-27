@@ -1,30 +1,23 @@
-import { useState, Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import styled from "styled-components";
 
-import { ActionButtonVariant, ArcgisContent } from "../../../types";
+import { ActionButtonVariant, ListItemType } from "../../../types";
+
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
-//import {ArcGISIdentityManager} from '@esri/arcgis-rest-request';
-import { getUserContent, getItem } from "@esri/arcgis-rest-portal";
-import {getArcGisSession} from "../../../utils/arcgis-auth";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { ArcgisListItem } from "../arcgis-list-item/arcgis-list-item";
+import { ArcGisListItem } from "../arcgis-list-item/arcgis-list-item";
 import { SelectionState } from "../../../types";
 
 import {
-  selectArcgisContent,
-  deleteArcgisContent,
-  selectSelectedArcgisContentId,
-  setSelectedArcgisContent,
-  addArcgisContent,
-
-  arcgisContent
+  selectArcGisContent,
+  selectArcGisContentSelected,
+  setArcGisContentSelected,
+  resetArcGisContentSelected,
 } from "../../../redux/slices/arcgis-content-slice";
-
-const NO_NAME_ERROR = "Please enter name";
 
 type InsertLayerProps = {
   title: string;
@@ -62,16 +55,6 @@ const Title = styled.div`
   margin-bottom: 16px;
 `;
 
-const InputsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 24px;
-
-  > * {
-    margin: 8px 0;
-  }
-`;
-
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -85,11 +68,6 @@ const AcrgisList = styled.div`
   margin-bottom: 10px;
 `;
 
-const handleImport = (event) => {
-  // ...
-  event.preventDefault();
-};
-
 export const ArcGisImportPanel = ({
   title,
   onImport,
@@ -97,44 +75,45 @@ export const ArcGisImportPanel = ({
 }: InsertLayerProps) => {
   const dispatch = useAppDispatch();
 
-  //let arcgisContentArray = useAppSelector(selectArcgisContent);
-  // if (!arcgisContentArray.length) {
-  //   dispatch(arcgisContent());
-  // }
-
   const layout = useAppLayout();
 
-  const arcgisContentArray = useAppSelector(selectArcgisContent);
-  const selectedArcgisContentId = useAppSelector(selectSelectedArcgisContentId);
+  const arcGisContentArray = useAppSelector(selectArcGisContent);
+  const arcGisContentSelected = useAppSelector(selectArcGisContentSelected);
+
+  useEffect(() => {
+    dispatch( resetArcGisContentSelected() );
+  }, [arcGisContentArray]);
+
+  const handleImport = (event) => {
+    const arcGisItem = arcGisContentArray.find( (item) => item.id === arcGisContentSelected );
+    if (arcGisItem) {
+      onImport(arcGisItem);
+    }
+    event.preventDefault();
+  };
 
   return (
     <Container layout={layout}>
       <Title>{title}</Title>
       <form className="insert-form" onSubmit={handleImport}>
-        <InputsWrapper>
-        </InputsWrapper>
-
         <AcrgisList>
-        {arcgisContentArray.map((baseMap) => {
-          const isMapSelected = selectedArcgisContentId === baseMap.id;
+        {arcGisContentArray.map((contentItem) => {
+          const isMapSelected = arcGisContentSelected === contentItem.id;
 
           return (
-            <Fragment key={baseMap.name}>
-              <ArcgisListItem
-                id={baseMap.id}
-                title={baseMap.name}
+            <Fragment key={contentItem.name}>
+              <ArcGisListItem
+                id={contentItem.id}
+                type={ListItemType.Radio}
+                title={contentItem.name}
                 selected={
                   isMapSelected
                     ? SelectionState.selected
                     : SelectionState.unselected
                 }
-                onMapsSelect={() => {
-                  dispatch(setSelectedArcgisContent(baseMap.id));
-                }}
-                onClickOutside={() => {
-                  // setShowMapSettings(false);
-                  // setSettingsMapId("");
-                }}
+                onChangeSelection={
+                  () => { dispatch( setArcGisContentSelected(contentItem.id) ); }
+                }
               />
             </Fragment>
           );
@@ -145,7 +124,7 @@ export const ArcGisImportPanel = ({
           <ActionButton variant={ActionButtonVariant.cancel} onClick={onCancel}>
             Cancel
           </ActionButton>
-          <ActionButton type="submit">Import</ActionButton>
+          <ActionButton type="submit">Import Selected</ActionButton>
         </ButtonsWrapper>
       </form>
     </Container>

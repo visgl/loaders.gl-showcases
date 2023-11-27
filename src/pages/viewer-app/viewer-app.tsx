@@ -299,7 +299,7 @@ export const ViewerApp = () => {
     onSelectBookmarkHandler(bookmarks?.[0].id, bookmarks);
   };
 
-  const onArcGisInsertHandler = (
+  const onArcGisImportHandler = (
     newLayer: LayerExample,
     bookmarks?: Bookmark[]
   ) => {
@@ -609,7 +609,7 @@ export const ViewerApp = () => {
             pageId={PageId.viewer}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
-            onArcGisImport={onArcGisInsertHandler}
+            onArcGisImport={onArcGisImportHandler}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
             onLayerDelete={(id) => onLayerDeleteHandler(id)}

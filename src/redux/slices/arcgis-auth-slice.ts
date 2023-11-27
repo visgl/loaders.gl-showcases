@@ -1,71 +1,50 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { getAuthenticatedUser, myArcGisLogin, myArcGisLogout } from '../../utils/arcgis-auth';
+import { getAuthenticatedUser, arcGisRequestLogin, arcGisRequestLogout } from '../../utils/arcgis-auth';
 
 // Define a type for the slice state
 export interface ArcGisAuthState {
-  /** Show ... */
   user: string;
-  authenticated: boolean;
 }
 
 const initialState: ArcGisAuthState = {
   user: getAuthenticatedUser(),
-  authenticated: false,
 }
-
-export const arcgisLogin = createAsyncThunk(
-  'arcgis/login',
-  async () => {
-    const response = await myArcGisLogin();
-    return response;
-  }
-);
-
-export const arcgisLogout = createAsyncThunk(
-  'arcgis/logout',
-  async () => {
-    const response = await myArcGisLogout();
-    return response;
-  }
-);
 
 const arcGisAuthSlice = createSlice({
   name: "arcGisAuth",
   initialState,
   reducers: {
-    resetArcGisAuth: () => {
+    setInitialArcGisAuthState: () => {
       return initialState;
     },
-    setArcGisAuth: (
-      state: ArcGisAuthState,
-      action: PayloadAction<Partial<ArcGisAuthState>>
-    ) => {
-      return { ...state, ...action.payload };
-    },
-    // requestArcGisAuth: () => {
-    //   return {user: '', authenticated: false, fetching: true};
-    // },
   },
   extraReducers: (builder) => {
-      builder.addCase(arcgisLogin.fulfilled, (state, action) => {
+      builder.addCase(arcGisLogin.fulfilled, (state, action) => {
         state.user = action.payload || '';
-        state.authenticated  =true;
       })
-      .addCase(arcgisLogout.fulfilled, (state, action) => {
+      .addCase(arcGisLogout.fulfilled, (state) => {
         state.user = '';
-        state.authenticated  = false;
       })
     },
 });
 
+export const arcGisLogin = createAsyncThunk(
+  'arcGisLogin',
+  async () => {
+    return await arcGisRequestLogin();
+  }
+);
+
+export const arcGisLogout = createAsyncThunk(
+  'arcGisLogout',
+  async () => {
+    return await arcGisRequestLogout();
+  }
+);
 
 export const selectUser = (state: RootState): string =>
-  state.arcgisAuth.user;
+  state.arcGisAuth.user;
 
-export const selectAuthenticated = (state: RootState): boolean =>
-  state.arcgisAuth.authenticated;
-
-export const { resetArcGisAuth } = arcGisAuthSlice.actions;
-export const { setArcGisAuth } = arcGisAuthSlice.actions;
-export default arcGisAuthSlice.reducer;
+  export const { setInitialArcGisAuthState } = arcGisAuthSlice.actions;
+  export default arcGisAuthSlice.reducer;

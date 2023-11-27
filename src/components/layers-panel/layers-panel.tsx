@@ -38,19 +38,10 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
 
-import { arcgisLogin, arcgisLogout, selectUser } from "../../redux/slices/arcgis-auth-slice";
-import {
-  // selectArcgisContent,
-  // deleteArcgisContent,
-  // selectSelectedArcgisContentId,
-  // setSelectedArcgisContent,
-  // addArcgisContent,
-  arcgisContent
-} from "../../redux/slices/arcgis-content-slice";
-
+import { getArcGisContent } from "../../redux/slices/arcgis-content-slice";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -212,27 +203,6 @@ export const LayersPanel = ({
   const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
 
   useClickOutside([warningNode], () => setShowExistedError(false));
-
-  const username = useAppSelector(selectUser);
-  const [showLogin, setShowLoginButton] = useState<boolean>(!username);
-  const [showLogout, setShowLogoutButton] = useState<boolean>(!!username);
-  const [showImport, setShowImportButton] = useState<boolean>(!!username);
-
-  const handleArcGisLogin = () => {
-    dispatch(arcgisLogin());
-    const username = useAppSelector(selectUser);
-    setShowLoginButton(!username);
-    setShowLogoutButton(!!username);
-    setShowImportButton(!!username);
-  };
-
-  const handleArcGisLogout = () => {
-    dispatch(arcgisLogout());
-    const username = useAppSelector(selectUser);
-    setShowLoginButton(!username);
-    setShowLogoutButton(!!username);
-    setShowImportButton(!!username);
-  };
 
   const handleArcGisImport = (layer: {
     name: string;
@@ -434,15 +404,11 @@ const handleInsertLayer = (layer: {
                 onLayerSelect={onLayerSelect}
                 onLayerInsertClick={() => setShowLayerInsertPanel(true)}
                 onSceneInsertClick={() => setShowSceneInsertPanel(true)}
-
-                onArcGisLoginClick={() => handleArcGisLogin()}
                 onArcGisImportClick={() => {
-                  // Initialize the content of the Import Panel
-                  dispatch(arcgisContent());
+                  dispatch(getArcGisContent());
                   setShowArcGisImportPanel(true)
                 }
               }
-                onArcGisLogoutClick={() => handleArcGisLogout()}
 
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
                 onPointToLayer={onPointToLayer}
@@ -515,8 +481,8 @@ const handleInsertLayer = (layer: {
           {showArcGisImportPanel && (
             <PanelWrapper>
               <ArcGisImportPanel
-                title={"Import ArcGis"}
-                onImport={(layer) => handleArcGisImport(layer)}
+                title={"Select map to import"}
+                onImport={(item) => handleArcGisImport(item)}
                 onCancel={() => setShowArcGisImportPanel(false)}
               />
             </PanelWrapper>

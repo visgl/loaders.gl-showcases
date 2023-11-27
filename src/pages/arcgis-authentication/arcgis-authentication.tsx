@@ -7,8 +7,8 @@ import {
 
 import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
 
-const ARCGIS_REST_REDIRECT_URL = 'https://localhost:8443/auth';
-const ARCGIS_REST_CLIENT_ID = '...';
+const ARCGIS_REST_REDIRECT_URL = process.env.REACT_APP_ARCGIS_REST_REDIRECT_URL || '';
+const ARCGIS_REST_CLIENT_ID = process.env.REACT_APP_ARCGIS_REST_CLIENT_ID || '';
 
 export type LayoutProps = {
   layout: string;
@@ -36,60 +36,21 @@ const AuthContainer = styled.div<LayoutProps>`
   mobile: "58px",
 })};
 `;
-/*
-function updateSessionInfo(session) {
-    // Get the signed in users into and log it to the console
-    if (session) {
-      console.log(`session=${JSON.stringify(session, null, 2)}`);
-      session.getUser().then((user) => {
-        console.log("User info:", user);
-      });
-    }
-
-    let sessionInfo = document.getElementById('sessionInfo')
-    let sessionCode = document.getElementById("sessionCode");
-
-    if (session) {
-      localStorage.setItem('__ARCGIS_REST_USER_SESSION__', session.serialize());
-    } else {
-      localStorage.removeItem('__ARCGIS_REST_USER_SESSION__');
-    }
-  }
-
-function handleAuthError(e) {
-    switch (e.code) {
-      case "no-auth-state":
-        console.log("No auth state found to complete sign in. This error can be ignored.");
-        break;
-      case "access-denied-error":
-        console.log("The user hit cancel on the authorization screen.");
-        break;
-      default:
-        console.error(e);
-        break;
-    }
-  }
-*/
 
 export const AuthApp = () => {
-  let session: any = null;
+//  let session: any = null;
   const layout = useAppLayout();
-  let options = {
-    clientId: ARCGIS_REST_CLIENT_ID,
-    redirectUri: ARCGIS_REST_REDIRECT_URL,
-    popup: true,
-    pkce: true
-  }
-//  debugger;
-  const sessionCompleted = ArcGISIdentityManager.completeOAuth2(options).then(newSession => {
-    session = newSession;
-    if (session) {
-      //            updateSessionInfo(session);
+  if (!ARCGIS_REST_CLIENT_ID || !ARCGIS_REST_REDIRECT_URL) {
+    console.error("The ClientId or the RedirectUrl is not defined in .env file.");
+  } else {
+    const options = {
+      clientId: ARCGIS_REST_CLIENT_ID,
+      redirectUri: ARCGIS_REST_REDIRECT_URL,
+      popup: true,
+      pkce: true
     }
-  }).catch(e => {
-    //        handleAuthError(e);
-  });
-
+    ArcGISIdentityManager.completeOAuth2(options);
+  }
   return (
     <AuthContainer id="dashboard-container" layout={layout}>
     </AuthContainer>
