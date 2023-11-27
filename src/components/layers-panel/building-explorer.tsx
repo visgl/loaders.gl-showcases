@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Sublayer } from "../../types";
+import { ComparisonSideMode, Sublayer } from "../../types";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { SublayerWidget } from "./sublayer-widget";
 import { FiltrationSection } from "./filtration-section/filtration-section";
@@ -27,10 +27,12 @@ export const BuildingExplorer = ({
   sublayers,
   onUpdateSublayerVisibility,
   onBuildingExplorerOpened,
+  side,
 }: {
   sublayers: ActiveSublayer[];
   onUpdateSublayerVisibility: (sublayer: Sublayer) => void;
   onBuildingExplorerOpened: (opened: boolean) => void;
+  side?: ComparisonSideMode;
 }) => {
   useEffect(() => {
     onBuildingExplorerOpened(true);
@@ -52,7 +54,7 @@ export const BuildingExplorer = ({
         ))}
       </BuildingExplorerSublayers>
       <SectionTitle>Filters</SectionTitle>
-      <FiltrationSection />
+      <FiltrationSection side={side} />
     </>
   );
 };

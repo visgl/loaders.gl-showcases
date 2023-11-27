@@ -65,10 +65,14 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
 import {
-  setInitialBaseMaps,
-} from "../../redux/slices/base-maps-slice";
+  selectFiltersByAttribute,
+  setColorsByAttrubute,
+} from "../../redux/slices/symbolization-slice";
+import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import { getBSLStatisticsSummary } from "../../redux/slices/i3s-stats-slice";
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -120,6 +124,9 @@ export const ViewerApp = () => {
     useState<boolean>(false);
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
+  const filtersByAttribute = useSelector((state: RootState) =>
+    selectFiltersByAttribute(state)
+  );
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -191,6 +198,11 @@ export const ViewerApp = () => {
     setLoadedTilesets([]);
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
+    if (buildingExplorerOpened && tilesetsData[0]) {
+      dispatch(
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url })
+      );
+    }
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -552,6 +564,7 @@ export const ViewerApp = () => {
         loadedTilesets={loadedTilesets}
         selectedTilesetBasePath={selectedTilesetBasePath}
         selectedIndex={selectedFeatureIndex}
+        filtersByAttribute={filtersByAttribute}
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}

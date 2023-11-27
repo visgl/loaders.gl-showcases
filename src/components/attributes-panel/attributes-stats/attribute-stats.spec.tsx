@@ -6,7 +6,7 @@ import { AttributeStats } from "./attribute-stats";
 import { fetchFile } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
 import { setupStore } from "../../../redux/store";
-import { setColorsByAttrubute } from "../../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../../redux/slices/symbolization-slice";
 
 jest.mock("@loaders.gl/core");
 
@@ -250,7 +250,7 @@ describe("AttributeStats", () => {
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -296,7 +296,7 @@ describe("AttributeStats", () => {
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual(null);
+    expect(store.getState().symbolization.colorsByAttribute).toEqual(null);
   });
 
   it("Should render switch 'Multiply Colors' on", async () => {
@@ -334,7 +334,7 @@ describe("AttributeStats", () => {
       )
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,
@@ -382,7 +382,7 @@ describe("AttributeStats", () => {
       )
     );
 
-    expect(store.getState().colorsByAttribute.value).toEqual({
+    expect(store.getState().symbolization.colorsByAttribute).toEqual({
       attributeName: "HEIGHTROOF",
       minValue: 0,
       maxValue: 100,

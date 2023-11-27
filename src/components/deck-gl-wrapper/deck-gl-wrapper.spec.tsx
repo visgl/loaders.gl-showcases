@@ -58,7 +58,7 @@ import { buildMinimapData } from "../../utils/debug/build-minimap-data";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
 import { setupStore } from "../../redux/store";
-import { setColorsByAttrubute } from "../../redux/slices/colors-by-attribute-slice";
+import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";

@@ -22,6 +22,7 @@ import {
   LoadOptions,
   TilesetType,
   MinimapPosition,
+  FiltersByAttribute,
 } from "../../types";
 import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
@@ -41,7 +42,7 @@ import {
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/slices/colors-by-attribute-slice";
+import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 import {
   fetchUVDebugTexture,
@@ -63,6 +64,7 @@ import {
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import { colorizeTile } from "../../utils/colorize-tile";
+import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -153,6 +155,8 @@ type DeckGlI3sProps = {
   preventTransitions?: boolean;
   /** calculate position of minimap */
   minimapPosition?: MinimapPosition;
+  /** side for compare mode */
+  filtersByAttribute?: FiltersByAttribute | null;
   onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
@@ -167,6 +171,8 @@ type DeckGlI3sProps = {
   onTileLoad?: (tile: Tile3D) => void;
   /** Tile3DLayer callback. Triggers after tile contenst was unloaded */
   onTileUnload?: (tile: Tile3D) => void;
+  /** Tile3DLayer callback. Triggers post traversal completion */
+  onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
 };
 
 export const DeckGlWrapper = ({
@@ -193,6 +199,7 @@ export const DeckGlWrapper = ({
   loadNumber = 0,
   preventTransitions = false,
   minimapPosition,
+  filtersByAttribute,
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
@@ -202,6 +209,7 @@ export const DeckGlWrapper = ({
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
+  onTraversalComplete = (selectedTiles) => selectedTiles,
 }: DeckGlI3sProps) => {
   const dragMode = useAppSelector(selectDragMode);
   const showMinimap = useAppSelector(selectMiniMap);
@@ -271,6 +279,7 @@ export const DeckGlWrapper = ({
   let currentViewport: WebMercatorViewport = null;
 
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+
   const dispatch = useAppDispatch();
 
   /** Load debug texture if necessary */
@@ -635,9 +644,12 @@ export const DeckGlWrapper = ({
       loader: I3SLoader,
       colorsByAttribute,
       customizeColors: colorizeTile,
+      filtersByAttribute,
+      filterTile,
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,
+      onTraversalComplete,
       loadOptions,
       pickable,
       autoHighlight,
@@ -670,6 +682,7 @@ export const DeckGlWrapper = ({
       onTilesetLoad: onTilesetLoadHandler,
       onTileLoad: onTileLoadHandler,
       onTileUnload,
+      onTraversalComplete,
     });
   };
 
