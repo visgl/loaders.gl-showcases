@@ -1,5 +1,5 @@
 import { act, screen } from "@testing-library/react";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersControlPanel } from "./layers-control-panel";
 
 // Mocked components
@@ -7,6 +7,7 @@ import { PlusButton } from "../plus-button/plus-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { ListItem } from "./list-item/list-item";
+import { setupStore } from "../../redux/store";
 
 jest.mock("./list-item/list-item");
 jest.mock("../plus-button/plus-button");
@@ -40,7 +41,7 @@ const onSelectLayerMock = jest.fn();
 const onLayerSettingsClickMock = jest.fn();
 const onPointToLayerMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
     <LayersControlPanel
       onSceneInsertClick={onInsertSceneMock}
@@ -55,13 +56,15 @@ const callRender = (renderFunc, props = {}) => {
       onPointToLayer={onPointToLayerMock}
       deleteLayer={onDeleteLayerMock}
       {...props}
-    />
+    />,
+    store
   );
 };
 
 describe("Layers Control Panel", () => {
   it("Should render LayersControlPanel without layers", () => {
-    const { container } = callRender(renderWithTheme);
+    const store = setupStore();
+    const { container } = callRender(renderWithThemeProviders, undefined, store);
     expect(container).toBeInTheDocument();
 
     // Insert Buttons should be present
@@ -70,7 +73,8 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should render LayersControlPanel with layers", () => {
-    const { container } = callRender(renderWithTheme, {
+    const store = setupStore();
+    const { container } = callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", url: "https://first-url.com" },
         { id: "second", name: "second name", url: "https://second-url.com" },
@@ -100,7 +104,8 @@ describe("Layers Control Panel", () => {
           ],
         },
       ],
-    });
+    },
+    store);
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("ListItem-first")).toBeInTheDocument();
@@ -113,7 +118,7 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should be able to call functions", () => {
-    const { container } = callRender(renderWithTheme, {
+    const { container } = callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", mapUrl: "https://first-url.com" },
       ],
@@ -141,7 +146,7 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should render conformation panel", () => {
-    callRender(renderWithTheme, {
+    callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", mapUrl: "https://first-url.com" },
         // Candidate to delete
