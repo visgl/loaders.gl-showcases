@@ -1,3 +1,12 @@
+## Setup
+
+### .env file
+
+Update .env file in the project directory.
+It should contain the environment variable with the Client ID obtained during the registeration process of the i3s explorer application on the ArcGIS portal.
+
+See more information https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
+
 ## Available Scripts
 
 In the project directory, you can run:
