@@ -3,9 +3,7 @@
 ### .env file
 
 Update .env file in the project directory.
-It should contain two environment variables:
- - the Client ID obtained during the registeration process of the i3s explorer application on the ArcGIS portal.
- - the Redirect URL that is used to authenticate an end user in the ArcGIS portal. This URL should have the path "/auth", e.g. https://localhost:3000/auth
+It should contain the environment variable with the Client ID obtained during the registeration process of the i3s explorer application on the ArcGIS portal.
 
 See more information https://developers.arcgis.com/documentation/mapping-apis-and-services/security/tutorials/register-your-application/
 
