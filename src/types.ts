@@ -262,6 +262,11 @@ export type ColorsByAttribute = {
   mode: string;
 };
 
+export type FiltersByAttribute = {
+  attributeName: string;
+  value: number;
+};
+
 export type LoadOptions = {
   i3s: {
     coordinateSystem: number;

@@ -191,14 +191,12 @@ export const Slider = ({
               ref={createRefsArray}
               selected={sliderItemSelected}
               editingSelected={editingSelected}
-              sliderItemText={item.phaseNumber || item.floorNumber}
+              sliderItemText={item.phaseNumber || item.floorNumber?.toString()}
               sliderType={sliderType}
               url={item.imageUrl}
               editingMode={editingMode}
               onSelect={() => onSelectHandler(item.id)}
-              onDelete={() =>
-                onDelete && onDelete(item.id)
-              }
+              onDelete={() => onDelete && onDelete(item.id)}
             />
           );
         })}

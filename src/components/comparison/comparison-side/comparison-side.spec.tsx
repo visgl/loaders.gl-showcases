@@ -48,6 +48,11 @@ jest.mock("@deck.gl/geo-layers", () => {
     return null;
   });
 });
+jest.mock("../../../layers/custom-tile-3d-layer/custom-tile-3d-layer", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../../layers-panel/layers-panel");

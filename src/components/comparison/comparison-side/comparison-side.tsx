@@ -56,6 +56,10 @@ import {
   updateLayerVisibility,
 } from "../../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
 
 type LayoutProps = {
   layout: string;
@@ -155,6 +159,12 @@ export const ComparisonSide = ({
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
   const sideId = `${side}-deck-container`;
   const dispatch = useAppDispatch();
+  const filtersByAttribute = useSelector((state: RootState) =>
+    selectFiltersByAttribute(
+      state,
+      mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
+    )
+  );
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -241,6 +251,11 @@ export const ComparisonSide = ({
         side,
       })
     );
+    if (buildingExplorerOpened && tilesetsData[0]) {
+      dispatch(
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url, side })
+      );
+    }
   }, [activeLayers, buildingExplorerOpened]);
 
   useEffect(() => {
@@ -311,7 +326,6 @@ export const ComparisonSide = ({
   };
 
   const onTilesetLoadHandler = (newTileset: Tileset3D) => {
-    newTileset.setProps({ onTraversalComplete: onTraversalCompleteHandler });
     onLoadingStateChange(true);
     setLoadedTilesets((prevTilesets) => [...prevTilesets, newTileset]);
     setExamples((prevExamples) =>
@@ -464,10 +478,12 @@ export const ComparisonSide = ({
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
+        filtersByAttribute={filtersByAttribute}
         onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
+        onTraversalComplete={onTraversalCompleteHandler}
         onAfterRender={handleOnAfterRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
@@ -493,6 +509,11 @@ export const ComparisonSide = ({
                 selectedLayerIds={selectedLayerIds}
                 viewWidth={viewState?.main?.width}
                 viewHeight={viewState?.main?.height}
+                side={
+                  mode === ComparisonMode.withinLayer
+                    ? ComparisonSideMode.left
+                    : side
+                }
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
                 onLayerDelete={(id) => onLayerDeleteHandler(id)}

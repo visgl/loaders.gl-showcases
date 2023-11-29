@@ -1,11 +1,12 @@
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 
 // Mocked components
 import { CloseButton } from "../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
+import { setupStore } from "../../redux/store";
 
 jest.mock("../close-button/close-button");
 jest.mock("./building-explorer");
@@ -25,7 +26,7 @@ const onBackClick = jest.fn();
 const onCloseClick = jest.fn();
 const onBuildingExplorerOpened = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
     <LayerSettingsPanel
       sublayers={[]}
@@ -34,13 +35,14 @@ const callRender = (renderFunc, props = {}) => {
       onCloseClick={onCloseClick}
       onBuildingExplorerOpened={onBuildingExplorerOpened}
       {...props}
-    />
+    />,
+    store
   );
 };
 
 describe("Layers Settings Panel", () => {
   it("Should render LayerSettingsPanel", () => {
-    const { container } = callRender(renderWithTheme);
+    const { container } = callRender(renderWithThemeProviders);
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("Layer settings"));
