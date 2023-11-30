@@ -5,11 +5,14 @@ import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../.
 
 import { ListItem } from "./list-item/list-item";
 import { PlusButton } from "../plus-button/plus-button";
+import { LoginButton } from "../login-button/login-button";
+import { LogoutButton } from "../logout-button/logout-button";
 
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
+import { PanelHorizontalLine } from "../common";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -72,6 +75,19 @@ export const LayersControlPanel = ({
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
+
+  /// Stab {
+  const username = 'Michael';
+  const showLogin = true;
+  const showLogout = true;
+  const showImport = true;
+
+  const onArcGisLoginClick = () => { return true; };
+
+  const onArcGisLogoutClick = () => { return true; };
+
+  const onArcGisImportClick = () => { return true; };
+/// Stab }
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -184,6 +200,22 @@ export const LayersControlPanel = ({
         <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
         </PlusButton>
+        <PanelHorizontalLine />
+        { showLogin && (
+        <LoginButton buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
+          Login to ArcGIS
+        </LoginButton>
+        ) }
+        { showImport && (
+        <LoginButton grayed={true} buttonSize={ButtonSize.Small} onClick={onArcGisImportClick}>
+          Import from ArcGIS
+        </LoginButton>
+        ) }
+        { showLogout && (
+          <LogoutButton buttonSize={ButtonSize.Small} onClick={onArcGisLogoutClick}>
+          {username}
+          </LogoutButton>
+        ) }
       </InsertButtons>
     </LayersContainer>
   );
