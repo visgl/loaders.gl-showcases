@@ -49,6 +49,7 @@ import {
 } from "../../redux/slices/base-maps-slice";
 import styled from "styled-components";
 import { renderLayers } from "../../utils/deckgl/render-layers";
+import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
 
 export const StyledMapContainer = styled.div`
   overflow: hidden;
@@ -446,7 +447,7 @@ export const ArcgisWrapper = ({
         setViewState(newViewState);
       }
     }
-    
+
     tileset.setProps({
       //todo: viewportTraversersMap,
       loadTiles,
@@ -516,37 +517,6 @@ export const ArcgisWrapper = ({
     });
   };
 
-  const layerFilter = ({ layer, viewport }) => {
-    const { id: viewportId } = viewport;
-    const {
-      id: layerId,
-      props: { viewportIds = null },
-    } = layer;
-    if (
-      viewportId !== "minimap" &&
-      (layerId === "frustum" || layerId === "main-on-minimap")
-    ) {
-      // only display frustum in the minimap
-      return false;
-    }
-    if (
-      showMinimap &&
-      viewportId === "minimap" &&
-      layerId.indexOf("obb-debug-") !== -1
-    ) {
-      return false;
-    }
-    if (viewportIds && !viewportIds.includes(viewportId)) {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId === "normals-debug") {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId.indexOf("terrain") !== -1) {
-      return false;
-    }
-    return true;
-  };
   // Trying to keep code alligned to deck-gl-wrapper above this line
   // All Arcgis specific code is allocated below this line
   const mapContainer = useRef<HTMLDivElement | null>(null);
@@ -556,7 +526,7 @@ export const ArcgisWrapper = ({
     // @ts-expect-error @deck.gl/arcgis has no types
     map.deck.set({ layers });
     // @ts-expect-error @deck.gl/arcgis has no types
-    map.deck.layerFilter = layerFilter;
+    map.deck.layerFilter = layerFilterCreator(showMinimap);
   }
   return <StyledMapContainer ref={mapContainer} />;
 };

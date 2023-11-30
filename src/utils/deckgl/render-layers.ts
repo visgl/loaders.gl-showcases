@@ -156,7 +156,7 @@ const renderI3SLayer = (
   });
 };
 
-const getViewState = (
+export const getViewState = (
   showMinimap: boolean,
   viewState: ViewStateSet,
   parentViewState?: ViewStateSet

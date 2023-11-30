@@ -51,7 +51,8 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
-import { renderLayers } from "../../utils/deckgl/render-layers";
+import { getViewState, renderLayers } from "../../utils/deckgl/render-layers";
+import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -306,9 +307,6 @@ export const DeckGlWrapper = ({
     });
   }, [showDebugTexture]);
 
-  const getViewState = () =>
-    parentViewState || (showMinimap && viewState) || { main: viewState.main };
-
   const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
 
   const onViewStateChangeHandler = ({
@@ -522,45 +520,13 @@ export const DeckGlWrapper = ({
     });
   };
 
-  const layerFilter = ({ layer, viewport }) => {
-    const { id: viewportId } = viewport;
-    const {
-      id: layerId,
-      props: { viewportIds = null },
-    } = layer;
-    if (
-      viewportId !== "minimap" &&
-      (layerId === "frustum" || layerId === "main-on-minimap")
-    ) {
-      // only display frustum in the minimap
-      return false;
-    }
-    if (
-      showMinimap &&
-      viewportId === "minimap" &&
-      layerId.indexOf("obb-debug-") !== -1
-    ) {
-      return false;
-    }
-    if (viewportIds && !viewportIds.includes(viewportId)) {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId === "normals-debug") {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId.indexOf("terrain") !== -1) {
-      return false;
-    }
-    return true;
-  };
-
   return (
     <DeckGL
       id={id}
       layers={doRenderLayers()}
-      viewState={getViewState()}
+      viewState={getViewState(showMinimap, viewState, parentViewState)}
       views={getViews()}
-      layerFilter={layerFilter}
+      layerFilter={layerFilterCreator(showMinimap)}
       onViewStateChange={onViewStateChangeHandler}
       controller={
         disableController
