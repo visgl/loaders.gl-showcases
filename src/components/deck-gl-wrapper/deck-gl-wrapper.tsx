@@ -388,6 +388,7 @@ export const DeckGlWrapper = ({
           zoom: zoom + 2,
           longitude: pLongitude,
           latitude: pLatitude,
+          bearing: 0,
           transitionDuration: TRANSITION_DURAITON,
           transitionInterpolator: new FlyToInterpolator(),
         },
@@ -395,6 +396,7 @@ export const DeckGlWrapper = ({
           ...globalViewState.minimap,
           longitude: pLongitude,
           latitude: pLatitude,
+          bearing: 0,
         },
       };
       setNeedTransitionToTileset(false);

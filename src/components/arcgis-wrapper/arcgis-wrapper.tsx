@@ -385,6 +385,7 @@ export const ArcgisWrapper = ({
           zoom: zoom + 2,
           longitude: pLongitude,
           latitude: pLatitude,
+          bearing: 0,
           transitionDuration: TRANSITION_DURAITON,
           transitionInterpolator: new FlyToInterpolator(),
         },
@@ -392,6 +393,7 @@ export const ArcgisWrapper = ({
           ...globalViewState.minimap,
           longitude: pLongitude,
           latitude: pLatitude,
+          bearing: 0,
         },
       };
       setNeedTransitionToTileset(false);

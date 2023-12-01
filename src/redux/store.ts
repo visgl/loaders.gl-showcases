@@ -32,7 +32,10 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types
-          ignoredActions: ["fetchUVDebugTexture/fulfilled"],
+          ignoredActions: [
+            "fetchUVDebugTexture/fulfilled",
+            "viewState/setViewState",
+          ],
           // Ignore these paths in the state
           ignoredPaths: ["uvDebugTexture.value"],
         },
