@@ -109,7 +109,6 @@ jest.mock("../../../constants/i3s-examples", () => ({
   ],
 }));
 
-const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
 const onChangeLayersMock = jest.fn();
 const onTilesetLoaded = jest.fn();
@@ -136,7 +135,6 @@ describe("ComparisonSide", () => {
         activeLayersIds={[]}
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -147,7 +145,6 @@ describe("ComparisonSide", () => {
         buildingExplorerOpened={true}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
-        onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
         onLoadingStateChange={onLoadingStateChange}
