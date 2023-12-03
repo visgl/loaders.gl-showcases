@@ -178,6 +178,7 @@ export const ArcgisWrapper = ({
   minimapPosition,
   filtersByAttribute,
   onViewStateChange,
+  onClick,
   onTilesetLoad,
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -502,6 +503,7 @@ export const ArcgisWrapper = ({
       createIndependentMinimapViewport,
       boundingVolumeColorMode,
       loadedTilesets,
+      onClick,
       onTilesetLoadHandler,
       onTileLoadHandler,
       onTileUnload,

@@ -101,6 +101,7 @@ const renderI3SLayer = (
   autoHighlight: boolean,
   wireframe: boolean,
   tileColorMode: TileColoredBy,
+  onClick,
   onTilesetLoadHandler,
   onTileLoadHandler,
   onTileUnload,
@@ -134,6 +135,7 @@ const renderI3SLayer = (
     customizeColors: colorizeTile,
     filtersByAttribute,
     filterTile,
+    onClick: onClick,
     onTilesetLoad: onTilesetLoadHandler,
     onTileLoad: onTileLoadHandler,
     onTileUnload,
@@ -162,7 +164,7 @@ export const getViewState = (
   parentViewState?: ViewStateSet
 ) => parentViewState || (showMinimap && viewState) || { main: viewState.main };
 
-const renderFrustum = (
+export const renderFrustum = (
   showMinimap: boolean,
   viewState: ViewStateSet,
   parentViewState?: ViewStateSet
@@ -201,7 +203,7 @@ const getBoundingVolumeColor = (
   return [...color, DEFAULT_BG_OPACITY];
 };
 
-const renderBoundingVolumeLayer = (
+export const renderBoundingVolumeLayer = (
   boundingVolume: boolean,
   boundingVolumeType: BoundingVolumeType,
   boundingVolumeColorMode: BoundingVolumeColoredBy,
@@ -223,7 +225,7 @@ const renderBoundingVolumeLayer = (
 };
 
 const NORMALS_COLOR = [255, 0, 0];
-const renderNormals = (
+export const renderNormals = (
   normalsTrianglesPercentage: number,
   normalsLength: number,
   normalsDebugData?: NormalsDebugData | null
@@ -251,7 +253,7 @@ const renderNormals = (
   });
 };
 
-const renderMainOnMinimap = (
+export const renderMainOnMinimap = (
   createIndependentMinimapViewport: boolean,
   loadedTilesets: Tileset3D[]
 ) => {
@@ -306,8 +308,9 @@ export const renderLayers = (params: {
   normalsTrianglesPercentage: number;
   normalsLength: number;
   createIndependentMinimapViewport: boolean;
-  loadedTilesets: Tileset3D[];
   boundingVolumeColorMode: BoundingVolumeColoredBy;
+  loadedTilesets: Tileset3D[];
+  onClick;
   onTilesetLoadHandler;
   onTileLoadHandler;
   onTileUnload;
@@ -341,6 +344,7 @@ export const renderLayers = (params: {
     createIndependentMinimapViewport,
     loadedTilesets,
     boundingVolumeColorMode,
+    onClick,
     onTilesetLoadHandler,
     onTileLoadHandler,
     onTileUnload,
@@ -378,6 +382,7 @@ export const renderLayers = (params: {
           autoHighlight,
           wireframe,
           tileColorMode,
+          onClick,
           onTilesetLoadHandler,
           onTileLoadHandler,
           onTileUnload,

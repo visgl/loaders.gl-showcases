@@ -505,6 +505,7 @@ export const DeckGlWrapper = ({
       createIndependentMinimapViewport,
       boundingVolumeColorMode,
       loadedTilesets,
+      onClick,
       onTilesetLoadHandler,
       onTileLoadHandler,
       onTileUnload,

@@ -1,13 +1,7 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
-import {
-  DragMode,
-  TilesetType,
-  TileColoredBy,
-  BoundingVolumeType,
-  BoundingVolumeColoredBy,
-} from "../../types";
+import { DragMode, TilesetType, TileColoredBy } from "../../types";
 
 // Mocks
 jest.mock("@loaders.gl/core");
@@ -62,13 +56,10 @@ import { act } from "@testing-library/react";
 import { DeckGlWrapper } from "./deck-gl-wrapper";
 import DeckGL from "@deck.gl/react";
 import { MapController } from "@deck.gl/core";
-import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
+import { TerrainLayer } from "@deck.gl/geo-layers";
 import { load } from "@loaders.gl/core";
-import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { ImageLoader } from "@loaders.gl/images";
-import { Tileset3D } from "@loaders.gl/tiles";
-import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
-import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
+import { CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -77,16 +68,8 @@ import {
   selectOriginalTextureForTileset,
 } from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
-import {
-  getNormalSourcePosition,
-  getNormalTargetPosition,
-} from "../../utils/debug/normals-utils";
-import { getFrustumBounds } from "../../utils/debug/frustum-utils";
-import { buildMinimapData } from "../../utils/debug/build-minimap-data";
-import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
 import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
 import { setupStore } from "../../redux/store";
-import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setDebugOptions } from "../../redux/slices/debug-options-slice";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
@@ -96,19 +79,12 @@ const simpleCallbackMock = jest.fn().mockImplementation(() => {
 });
 const tilesetUrl =
   "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0";
-const cesiumUrl = "https://assets.cesium.com/687891/tileset.json";
-const tiles3DUrl = "https://path.to.tileset/tileset.json";
 const imageStubObject = { width: 1024, height: 1024, data: new ArrayBuffer(0) };
 (load as unknown as jest.Mock<any>).mockReturnValue(
   Promise.resolve(imageStubObject)
 );
-const setPropsMock = jest.spyOn(Tileset3D.prototype, "setProps");
 const getColorMock = jest
   .spyOn(ColorMap.prototype, "getTileColor")
-  .mockImplementation(() => [100, 150, 200]);
-
-const getBoundingVolumeColorMock = jest
-  .spyOn(ColorMap.prototype, "getBoundingVolumeColor")
   .mockImplementation(() => [100, 150, 200]);
 
 const controllerExpected = {
@@ -289,141 +265,6 @@ describe("Deck.gl I3S map component", () => {
   });
 
   describe("Render Tile3DLayer", () => {
-    it("Should render Tile3DLayer", () => {
-      callRender(renderWithProvider);
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const {
-        id,
-        data,
-        loader,
-        loadOptions,
-        autoHighlight,
-        highlightedObjectIndex,
-      } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--0"
-      );
-      expect(data).toBe(tilesetUrl);
-      expect(loader).toBe(I3SLoader);
-      expect(loadOptions).toEqual({
-        i3s: {
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-          useCompressedTextures: true,
-          useDracoGeometry: true,
-        },
-      });
-      expect(autoHighlight).toBe(false);
-      expect(highlightedObjectIndex).toBe(undefined);
-    });
-
-    it("Should render Tile3DLayer with CesiumIon tileset", () => {
-      callRender(renderWithProvider, {
-        layers3d: [
-          {
-            url: cesiumUrl,
-            type: TilesetType.CesiumIon,
-            token: "<asdfasdffffd>",
-          },
-        ],
-      });
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { id, data, loader, loadOptions } = Tile3DLayer.mock.lastCall[0];
-      expect(id).toBe("tile-layer-undefined--0");
-      expect(data).toBe(cesiumUrl);
-      expect(loader).toBe(CesiumIonLoader);
-      expect(loadOptions).toEqual({
-        "cesium-ion": { accessToken: "<asdfasdffffd>" },
-      });
-    });
-
-    it("Should render Tile3DLayer with 3DTiles tileset", () => {
-      callRender(renderWithProvider, {
-        layers3d: [
-          {
-            url: tiles3DUrl,
-            type: TilesetType.Tiles3D,
-          },
-        ],
-      });
-      expect(Tile3DLayer).toHaveBeenCalled();
-      const { id, data, loader, loadOptions } = Tile3DLayer.mock.lastCall[0];
-      expect(id).toBe("tile-layer-undefined--0");
-      expect(data).toBe(tiles3DUrl);
-      expect(loader).toBe(Tiles3DLoader);
-      expect(loadOptions).toEqual({});
-    });
-
-    it("Should update layer", () => {
-      callRender(renderWithProvider, { loadNumber: 1 });
-      const { id } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--1"
-      );
-    });
-
-    it("Should render pickable with auto highlighting", () => {
-      const store = setupStore();
-      callRender(
-        renderWithProvider,
-        { pickable: true, autoHighlight: true },
-        store
-      );
-      const { pickable, autoHighlight } = (CustomTile3DLayer as any).mock
-        .lastCall[0];
-      expect(pickable).toBe(true);
-      expect(autoHighlight).toBe(true);
-    });
-
-    it("Should not highlight tile", () => {
-      callRender(renderWithProvider, {
-        selectedTilesetBasePath: "http://another.tileset.local",
-      });
-      const { highlightedObjectIndex } = (CustomTile3DLayer as any).mock
-        .lastCall[0];
-      expect(highlightedObjectIndex).toBe(-1);
-    });
-
-    it("Should render wireframe", () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ wireframe: false }));
-      const { rerender } = callRender(renderWithProvider, undefined, store);
-      const {
-        _subLayerProps: {
-          mesh: { wireframe },
-        },
-      } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(wireframe).toBe(false);
-
-      store.dispatch(setDebugOptions({ wireframe: true }));
-      callRender(rerender, undefined, store);
-      const {
-        _subLayerProps: {
-          mesh: { wireframe: wireframe2 },
-        },
-      } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(wireframe2).toBe(true);
-    });
-
-    it("Should render with token", () => {
-      callRender(renderWithProvider, {
-        layers3d: [
-          {
-            url: tilesetUrl,
-            token: "<abcdefg123456>",
-          },
-        ],
-      });
-      const { loadOptions } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(loadOptions).toEqual({
-        i3s: {
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-          useCompressedTextures: true,
-          useDracoGeometry: true,
-          token: "<abcdefg123456>",
-        },
-      });
-    });
-
     it("Should call Tile3DLayer tileset callbacks", () => {
       const { rerender } = callRender(renderWithProvider);
       expect(CustomTile3DLayer).toHaveBeenCalled();
@@ -505,43 +346,6 @@ describe("Deck.gl I3S map component", () => {
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
     });
-
-    it("Should not be pickable", () => {
-      const store = setupStore();
-      callRender(renderWithProvider, { pickable: false }, store);
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { pickable } = (CustomTile3DLayer as any).mock.lastCall[0];
-      expect(pickable).toBe(false);
-    });
-
-    it("Should colorize by attribute", () => {
-      const store = setupStore();
-      store.dispatch(
-        setColorsByAttrubute({
-          attributeName: "HEIGHTROOF",
-          minValue: 0,
-          maxValue: 1400,
-          minColor: [146, 146, 252, 255],
-          maxColor: [44, 44, 175, 255],
-          mode: "replace",
-        })
-      );
-      callRender(renderWithProvider, undefined, store);
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { id, colorsByAttribute } = (CustomTile3DLayer as any).mock
-        .lastCall[0];
-      expect(id).toBe(
-        "tile-layer-undefined-draco-true-compressed-textures-true--0"
-      );
-      expect(colorsByAttribute).toEqual({
-        attributeName: "HEIGHTROOF",
-        maxColor: [44, 44, 175, 255],
-        maxValue: 1400,
-        minColor: [146, 146, 252, 255],
-        minValue: 0,
-        mode: "replace",
-      });
-    });
   });
 
   describe("Render TerrainLayer", () => {
@@ -575,257 +379,6 @@ describe("Deck.gl I3S map component", () => {
       expect(getElevationByCentralTile).toHaveBeenCalledWith(50, 50, {
         "10;20;30;40": { bbox: { east: 10, north: 20, south: 30, west: 40 } },
       });
-    });
-  });
-
-  describe("Render BoundingVolumeLayer", () => {
-    it("Should render bounding volume", () => {
-      const store = setupStore();
-      store.dispatch(
-        setDebugOptions({
-          boundingVolume: true,
-          boundingVolumeType: BoundingVolumeType.obb,
-        })
-      );
-      callRender(renderWithProvider, undefined, store);
-      expect(BoundingVolumeLayer).toHaveBeenCalled();
-    });
-
-    it("Should call getBoundingVolumeColor", () => {
-      const store = setupStore();
-      store.dispatch(
-        setDebugOptions({
-          boundingVolume: true,
-          boundingVolumeType: BoundingVolumeType.obb,
-          boundingVolumeColorMode: BoundingVolumeColoredBy.tile,
-        })
-      );
-      callRender(renderWithProvider, undefined, store);
-      const { getBoundingVolumeColor } = (
-        BoundingVolumeLayer as unknown as jest.Mock<BoundingVolumeLayer>
-      ).mock.calls[0][0];
-      getBoundingVolumeColor({ id: "custom-tile" });
-      expect(getBoundingVolumeColorMock).toHaveBeenCalledWith(
-        {
-          id: "custom-tile",
-        },
-        { coloredBy: "By tile" }
-      );
-    });
-  });
-
-  describe("Render normals", () => {
-    it("Should render normals", () => {
-      const normalsDebugData = {};
-      callRender(renderWithProvider, {
-        normalsDebugData: normalsDebugData,
-        normalsTrianglesPercentage: 5,
-        normalsLength: 25,
-      });
-      const {
-        id,
-        data,
-        modelMatrix,
-        coordinateOrigin,
-        coordinateSystem,
-        getWidth,
-      } = LineLayer.mock.lastCall[0];
-      expect(id).toBe("normals-debug");
-      expect(data).toEqual(normalsDebugData);
-      expect(modelMatrix).toBe(undefined);
-      expect(coordinateOrigin).toBe(undefined);
-      expect(coordinateSystem).toBe(COORDINATE_SYSTEM.METER_OFFSETS);
-      expect(getWidth).toBe(1);
-    });
-
-    it("Should call callbacks", () => {
-      const normalsDebugData = {};
-      callRender(renderWithProvider, {
-        normalsDebugData: normalsDebugData,
-        normalsTrianglesPercentage: 5,
-        normalsLength: 25,
-      });
-      const { getSourcePosition, getTargetPosition, getColor } =
-        LineLayer.mock.lastCall[0];
-      getSourcePosition(undefined, { index: "id", data: "data" });
-      expect(getNormalSourcePosition).toHaveBeenCalledWith("id", "data", 5);
-      getTargetPosition(undefined, { index: "id", data: "data" });
-      expect(getNormalTargetPosition).toHaveBeenCalledWith("id", "data", 5, 25);
-      expect(getColor()).toEqual([255, 0, 0]);
-    });
-  });
-
-  describe("Render minimap", () => {
-    it("Should render minimap", () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ minimap: false }));
-      const { rerender } = callRender(renderWithProvider, undefined, store);
-      let lastCallArgs = DeckGL.mock.lastCall[0];
-      expect(lastCallArgs.views.length).toBe(1);
-      expect(Object.keys(lastCallArgs.viewState)).toEqual(["main"]);
-      expect(getFrustumBounds).not.toHaveBeenCalled();
-      callRender(rerender, undefined, store);
-      store.dispatch(setDebugOptions({ minimap: true }));
-      lastCallArgs = DeckGL.mock.lastCall[0];
-      expect(lastCallArgs.views.length).toBe(2);
-      expect(Object.keys(lastCallArgs.viewState)).toEqual(["main", "minimap"]);
-      expect(getFrustumBounds).toHaveBeenCalledTimes(1);
-
-      const { id, data, getWidth } = LineLayer.mock.lastCall[0];
-      expect(id).toBe("frustum");
-      expect(data).toBe(undefined);
-      expect(getWidth).toBe(2);
-    });
-
-    it("Should call frustum callbacks", () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ minimap: true }));
-      callRender(renderWithProvider, undefined, store);
-      const { getSourcePosition, getTargetPosition, getColor } =
-        LineLayer.mock.lastCall[0];
-      const line = {
-        source: [1, 2, 3],
-        target: [11, 12, 13],
-        color: [55, 155, 255],
-      };
-      expect(getSourcePosition(line)).toEqual([1, 2, 3]);
-      expect(getTargetPosition(line)).toEqual([11, 12, 13]);
-      expect(getColor(line)).toEqual([55, 155, 255]);
-    });
-  });
-
-  describe("Render main viewport tiles on minimap", () => {
-    it("Should render independent viewport for the minimap", async () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ minimapViewport: true }));
-      const { rerender } = callRender(renderWithProvider, undefined, store);
-      expect(setPropsMock).toHaveBeenCalledWith({
-        viewportTraversersMap: { main: "main", minimap: "minimap" },
-        loadTiles: true,
-      });
-      store.dispatch(setDebugOptions({ minimapViewport: false }));
-      callRender(rerender, undefined, store);
-      expect(setPropsMock).toHaveBeenCalledWith({
-        viewportTraversersMap: { main: "main", minimap: "main" },
-        loadTiles: true,
-      });
-      expect(buildMinimapData).toHaveBeenCalledTimes(2);
-
-      callRender(rerender, { loadedTilesets: [] }, store);
-      store.dispatch(setDebugOptions({ minimapViewport: true }));
-      expect(buildMinimapData).toHaveBeenCalledTimes(2);
-    });
-
-    it("Should render main viewport as Scatterplot", () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ minimapViewport: true }));
-      callRender(renderWithProvider, undefined, store);
-      expect(ScatterplotLayer).toHaveBeenCalled();
-      const {
-        id,
-        data,
-        opacity,
-        stroked,
-        filled,
-        radiusScale,
-        radiusMinPixels,
-        radiusMaxPixels,
-        lineWidthMinPixels,
-        getPosition,
-        getRadius,
-        getFillColor,
-        getLineColor,
-      } = ScatterplotLayer.mock.lastCall[0];
-      const circle = { coordinates: [44, 55, 66], radius: 15 };
-      expect(id).toBe("main-on-minimap");
-      expect(data).toBe(undefined);
-      expect(opacity).toBe(0.8);
-      expect(stroked).toBe(true);
-      expect(filled).toBe(true);
-      expect(radiusScale).toBe(1);
-      expect(radiusMinPixels).toBe(1);
-      expect(radiusMaxPixels).toBe(100);
-      expect(lineWidthMinPixels).toBe(1);
-      expect(getPosition(circle)).toEqual([44, 55, 66]);
-      expect(getRadius(circle)).toBe(15);
-      expect(getFillColor()).toEqual([255, 140, 0, 100]);
-      expect(getLineColor()).toEqual([0, 0, 0, 120]);
-    });
-  });
-
-  describe("Layer filter", () => {
-    it("Should not show frustum and scatterplon on main map", () => {
-      callRender(renderWithProvider);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "frustum", props: {} },
-          viewport: { id: "main" },
-        })
-      ).toBe(false);
-      expect(
-        layerFilter({
-          layer: { id: "main-on-minimap", props: {} },
-          viewport: { id: "main" },
-        })
-      ).toBe(false);
-    });
-
-    it("Should not show bounding volumes on minimap", () => {
-      const store = setupStore();
-      store.dispatch(setDebugOptions({ minimap: true }));
-      callRender(renderWithProvider, undefined, store);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "obb-debug-0", props: {} },
-          viewport: { id: "minimap" },
-        })
-      ).toBe(false);
-    });
-
-    it("Should not show tile if there is no viewport in viewportIds", () => {
-      callRender(renderWithProvider);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "layer-id", props: { viewportIds: ["main"] } },
-          viewport: { id: "minimap" },
-        })
-      ).toBe(false);
-    });
-
-    it("Should not show normals on minimap", () => {
-      callRender(renderWithProvider);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "normals-debug", props: {} },
-          viewport: { id: "minimap" },
-        })
-      ).toBe(false);
-    });
-
-    it("Should not show terrain on minimap", () => {
-      callRender(renderWithProvider);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "terrain-0", props: {} },
-          viewport: { id: "minimap" },
-        })
-      ).toBe(false);
-    });
-
-    it("Should show a tile on a viewport", () => {
-      callRender(renderWithProvider);
-      const { layerFilter } = DeckGL.mock.lastCall[0];
-      expect(
-        layerFilter({
-          layer: { id: "layer-id", props: { viewportIds: ["main"] } },
-          viewport: { id: "main" },
-        })
-      ).toBe(true);
     });
   });
 });
