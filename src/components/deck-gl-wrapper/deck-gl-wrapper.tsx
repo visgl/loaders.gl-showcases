@@ -1,14 +1,10 @@
 import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
-import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
-import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import { MapController } from "@deck.gl/core";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
-import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
+import { SceneLayer3D } from "@loaders.gl/i3s";
 import {
   FlyToInterpolator,
-  COORDINATE_SYSTEM,
   MapView,
   WebMercatorViewport,
   PickingInfo,
@@ -19,12 +15,10 @@ import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
   ViewStateSet,
-  LoadOptions,
   TilesetType,
   MinimapPosition,
   FiltersByAttribute,
 } from "../../types";
-import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -33,12 +27,6 @@ import {
   selectOriginalTextureForTileset,
 } from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
-import { getFrustumBounds } from "../../utils/debug/frustum-utils";
-import { buildMinimapData } from "../../utils/debug/build-minimap-data";
-import {
-  getNormalSourcePosition,
-  getNormalTargetPosition,
-} from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -63,8 +51,8 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
-import { colorizeTile } from "../../utils/colorize-tile";
-import { filterTile } from "../../utils/tiles-filtering/filter-tile";
+import { getViewState, renderLayers } from "../../utils/deckgl/render-layers";
+import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -79,22 +67,6 @@ const INITIAL_VIEW_STATE = {
   transitionDuration: 0,
   transitionInterpolator: null,
 };
-
-// https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
-const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
-const ARCGIS_STREET_MAP_SURFACE_IMAGES =
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
-  rScaler: 256,
-  gScaler: 1,
-  bScaler: 1 / 256,
-  offset: -32768,
-};
-const TERRAIN_LAYER_MAX_ZOOM = 15;
-
-const DEFAULT_BG_OPACITY = 100;
-
-const NORMALS_COLOR = [255, 0, 0];
 
 const colorMap = new ColorMap();
 
@@ -335,9 +307,6 @@ export const DeckGlWrapper = ({
     });
   }, [showDebugTexture]);
 
-  const getViewState = () =>
-    parentViewState || (showMinimap && viewState) || { main: viewState.main };
-
   const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
 
   const onViewStateChangeHandler = ({
@@ -515,250 +484,50 @@ export const DeckGlWrapper = ({
     }));
   };
 
-  const getAllTilesFromTilesets = (tilesets) => {
-    const allTiles = tilesets.map((tileset) => tileset.tiles);
-    return allTiles.flat();
-  };
-
-  const getBoundingVolumeColor = (tile) => {
-    const color = colorMap.getBoundingVolumeColor(tile, {
-      coloredBy: boundingVolumeColorMode,
-    });
-
-    return [...color, DEFAULT_BG_OPACITY];
-  };
-
-  const getMeshColor = (tile) => {
-    const result = colorMap.getTileColor(tile, {
-      coloredBy: tileColorMode,
-      selectedTileId: selectedTile?.id,
-      coloredTilesMap,
-    });
-
-    return result;
-  };
-
-  const renderBoundingVolumeLayer = () => {
-    if (!boundingVolume) {
-      return null;
-    }
-    const tiles = getAllTilesFromTilesets(loadedTilesets);
-    // @ts-expect-error - Expected 0 arguments, but got 1.
-    return new BoundingVolumeLayer({
-      id: "bounding-volume-layer",
-      visible: boundingVolume,
-      tiles,
-      getBoundingVolumeColor,
-      boundingVolumeType,
-    });
-  };
-
-  const renderFrustum = () => {
-    if (!showMinimap) {
-      return false;
-    }
-    const viewport = new WebMercatorViewport(getViewState().main);
-    const frustumBounds = getFrustumBounds(viewport);
-    return new LineLayer({
-      id: "frustum",
-      data: frustumBounds,
-      getSourcePosition: (d) => d.source,
-      getTargetPosition: (d) => d.target,
-      getColor: (d) => d.color,
-      getWidth: 2,
-    });
-  };
-
-  const renderMainOnMinimap = () => {
-    if (!createIndependentMinimapViewport) {
-      return null;
-    }
-    let data = [];
-
-    if (loadedTilesets.length) {
-      const tiles = getAllTilesFromTilesets(loadedTilesets);
-      data = buildMinimapData(tiles);
-    }
-
-    return new ScatterplotLayer({
-      id: "main-on-minimap",
-      data,
-      pickable: false,
-      opacity: 0.8,
-      stroked: true,
-      filled: true,
-      radiusScale: 1,
-      radiusMinPixels: 1,
-      radiusMaxPixels: 100,
-      lineWidthMinPixels: 1,
-      getPosition: (d) => d.coordinates,
-      getRadius: (d) => d.radius,
-      getFillColor: () => [255, 140, 0, 100],
-      getLineColor: () => [0, 0, 0, 120],
-    });
-  };
-
-  const renderNormals = () => {
-    if (!normalsDebugData) {
-      return;
-    }
-    return new LineLayer({
-      id: "normals-debug",
-      data: normalsDebugData,
-      getSourcePosition: (_, { index, data }) =>
-        getNormalSourcePosition(index, data, normalsTrianglesPercentage),
-      getTargetPosition: (_, { index, data }) =>
-        getNormalTargetPosition(
-          index,
-          data,
-          normalsTrianglesPercentage,
-          normalsLength
-        ),
-      getColor: () => NORMALS_COLOR,
-      modelMatrix: normalsDebugData?.cartographicModelMatrix,
-      coordinateOrigin: normalsDebugData?.cartographicOrigin,
-      coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
-      getWidth: 1,
-    });
-  };
-
-  const renderI3SLayer = (layer) => {
-    const loadOptions: LoadOptions = {
-      i3s: {
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-        useDracoGeometry,
-        useCompressedTextures,
-      },
-    };
-    let url = layer.url;
-    if (layer.token) {
-      loadOptions.i3s.token = layer.token;
-      const urlObject = new URL(url);
-      urlObject.searchParams.append("token", layer.token);
-      url = urlObject.href;
-    }
-    return new CustomTile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
-      data: url,
-      // @ts-expect-error loader
-      loader: I3SLoader,
+  const doRenderLayers = () => {
+    return renderLayers({
+      layers3d,
+      useDracoGeometry,
+      useCompressedTextures,
+      showTerrain,
+      loadNumber,
       colorsByAttribute,
-      customizeColors: colorizeTile,
-      filtersByAttribute,
-      filterTile,
-      onTilesetLoad: onTilesetLoadHandler,
-      onTileLoad: onTileLoadHandler,
-      onTileUnload,
-      onTraversalComplete,
-      loadOptions,
       pickable,
       autoHighlight,
-      _subLayerProps: {
-        mesh: {
-          wireframe,
-        },
-      },
-      _getMeshColor: getMeshColor,
-      highlightedObjectIndex: autoHighlight
-        ? undefined
-        : layer.url === selectedTilesetBasePath
-        ? selectedIndex
-        : -1,
-    });
-  };
-
-  const render3DTilesLayer = (layer) => {
-    const loadOptions =
-      layer.type === TilesetType.CesiumIon
-        ? { "cesium-ion": { accessToken: layer.token } }
-        : {};
-    const loader =
-      layer.type === TilesetType.CesiumIon ? CesiumIonLoader : Tiles3DLoader;
-    return new Tile3DLayer({
-      id: `tile-layer-${layer.id}--${loadNumber}`,
-      data: layer.url,
-      loader,
-      loadOptions,
-      onTilesetLoad: onTilesetLoadHandler,
-      onTileLoad: onTileLoadHandler,
+      wireframe,
+      tileColorMode,
+      showMinimap,
+      viewState,
+      boundingVolume,
+      boundingVolumeType,
+      normalsTrianglesPercentage,
+      normalsLength,
+      createIndependentMinimapViewport,
+      boundingVolumeColorMode,
+      loadedTilesets,
+      onClick,
+      onTilesetLoadHandler,
+      onTileLoadHandler,
       onTileUnload,
       onTraversalComplete,
+      onTerrainTileLoad,
+      filtersByAttribute,
+      selectedTile,
+      coloredTilesMap,
+      selectedTilesetBasePath,
+      selectedIndex,
+      parentViewState,
+      normalsDebugData,
     });
-  };
-
-  const renderLayers = () => {
-    const tile3dLayers = layers3d.map((layer) => {
-      switch (layer.type) {
-        case TilesetType.CesiumIon:
-        case TilesetType.Tiles3D:
-          return render3DTilesLayer(layer);
-        case TilesetType.I3S:
-        default:
-          return renderI3SLayer(layer);
-      }
-    });
-
-    if (showTerrain) {
-      const terrainLayer = new TerrainLayer({
-        id: "terrain",
-        maxZoom: TERRAIN_LAYER_MAX_ZOOM,
-        elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
-        elevationData: MAPZEN_TERRAIN_IMAGES,
-        texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
-        onTileLoad: (tile) => onTerrainTileLoad(tile),
-        color: [255, 255, 255],
-      });
-      tile3dLayers.push(terrainLayer);
-    }
-
-    return [
-      ...tile3dLayers,
-      renderFrustum(),
-      renderBoundingVolumeLayer(),
-      renderNormals(),
-      renderMainOnMinimap(),
-    ];
-  };
-
-  const layerFilter = ({ layer, viewport }) => {
-    const { id: viewportId } = viewport;
-    const {
-      id: layerId,
-      props: { viewportIds = null },
-    } = layer;
-    if (
-      viewportId !== "minimap" &&
-      (layerId === "frustum" || layerId === "main-on-minimap")
-    ) {
-      // only display frustum in the minimap
-      return false;
-    }
-    if (
-      showMinimap &&
-      viewportId === "minimap" &&
-      layerId.indexOf("obb-debug-") !== -1
-    ) {
-      return false;
-    }
-    if (viewportIds && !viewportIds.includes(viewportId)) {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId === "normals-debug") {
-      return false;
-    }
-    if (viewportId === "minimap" && layerId.indexOf("terrain") !== -1) {
-      return false;
-    }
-    return true;
   };
 
   return (
     <DeckGL
       id={id}
-      layers={renderLayers()}
-      viewState={getViewState()}
+      layers={doRenderLayers()}
+      viewState={getViewState(showMinimap, viewState, parentViewState)}
       views={getViews()}
-      layerFilter={layerFilter}
+      layerFilter={layerFilterCreator(showMinimap)}
       onViewStateChange={onViewStateChangeHandler}
       controller={
         disableController
