@@ -14,11 +14,6 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
-<<<<<<< HEAD
-  ViewStateSet,
-=======
-  LoadOptions,
->>>>>>> 43628ff (updated after review)
   TilesetType,
   MinimapPosition,
   FiltersByAttribute,
@@ -55,10 +50,8 @@ import {
   selectBaseMaps,
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
-import { getViewState, renderLayers } from "../../utils/deckgl/render-layers";
+import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
-import { colorizeTile } from "../../utils/colorize-tile";
-import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 import {
   selectViewState,
   setViewState,
@@ -444,7 +437,6 @@ export const DeckGlWrapper = ({
     }));
   };
 
-<<<<<<< HEAD
   const doRenderLayers = () => {
     return renderLayers({
       layers3d,
@@ -452,135 +444,6 @@ export const DeckGlWrapper = ({
       useCompressedTextures,
       showTerrain,
       loadNumber,
-=======
-  const getAllTilesFromTilesets = (tilesets) => {
-    const allTiles = tilesets.map((tileset) => tileset.tiles);
-    return allTiles.flat();
-  };
-
-  const getBoundingVolumeColor = (tile) => {
-    const color = colorMap.getBoundingVolumeColor(tile, {
-      coloredBy: boundingVolumeColorMode,
-    });
-
-    return [...color, DEFAULT_BG_OPACITY];
-  };
-
-  const getMeshColor = (tile) => {
-    const result = colorMap.getTileColor(tile, {
-      coloredBy: tileColorMode,
-      selectedTileId: selectedTile?.id,
-      coloredTilesMap,
-    });
-
-    return result;
-  };
-
-  const renderBoundingVolumeLayer = () => {
-    if (!boundingVolume) {
-      return null;
-    }
-    const tiles = getAllTilesFromTilesets(loadedTilesets);
-    // @ts-expect-error - Expected 0 arguments, but got 1.
-    return new BoundingVolumeLayer({
-      id: "bounding-volume-layer",
-      visible: boundingVolume,
-      tiles,
-      getBoundingVolumeColor,
-      boundingVolumeType,
-    });
-  };
-
-  const renderFrustum = () => {
-    if (!showMinimap) {
-      return false;
-    }
-    const viewport = new WebMercatorViewport(viewState.main);
-    const frustumBounds = getFrustumBounds(viewport);
-    return new LineLayer({
-      id: "frustum",
-      data: frustumBounds,
-      getSourcePosition: (d) => d.source,
-      getTargetPosition: (d) => d.target,
-      getColor: (d) => d.color,
-      getWidth: 2,
-    });
-  };
-
-  const renderMainOnMinimap = () => {
-    if (!createIndependentMinimapViewport) {
-      return null;
-    }
-    let data = [];
-
-    if (loadedTilesets.length) {
-      const tiles = getAllTilesFromTilesets(loadedTilesets);
-      data = buildMinimapData(tiles);
-    }
-
-    return new ScatterplotLayer({
-      id: "main-on-minimap",
-      data,
-      pickable: false,
-      opacity: 0.8,
-      stroked: true,
-      filled: true,
-      radiusScale: 1,
-      radiusMinPixels: 1,
-      radiusMaxPixels: 100,
-      lineWidthMinPixels: 1,
-      getPosition: (d) => d.coordinates,
-      getRadius: (d) => d.radius,
-      getFillColor: () => [255, 140, 0, 100],
-      getLineColor: () => [0, 0, 0, 120],
-    });
-  };
-
-  const renderNormals = () => {
-    if (!normalsDebugData) {
-      return;
-    }
-    return new LineLayer({
-      id: "normals-debug",
-      data: normalsDebugData,
-      getSourcePosition: (_, { index, data }) =>
-        getNormalSourcePosition(index, data, normalsTrianglesPercentage),
-      getTargetPosition: (_, { index, data }) =>
-        getNormalTargetPosition(
-          index,
-          data,
-          normalsTrianglesPercentage,
-          normalsLength
-        ),
-      getColor: () => NORMALS_COLOR,
-      modelMatrix: normalsDebugData?.cartographicModelMatrix,
-      coordinateOrigin: normalsDebugData?.cartographicOrigin,
-      coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
-      getWidth: 1,
-    });
-  };
-
-  const renderI3SLayer = (layer) => {
-    const loadOptions: LoadOptions = {
-      i3s: {
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-        useDracoGeometry,
-        useCompressedTextures,
-      },
-    };
-    let url = layer.url;
-    if (layer.token) {
-      loadOptions.i3s.token = layer.token;
-      const urlObject = new URL(url);
-      urlObject.searchParams.append("token", layer.token);
-      url = urlObject.href;
-    }
-    return new CustomTile3DLayer({
-      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
-      data: url,
-      // @ts-expect-error loader
-      loader: I3SLoader,
->>>>>>> 43628ff (updated after review)
       colorsByAttribute,
       pickable,
       autoHighlight,
@@ -606,7 +469,6 @@ export const DeckGlWrapper = ({
       coloredTilesMap,
       selectedTilesetBasePath,
       selectedIndex,
-      parentViewState,
       normalsDebugData,
     });
   };
@@ -614,13 +476,8 @@ export const DeckGlWrapper = ({
   return (
     <DeckGL
       id={id}
-<<<<<<< HEAD
       layers={doRenderLayers()}
-      viewState={getViewState(showMinimap, viewState, parentViewState)}
-=======
-      layers={renderLayers()}
       viewState={viewState}
->>>>>>> 43628ff (updated after review)
       views={getViews()}
       layerFilter={layerFilterCreator(showMinimap)}
       onViewStateChange={onViewStateChangeHandler}
