@@ -10,7 +10,11 @@ import {
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   NormalsDebugData,
+<<<<<<< HEAD
   ViewStateSet,
+=======
+  LoadOptions,
+>>>>>>> 43628ff (updated after review)
   TilesetType,
   MinimapPosition,
   FiltersByAttribute,
@@ -283,7 +287,7 @@ export const ArcgisWrapper = ({
     });
   }, [showDebugTexture]);
 
-  const getViewState = () => {
+  const viewState = useMemo(() => {
     return (
       (showMinimap && {
         main: { ...globalViewState.main },
@@ -292,7 +296,7 @@ export const ArcgisWrapper = ({
         main: { ...globalViewState.main },
       }
     );
-  };
+  }, [showMinimap, globalViewState]);
 
   const onViewStateChangeHandler = ({
     interactionState,
@@ -386,6 +390,7 @@ export const ArcgisWrapper = ({
           longitude: pLongitude,
           latitude: pLatitude,
           bearing: 0,
+          pitch: 45,
           transitionDuration: TRANSITION_DURAITON,
           transitionInterpolator: new FlyToInterpolator(),
         },
@@ -393,7 +398,6 @@ export const ArcgisWrapper = ({
           ...globalViewState.minimap,
           longitude: pLongitude,
           latitude: pLatitude,
-          bearing: 0,
         },
       };
       setNeedTransitionToTileset(false);
@@ -433,6 +437,7 @@ export const ArcgisWrapper = ({
     }));
   };
 
+<<<<<<< HEAD
   const doRenderLayers = () => {
     return renderLayers({
       layers3d,
@@ -440,6 +445,135 @@ export const ArcgisWrapper = ({
       useCompressedTextures,
       showTerrain,
       loadNumber,
+=======
+  const getAllTilesFromTilesets = (tilesets) => {
+    const allTiles = tilesets.map((tileset) => tileset.tiles);
+    return allTiles.flat();
+  };
+
+  const getBoundingVolumeColor = (tile) => {
+    const color = colorMap.getBoundingVolumeColor(tile, {
+      coloredBy: boundingVolumeColorMode,
+    });
+
+    return [...color, DEFAULT_BG_OPACITY];
+  };
+
+  const getMeshColor = (tile) => {
+    const result = colorMap.getTileColor(tile, {
+      coloredBy: tileColorMode,
+      selectedTileId: selectedTile?.id,
+      coloredTilesMap,
+    });
+
+    return result;
+  };
+
+  const renderBoundingVolumeLayer = () => {
+    if (!boundingVolume) {
+      return null;
+    }
+    const tiles = getAllTilesFromTilesets(loadedTilesets);
+    // @ts-expect-error - Expected 0 arguments, but got 1.
+    return new BoundingVolumeLayer({
+      id: "bounding-volume-layer",
+      visible: boundingVolume,
+      tiles,
+      getBoundingVolumeColor,
+      boundingVolumeType,
+    });
+  };
+
+  const renderFrustum = () => {
+    if (!showMinimap) {
+      return false;
+    }
+    const viewport = new WebMercatorViewport(viewState.main);
+    const frustumBounds = getFrustumBounds(viewport);
+    return new LineLayer({
+      id: "frustum",
+      data: frustumBounds,
+      getSourcePosition: (d) => d.source,
+      getTargetPosition: (d) => d.target,
+      getColor: (d) => d.color,
+      getWidth: 2,
+    });
+  };
+
+  const renderMainOnMinimap = () => {
+    if (!createIndependentMinimapViewport) {
+      return null;
+    }
+    let data = [];
+
+    if (loadedTilesets.length) {
+      const tiles = getAllTilesFromTilesets(loadedTilesets);
+      data = buildMinimapData(tiles);
+    }
+
+    return new ScatterplotLayer({
+      id: "main-on-minimap",
+      data,
+      pickable: false,
+      opacity: 0.8,
+      stroked: true,
+      filled: true,
+      radiusScale: 1,
+      radiusMinPixels: 1,
+      radiusMaxPixels: 100,
+      lineWidthMinPixels: 1,
+      getPosition: (d) => d.coordinates,
+      getRadius: (d) => d.radius,
+      getFillColor: () => [255, 140, 0, 100],
+      getLineColor: () => [0, 0, 0, 120],
+    });
+  };
+
+  const renderNormals = () => {
+    if (!normalsDebugData) {
+      return;
+    }
+    return new LineLayer({
+      id: "normals-debug",
+      data: normalsDebugData,
+      getSourcePosition: (_, { index, data }) =>
+        getNormalSourcePosition(index, data, normalsTrianglesPercentage),
+      getTargetPosition: (_, { index, data }) =>
+        getNormalTargetPosition(
+          index,
+          data,
+          normalsTrianglesPercentage,
+          normalsLength
+        ),
+      getColor: () => NORMALS_COLOR,
+      modelMatrix: normalsDebugData?.cartographicModelMatrix,
+      coordinateOrigin: normalsDebugData?.cartographicOrigin,
+      coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
+      getWidth: 1,
+    });
+  };
+
+  const renderI3SLayer = (layer) => {
+    const loadOptions: LoadOptions = {
+      i3s: {
+        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
+        useDracoGeometry,
+        useCompressedTextures,
+      },
+    };
+    let url = layer.url;
+    if (layer.token) {
+      loadOptions.i3s.token = layer.token;
+      const urlObject = new URL(url);
+      urlObject.searchParams.append("token", layer.token);
+      url = urlObject.href;
+    }
+    return new CustomTile3DLayer({
+      id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
+      data: url,
+      // @ts-expect-error loader
+      loader: I3SLoader,
+>>>>>>> 43628ff (updated after review)
       colorsByAttribute,
       pickable,
       autoHighlight,
@@ -473,7 +607,7 @@ export const ArcgisWrapper = ({
   // Trying to keep code alligned to deck-gl-wrapper above this line
   // All Arcgis specific code is allocated below this line
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useArcgis(mapContainer, getViewState(), onViewStateChangeHandler);
+  const map = useArcgis(mapContainer, viewState, onViewStateChangeHandler);
   if (map) {
     const layers = doRenderLayers();
     // @ts-expect-error @deck.gl/arcgis has no types

@@ -37,7 +37,11 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
             "viewState/setViewState",
           ],
           // Ignore these paths in the state
-          ignoredPaths: ["uvDebugTexture.value"],
+          ignoredPaths: [
+            "uvDebugTexture.value",
+            "viewState.main.transitionInterpolator",
+            "viewState.minimap.transitionInterpolator",
+          ],
         },
       }),
   });
