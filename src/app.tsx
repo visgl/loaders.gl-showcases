@@ -78,8 +78,8 @@ const THEMES: AppThemes = {
       filtrationImage: color_brand_quaternary,
 
       actionIconButtonDisabledColor: color_canvas_primary,
-      actionIconButtonDisabledBG: `${dim_canvas_primary}FF`,
-      actionIconButtonDisabledBGHover: `${dim_canvas_primary}99`,
+      actionIconButtonDisabledBG: dim_canvas_primary,
+      actionIconButtonDisabledBGHover: `${dim_canvas_primary}99`,// TODO: waiting for the design...
       actionIconButtonTextDisabledColor: dim_canvas_primary,
 
       actionIconButtonActiveColor: color_brand_tertiary,
@@ -119,15 +119,15 @@ const THEMES: AppThemes = {
       validateTileOk: color_brand_secondary,
       validateTileWarning: color_accent_primary,
       filtrationImage: color_canvas_secondary,
-      
+
       actionIconButtonDisabledColor: color_canvas_secondary,
       actionIconButtonDisabledBG: `${color_brand_tertiary}66`,
       actionIconButtonDisabledBGHover: `${color_brand_tertiary}33`,// TODO: waiting for the design...
       actionIconButtonTextDisabledColor: `${color_brand_tertiary}66`,
-      
+
       actionIconButtonActiveColor: color_brand_tertiary,
       actionIconButtonActiveBG: `${color_brand_tertiary}66`,
-      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,// TODO: waiting for the design...
+      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,
       actionIconButtonTextActiveColor: color_brand_tertiary,
 
       esriImageColor: `${color_brand_tertiary}66`,
@@ -185,3 +185,4 @@ export const App = () => {
     </>
   );
 };
+
