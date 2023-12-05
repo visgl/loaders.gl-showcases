@@ -29,8 +29,8 @@ const Button = styled.div`
   &:hover {
     > * {
         background: ${({ theme }) => (
-          theme.colors.actionIconButtonDisabledBGHover
-      )};
+    theme.colors.actionIconButtonDisabledBGHover
+  )};
     }
   }
 `;
@@ -42,7 +42,7 @@ export const LogoutButton = ({
   return (
     <Button onClick={onClick}>
       <ButtonText>{children}</ButtonText>
-      <LogoutImage/>
+      <LogoutImage />
     </Button>
   );
 };

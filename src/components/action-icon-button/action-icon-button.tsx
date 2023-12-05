@@ -82,7 +82,7 @@ export const ActionIconButton = (props: ActionIconButtonProps) => {
   return (
     <Button onClick={props.onClick} grayed={grayed}>
       <IconContainer buttonSize={props.buttonSize} grayed={grayed}>
-        <props.icon/>
+        <props.icon />
         <StyledIcon grayed={grayed} />
       </IconContainer>
       <ButtonText grayed={grayed}>{props.children}</ButtonText>
