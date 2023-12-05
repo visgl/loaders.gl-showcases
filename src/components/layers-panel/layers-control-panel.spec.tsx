@@ -3,18 +3,18 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { LayersControlPanel } from "./layers-control-panel";
 
 // Mocked components
-import { PlusButton } from "../plus-button/plus-button";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { ListItem } from "./list-item/list-item";
 
 jest.mock("./list-item/list-item");
-jest.mock("../plus-button/plus-button");
+jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./layer-options-menu/layer-options-menu");
 
 const ListItemMock = ListItem as unknown as jest.Mocked<any>;
-const PlusButtonMock = PlusButton as unknown as jest.Mocked<any>;
+const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
 const DeleteConfirmationMock =
   DeleteConfirmation as unknown as jest.Mocked<any>;
 const LayerOptionsMenuMock = LayerOptionsMenu as unknown as jest.Mocked<any>;

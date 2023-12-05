@@ -19,6 +19,7 @@ import {
   color_brand_secondary_dark,
   color_accent_primary,
   color_accent_tertiary,
+  color_brand_tertiary,
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -75,6 +76,18 @@ const THEMES: AppThemes = {
       validateTileOk: color_brand_secondary_dark,
       validateTileWarning: color_accent_tertiary,
       filtrationImage: color_brand_quaternary,
+
+      actionIconButtonDisabledColor: color_canvas_primary,
+      actionIconButtonDisabledBG: `${dim_canvas_primary}FF`,
+      actionIconButtonDisabledBGHover: `${dim_canvas_primary}99`,
+      actionIconButtonTextDisabledColor: dim_canvas_primary,
+
+      actionIconButtonActiveColor: color_brand_tertiary,
+      actionIconButtonActiveBG: `${color_brand_tertiary}66`,
+      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,
+      actionIconButtonTextActiveColor: color_brand_tertiary,
+
+      esriImageColor: color_canvas_secondary_inverted,
     },
     name: Theme.Dark,
   },
@@ -106,6 +119,18 @@ const THEMES: AppThemes = {
       validateTileOk: color_brand_secondary,
       validateTileWarning: color_accent_primary,
       filtrationImage: color_canvas_secondary,
+      
+      actionIconButtonDisabledColor: color_canvas_secondary,
+      actionIconButtonDisabledBG: `${color_brand_tertiary}66`,
+      actionIconButtonDisabledBGHover: `${color_brand_tertiary}33`,// TODO: waiting for the design...
+      actionIconButtonTextDisabledColor: `${color_brand_tertiary}66`,
+      
+      actionIconButtonActiveColor: color_brand_tertiary,
+      actionIconButtonActiveBG: `${color_brand_tertiary}66`,
+      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,// TODO: waiting for the design...
+      actionIconButtonTextActiveColor: color_brand_tertiary,
+
+      esriImageColor: `${color_brand_tertiary}66`,
     },
     name: Theme.Light,
   },

@@ -4,8 +4,10 @@ import styled from "styled-components";
 import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
 
 import { ListItem } from "./list-item/list-item";
-import { PlusButton } from "../plus-button/plus-button";
-import { LoginButton } from "../login-button/login-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import ImportIcon from "../../../public/icons/import.svg";
+import EsriImage from "../../../public/images/esri.svg";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { LogoutButton } from "../logout-button/logout-button";
 
 import { DeleteConfirmation } from "./delete-confirmation";
@@ -26,6 +28,15 @@ type LayersControlPanelProps = {
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
 };
+
+const EsriStyledImage = styled(EsriImage)`
+  display: flex;
+  position: relative;
+  top: 0.37px;
+  width: 41.9px;
+  height: 15.65px;
+  fill: ${({ theme }) => theme.colors.esriImageColor};
+`;
 
 const LayersContainer = styled.div`
   display: flex;
@@ -60,6 +71,14 @@ const ChildrenContainer = styled.div`
   padding-left: 12px;
 `;
 
+const ActionIconButtonContainer = styled.div<{ bottom?: number }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
+`;
+
 export const LayersControlPanel = ({
   layers,
   type,
@@ -78,16 +97,14 @@ export const LayersControlPanel = ({
 
   /// Stab {
   const username = 'Michael';
-  const showLogin = true;
-  const showLogout = true;
-  const showImport = true;
-
-  const onArcGisLoginClick = () => { return true; };
-
-  const onArcGisLogoutClick = () => { return true; };
-
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const onArcGisLoginClick = () => { setIsLoggedIn(true) };
+  const onArcGisLogoutClick = () => { setIsLoggedIn(false) };
   const onArcGisImportClick = () => { return true; };
-/// Stab }
+  const showLogin = !isLoggedIn;
+  const showLogout = isLoggedIn;
+  const showImport = isLoggedIn;
+  /// Stab }
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -194,28 +211,36 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton icon={PlusIcon} buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
           Insert layer
-        </PlusButton>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
+        </ActionIconButton>
+        <ActionIconButton icon={PlusIcon} buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
-        </PlusButton>
+        </ActionIconButton>
+
         <PanelHorizontalLine />
-        { showLogin && (
-        <LoginButton buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
-          Login to ArcGIS
-        </LoginButton>
-        ) }
-        { showImport && (
-        <LoginButton grayed={true} buttonSize={ButtonSize.Small} onClick={onArcGisImportClick}>
-          Import from ArcGIS
-        </LoginButton>
-        ) }
-        { showLogout && (
-          <LogoutButton buttonSize={ButtonSize.Small} onClick={onArcGisLogoutClick}>
-          {username}
+
+        {showLogin && (
+          <ActionIconButtonContainer>
+            <ActionIconButton icon={ImportIcon} style={'disabled'} buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
+              Login to ArcGIS
+            </ActionIconButton>
+            <EsriStyledImage />
+          </ActionIconButtonContainer>
+        )}
+        {showImport && (
+          <ActionIconButtonContainer>
+            <ActionIconButton icon={ImportIcon} style={'active'} buttonSize={ButtonSize.Small} onClick={onArcGisImportClick}>
+              Import from ArcGIS
+            </ActionIconButton>
+            <EsriStyledImage />
+          </ActionIconButtonContainer>
+        )}
+        {showLogout && (
+          <LogoutButton onClick={onArcGisLogoutClick}>
+            {username}
           </LogoutButton>
-        ) }
+        )}
       </InsertButtons>
     </LayersContainer>
   );
