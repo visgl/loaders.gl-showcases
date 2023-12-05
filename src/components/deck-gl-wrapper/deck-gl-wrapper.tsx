@@ -1,16 +1,9 @@
 import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
-import { MapController } from "@deck.gl/core";
+import { MapController, WebMercatorViewport } from "@deck.gl/core";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { SceneLayer3D } from "@loaders.gl/i3s";
-import {
-  FlyToInterpolator,
-  MapView,
-  WebMercatorViewport,
-  PickingInfo,
-  View,
-} from "@deck.gl/core";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { FlyToInterpolator, PickingInfo, View } from "@deck.gl/core";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
   NormalsDebugData,
@@ -18,48 +11,21 @@ import {
   MinimapPosition,
   FiltersByAttribute,
 } from "../../types";
-import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
-  selectDebugTextureForTileset,
   selectOriginalTextureForTile,
-  selectOriginalTextureForTileset,
 } from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
-import { selectDragMode } from "../../redux/slices/drag-mode-slice";
-import {
-  fetchUVDebugTexture,
-  selectUVDebugTexture,
-} from "../../redux/slices/uv-debug-texture-slice";
-import {
-  selectMiniMap,
-  selectMiniMapViewPort,
-  selectBoundingVolume,
-  selectLoadTiles,
-  selectShowUVDebugTexture,
-  selectWireframe,
-  selectTileColorMode,
-  selectBoundingVolumeColorMode,
-  selectBoundingVolumeType,
-} from "../../redux/slices/debug-options-slice";
-import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
-} from "../../redux/slices/base-maps-slice";
+import { useAppDispatch } from "../../redux/hooks";
+
 import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
-import {
-  selectViewState,
-  setViewState,
-} from "../../redux/slices/view-state-slice";
+import { setViewState } from "../../redux/slices/view-state-slice";
+import { useDeckGl } from "../../hooks/use-deckgl-hook/use-deckgl-hook";
 
 const TRANSITION_DURAITON = 4000;
-
-const colorMap = new ColorMap();
 
 type DeckGlI3sProps = {
   /** DeckGL component id */
@@ -166,133 +132,38 @@ export const DeckGlWrapper = ({
   onTileUnload = () => {},
   onTraversalComplete = (selectedTiles) => selectedTiles,
 }: DeckGlI3sProps) => {
-  const dragMode = useAppSelector(selectDragMode);
-  const showMinimap = useAppSelector(selectMiniMap);
-  const loadTiles = useAppSelector(selectLoadTiles);
-  const showDebugTexture = useAppSelector(selectShowUVDebugTexture);
-  const createIndependentMinimapViewport = useAppSelector(
-    selectMiniMapViewPort
+  const {
+    dragMode,
+    showMinimap,
+    loadTiles,
+    createIndependentMinimapViewport,
+    tileColorMode,
+    boundingVolumeColorMode,
+    wireframe,
+    showTerrain,
+    mapStyle,
+    boundingVolume,
+    boundingVolumeType,
+    colorsByAttribute,
+    globalViewState,
+    terrainTiles,
+    needTransitionToTileset,
+    VIEWS,
+    viewState,
+    showDebugTextureRef,
+    uvDebugTextureRef,
+    setNeedTransitionToTileset,
+    setTerrainTiles,
+  } = useDeckGl(
+    lastLayerSelectedId,
+    loadDebugTextureImage,
+    loadedTilesets,
+    disableController,
+    minimapPosition
   );
-  const tileColorMode = useAppSelector(selectTileColorMode);
-  const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
-  const wireframe = useAppSelector(selectWireframe);
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
-  const showTerrain = selectedBaseMap?.id === "Terrain";
-  const mapStyle = selectedBaseMap?.mapUrl;
-  const boundingVolume = useAppSelector(selectBoundingVolume);
-  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
-
-  const VIEWS = useMemo(
-    () => [
-      new MapView({
-        id: "main",
-        controller: disableController ? false : { inertia: true },
-        farZMultiplier: 2.02,
-      }),
-      new MapView({
-        id: "minimap",
-
-        // Position on top of main map
-        x: minimapPosition?.x,
-        y: minimapPosition?.y,
-        width: "20%",
-        height: "20%",
-
-        // Minimap is overlaid on top of an existing view, so need to clear the background
-        clear: true,
-
-        controller: disableController
-          ? false
-          : {
-              maxZoom: 9,
-              minZoom: 9,
-              dragRotate: false,
-              keyboard: false,
-            },
-      }),
-    ],
-    [disableController, dragMode]
-  );
-  const globalViewState = useAppSelector(selectViewState);
-  const [terrainTiles, setTerrainTiles] = useState({});
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
-  const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
-  uvDebugTextureRef.current = uvDebugTexture;
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
-
-  const showDebugTextureRef = useRef<boolean>(false);
-  showDebugTextureRef.current = showDebugTexture;
-
-  let currentViewport: WebMercatorViewport = null;
-
-  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
-
   const dispatch = useAppDispatch();
-
-  /** Load debug texture if necessary */
-  useEffect(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchUVDebugTexture());
-    }
-  }, [loadDebugTextureImage]);
-
-  /**
-   * Hook to call multiple changing function based on selected tileset.
-   */
-  useEffect(() => {
-    setNeedTransitionToTileset(true);
-    colorMap._resetColorsMap();
-  }, [lastLayerSelectedId]);
-
-  /** Independent minimap viewport toggle */
-  useEffect(() => {
-    const viewportTraversersMap = {
-      main: "main",
-      minimap: createIndependentMinimapViewport ? "minimap" : "main",
-    };
-    loadedTilesets.forEach((tileset) => {
-      tileset.setProps({
-        viewportTraversersMap,
-        loadTiles,
-      });
-      tileset.selectTiles();
-    });
-  }, [createIndependentMinimapViewport]);
-
-  /** Load tiles toggle */
-  useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
-      tileset.setProps({
-        loadTiles,
-      });
-      tileset.selectTiles();
-    });
-  }, [loadTiles]);
-
-  useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
-      if (showDebugTexture) {
-        selectDebugTextureForTileset(tileset, uvDebugTexture);
-      } else {
-        selectOriginalTextureForTileset();
-      }
-    });
-  }, [showDebugTexture]);
-
-  const viewState = useMemo(() => {
-    return (
-      (showMinimap && {
-        main: { ...globalViewState.main },
-        minimap: { ...globalViewState.minimap },
-      }) || {
-        main: { ...globalViewState.main },
-      }
-    );
-  }, [showMinimap, globalViewState]);
-
   const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
+  let currentViewport: WebMercatorViewport = null;
 
   const onViewStateChangeHandler = ({
     interactionState,

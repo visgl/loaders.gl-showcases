@@ -3,56 +3,29 @@ import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { SceneLayer3D } from "@loaders.gl/i3s";
 import {
   FlyToInterpolator,
-  MapView,
-  WebMercatorViewport,
   PickingInfo,
+  WebMercatorViewport,
 } from "@deck.gl/core";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useRef } from "react";
 import {
   NormalsDebugData,
   TilesetType,
   MinimapPosition,
   FiltersByAttribute,
 } from "../../types";
-import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
-  selectDebugTextureForTileset,
   selectOriginalTextureForTile,
-  selectOriginalTextureForTileset,
 } from "../../utils/debug/texture-selector-utils";
 import { getElevationByCentralTile } from "../../utils/terrain-elevation";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
-import { selectDragMode } from "../../redux/slices/drag-mode-slice";
-import {
-  fetchUVDebugTexture,
-  selectUVDebugTexture,
-} from "../../redux/slices/uv-debug-texture-slice";
-import {
-  selectMiniMap,
-  selectMiniMapViewPort,
-  selectBoundingVolume,
-  selectLoadTiles,
-  selectShowUVDebugTexture,
-  selectWireframe,
-  selectTileColorMode,
-  selectBoundingVolumeColorMode,
-  selectBoundingVolumeType,
-} from "../../redux/slices/debug-options-slice";
-import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
-} from "../../redux/slices/base-maps-slice";
+import { useAppDispatch } from "../../redux/hooks";
 import styled from "styled-components";
 import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
-import {
-  selectViewState,
-  setViewState,
-} from "../../redux/slices/view-state-slice";
+import { setViewState } from "../../redux/slices/view-state-slice";
+import { useDeckGl } from "../../hooks/use-deckgl-hook/use-deckgl-hook";
 
 export const StyledMapContainer = styled.div`
   overflow: hidden;
@@ -64,8 +37,6 @@ export const StyledMapContainer = styled.div`
 `;
 
 const TRANSITION_DURAITON = 4000;
-
-const colorMap = new ColorMap();
 
 type ArcGisMapProps = {
   /** DeckGL component id */
@@ -168,130 +139,35 @@ export const ArcgisWrapper = ({
   onTileUnload = () => {},
   onTraversalComplete = (selectedTiles) => selectedTiles,
 }: ArcGisMapProps) => {
-  const dragMode = useAppSelector(selectDragMode);
-  const showMinimap = useAppSelector(selectMiniMap);
-  const loadTiles = useAppSelector(selectLoadTiles);
-  const showDebugTexture = useAppSelector(selectShowUVDebugTexture);
-  const createIndependentMinimapViewport = useAppSelector(
-    selectMiniMapViewPort
+  const {
+    showMinimap,
+    loadTiles,
+    createIndependentMinimapViewport,
+    tileColorMode,
+    boundingVolumeColorMode,
+    wireframe,
+    showTerrain,
+    boundingVolume,
+    boundingVolumeType,
+    colorsByAttribute,
+    globalViewState,
+    terrainTiles,
+    needTransitionToTileset,
+    VIEWS,
+    viewState,
+    showDebugTextureRef,
+    uvDebugTextureRef,
+    setNeedTransitionToTileset,
+    setTerrainTiles,
+  } = useDeckGl(
+    lastLayerSelectedId,
+    loadDebugTextureImage,
+    loadedTilesets,
+    disableController,
+    minimapPosition
   );
-  const tileColorMode = useAppSelector(selectTileColorMode);
-  const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
-  const wireframe = useAppSelector(selectWireframe);
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
-  const showTerrain = selectedBaseMap?.id === "Terrain";
-  const boundingVolume = useAppSelector(selectBoundingVolume);
-  const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
-
-  const VIEWS = useMemo(
-    () => [
-      new MapView({
-        id: "main",
-        controller: disableController ? false : { inertia: true },
-        farZMultiplier: 2.02,
-      }),
-      new MapView({
-        id: "minimap",
-
-        // Position on top of main map
-        x: minimapPosition?.x,
-        y: minimapPosition?.y,
-        width: "20%",
-        height: "20%",
-
-        // Minimap is overlaid on top of an existing view, so need to clear the background
-        clear: true,
-
-        controller: disableController
-          ? false
-          : {
-              maxZoom: 9,
-              minZoom: 9,
-              dragRotate: false,
-              keyboard: false,
-            },
-      }),
-    ],
-    [disableController, dragMode]
-  );
-  const globalViewState = useAppSelector(selectViewState);
-  const [terrainTiles, setTerrainTiles] = useState({});
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
-  const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
-  uvDebugTextureRef.current = uvDebugTexture;
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
-
-  const showDebugTextureRef = useRef<boolean>(false);
-  showDebugTextureRef.current = showDebugTexture;
-
-  const currentViewport: WebMercatorViewport = null;
-
-  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
-
   const dispatch = useAppDispatch();
-
-  /** Load debug texture if necessary */
-  useEffect(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchUVDebugTexture());
-    }
-  }, [loadDebugTextureImage]);
-
-  /**
-   * Hook to call multiple changing function based on selected tileset.
-   */
-  useEffect(() => {
-    setNeedTransitionToTileset(true);
-    colorMap._resetColorsMap();
-  }, [lastLayerSelectedId]);
-
-  /** Independent minimap viewport toggle */
-  useEffect(() => {
-    const viewportTraversersMap = {
-      main: "main",
-      minimap: createIndependentMinimapViewport ? "minimap" : "main",
-    };
-    loadedTilesets.forEach((tileset) => {
-      tileset.setProps({
-        viewportTraversersMap,
-        loadTiles,
-      });
-      tileset.selectTiles();
-    });
-  }, [createIndependentMinimapViewport]);
-
-  /** Load tiles toggle */
-  useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
-      tileset.setProps({
-        loadTiles,
-      });
-      tileset.selectTiles();
-    });
-  }, [loadTiles]);
-
-  useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
-      if (showDebugTexture) {
-        selectDebugTextureForTileset(tileset, uvDebugTexture);
-      } else {
-        selectOriginalTextureForTileset();
-      }
-    });
-  }, [showDebugTexture]);
-
-  const viewState = useMemo(() => {
-    return (
-      (showMinimap && {
-        main: { ...globalViewState.main },
-        minimap: { ...globalViewState.minimap },
-      }) || {
-        main: { ...globalViewState.main },
-      }
-    );
-  }, [showMinimap, globalViewState]);
+  const currentViewport: WebMercatorViewport = null;
 
   const onViewStateChangeHandler = ({
     interactionState,
@@ -467,9 +343,6 @@ export const ArcgisWrapper = ({
       normalsDebugData,
     });
   };
-
-  // Trying to keep code alligned to deck-gl-wrapper above this line
-  // All Arcgis specific code is allocated below this line
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useArcgis(mapContainer, viewState, onViewStateChangeHandler);
   if (map) {
@@ -481,5 +354,4 @@ export const ArcgisWrapper = ({
   }
   return <StyledMapContainer ref={mapContainer} />;
 };
-
 export default ArcgisWrapper;
