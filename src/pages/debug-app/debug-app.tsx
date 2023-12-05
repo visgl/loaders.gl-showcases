@@ -6,7 +6,6 @@ import {
   Sublayer,
   TilesetType,
   ActiveButton,
-  ViewStateSet,
   LayerViewState,
   ListItemType,
   TileColoredBy,
@@ -87,6 +86,10 @@ import {
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -145,7 +148,7 @@ export const DebugApp = () => {
   const [preventTransitions, setPreventTransitions] = useState<boolean>(false);
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
-  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const globalViewState = useAppSelector(selectViewState);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
@@ -187,6 +190,7 @@ export const DebugApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
+    dispatch(setViewState(INITIAL_VIEW_STATE));
     return () => {
       dispatch(resetDebugOptions());
       dispatch(setInitialBaseMaps());
@@ -478,27 +482,29 @@ export const DebugApp = () => {
     );
   };
 
-  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
-    if (layerViewState) {
-      setViewState((viewStatePrev) => {
+  const pointToTileset = useCallback(
+    (layerViewState?: LayerViewState) => {
+      if (layerViewState) {
         const { zoom, longitude, latitude } = layerViewState;
-        return {
+        const newViewState = {
           main: {
-            ...viewStatePrev.main,
+            ...globalViewState.main,
             zoom: zoom + 2.5,
             longitude,
             latitude,
             transitionDuration: 1000,
           },
           minimap: {
-            ...viewStatePrev.minimap,
+            ...globalViewState.minimap,
             longitude,
             latitude,
           },
         };
-      });
-    }
-  }, []);
+        dispatch(setViewState(newViewState));
+      }
+    },
+    [globalViewState]
+  );
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -514,10 +520,6 @@ export const DebugApp = () => {
         );
       }
     }
-  };
-
-  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    setViewState(viewStateSet);
   };
 
   const handleOnAfterRender = () => {
@@ -554,7 +556,7 @@ export const DebugApp = () => {
           id: newBookmarkId,
           pageId: PageId.debug,
           imageUrl,
-          viewState,
+          viewState: globalViewState,
           debugOptions,
           layersLeftSide: activeLayers,
           layersRightSide: [],
@@ -577,7 +579,7 @@ export const DebugApp = () => {
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
-    setViewState(bookmark.viewState);
+    dispatch(setViewState(bookmark.viewState));
     setExamples(bookmark.layersLeftSide);
     setActiveLayers(
       getActiveLayersByIds(
@@ -607,7 +609,7 @@ export const DebugApp = () => {
             ? {
                 ...bookmark,
                 imageUrl,
-                viewState,
+                viewState: globalViewState,
                 debugOptions,
                 layersLeftSide: activeLayers,
                 layersRightSide: [],
@@ -642,65 +644,57 @@ export const DebugApp = () => {
   };
 
   const onZoomIn = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, maxZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === maxZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-        minimap: {
-          ...viewStatePrev.minimap,
-        },
-      };
-    });
-  }, []);
-
-  const onZoomOut = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, minZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === minZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-        minimap: {
-          ...viewStatePrev.minimap,
-        },
-      };
-    });
-  }, []);
-
-  const onCompassClick = useCallback(() => {
-    setViewState((viewStatePrev) => ({
+    const { zoom, maxZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === maxZoom;
+    const newViewState = {
       main: {
-        ...viewStatePrev.main,
-        bearing: 0,
-        transitionDuration: 1000,
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
       },
       minimap: {
-        ...viewStatePrev.minimap,
+        ...globalViewState.minimap,
       },
-    }));
-  }, []);
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
+
+  const onZoomOut = useCallback(() => {
+    const { zoom, minZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === minZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+      minimap: {
+        ...globalViewState.minimap,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
+
+  const onCompassClick = useCallback(() => {
+    dispatch(
+      setViewState({
+        main: {
+          ...globalViewState.main,
+          bearing: 0,
+          transitionDuration: 1000,
+        },
+        minimap: {
+          ...globalViewState.minimap,
+        },
+      })
+    );
+  }, [globalViewState]);
 
   return (
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
@@ -717,7 +711,6 @@ export const DebugApp = () => {
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
-        onViewStateChange={onViewStateChangeHandler}
         onTilesetLoad={onTilesetLoad}
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
@@ -822,7 +815,7 @@ export const DebugApp = () => {
         />
       )}
       <MapControllPanel
-        bearing={viewState.main.bearing}
+        bearing={globalViewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}

@@ -109,7 +109,6 @@ jest.mock("../../../constants/i3s-examples", () => ({
   ],
 }));
 
-const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
 const onChangeLayersMock = jest.fn();
 const onTilesetLoaded = jest.fn();
@@ -128,15 +127,12 @@ const parseTilesetUrlParamsMock =
   parseTilesetUrlParams as unknown as jest.Mocked<any>;
 
 describe("ComparisonSide", () => {
-  let viewState;
-
   const callRender = (renderFunc, props = {}, store = setupStore()) => {
     return renderFunc(
       <ComparisonSide
         activeLayersIds={[]}
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -147,7 +143,6 @@ describe("ComparisonSide", () => {
         buildingExplorerOpened={true}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
-        onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
         onLoadingStateChange={onLoadingStateChange}
@@ -169,23 +164,6 @@ describe("ComparisonSide", () => {
       tilesetUrl: "https://new.layer.url/layers/0",
       token: null,
     });
-  });
-
-  beforeEach(() => {
-    viewState = {
-      main: {
-        longitude: 0,
-        latitude: 0,
-        pitch: 45,
-        maxPitch: 90,
-        bearing: 0,
-        minZoom: 2,
-        maxZoom: 24,
-        zoom: 2,
-        transitionDuration: 0,
-        transitionInterpolator: null,
-      },
-    };
   });
 
   it("Should render left side", () => {

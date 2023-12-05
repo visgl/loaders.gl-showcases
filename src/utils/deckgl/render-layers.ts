@@ -158,23 +158,14 @@ const renderI3SLayer = (
   });
 };
 
-export const getViewState = (
-  showMinimap: boolean,
-  viewState: ViewStateSet,
-  parentViewState?: ViewStateSet
-) => parentViewState || (showMinimap && viewState) || { main: viewState.main };
-
 export const renderFrustum = (
   showMinimap: boolean,
-  viewState: ViewStateSet,
-  parentViewState?: ViewStateSet
+  viewState: ViewStateSet
 ) => {
   if (!showMinimap) {
     return false;
   }
-  const viewport = new WebMercatorViewport(
-    getViewState(showMinimap, viewState, parentViewState).main
-  );
+  const viewport = new WebMercatorViewport(viewState.main);
   const frustumBounds = getFrustumBounds(viewport);
   return new LineLayer({
     id: "frustum",
@@ -321,7 +312,6 @@ export const renderLayers = (params: {
   coloredTilesMap?: { [key: string]: string };
   selectedTilesetBasePath?: string | null;
   selectedIndex?: number;
-  parentViewState?: ViewStateSet;
   normalsDebugData?: NormalsDebugData | null;
 }) => {
   const {
@@ -355,7 +345,6 @@ export const renderLayers = (params: {
     coloredTilesMap,
     selectedTilesetBasePath,
     selectedIndex,
-    parentViewState,
     normalsDebugData,
   } = params;
   const tile3dLayers = layers3d.map((layer) => {
@@ -411,7 +400,7 @@ export const renderLayers = (params: {
 
   return [
     ...tile3dLayers,
-    renderFrustum(showMinimap, viewState, parentViewState),
+    renderFrustum(showMinimap, viewState),
     renderBoundingVolumeLayer(
       boundingVolume,
       boundingVolumeType,

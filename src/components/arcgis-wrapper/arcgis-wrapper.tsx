@@ -10,7 +10,6 @@ import {
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   NormalsDebugData,
-  ViewStateSet,
   TilesetType,
   MinimapPosition,
   FiltersByAttribute,
@@ -50,6 +49,10 @@ import {
 import styled from "styled-components";
 import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
 
 export const StyledMapContainer = styled.div`
   overflow: hidden;
@@ -61,29 +64,12 @@ export const StyledMapContainer = styled.div`
 `;
 
 const TRANSITION_DURAITON = 4000;
-const INITIAL_VIEW_STATE = {
-  longitude: -120,
-  latitude: 34,
-  pitch: 45,
-  maxPitch: 90,
-  bearing: 0,
-  minZoom: 2,
-  maxZoom: 30,
-  zoom: 14.5,
-  transitionDuration: 0,
-  transitionInterpolator: null,
-};
 
 const colorMap = new ColorMap();
 
 type ArcGisMapProps = {
   /** DeckGL component id */
   id?: string;
-  /**
-   * View state controlled by parent component
-   * if is not set `viewState` state variable will be used
-   */
-  parentViewState?: ViewStateSet;
   /** User selected tiles colors */
   coloredTilesMap?: { [key: string]: string };
   /** Allows layers picking to handle mouse events */
@@ -135,7 +121,6 @@ type ArcGisMapProps = {
   minimapPosition?: MinimapPosition;
   /** side for compare mode */
   filtersByAttribute?: FiltersByAttribute | null;
-  onViewStateChange?: (viewStates: ViewStateSet) => void;
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
@@ -154,7 +139,6 @@ type ArcGisMapProps = {
 };
 
 export const ArcgisWrapper = ({
-  parentViewState,
   coloredTilesMap,
   pickable = false,
   layers3d,
@@ -177,7 +161,6 @@ export const ArcgisWrapper = ({
   preventTransitions = false,
   minimapPosition,
   filtersByAttribute,
-  onViewStateChange,
   onClick,
   onTilesetLoad,
   onTileLoad,
@@ -233,16 +216,7 @@ export const ArcgisWrapper = ({
     ],
     [disableController, dragMode]
   );
-  const [viewState, setViewState] = useState<ViewStateSet>({
-    main: INITIAL_VIEW_STATE,
-    minimap: {
-      latitude: INITIAL_VIEW_STATE.latitude,
-      longitude: INITIAL_VIEW_STATE.longitude,
-      zoom: 9,
-      pitch: 0,
-      bearing: 0,
-    },
-  });
+  const globalViewState = useAppSelector(selectViewState);
   const [terrainTiles, setTerrainTiles] = useState({});
   const uvDebugTexture = useAppSelector(selectUVDebugTexture);
   const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
@@ -308,8 +282,16 @@ export const ArcgisWrapper = ({
     });
   }, [showDebugTexture]);
 
-  const getViewState = () =>
-    parentViewState || (showMinimap && viewState) || { main: viewState.main };
+  const viewState = useMemo(() => {
+    return (
+      (showMinimap && {
+        main: { ...globalViewState.main },
+        minimap: { ...globalViewState.minimap },
+      }) || {
+        main: { ...globalViewState.main },
+      }
+    );
+  }, [showMinimap, globalViewState]);
 
   const onViewStateChangeHandler = ({
     interactionState,
@@ -350,71 +332,41 @@ export const ArcgisWrapper = ({
       }
     }
 
-    if (parentViewState && onViewStateChange) {
-      let newViewState;
-      if (viewId === "minimap") {
-        newViewState = {
-          main: {
-            ...parentViewState.main,
-            longitude: viewState.longitude,
-            latitude: viewState.latitude,
-            position: [0, 0, elevation],
-          },
-          minimap: viewState,
-        };
-      } else {
-        newViewState = {
-          main: {
-            ...viewState,
-            position: [0, 0, elevation],
-          },
-          minimap: {
-            ...parentViewState.minimap,
-            longitude: viewState.longitude,
-            latitude: viewState.latitude,
-          },
-        };
-      }
-      onViewStateChange(newViewState);
+    let newViewState;
+    if (viewId === "minimap") {
+      newViewState = {
+        main: {
+          ...globalViewState.main,
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+          position: [0, 0, elevation],
+        },
+        minimap: viewState,
+      };
     } else {
-      setViewState((prevValues) => {
-        let newViewState;
-        if (viewId === "minimap") {
-          newViewState = {
-            main: {
-              ...prevValues.main,
-              longitude: viewState.longitude,
-              latitude: viewState.latitude,
-              position: [0, 0, elevation],
-            },
-            minimap: viewState,
-          };
-        } else {
-          newViewState = {
-            main: {
-              ...viewState,
-              position: [0, 0, elevation],
-            },
-            minimap: {
-              ...prevValues.minimap,
-              longitude: viewState.longitude,
-              latitude: viewState.latitude,
-            },
-          };
-        }
-        return newViewState;
-      });
+      newViewState = {
+        main: {
+          ...viewState,
+          position: [0, 0, elevation],
+        },
+        minimap: {
+          ...globalViewState.minimap,
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+        },
+      };
     }
+    dispatch(setViewState(newViewState));
   };
 
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
     if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter || [];
-      const viewport = new VIEWS[0].ViewportType(viewState.main);
+      const viewport = new VIEWS[0].ViewportType(globalViewState.main);
       const {
         main: { pitch, bearing },
-      } = viewState;
+      } = globalViewState;
 
       const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
       const [pLongitude, pLatitude] = getLonLatWithElevationOffset(
@@ -428,25 +380,23 @@ export const ArcgisWrapper = ({
 
       const newViewState = {
         main: {
-          ...viewState.main,
+          ...globalViewState.main,
           zoom: zoom + 2,
           longitude: pLongitude,
           latitude: pLatitude,
+          bearing: 0,
+          pitch: 45,
           transitionDuration: TRANSITION_DURAITON,
           transitionInterpolator: new FlyToInterpolator(),
         },
         minimap: {
-          ...viewState.minimap,
+          ...globalViewState.minimap,
           longitude: pLongitude,
           latitude: pLatitude,
         },
       };
       setNeedTransitionToTileset(false);
-      if (parentViewState && onViewStateChange) {
-        onViewStateChange(newViewState);
-      } else {
-        setViewState(newViewState);
-      }
+      dispatch(setViewState(newViewState));
     }
 
     tileset.setProps({
@@ -514,7 +464,6 @@ export const ArcgisWrapper = ({
       coloredTilesMap,
       selectedTilesetBasePath,
       selectedIndex,
-      parentViewState,
       normalsDebugData,
     });
   };
@@ -522,7 +471,7 @@ export const ArcgisWrapper = ({
   // Trying to keep code alligned to deck-gl-wrapper above this line
   // All Arcgis specific code is allocated below this line
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useArcgis(mapContainer, getViewState(), onViewStateChangeHandler);
+  const map = useArcgis(mapContainer, viewState, onViewStateChangeHandler);
   if (map) {
     const layers = doRenderLayers();
     // @ts-expect-error @deck.gl/arcgis has no types
