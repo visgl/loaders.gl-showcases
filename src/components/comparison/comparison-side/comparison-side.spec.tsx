@@ -23,6 +23,11 @@ jest.mock("react-map-gl/maplibre", () => {
     return null;
   });
 });
+jest.mock("@deck.gl/arcgis", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("@loaders.gl/core", () => {
   return {
     load: jest.fn(),

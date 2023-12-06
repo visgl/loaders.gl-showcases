@@ -90,6 +90,8 @@ import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -122,6 +124,7 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
   const debugOptions = useAppSelector(selectDebugOptions);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -152,6 +155,8 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
 
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
@@ -693,7 +698,7 @@ export const DebugApp = () => {
   return (
     <MapArea>
       {renderTilePanel()}
-      <DeckGlWrapper
+      <MapWrapper
         id="debug-deck-container"
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
@@ -819,6 +824,7 @@ export const DebugApp = () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
+        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
       />
     </MapArea>
   );

@@ -38,6 +38,7 @@ import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -94,6 +95,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     new ComparisonLoadManager()
   );
 
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const globalViewState = useAppSelector(selectViewState);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
@@ -544,6 +546,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
+          isDragModeVisible={selectedBaseMapId !== "ArcGis"}
         />
       )}
     </Container>
