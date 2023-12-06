@@ -60,6 +60,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
 import { selectViewState } from "../../../redux/slices/view-state-slice";
+import { selectSelectedBaseMapId } from "../../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../../components/arcgis-wrapper/arcgis-wrapper";
 
 type LayoutProps = {
   layout: string;
@@ -139,6 +141,9 @@ export const ComparisonSide = ({
       ? selectLeftSublayers
       : selectRightSublayers
   );
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =
@@ -460,7 +465,7 @@ export const ComparisonSide = ({
 
   return (
     <Container layout={layout}>
-      <DeckGlWrapper
+      <MapWrapper
         id={sideId}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
