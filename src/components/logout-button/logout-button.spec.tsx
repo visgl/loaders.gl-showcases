@@ -18,11 +18,12 @@ describe("Logout Button", () => {
     const { container } = callRender(renderWithTheme, { children: 'Test Button' });
     expect(container).toBeInTheDocument();
     const button = screen.getByText('Test Button');
-    const buttonHeight = getComputedStyle(button as Element).getPropertyValue(
-      "margin-left"
+    const buttonIcon = button.nextSibling as Element;
+    const buttonHeight = getComputedStyle(buttonIcon).getPropertyValue(
+      "height"
     );
-    expect(buttonHeight).toEqual('41px');
-    userEvent.click(button);
+    expect(buttonHeight).toEqual('17px');
+    userEvent.click(buttonIcon);
     expect(onClickMock).toHaveBeenCalled();
   });
 

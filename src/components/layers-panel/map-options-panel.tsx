@@ -121,7 +121,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
         })}
       </MapList>
       <InsertButtons>
-        <ActionIconButton icon={PlusIcon} buttonSize={ButtonSize.Big} onClick={insertBaseMap}>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Big} onClick={insertBaseMap}>
           Insert Base Map
         </ActionIconButton>
       </InsertButtons>

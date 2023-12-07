@@ -35,6 +35,7 @@ const EsriStyledImage = styled(EsriImage)`
   top: 0.37px;
   width: 41.9px;
   height: 15.65px;
+  margin-left: 16px;
   fill: ${({ theme }) => theme.colors.esriImageColor};
 `;
 
@@ -49,17 +50,14 @@ const LayersList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
+
   > * {
-    &:first-child {
-      margin-bottom: 28px;
-    }
+      margin-bottom: 8px;
   }
 `;
 
@@ -71,12 +69,11 @@ const ChildrenContainer = styled.div`
   padding-left: 12px;
 `;
 
-const ActionIconButtonContainer = styled.div<{ bottom?: number }>`
+const ActionIconButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: start;
   align-items: center;
-  margin-bottom: ${({ bottom = 0 }) => `${bottom}px`};
 `;
 
 export const LayersControlPanel = ({
@@ -211,10 +208,10 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <ActionIconButton icon={PlusIcon} buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onLayerInsertClick}>
           Insert layer
         </ActionIconButton>
-        <ActionIconButton icon={PlusIcon} buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
         </ActionIconButton>
 
@@ -222,7 +219,7 @@ export const LayersControlPanel = ({
 
         {showLogin && (
           <ActionIconButtonContainer>
-            <ActionIconButton icon={ImportIcon} style={'disabled'} buttonSize={ButtonSize.Small} onClick={onArcGisLoginClick}>
+            <ActionIconButton Icon={ImportIcon} style={'disabled'} size={ButtonSize.Small} onClick={onArcGisLoginClick}>
               Login to ArcGIS
             </ActionIconButton>
             <EsriStyledImage />
@@ -230,7 +227,7 @@ export const LayersControlPanel = ({
         )}
         {showImport && (
           <ActionIconButtonContainer>
-            <ActionIconButton icon={ImportIcon} style={'active'} buttonSize={ButtonSize.Small} onClick={onArcGisImportClick}>
+            <ActionIconButton Icon={ImportIcon} style={'active'} size={ButtonSize.Small} onClick={onArcGisImportClick}>
               Import from ArcGIS
             </ActionIconButton>
             <EsriStyledImage />

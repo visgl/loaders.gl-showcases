@@ -1,51 +1,61 @@
 import styled from "styled-components";
 import LogoutIcon from "../../../public/icons/logout.svg";
+import {
+  color_canvas_secondary_inverted,
+} from "../../constants/colors";
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 10px;
+  transform: translate(0, -8px);
+
+  &:hover {
+    > :nth-child(2) > * {
+        stroke: ${({ theme }) => (theme.colors.logoutButtonIconColorHover)};
+      }
+  }
+`;
+
+const ButtonText = styled.div`
+  position: relative;
+  height: 17px;
+  margin-left: 40px;
+  margin-right: 8px;
+  color: ${({ theme }) => (
+    theme.colors.logoutButtonTextColor
+  )};
+`;
+
+const IconContainer = styled.div`
+  position: relative;
+  width: 63px;
+  height: 17px;
+  cursor: pointer;
+`;
+
+const StyledIcon = styled(LogoutIcon)`
+  position: absolute;
+  top: 1px;
+  stroke: ${color_canvas_secondary_inverted};
+`;
 
 type LogoutButtonProps = {
   children?: React.ReactNode;
   onClick?: () => void;
 };
 
-const LogoutImage = styled(LogoutIcon)`
-  display: flex;
-  position: relative;
-  height: 14px;
-`;
-
-const ButtonText = styled.div`
-  color: ${({ theme }) => (
-    theme.colors.actionIconButtonTextDisabledColor
-  )};
-  margin-left: 41px;
-  margin-right: 16px;
-`;
-
-const Button = styled.div`
-  display: flex;
-  cursor: pointer;
-  justify-content: flex-start;
-  align-items: center;
-
-  &:hover {
-    > * {
-        background: ${({ theme }) => (
-    theme.colors.actionIconButtonDisabledBGHover
-  )};
-    }
-  }
-`;
-
 export const LogoutButton = ({
   children,
   onClick,
 }: LogoutButtonProps) => {
   return (
-    <Button onClick={onClick}>
+    <ButtonContainer>
       <ButtonText>{children}</ButtonText>
-      <LogoutImage />
-    </Button>
+      <IconContainer onClick={onClick}>
+        <StyledIcon />
+      </IconContainer>
+    </ButtonContainer>
   );
 };
-
-
-

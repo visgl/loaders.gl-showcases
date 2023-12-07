@@ -10,9 +10,9 @@ const onClickMock = jest.fn();
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <ActionIconButton
-      icon={PlusIcon}
+      Icon={PlusIcon}
       style='disabled'
-      buttonSize={ButtonSize.Small}
+      size={ButtonSize.Small}
       onClick={onClickMock}
       {...props} />
   );
@@ -31,7 +31,7 @@ describe("Plus Button", () => {
   });
 
   it("Should render Big Plus button", () => {
-    const { container } = callRender(renderWithTheme, { children: 'Test Button', buttonSize: ButtonSize.Big });
+    const { container } = callRender(renderWithTheme, { children: 'Test Button', size: ButtonSize.Big });
     expect(container).toBeInTheDocument();
     const button = screen.getByText('Test Button');
     const buttonHeight = getComputedStyle(button.previousSibling as Element).getPropertyValue("height");

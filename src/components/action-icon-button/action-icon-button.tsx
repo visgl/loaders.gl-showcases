@@ -1,51 +1,45 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { ButtonSize } from "../../types";
 import { StyledComponent, DefaultTheme } from "styled-components";
 
-type ActionIconButtonProps = {
-  children?: React.ReactNode;
-  icon: StyledComponent<any, DefaultTheme, object, string | number | symbol>;
-  buttonSize: ButtonSize;
-  style?: "active" | "disabled";
-  onClick?: () => void;
-};
-
-/*
-  https://developer.mozilla.org/en-US/docs/Web/CSS/opacity
-
-  opacity applies to the element as a whole, including its contents, even though the value is not inherited by child elements.
-  Thus, the element and its children all have the same opacity relative to the element's background,
-  even if they have different opacities relative to one another.
-
-  To change the opacity of a background only, use the background property with a color value that allows for an alpha channel. F
-*/
+import {
+  color_brand_tertiary,
+} from "../../constants/colors";
 
 const Button = styled.div<{ grayed?: boolean }>`
   display: flex;
-  cursor: pointer;
   justify-content: flex-start;
   align-items: center;
-  margin-right: 16px;
+  padding: 10px;
+  cursor: pointer;
 
   &:hover {
-    > * {
-      &:first-child {
-        background: ${({ theme, grayed }) => (
-    grayed
-      ? theme.colors.actionIconButtonDisabledBGHover
-      : theme.colors.actionIconButtonActiveBGHover
-  )};
+    > :first-child {
+      background: ${color_brand_tertiary}33;
+
+      > * {
+        fill: ${color_brand_tertiary};
       }
+    }
+
+    > :nth-child(2) {
+      color: ${({ theme, grayed }) => (
+        grayed
+          ? theme.colors.actionIconButtonTextDisabledColorHover
+          : color_brand_tertiary
+      )};
     }
   }
 `;
 
 const ButtonText = styled.div<{ grayed?: boolean }>`
+  position: relative;
+  margin-left: 16px;
   color: ${({ theme, grayed }) => (
     grayed
       ? theme.colors.actionIconButtonTextDisabledColor
-      : theme.colors.actionIconButtonTextActiveColor
+      : color_brand_tertiary
   )};
   `;
 
@@ -58,34 +52,41 @@ const IconContainer = styled.div<{ buttonSize: number, grayed?: boolean }>`
   background: ${({ theme, grayed }) => (
     grayed
       ? theme.colors.actionIconButtonDisabledBG
-      : theme.colors.actionIconButtonActiveBG
+      : `${color_brand_tertiary}66`
   )};
 
   border-radius: 4px;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
   `;
 
-export const ActionIconButton = (props: ActionIconButtonProps) => {
+type ActionIconButtonProps = {
+  children?: React.ReactNode;
+  Icon: StyledComponent<any, DefaultTheme, object, string | number | symbol>;
+  size: ButtonSize;
+  style?: "active" | "disabled";
+  onClick?: () => void;
+};
 
-  const grayed = props.style === "disabled";
-  const StyledIcon = styled(props.icon) <{ grayed?: boolean }>`
+export const ActionIconButton = ({ Icon, style, size, children, onClick }: ActionIconButtonProps) => {
+
+  const grayed = useMemo(() => style === "disabled", [style]);
+
+  const StyledIcon = styled(Icon) <{ grayed?: boolean }>`
     position: absolute;
     fill: ${({ theme, grayed }) => (
       grayed
         ? theme.colors.actionIconButtonDisabledColor
-        : theme.colors.actionIconButtonActiveColor
+        : color_brand_tertiary
     )};
     `;
 
   return (
-    <Button onClick={props.onClick} grayed={grayed}>
-      <IconContainer buttonSize={props.buttonSize} grayed={grayed}>
-        <props.icon />
+    <Button onClick={onClick} grayed={grayed}>
+      <IconContainer buttonSize={size} grayed={grayed}>
         <StyledIcon grayed={grayed} />
       </IconContainer>
-      <ButtonText grayed={grayed}>{props.children}</ButtonText>
+      <ButtonText grayed={grayed}>{children}</ButtonText>
     </Button>
   );
 };

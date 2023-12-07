@@ -20,6 +20,7 @@ import {
   color_accent_primary,
   color_accent_tertiary,
   color_brand_tertiary,
+  dim_brand_tertinary
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
@@ -79,13 +80,11 @@ const THEMES: AppThemes = {
 
       actionIconButtonDisabledColor: color_canvas_primary,
       actionIconButtonDisabledBG: dim_canvas_primary,
-      actionIconButtonDisabledBGHover: `${dim_canvas_primary}99`,// TODO: waiting for the design...
       actionIconButtonTextDisabledColor: dim_canvas_primary,
+      actionIconButtonTextDisabledColorHover: dim_brand_tertinary,
 
-      actionIconButtonActiveColor: color_brand_tertiary,
-      actionIconButtonActiveBG: `${color_brand_tertiary}66`,
-      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,
-      actionIconButtonTextActiveColor: color_brand_tertiary,
+      logoutButtonTextColor: dim_canvas_primary,
+      logoutButtonIconColorHover: dim_brand_tertinary,
 
       esriImageColor: color_canvas_secondary_inverted,
     },
@@ -122,13 +121,11 @@ const THEMES: AppThemes = {
 
       actionIconButtonDisabledColor: color_canvas_secondary,
       actionIconButtonDisabledBG: `${color_brand_tertiary}66`,
-      actionIconButtonDisabledBGHover: `${color_brand_tertiary}33`,// TODO: waiting for the design...
       actionIconButtonTextDisabledColor: `${color_brand_tertiary}66`,
+      actionIconButtonTextDisabledColorHover: color_brand_tertiary,
 
-      actionIconButtonActiveColor: color_brand_tertiary,
-      actionIconButtonActiveBG: `${color_brand_tertiary}66`,
-      actionIconButtonActiveBGHover: `${color_brand_tertiary}33`,
-      actionIconButtonTextActiveColor: color_brand_tertiary,
+      logoutButtonTextColor: color_brand_quaternary,
+      logoutButtonIconColorHover: color_brand_tertiary,
 
       esriImageColor: `${color_brand_tertiary}66`,
     },
