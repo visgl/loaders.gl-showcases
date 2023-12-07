@@ -1,3 +1,7 @@
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const checkLayersPanel = async (
   page,
   panelId: string,
@@ -124,6 +128,7 @@ export const inserAndDeleteLayer = async (
     Name: "",
   });
   await page.keyboard.press("Enter");
+  await sleep(200);
   const nameWarning = await insertPanel.$eval(
     `${panelId} form.insert-form span`,
     (node) => node.innerText

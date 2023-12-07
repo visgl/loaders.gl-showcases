@@ -367,3 +367,8 @@ export type TilesetMetadata = {
   hasChildren: boolean;
   type?: TilesetType;
 };
+
+export enum FetchingStatus {
+  pending = "pending",
+  ready = "ready",
+}
