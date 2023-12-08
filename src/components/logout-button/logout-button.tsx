@@ -4,58 +4,58 @@ import {
   color_canvas_secondary_inverted,
 } from "../../constants/colors";
 
-const ButtonContainer = styled.div`
+const Container = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding-left: 10px;
-  transform: translate(0, -8px);
-
-  &:hover {
-    > :nth-child(2) > * {
-        stroke: ${({ theme }) => (theme.colors.logoutButtonIconColorHover)};
-      }
-  }
+  margin-left: 50px;
+  margin-top: -18px;
 `;
 
-const ButtonText = styled.div`
-  position: relative;
+const UserInfo = styled.div`
   height: 17px;
-  margin-left: 40px;
   margin-right: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
   color: ${({ theme }) => (
     theme.colors.logoutButtonTextColor
   )};
 `;
 
-const IconContainer = styled.div`
-  position: relative;
+const IconButton = styled.div`
+  display: flex;
+  justify-content: flex-start;
   width: 63px;
   height: 17px;
   cursor: pointer;
+  &:hover {
+    > * {
+      stroke: ${({ theme }) => (theme.colors.logoutButtonIconColorHover)};
+    }
+  }
 `;
 
 const StyledIcon = styled(LogoutIcon)`
-  position: absolute;
-  top: 1px;
+  margin-top: 1px;
   stroke: ${color_canvas_secondary_inverted};
 `;
 
-type LogoutButtonProps = {
+type ArcGisUserProps = {
   children?: React.ReactNode;
   onClick?: () => void;
 };
 
-export const LogoutButton = ({
+export const AcrGisUser = ({
   children,
   onClick,
-}: LogoutButtonProps) => {
+}: ArcGisUserProps) => {
   return (
-    <ButtonContainer>
-      <ButtonText>{children}</ButtonText>
-      <IconContainer onClick={onClick}>
+    <Container>
+      <UserInfo>{children}</UserInfo>
+      <IconButton onClick={onClick}>
         <StyledIcon />
-      </IconContainer>
-    </ButtonContainer>
+      </IconButton>
+    </Container>
   );
 };

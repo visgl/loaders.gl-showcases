@@ -1,19 +1,19 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { LogoutButton } from "./logout-button";
+import { AcrGisUser } from "./logout-button";
 
 const onClickMock = jest.fn();
 
 const callRender = (renderFunc, props) => {
   return renderFunc(
-    <LogoutButton
+    <AcrGisUser
       onClick={onClickMock}
       {...props} />
   );
 };
 
-describe("Logout Button", () => {
+describe("AcrGisUser", () => {
   it("Should render Logout button", () => {
     const { container } = callRender(renderWithTheme, { children: 'Test Button' });
     expect(container).toBeInTheDocument();

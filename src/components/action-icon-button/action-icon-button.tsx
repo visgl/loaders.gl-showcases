@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import styled from "styled-components";
+import styled, { StyledComponent, DefaultTheme, useTheme } from "styled-components";
 import { ButtonSize } from "../../types";
-import { StyledComponent, DefaultTheme } from "styled-components";
 
 import {
   color_brand_tertiary,
@@ -25,17 +24,19 @@ const Button = styled.div<{ grayed?: boolean }>`
 
     > :nth-child(2) {
       color: ${({ theme, grayed }) => (
-        grayed
-          ? theme.colors.actionIconButtonTextDisabledColorHover
-          : color_brand_tertiary
-      )};
+    grayed
+      ? theme.colors.actionIconButtonTextDisabledColorHover
+      : color_brand_tertiary
+  )};
     }
   }
 `;
 
 const ButtonText = styled.div<{ grayed?: boolean }>`
-  position: relative;
   margin-left: 16px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
   color: ${({ theme, grayed }) => (
     grayed
       ? theme.colors.actionIconButtonTextDisabledColor
@@ -45,7 +46,9 @@ const ButtonText = styled.div<{ grayed?: boolean }>`
 
 const IconContainer = styled.div<{ buttonSize: number, grayed?: boolean }>`
   display: flex;
-  position: relative;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
   width: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
   height: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
   
@@ -54,10 +57,6 @@ const IconContainer = styled.div<{ buttonSize: number, grayed?: boolean }>`
       ? theme.colors.actionIconButtonDisabledBG
       : `${color_brand_tertiary}66`
   )};
-
-  border-radius: 4px;
-  align-items: center;
-  justify-content: center;
   `;
 
 type ActionIconButtonProps = {
@@ -69,22 +68,17 @@ type ActionIconButtonProps = {
 };
 
 export const ActionIconButton = ({ Icon, style, size, children, onClick }: ActionIconButtonProps) => {
-
-  const grayed = useMemo(() => style === "disabled", [style]);
-
-  const StyledIcon = styled(Icon) <{ grayed?: boolean }>`
-    position: absolute;
-    fill: ${({ theme, grayed }) => (
-      grayed
-        ? theme.colors.actionIconButtonDisabledColor
-        : color_brand_tertiary
-    )};
-    `;
+  const grayed = style === "disabled";
+  const theme = useTheme();
 
   return (
     <Button onClick={onClick} grayed={grayed}>
       <IconContainer buttonSize={size} grayed={grayed}>
-        <StyledIcon grayed={grayed} />
+        <Icon fill={
+          grayed
+            ? theme.colors.actionIconButtonDisabledColor
+            : color_brand_tertiary
+        } />
       </IconContainer>
       <ButtonText grayed={grayed}>{children}</ButtonText>
     </Button>
