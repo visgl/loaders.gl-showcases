@@ -71,10 +71,11 @@ export function useArcgis(
               interactionState: { isZooming: false },
               viewState: {
                 ...viewState.main,
+                longitude: sceneView.center.longitude,
+                latitude: sceneView.center.latitude,
                 bearing: sceneView.camera.heading,
                 pitch: sceneView.camera.tilt,
                 zoom: sceneView.zoom,
-                position: [sceneView.center, 100],
               },
               viewId: "main",
             });
@@ -85,10 +86,11 @@ export function useArcgis(
             interactionState: { isZooming: false },
             viewState: {
               ...viewState.main,
+              longitude: sceneView.center.longitude,
+              latitude: sceneView.center.latitude,
               bearing: sceneView.camera.heading,
               pitch: sceneView.camera.tilt,
               zoom: sceneView.zoom,
-              position: [sceneView.center, 100],
             },
             viewId: "main",
           });
