@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import { AcrGisUser } from "./logout-button";
+import { AcrGisUser } from "./arcgis-user";
 
 const onClickMock = jest.fn();
 

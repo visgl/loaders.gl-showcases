@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled, { StyledComponent, DefaultTheme, useTheme } from "styled-components";
 import { ButtonSize } from "../../types";
 
@@ -84,4 +84,3 @@ export const ActionIconButton = ({ Icon, style, size, children, onClick }: Actio
     </Button>
   );
 };
-

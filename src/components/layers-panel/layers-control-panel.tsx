@@ -8,7 +8,7 @@ import PlusIcon from "../../../public/icons/plus.svg";
 import ImportIcon from "../../../public/icons/import.svg";
 import EsriImage from "../../../public/images/esri.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import { AcrGisUser } from "../logout-button/logout-button";
+import { AcrGisUser } from "../arcgis-user/arcgis-user";
 
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
