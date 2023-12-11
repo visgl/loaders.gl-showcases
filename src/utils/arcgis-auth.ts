@@ -4,7 +4,7 @@ const ARCGIS_REST_USER_SESSION = '__ARCGIS_REST_USER_SESSION__';
 const ARCGIS_REST_USER_INFO = '__ARCGIS_REST_USER_INFO__';
 
 const updateSessionInfo = async (session?: ArcGISIdentityManager): Promise<string> => {
-  let email: string = '';
+  let email = '';
   if (session) {
     localStorage.setItem(ARCGIS_REST_USER_SESSION, session.serialize());
     const user = await session.getUser();
@@ -33,12 +33,12 @@ export const getAuthOptions = () => {
  * @returns the user's email or an empty string if the user is not logged in.
  */
 export const getAuthenticatedUser = (): string => {
-  return  localStorage.getItem(ARCGIS_REST_USER_INFO) || '';
+  return localStorage.getItem(ARCGIS_REST_USER_INFO) || '';
 }
 
 /**
- * 
- * @returns 
+ * Makes a ArcGIS login request by opening a popup dialog.
+ * @returns email of the user logged in or an empty string if the user is not logged in.
  */
 export const arcGisRequestLogin = async () => {
   const { redirectUrl, clientId } = getAuthOptions();
@@ -67,6 +67,10 @@ export const arcGisRequestLogin = async () => {
   return email;
 };
 
+/**
+ * Makes a ArcGIS logout request.
+ * @returns empty string
+ */
 export const arcGisRequestLogout = async () => {
   return await updateSessionInfo();
 };
