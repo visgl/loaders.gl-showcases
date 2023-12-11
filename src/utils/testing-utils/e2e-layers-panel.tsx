@@ -37,12 +37,12 @@ export const checkLayersPanel = async (
 
   // Insert buttons
   const insertLayerText = await page.$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child :last-child`,
+    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child > :last-child`,
     (node) => node.innerText
   );
   expect(insertLayerText).toBe("Insert layer");
   const insertSceneText = await page.$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :last-child  :last-child`,
+    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :nth-child(2) > :last-child`,
     (node) => node.innerText
   );
   expect(insertSceneText).toBe("Insert scene");

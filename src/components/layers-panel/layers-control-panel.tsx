@@ -4,12 +4,17 @@ import styled from "styled-components";
 import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
 
 import { ListItem } from "./list-item/list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import ImportIcon from "../../../public/icons/import.svg";
+import EsriImage from "../../../public/images/esri.svg";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
+import { AcrGisUser } from "../arcgis-user/arcgis-user";
 
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
+import { PanelHorizontalLine } from "../common";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -35,18 +40,13 @@ const LayersList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
-  > * {
-    &:first-child {
-      margin-bottom: 28px;
-    }
-  }
+  row-gap: 8px;
+  margin-top: 8px;
 `;
 
 const ChildrenContainer = styled.div`
@@ -55,6 +55,18 @@ const ChildrenContainer = styled.div`
   border-left: 1px solid ${({ theme }) => theme.colors.mainDimColor};
   margin-left: 22px;
   padding-left: 12px;
+`;
+
+const ActionIconButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+`;
+
+const EsriStyledImage = styled(EsriImage)`
+  margin-left: 16px;
+  fill: ${({ theme }) => theme.colors.esriImageColor};
 `;
 
 export const LayersControlPanel = ({
@@ -72,6 +84,13 @@ export const LayersControlPanel = ({
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
+
+  /// Stab {
+  const username = 'Michael-g';
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const onArcGisActionClick = () => { !isLoggedIn && setIsLoggedIn(true) };
+  const onArcGisLogoutClick = () => { setIsLoggedIn(false) };
+  /// Stab }
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -178,12 +197,28 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onLayerInsertClick}>
           Insert layer
-        </PlusButton>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
+        </ActionIconButton>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
-        </PlusButton>
+        </ActionIconButton>
+
+        <PanelHorizontalLine top={0} bottom={0} />
+
+        <ActionIconButtonContainer>
+          <ActionIconButton Icon={ImportIcon} style={isLoggedIn ? 'active' : 'disabled'} size={ButtonSize.Small} onClick={onArcGisActionClick}>
+            {!isLoggedIn && "Login to ArcGIS"}
+            {isLoggedIn && "Import from ArcGIS"}
+          </ActionIconButton>
+          <EsriStyledImage />
+        </ActionIconButtonContainer>
+
+        {isLoggedIn && (
+          <AcrGisUser onClick={onArcGisLogoutClick}>
+            {username}
+          </AcrGisUser>
+        )}
       </InsertButtons>
     </LayersContainer>
   );
