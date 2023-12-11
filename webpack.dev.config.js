@@ -100,6 +100,7 @@ module.exports = (env) => {
     devServer: {
       open: true,
       port: 3000,
+      server: 'https',
       client: {
         overlay: {
           errors: true,

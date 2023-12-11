@@ -1,4 +1,4 @@
-import { Fragment, ReactEventHandler, useState } from "react";
+import { Fragment, ReactEventHandler, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
@@ -10,6 +10,10 @@ import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
+
+
+import { arcGisLogin, arcGisLogout, selectUser } from "../../redux/slices/arcgis-auth-slice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -69,6 +73,28 @@ export const LayersControlPanel = ({
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
+
+  // stub {
+  const dispatch = useAppDispatch();
+
+  const handleArcGisLogin = () => {
+    dispatch(arcGisLogin());
+  };
+  
+  const handleArcGisLogout = () => {
+    dispatch(arcGisLogout());
+  };
+  
+  const username = useAppSelector(selectUser);
+  const [showLogin, setShowLoginButton] = useState<boolean>(!username);
+  const [showLogout, setShowLogoutButton] = useState<boolean>(!!username);
+  
+  useEffect(() => {
+    setShowLoginButton(!username);
+    setShowLogoutButton(!!username);
+  }, [username]);
+// stub }
+
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
@@ -184,7 +210,20 @@ export const LayersControlPanel = ({
         <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
           Insert scene
         </PlusButton>
-      </InsertButtons>
+        </InsertButtons>
+
+        { showLogin && (
+        <PlusButton buttonSize={ButtonSize.Small} onClick={handleArcGisLogin}>
+          Login to ArcGIS
+        </PlusButton>
+        ) }
+        { showLogout && (
+        <PlusButton buttonSize={ButtonSize.Small} onClick={handleArcGisLogout}>
+          {username} Logout
+        </PlusButton>
+        ) }
+
+
     </LayersContainer>
   );
 };
