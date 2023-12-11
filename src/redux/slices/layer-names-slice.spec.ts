@@ -8,7 +8,7 @@ import reducer, {
 
 jest.mock("@loaders.gl/core");
 
-describe("slice: bsl-statistics-summary", () => {
+describe("slice: layer-names", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
       map: {},
