@@ -42,19 +42,12 @@ const MapList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
-
-  > * {
-    &:first-child {
-      margin-bottom: 0px;
-    }
-  }
+  row-gap: 8px;
 `;
 
 export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
