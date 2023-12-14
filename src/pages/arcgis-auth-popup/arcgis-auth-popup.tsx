@@ -5,8 +5,7 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-import { ArcGISIdentityManager } from '@esri/arcgis-rest-request';
-import { getAuthOptions } from "../../utils/arcgis-auth";
+import { arcGisCompleteLogin } from "../../utils/arcgis-auth";
 
 export type LayoutProps = {
   layout: string;
@@ -37,22 +36,10 @@ const AuthContainer = styled.div<LayoutProps>`
 
 export const AuthApp = () => {
   const layout = useAppLayout();
-
-  const { redirectUrl, clientId } = getAuthOptions();
-  if (!clientId) {
-    console.error("The ClientId is not defined in .env file.");
-  } else {
-    const options = {
-      clientId: clientId,
-      redirectUri: redirectUrl,
-      popup: true,
-      pkce: true
-    }
-    ArcGISIdentityManager.completeOAuth2(options);
-  }
+  arcGisCompleteLogin();
   return (
     <AuthContainer id="dashboard-container" layout={layout}>
     </AuthContainer>
   );
-
+  
 }

@@ -17,15 +17,32 @@ const updateSessionInfo = async (session?: ArcGISIdentityManager): Promise<strin
   return email;
 }
 
+function getArcGisSession(): ArcGISIdentityManager | undefined {
+  let session;
+  const itemString = localStorage.getItem(ARCGIS_REST_USER_SESSION);
+  if (itemString) {
+    session = ArcGISIdentityManager.deserialize(itemString);
+  }
+  return session;
+}
+
 /**
  * Gets the redirection URL and the client ID to use in the ArcGIS authentication workflow.
  * @returns the redirection URL and the client ID.
  */
-export const getAuthOptions = () => {
-  return {
-    redirectUrl: `${window.location.protocol}//${window.location.hostname}:${window.location.port}/auth`,
-    clientId: process.env.REACT_APP_ARCGIS_REST_CLIENT_ID
+const getAuthOptions = () => {
+  const port = window.location.port ? `:${window.location.port}` : '';
+  const options = {
+    redirectUri: `${window.location.protocol}//${window.location.hostname}${port}/auth`,
+    clientId: process.env.REACT_APP_ARCGIS_REST_CLIENT_ID || '',
+    popup: true,
+    pkce: true
+  };
+
+  if (!options.clientId) {
+    console.error("The ClientId is not defined in .env file.");
   }
+  return options;
 }
 
 /**
@@ -37,40 +54,45 @@ export const getAuthenticatedUser = (): string => {
 }
 
 /**
- * Makes a ArcGIS login request by opening a popup dialog.
+ * Makes an ArcGIS login request by opening a popup dialog.
  * @returns email of the user logged in or an empty string if the user is not logged in.
  */
 export const arcGisRequestLogin = async () => {
-  const { redirectUrl, clientId } = getAuthOptions();
-
-  if (!clientId) {
-    console.error("The ClientId is not defined in .env file.");
-    return '';
-  }
-  const options = {
-    clientId: clientId,
-    redirectUri: redirectUrl,
-    popup: true,
-    pkce: true
-  }
-
   let email = '';
-  let session: ArcGISIdentityManager | undefined;
-  try {
-    session = await ArcGISIdentityManager.beginOAuth2(options);
-  }
-  finally {
-    // In case of an exception the session is not set.
-    // So the following call will remove any session stored in the local storage.
-    email = await updateSessionInfo(session);
+
+  const options = getAuthOptions();
+  if (options.clientId) {
+    let session: ArcGISIdentityManager | undefined;
+    try {
+      session = await ArcGISIdentityManager.beginOAuth2(options);
+    }
+    finally {
+      // In case of an exception the session is not set.
+      // So the following call will remove any session stored in the local storage.
+      email = await updateSessionInfo(session);
+    }
   }
   return email;
 };
 
 /**
- * Makes a ArcGIS logout request.
+ * Completes the ArcGIS login request started by {@link arcGisRequestLogin}.
+ */
+export const arcGisCompleteLogin = async () => {
+  const options = getAuthOptions();
+  if (options.clientId) {
+    ArcGISIdentityManager.completeOAuth2(options);
+  }
+}
+
+/**
+ * Makes an ArcGIS logout request.
  * @returns empty string
  */
 export const arcGisRequestLogout = async () => {
+  const session = getArcGisSession();
+  if (session) {
+    await ArcGISIdentityManager.destroy(session);
+  }
   return await updateSessionInfo();
 };

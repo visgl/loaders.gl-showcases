@@ -1,24 +1,20 @@
-import { Fragment, ReactEventHandler, useState, useEffect } from "react";
+import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-
 import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
-
 import { ListItem } from "./list-item/list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
 import ImportIcon from "../../../public/icons/import.svg";
 import EsriImage from "../../../public/images/esri.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { AcrGisUser } from "../arcgis-user/arcgis-user";
-
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
 import { PanelHorizontalLine } from "../common";
-
-
 import { arcGisLogin, arcGisLogout, selectUser } from "../../redux/slices/arcgis-auth-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { ModalDialog } from "../modal-dialog/modal-dialog";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -86,37 +82,18 @@ export const LayersControlPanel = ({
   deleteLayer,
 }: LayersControlPanelProps) => {
 
-  // stub {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-  // const handleArcGisLogin = () => {
-  //   dispatch(arcGisLogin());
-  // };
-  
-  // const handleArcGisLogout = () => {
-  //   dispatch(arcGisLogout());
-  // };
-  
-  // const username = useAppSelector(selectUser);
-  // const [showLogin, setShowLoginButton] = useState<boolean>(!username);
-  // const [showLogout, setShowLogoutButton] = useState<boolean>(!!username);
-  
-  // useEffect(() => {
-  //   setShowLoginButton(!username);
-  //   setShowLogoutButton(!!username);
-  // }, [username]);
-// stub }
+  const username = useAppSelector(selectUser);
+  const isLoggedIn = !!username;
 
+  const [showLogoutWarning, setShowLogoutWarning] = useState(false);
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
-  /// Stab {
-  const username = 'Michael-g';
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const onArcGisActionClick = () => { !isLoggedIn && setIsLoggedIn(true) };
-  const onArcGisLogoutClick = () => { setIsLoggedIn(false) };
-  /// Stab }
+  const onArcGisActionClick = () => { !isLoggedIn && dispatch(arcGisLogin()); };
+  const onArcGisLogoutClick = () => { setShowLogoutWarning(true); };
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -149,6 +126,38 @@ export const LayersControlPanel = ({
 
     return selectedState;
   };
+
+  const TextQuestion = styled.div`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
+  const TextInfo = styled.div`
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
+  const renderModalDialogContent = (): JSX.Element => {
+    return (
+      <>
+        <TextQuestion>
+          Are you sure you want to log out?
+        </TextQuestion>
+
+        <TextInfo>
+          You are logged in as
+        </TextInfo>
+
+        <TextInfo>
+          {username}
+        </TextInfo>
+      </>
+    );
+  }
 
   const renderLayers = (
     layers: LayerExample[],
@@ -245,6 +254,22 @@ export const LayersControlPanel = ({
             {username}
           </AcrGisUser>
         )}
+
+        {showLogoutWarning && (
+          <ModalDialog
+            width={442}
+            height={290}
+            title={'Logout from ArcGIS'}
+            content={renderModalDialogContent}
+            onConfirm={
+              () => {
+                dispatch(arcGisLogout());
+                setShowLogoutWarning(false);
+              }}
+            onCancel={() => { setShowLogoutWarning(false); }}
+          />
+        )}
+
       </InsertButtons>
     </LayersContainer>
   );

@@ -22,7 +22,6 @@ const rootReducer = combineReducers({
   symbolization: symbolizationSliceReducer,
   i3sStats: i3sStatsSliceReducer,
   arcGisAuth: arcGisAuthSliceReducer,
-
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
