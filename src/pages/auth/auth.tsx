@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Background from "../../../public/images/tools-background.webp";
 import styled from "styled-components";
 import {
@@ -22,24 +23,22 @@ const AuthContainer = styled.div<LayoutProps>`
   background-size: cover;
 
   height: ${getCurrentLayoutProperty({
-  desktop: "calc(100vh - 65px)",
-  tablet: "calc(100vh - 65px)",
-  mobile: "calc(100vh - 58px)",
-})};
+    desktop: "calc(100vh - 65px)",
+    tablet: "calc(100vh - 65px)",
+    mobile: "calc(100vh - 58px)",
+  })};
 
   margin-top: ${getCurrentLayoutProperty({
-  desktop: "65px",
-  tablet: "65px",
-  mobile: "58px",
-})};
+    desktop: "65px",
+    tablet: "65px",
+    mobile: "58px",
+  })};
 `;
 
 export const AuthApp = () => {
   const layout = useAppLayout();
-  arcGisCompleteLogin();
-  return (
-    <AuthContainer id="dashboard-container" layout={layout}>
-    </AuthContainer>
-  );
-  
-}
+  useEffect(() => {
+    arcGisCompleteLogin();
+  }, []);
+  return <AuthContainer id="dashboard-container" layout={layout} />;
+};

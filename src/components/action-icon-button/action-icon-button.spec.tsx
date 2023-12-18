@@ -18,8 +18,8 @@ const callRender = (renderFunc, props = {}) => {
   );
 };
 
-describe("Plus Button", () => {
-  it("Should render small Plus button", () => {
+describe("ActionIconButton", () => {
+  it("Should render small Plus icon in the button", () => {
     const { container } = callRender(renderWithTheme, { children: 'Test Button' });
     expect(container).toBeInTheDocument();
     const button = screen.getByText('Test Button');
@@ -30,7 +30,7 @@ describe("Plus Button", () => {
     expect(onClickMock).toHaveBeenCalled();
   });
 
-  it("Should render Big Plus button", () => {
+  it("Should render Big Plus icon in the button", () => {
     const { container } = callRender(renderWithTheme, { children: 'Test Button', size: ButtonSize.Big });
     expect(container).toBeInTheDocument();
     const button = screen.getByText('Test Button');

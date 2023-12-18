@@ -1,6 +1,11 @@
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
+import {
+  SelectionState,
+  LayerExample,
+  LayerViewState,
+  ListItemType,
+} from "../../types";
 import { ListItem } from "./list-item/list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
 import ImportIcon from "../../../public/icons/import.svg";
@@ -12,7 +17,11 @@ import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
 import { PanelHorizontalLine } from "../common";
-import { arcGisLogin, arcGisLogout, selectUser } from "../../redux/slices/arcgis-auth-slice";
+import {
+  arcGisLogin,
+  arcGisLogout,
+  selectUser,
+} from "../../redux/slices/arcgis-auth-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 
@@ -69,6 +78,20 @@ const EsriStyledImage = styled(EsriImage)`
   fill: ${({ theme }) => theme.colors.esriImageColor};
 `;
 
+const TextInfo = styled.div`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
+const TextUser = styled.div`
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
 export const LayersControlPanel = ({
   layers,
   type,
@@ -81,7 +104,6 @@ export const LayersControlPanel = ({
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
-
   const dispatch = useAppDispatch();
 
   const username = useAppSelector(selectUser);
@@ -92,8 +114,12 @@ export const LayersControlPanel = ({
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
-  const onArcGisActionClick = () => { !isLoggedIn && dispatch(arcGisLogin()); };
-  const onArcGisLogoutClick = () => { setShowLogoutWarning(true); };
+  const onArcGisActionClick = () => {
+    !isLoggedIn && dispatch(arcGisLogin());
+  };
+  const onArcGisLogoutClick = () => {
+    setShowLogoutWarning(true);
+  };
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -104,60 +130,46 @@ export const LayersControlPanel = ({
     let selectedState = SelectionState.unselected;
 
     if (!childLayers.length) {
-      selectedState = selectedLayerIds.includes(layer.id) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = selectedLayerIds.includes(layer.id)
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && !parentLayer) {
-      selectedState = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id)) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      )
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && parentLayer) {
       const isAllChildLayersSelected = !groupLeafs.some(
-        (leaf) => !selectedLayerIds.includes(leaf.id));
-      const isAnyChildLayerSelected = groupLeafs.some(
-        (leaf) => selectedLayerIds.includes(leaf.id));
+        (leaf) => !selectedLayerIds.includes(leaf.id)
+      );
+      const isAnyChildLayerSelected = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      );
 
       if (isAllChildLayersSelected) {
         selectedState = SelectionState.selected;
       } else if (isAnyChildLayerSelected) {
-        selectedState = SelectionState.indeterminate
+        selectedState = SelectionState.indeterminate;
       }
     }
 
     return selectedState;
   };
 
-  const TextQuestion = styled.div`
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-`;
-
-  const TextInfo = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 19px;
-`;
-
   const renderModalDialogContent = (): JSX.Element => {
     return (
       <>
-        <TextQuestion>
-          Are you sure you want to log out?
-        </TextQuestion>
-
-        <TextInfo>
-          You are logged in as
-        </TextInfo>
-
-        <TextInfo>
-          {username}
-        </TextInfo>
+        <TextInfo>Are you sure you want to log out?</TextInfo>
+        <TextInfo>You are logged in as</TextInfo>
+        <TextUser>{username}</TextUser>
       </>
     );
-  }
+  };
 
   const renderLayers = (
     layers: LayerExample[],
@@ -232,17 +244,30 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onLayerInsertClick}
+        >
           Insert layer
         </ActionIconButton>
-        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onSceneInsertClick}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onSceneInsertClick}
+        >
           Insert scene
         </ActionIconButton>
 
         <PanelHorizontalLine top={0} bottom={0} />
 
         <ActionIconButtonContainer>
-          <ActionIconButton Icon={ImportIcon} style={isLoggedIn ? 'active' : 'disabled'} size={ButtonSize.Small} onClick={onArcGisActionClick}>
+          <ActionIconButton
+            Icon={ImportIcon}
+            style={isLoggedIn ? "active" : "disabled"}
+            size={ButtonSize.Small}
+            onClick={onArcGisActionClick}
+          >
             {!isLoggedIn && "Login to ArcGIS"}
             {isLoggedIn && "Import from ArcGIS"}
           </ActionIconButton>
@@ -250,26 +275,23 @@ export const LayersControlPanel = ({
         </ActionIconButtonContainer>
 
         {isLoggedIn && (
-          <AcrGisUser onClick={onArcGisLogoutClick}>
-            {username}
-          </AcrGisUser>
+          <AcrGisUser onClick={onArcGisLogoutClick}>{username}</AcrGisUser>
         )}
 
         {showLogoutWarning && (
           <ModalDialog
-            width={442}
-            height={290}
-            title={'Logout from ArcGIS'}
+            title={"Logout from ArcGIS"}
             content={renderModalDialogContent}
-            onConfirm={
-              () => {
-                dispatch(arcGisLogout());
-                setShowLogoutWarning(false);
-              }}
-            onCancel={() => { setShowLogoutWarning(false); }}
+            okButtonText={"Log out"}
+            onConfirm={() => {
+              dispatch(arcGisLogout());
+              setShowLogoutWarning(false);
+            }}
+            onCancel={() => {
+              setShowLogoutWarning(false);
+            }}
           />
         )}
-
       </InsertButtons>
     </LayersContainer>
   );
