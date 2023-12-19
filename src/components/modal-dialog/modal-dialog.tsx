@@ -27,6 +27,7 @@ const WrapperContainer = styled.div`
   justify-content: center;
   align-items: center;
   visibility: hidden;
+  z-index: 104;
 `;
 
 const Container = styled.div`
@@ -36,7 +37,7 @@ const Container = styled.div`
   border-radius: 8px;
   background: ${({ theme }) => theme.colors.mainHelpPanelColor};
   visibility: visible;
-  z-index: 104;
+  z-index: 105;
 `;
 
 const IconContainer = styled.div`
