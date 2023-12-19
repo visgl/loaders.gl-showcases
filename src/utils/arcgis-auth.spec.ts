@@ -15,7 +15,7 @@ beforeAll(() => {
   OLD_ENV = process.env;
 });
 
-describe("getAuthenticatedUser", () => {
+describe("ArcGIS auth functions", () => {
   beforeEach(() => {
     jest.resetModules(); // Clear the cache
     process.env = { ...OLD_ENV };
@@ -26,18 +26,18 @@ describe("getAuthenticatedUser", () => {
     process.env = OLD_ENV;
   });
 
-  it("Should return email", () => {
+  it("Should return email of user logged in", () => {
     localStorage.setItem(ARCGIS_REST_USER_INFO, mockEmailExpected);
     const email = getAuthenticatedUser();
     expect(email).toEqual(mockEmailExpected);
   });
 
-  it("Should return session", async () => {
+  it("Should request login and return email of user", async () => {
     const email = await arcGisRequestLogin();
     expect(email).toBe(mockEmailExpected);
   });
 
-  it("Should return empty session", async () => {
+  it("Should request logout and return empty string", async () => {
     const email = await arcGisRequestLogout();
     expect(email).toBe("");
   });

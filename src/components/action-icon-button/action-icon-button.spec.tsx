@@ -11,33 +11,42 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <ActionIconButton
       Icon={PlusIcon}
-      style='disabled'
+      style="disabled"
       size={ButtonSize.Small}
       onClick={onClickMock}
-      {...props} />
+      {...props}
+    />
   );
 };
 
 describe("ActionIconButton", () => {
   it("Should render small Plus icon in the button", () => {
-    const { container } = callRender(renderWithTheme, { children: 'Test Button' });
+    const { container } = callRender(renderWithTheme, {
+      children: "Test Button",
+    });
     expect(container).toBeInTheDocument();
-    const button = screen.getByText('Test Button');
-    const buttonHeight = getComputedStyle(button.previousSibling as Element).getPropertyValue("height");
-    expect(buttonHeight).toEqual('24px');
+    const button = screen.getByText("Test Button");
+    const buttonHeight = getComputedStyle(
+      button.previousSibling as Element
+    ).getPropertyValue("height");
+    expect(buttonHeight).toEqual("24px");
 
     userEvent.click(button);
     expect(onClickMock).toHaveBeenCalled();
   });
 
   it("Should render Big Plus icon in the button", () => {
-    const { container } = callRender(renderWithTheme, { children: 'Test Button', size: ButtonSize.Big });
+    const { container } = callRender(renderWithTheme, {
+      children: "Test Button",
+      size: ButtonSize.Big,
+    });
     expect(container).toBeInTheDocument();
-    const button = screen.getByText('Test Button');
-    const buttonHeight = getComputedStyle(button.previousSibling as Element).getPropertyValue("height");
-    expect(buttonHeight).toEqual('40px');
+    const button = screen.getByText("Test Button");
+    const buttonHeight = getComputedStyle(
+      button.previousSibling as Element
+    ).getPropertyValue("height");
+    expect(buttonHeight).toEqual("40px");
     userEvent.click(button);
     expect(onClickMock).toHaveBeenCalled();
   });
-
 });

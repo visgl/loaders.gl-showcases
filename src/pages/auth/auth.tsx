@@ -40,5 +40,5 @@ export const AuthApp = () => {
   useEffect(() => {
     arcGisCompleteLogin();
   }, []);
-  return <AuthContainer id="dashboard-container" layout={layout} />;
+  return <AuthContainer id="auth-container" layout={layout} />;
 };

@@ -2,6 +2,7 @@ import styled, { useTheme } from "styled-components";
 import { ActionButton } from "../action-button/action-button";
 import { ActionButtonVariant } from "../../types";
 import CloseIcon from "../../../public/icons/close.svg";
+import { color_brand_primary } from "../../constants/colors";
 
 const Overlay = styled.div`
   position: fixed;
@@ -12,8 +13,20 @@ const Overlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #00000099;
+  background: ${color_brand_primary}80;
   z-index: 103;
+`;
+
+const WrapperContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
 `;
 
 const Container = styled.div`
@@ -21,7 +34,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  background: ${({ theme }) => theme.colors.mainColor};
+  background: ${({ theme }) => theme.colors.mainHelpPanelColor};
+  visibility: visible;
   z-index: 104;
 `;
 
@@ -70,7 +84,7 @@ const ButtonsContainer = styled.div`
 
 type LogoutPanelProps = {
   title: string;
-  content: (() => JSX.Element) | JSX.Element;
+  children: JSX.Element | JSX.Element[];
   okButtonText?: string;
   cancelButtonText?: string;
   onCancel: () => void;
@@ -85,7 +99,7 @@ const CloseCrossButton = styled(CloseIcon)`
 
 export const ModalDialog = ({
   title,
-  content,
+  children,
   cancelButtonText = "Cancel",
   okButtonText = "Ok",
   onCancel,
@@ -94,25 +108,31 @@ export const ModalDialog = ({
   const theme = useTheme();
 
   return (
-    <Overlay>
-      <Container data-testid="modal-dialog-content">
-        <IconContainer>
-          <CloseCrossButton fill={theme.colors.fontColor} onClick={onCancel} />
-        </IconContainer>
-        <ContentContainer>
-          <Title>{title}</Title>
-          {typeof content === "function" ? content() : content}
-        </ContentContainer>
-        <ButtonsContainer>
-          <ActionButton
-            variant={ActionButtonVariant.secondary}
-            onClick={onCancel}
-          >
-            {cancelButtonText}
-          </ActionButton>
-          <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
-        </ButtonsContainer>
-      </Container>
-    </Overlay>
+    <>
+      <Overlay />
+      <WrapperContainer>
+        <Container data-testid="modal-dialog-content">
+          <IconContainer>
+            <CloseCrossButton
+              fill={theme.colors.fontColor}
+              onClick={onCancel}
+            />
+          </IconContainer>
+          <ContentContainer>
+            <Title>{title}</Title>
+            {children}
+          </ContentContainer>
+          <ButtonsContainer>
+            <ActionButton
+              variant={ActionButtonVariant.secondary}
+              onClick={onCancel}
+            >
+              {cancelButtonText}
+            </ActionButton>
+            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
+          </ButtonsContainer>
+        </Container>
+      </WrapperContainer>
+    </>
   );
 };

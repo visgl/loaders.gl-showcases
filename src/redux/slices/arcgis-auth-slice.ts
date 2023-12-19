@@ -11,8 +11,9 @@ export interface ArcGisAuthState {
   user: string;
 }
 
-const initialState: ArcGisAuthState = {
-  user: getAuthenticatedUser(),
+// "lazy initializer"
+const initialState = () => {
+  return { user: getAuthenticatedUser() };
 };
 
 const arcGisAuthSlice = createSlice({

@@ -161,16 +161,6 @@ export const LayersControlPanel = ({
     return selectedState;
   };
 
-  const renderModalDialogContent = (): JSX.Element => {
-    return (
-      <>
-        <TextInfo>Are you sure you want to log out?</TextInfo>
-        <TextInfo>You are logged in as</TextInfo>
-        <TextUser>{username}</TextUser>
-      </>
-    );
-  };
-
   const renderLayers = (
     layers: LayerExample[],
     parentLayer?: LayerExample,
@@ -281,7 +271,6 @@ export const LayersControlPanel = ({
         {showLogoutWarning && (
           <ModalDialog
             title={"Logout from ArcGIS"}
-            content={renderModalDialogContent}
             okButtonText={"Log out"}
             onConfirm={() => {
               dispatch(arcGisLogout());
@@ -290,7 +279,11 @@ export const LayersControlPanel = ({
             onCancel={() => {
               setShowLogoutWarning(false);
             }}
-          />
+          >
+            <TextInfo>Are you sure you want to log out?</TextInfo>
+            <TextInfo>You are logged in as</TextInfo>
+            <TextUser>{username}</TextUser>
+          </ModalDialog>
         )}
       </InsertButtons>
     </LayersContainer>
