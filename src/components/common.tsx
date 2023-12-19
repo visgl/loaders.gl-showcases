@@ -26,8 +26,7 @@ export const PanelContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${({ theme }) => theme.colors.mainCanvasColor};
-  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
+  background: ${({ theme }) => `${theme.colors.mainCanvasColor}${theme.name === Theme.Dark ? 'e6' : 'ff'}` };
   border-radius: 8px;
   padding-bottom: 26px;
   position: relative;
