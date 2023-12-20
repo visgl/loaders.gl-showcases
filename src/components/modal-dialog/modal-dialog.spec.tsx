@@ -7,7 +7,7 @@ import { setupStore } from "../../redux/store";
 const onCancel = jest.fn();
 const onConfirm = jest.fn();
 
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (renderFunc, store = setupStore()) => {
   return renderFunc(
     <ModalDialog
       title={"Test Title"}
@@ -25,11 +25,7 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 describe("ModalDialog", () => {
   it("Should render dialog", async () => {
     const store = setupStore();
-    const { container } = callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
+    const { container } = callRender(renderWithThemeProviders, store);
     expect(container).toBeInTheDocument();
     const dialog = screen.getByTestId("modal-dialog-content");
     expect(dialog).toBeInTheDocument();

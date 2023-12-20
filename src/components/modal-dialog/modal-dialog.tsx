@@ -93,6 +93,7 @@ type LogoutPanelProps = {
 };
 
 const CloseCrossButton = styled(CloseIcon)`
+  cursor: pointer;
   &:hover {
     fill: ${({ theme }) => theme.colors.mainDimColorInverted};
   }
