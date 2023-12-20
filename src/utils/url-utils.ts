@@ -7,7 +7,7 @@ export const parseTilesetFromUrl = () => {
 
 export const parseTilesetUrlParams = (url, options) => {
   if (!url) {
-    return { ...options, tilesetUrl: '', token: '', metadataUrl: '' }
+    return { ...options, tilesetUrl: "", token: "", metadataUrl: "" };
   }
 
   const parsedUrl = new URL(url);
@@ -56,4 +56,36 @@ const prepareTilesetUrl = (parsedUrl) => {
     .replace(/\/?$/, "/")
     .concat("layers/0");
   return `${parsedUrl.origin}${replacedPathName}${parsedUrl.search}`;
+};
+
+export const viewStateToUrlParams = (viewState, setSearchParams) => {
+  const search = Object.fromEntries(
+    new URLSearchParams(window.location.search)
+  );
+  const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
+  setSearchParams(
+    {
+      ...search,
+      longitude,
+      latitude,
+      pitch,
+      bearing,
+      zoom,
+    },
+    { replace: true }
+  );
+};
+
+export const urlParamsToViewState = (viewState, setStateUrlViewStateParams) => {
+  const search = new URLSearchParams(window.location.search);
+  const urlViewStateParams = {};
+  for (const viewStateParam of search) {
+    if (
+      Object.keys(viewState.main).includes(viewStateParam[0]) &&
+      !isNaN(parseFloat(viewStateParam[1]))
+    ) {
+      urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
+    }
+  }
+  setStateUrlViewStateParams(urlViewStateParams);
 };

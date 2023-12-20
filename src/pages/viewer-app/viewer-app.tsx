@@ -14,7 +14,11 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
+} from "../../utils/url-utils";
 import {
   FeatureAttributes,
   Sublayer,
@@ -158,17 +162,7 @@ export const ViewerApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
 
-    const search = new URLSearchParams(window.location.search);
-    const urlViewStateParams = {};
-    for (const viewStateParam of search) {
-      if (
-        Object.keys(viewState.main).includes(viewStateParam[0]) &&
-        !isNaN(parseFloat(viewStateParam[1]))
-      ) {
-        urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
-      }
-    }
-    setStateUrlViewStateParams(urlViewStateParams);
+    urlParamsToViewState(viewState, setStateUrlViewStateParams);
 
     return () => {
       dispatch(setInitialBaseMaps());
@@ -570,24 +564,6 @@ export const ViewerApp = () => {
     }));
   }, []);
 
-  const updateSearchParams = () => {
-    const search = Object.fromEntries(
-      new URLSearchParams(window.location.search)
-    );
-    const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
-    setSearchParams(
-      {
-        ...search,
-        longitude,
-        latitude,
-        pitch,
-        bearing,
-        zoom,
-      },
-      { replace: true }
-    );
-  };
-
   const onInteractionStateChange = (
     interactionStateChange: InteractionStateChange
   ) => {
@@ -600,7 +576,7 @@ export const ViewerApp = () => {
       !isPanning &&
       !isRotating
     ) {
-      updateSearchParams();
+      viewStateToUrlParams(viewState, setSearchParams);
     }
   };
 

@@ -38,7 +38,11 @@ import ColorMap, {
   makeRGBObjectFromColor,
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
+} from "../../utils/url-utils";
 import { validateTile } from "../../utils/debug/tile-debug";
 import {
   BottomToolsPanelWrapper,
@@ -189,17 +193,7 @@ export const DebugApp = () => {
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
 
-    const search = new URLSearchParams(window.location.search);
-    const urlViewStateParams = {};
-    for (const viewStateParam of search) {
-      if (
-        Object.keys(viewState.main).includes(viewStateParam[0]) &&
-        !isNaN(parseFloat(viewStateParam[1]))
-      ) {
-        urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
-      }
-    }
-    setStateUrlViewStateParams(urlViewStateParams);
+    urlParamsToViewState(viewState, setStateUrlViewStateParams);
 
     return () => {
       dispatch(resetDebugOptions());
@@ -717,24 +711,6 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const updateSearchParams = () => {
-    const search = Object.fromEntries(
-      new URLSearchParams(window.location.search)
-    );
-    const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
-    setSearchParams(
-      {
-        ...search,
-        longitude,
-        latitude,
-        pitch,
-        bearing,
-        zoom,
-      },
-      { replace: true }
-    );
-  };
-
   const onInteractionStateChange = (
     interactionStateChange: InteractionStateChange
   ) => {
@@ -747,7 +723,7 @@ export const DebugApp = () => {
       !isPanning &&
       !isRotating
     ) {
-      updateSearchParams();
+      viewStateToUrlParams(viewState, setSearchParams);
     }
   };
 
