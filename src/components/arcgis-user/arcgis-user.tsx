@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import LogoutIcon from "../../../public/icons/logout.svg";
-import {
-  color_canvas_secondary_inverted,
-} from "../../constants/colors";
+import { color_canvas_secondary_inverted } from "../../constants/colors";
 
 const Container = styled.div`
   display: flex;
@@ -18,9 +16,7 @@ const UserInfo = styled.div`
   font-weight: 500;
   font-size: 14px;
   line-height: 17px;
-  color: ${({ theme }) => (
-    theme.colors.logoutButtonTextColor
-  )};
+  color: ${({ theme }) => theme.colors.logoutButtonTextColor};
 `;
 
 const IconButton = styled.div`
@@ -31,7 +27,7 @@ const IconButton = styled.div`
   cursor: pointer;
   &:hover {
     > * {
-      stroke: ${({ theme }) => (theme.colors.logoutButtonIconColorHover)};
+      stroke: ${({ theme }) => theme.colors.logoutButtonIconColorHover};
     }
   }
 `;
@@ -46,14 +42,11 @@ type ArcGisUserProps = {
   onClick?: () => void;
 };
 
-export const AcrGisUser = ({
-  children,
-  onClick,
-}: ArcGisUserProps) => {
+export const AcrGisUser = ({ children, onClick }: ArcGisUserProps) => {
   return (
     <Container>
       <UserInfo>{children}</UserInfo>
-      <IconButton onClick={onClick}>
+      <IconButton onClick={onClick} data-testid="userinfo-button">
         <StyledIcon />
       </IconButton>
     </Container>

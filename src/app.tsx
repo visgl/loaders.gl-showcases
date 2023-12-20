@@ -164,6 +164,7 @@ export const App = () => {
               <Route path={"dashboard"} element={<Pages.Dashboard />} />
               <Route path={"viewer"} element={<Pages.ViewerApp />} />
               <Route path={"debug"} element={<Pages.DebugApp />} />
+              <Route path={"auth"} element={<Pages.AuthApp />} />
               <Route
                 path={"compare-across-layers"}
                 element={

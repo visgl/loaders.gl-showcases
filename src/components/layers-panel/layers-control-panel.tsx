@@ -1,20 +1,29 @@
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-
-import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
-
+import {
+  SelectionState,
+  LayerExample,
+  LayerViewState,
+  ListItemType,
+} from "../../types";
 import { ListItem } from "./list-item/list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
 import ImportIcon from "../../../public/icons/import.svg";
 import EsriImage from "../../../public/images/esri.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { AcrGisUser } from "../arcgis-user/arcgis-user";
-
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
 import { PanelHorizontalLine } from "../common";
+import {
+  arcGisLogin,
+  arcGisLogout,
+  selectUser,
+} from "../../redux/slices/arcgis-auth-slice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { ModalDialog } from "../modal-dialog/modal-dialog";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -69,6 +78,20 @@ const EsriStyledImage = styled(EsriImage)`
   fill: ${({ theme }) => theme.colors.esriImageColor};
 `;
 
+const TextInfo = styled.div`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
+const TextUser = styled.div`
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+`;
+
 export const LayersControlPanel = ({
   layers,
   type,
@@ -81,16 +104,22 @@ export const LayersControlPanel = ({
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
+  const dispatch = useAppDispatch();
+
+  const username = useAppSelector(selectUser);
+  const isLoggedIn = !!username;
+
+  const [showLogoutWarning, setShowLogoutWarning] = useState(false);
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
-  /// Stab {
-  const username = 'Michael-g';
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const onArcGisActionClick = () => { !isLoggedIn && setIsLoggedIn(true) };
-  const onArcGisLogoutClick = () => { setIsLoggedIn(false) };
-  /// Stab }
+  const onArcGisActionClick = () => {
+    !isLoggedIn && dispatch(arcGisLogin());
+  };
+  const onArcGisLogoutClick = () => {
+    setShowLogoutWarning(true);
+  };
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -101,23 +130,31 @@ export const LayersControlPanel = ({
     let selectedState = SelectionState.unselected;
 
     if (!childLayers.length) {
-      selectedState = selectedLayerIds.includes(layer.id) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = selectedLayerIds.includes(layer.id)
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && !parentLayer) {
-      selectedState = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id)) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      )
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && parentLayer) {
       const isAllChildLayersSelected = !groupLeafs.some(
-        (leaf) => !selectedLayerIds.includes(leaf.id));
-      const isAnyChildLayerSelected = groupLeafs.some(
-        (leaf) => selectedLayerIds.includes(leaf.id));
+        (leaf) => !selectedLayerIds.includes(leaf.id)
+      );
+      const isAnyChildLayerSelected = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      );
 
       if (isAllChildLayersSelected) {
         selectedState = SelectionState.selected;
       } else if (isAnyChildLayerSelected) {
-        selectedState = SelectionState.indeterminate
+        selectedState = SelectionState.indeterminate;
       }
     }
 
@@ -197,17 +234,30 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onLayerInsertClick}
+        >
           Insert layer
         </ActionIconButton>
-        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Small} onClick={onSceneInsertClick}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onSceneInsertClick}
+        >
           Insert scene
         </ActionIconButton>
 
         <PanelHorizontalLine top={0} bottom={0} />
 
         <ActionIconButtonContainer>
-          <ActionIconButton Icon={ImportIcon} style={isLoggedIn ? 'active' : 'disabled'} size={ButtonSize.Small} onClick={onArcGisActionClick}>
+          <ActionIconButton
+            Icon={ImportIcon}
+            style={isLoggedIn ? "active" : "disabled"}
+            size={ButtonSize.Small}
+            onClick={onArcGisActionClick}
+          >
             {!isLoggedIn && "Login to ArcGIS"}
             {isLoggedIn && "Import from ArcGIS"}
           </ActionIconButton>
@@ -215,9 +265,25 @@ export const LayersControlPanel = ({
         </ActionIconButtonContainer>
 
         {isLoggedIn && (
-          <AcrGisUser onClick={onArcGisLogoutClick}>
-            {username}
-          </AcrGisUser>
+          <AcrGisUser onClick={onArcGisLogoutClick}>{username}</AcrGisUser>
+        )}
+
+        {showLogoutWarning && (
+          <ModalDialog
+            title={"Logout from ArcGIS"}
+            okButtonText={"Log out"}
+            onConfirm={() => {
+              dispatch(arcGisLogout());
+              setShowLogoutWarning(false);
+            }}
+            onCancel={() => {
+              setShowLogoutWarning(false);
+            }}
+          >
+            <TextInfo>Are you sure you want to log out?</TextInfo>
+            <TextInfo>You are logged in as</TextInfo>
+            <TextUser>{username}</TextUser>
+          </ModalDialog>
         )}
       </InsertButtons>
     </LayersContainer>
