@@ -22,8 +22,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import { PickingInfo } from "@deck.gl/core";
-import { ViewState } from "@deck.gl/core";
+import { PickingInfo, InteractionStateChange, ViewState } from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
@@ -150,11 +149,8 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
-
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
-  const [isMouseDown, setIsMouseDown] = useState(false);
-
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -279,12 +275,6 @@ export const DebugApp = () => {
   useEffect(() => {
     selectedTileRef.current = selectedTile;
   }, [selectedTile]);
-
-  useEffect(() => {
-    if (!isMouseDown) {
-      updateSearchParams();
-    }
-  }, [viewState]);
 
   const onTileLoad = (tile) => {
     setTimeout(() => {
@@ -727,11 +717,6 @@ export const DebugApp = () => {
     }));
   }, []);
 
-  const onMouseUpHandler = () => {
-    setIsMouseDown(false);
-    updateSearchParams();
-  };
-
   const updateSearchParams = () => {
     const search = Object.fromEntries(
       new URLSearchParams(window.location.search)
@@ -750,11 +735,24 @@ export const DebugApp = () => {
     );
   };
 
+  const onInteractionStateChange = (
+    interactionStateChange: InteractionStateChange
+  ) => {
+    const { isDragging, inTransition, isZooming, isPanning, isRotating } =
+      interactionStateChange;
+    if (
+      !isDragging &&
+      !inTransition &&
+      !isZooming &&
+      !isPanning &&
+      !isRotating
+    ) {
+      updateSearchParams();
+    }
+  };
+
   return (
-    <MapArea
-      onMouseDown={() => setIsMouseDown(true)}
-      onMouseUp={onMouseUpHandler}
-    >
+    <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
@@ -785,6 +783,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        onInteractionStateChange={onInteractionStateChange}
       />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>

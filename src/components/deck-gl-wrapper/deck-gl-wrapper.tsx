@@ -1,7 +1,7 @@
 import DeckGL from "@deck.gl/react";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
-import { MapController } from "@deck.gl/core";
+import { MapController, InteractionState } from "@deck.gl/core";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { I3SLoader, SceneLayer3D } from "@loaders.gl/i3s";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
@@ -161,6 +161,8 @@ type DeckGlI3sProps = {
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
+  /** DeckGL onInteractionStateChange callback */
+  onInteractionStateChange?: (interactionState: InteractionState) => void;
   /** DeckGL callback. On layer hover behavior */
   getTooltip?: (info: { object: Tile3D; index: number; layer: any }) => void;
   /** DeckGL callback. On layer click behavior */
@@ -203,6 +205,7 @@ export const DeckGlWrapper = ({
   onViewStateChange,
   onWebGLInitialized,
   onAfterRender,
+  onInteractionStateChange,
   getTooltip,
   onClick,
   onTilesetLoad,
@@ -777,6 +780,7 @@ export const DeckGlWrapper = ({
       }}
       onWebGLInitialized={onWebGLInitialized}
       onAfterRender={onAfterRender}
+      onInteractionStateChange={onInteractionStateChange}
       getTooltip={getTooltip}
       onClick={onClick}
     >

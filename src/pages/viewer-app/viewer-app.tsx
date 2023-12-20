@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
+import { InteractionStateChange, ViewState } from "@deck.gl/core";
 import { lumaStats } from "@luma.gl/core";
 import { loadFeatureAttributes, StatisticsInfo } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
@@ -122,6 +123,8 @@ export const ViewerApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
+  const [stateUrlViewStateParams, setStateUrlViewStateParams] =
+    useState<ViewState>({});
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const filtersByAttribute = useSelector((state: RootState) =>
@@ -154,6 +157,19 @@ export const ViewerApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+
+    const search = new URLSearchParams(window.location.search);
+    const urlViewStateParams = {};
+    for (const viewStateParam of search) {
+      if (
+        Object.keys(viewState.main).includes(viewStateParam[0]) &&
+        !isNaN(parseFloat(viewStateParam[1]))
+      ) {
+        urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
+      }
+    }
+    setStateUrlViewStateParams(urlViewStateParams);
+
     return () => {
       dispatch(setInitialBaseMaps());
     };
@@ -228,6 +244,13 @@ export const ViewerApp = () => {
     );
     tilesetRef.current = tileset;
     setUpdateStatsNumber((prev) => prev + 1);
+    if (Object.keys(stateUrlViewStateParams).length > 0) {
+      setViewState({
+        ...viewState,
+        main: { ...viewState.main, ...stateUrlViewStateParams },
+      });
+      setStateUrlViewStateParams({});
+    }
   };
 
   const isLayerPickable = () => {
@@ -547,6 +570,40 @@ export const ViewerApp = () => {
     }));
   }, []);
 
+  const updateSearchParams = () => {
+    const search = Object.fromEntries(
+      new URLSearchParams(window.location.search)
+    );
+    const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
+    setSearchParams(
+      {
+        ...search,
+        longitude,
+        latitude,
+        pitch,
+        bearing,
+        zoom,
+      },
+      { replace: true }
+    );
+  };
+
+  const onInteractionStateChange = (
+    interactionStateChange: InteractionStateChange
+  ) => {
+    const { isDragging, inTransition, isZooming, isPanning, isRotating } =
+      interactionStateChange;
+    if (
+      !isDragging &&
+      !inTransition &&
+      !isZooming &&
+      !isPanning &&
+      !isRotating
+    ) {
+      updateSearchParams();
+    }
+  };
+
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
@@ -573,6 +630,7 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        onInteractionStateChange={onInteractionStateChange}
       />
 
       {layout !== Layout.Mobile && (
