@@ -23,6 +23,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
 import { PickingInfo } from "@deck.gl/core";
+import { ViewState } from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
@@ -150,6 +151,10 @@ export const DebugApp = () => {
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
 
+  const [stateUrlViewStateParams, setStateUrlViewStateParams] =
+    useState<ViewState>({});
+  const [isMouseDown, setIsMouseDown] = useState(false);
+
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -187,6 +192,19 @@ export const DebugApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
+
+    const search = new URLSearchParams(window.location.search);
+    const urlViewStateParams = {};
+    for (const viewStateParam of search) {
+      if (
+        Object.keys(viewState.main).includes(viewStateParam[0]) &&
+        !isNaN(parseFloat(viewStateParam[1]))
+      ) {
+        urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
+      }
+    }
+    setStateUrlViewStateParams(urlViewStateParams);
+
     return () => {
       dispatch(resetDebugOptions());
       dispatch(setInitialBaseMaps());
@@ -262,6 +280,12 @@ export const DebugApp = () => {
     selectedTileRef.current = selectedTile;
   }, [selectedTile]);
 
+  useEffect(() => {
+    if (!isMouseDown) {
+      updateSearchParams();
+    }
+  }, [viewState]);
+
   const onTileLoad = (tile) => {
     setTimeout(() => {
       setUpdateStatsNumber((prev) => prev + 1);
@@ -278,6 +302,19 @@ export const DebugApp = () => {
 
     tilesetRef.current = tileset;
     setUpdateStatsNumber((prev) => prev + 1);
+    if (Object.keys(stateUrlViewStateParams).length > 0) {
+      const { longitude, latitude } = stateUrlViewStateParams;
+      setViewState({
+        ...viewState,
+        main: { ...viewState.main, ...stateUrlViewStateParams },
+        minimap: {
+          ...viewState.minimap,
+          longitude,
+          latitude,
+        },
+      });
+      setStateUrlViewStateParams({});
+    }
   };
 
   const handleValidateTile = (tile) => {
@@ -690,8 +727,34 @@ export const DebugApp = () => {
     }));
   }, []);
 
+  const onMouseUpHandler = () => {
+    setIsMouseDown(false);
+    updateSearchParams();
+  };
+
+  const updateSearchParams = () => {
+    const search = Object.fromEntries(
+      new URLSearchParams(window.location.search)
+    );
+    const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
+    setSearchParams(
+      {
+        ...search,
+        longitude,
+        latitude,
+        pitch,
+        bearing,
+        zoom,
+      },
+      { replace: true }
+    );
+  };
+
   return (
-    <MapArea>
+    <MapArea
+      onMouseDown={() => setIsMouseDown(true)}
+      onMouseUp={onMouseUpHandler}
+    >
       {renderTilePanel()}
       <DeckGlWrapper
         id="debug-deck-container"
