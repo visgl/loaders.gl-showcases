@@ -128,7 +128,7 @@ export const ModalDialog = ({
             <Title>{title}</Title>
             {children}
           </ContentContainer>
-          <ButtonsContainer justify={!!cancelButtonText ? "center" : "end"}>
+          <ButtonsContainer justify={!cancelButtonText ? "end" : "center"}>
             {cancelButtonText ? (
               <ActionButton
                 variant={ActionButtonVariant.secondary}
