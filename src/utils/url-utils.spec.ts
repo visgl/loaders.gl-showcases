@@ -3,6 +3,8 @@ import {
   getTilesetType,
   parseTilesetFromUrl,
   parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
 } from "./url-utils";
 
 const mockResponse = jest.fn();
@@ -132,5 +134,48 @@ describe("Url Utils - getTilesetType", () => {
 
     const resultEmptyUrl = getTilesetType();
     expect(resultEmptyUrl).toEqual(TilesetType.I3S);
+  });
+});
+
+describe("Url Utils - viewStateToUrlParams", () => {
+  test("Should generate updated url search params", () => {
+    Object.defineProperty(window, "location", {
+      value: {
+        search: "tileset=test-tileset-name&token=test-token",
+      },
+      writable: true,
+    });
+    const viewState = {
+      main: { zoom: 1, longitude: 2, latitude: 3, bearing: 4, pitch: 5 },
+    };
+    const result = viewStateToUrlParams(viewState);
+    expect(result).toEqual({
+      ...viewState.main,
+      tileset: "test-tileset-name",
+      token: "test-token",
+    });
+  });
+});
+
+describe("Url Utils - urlParamsToViewState", () => {
+  test("Should generate updated url search params", () => {
+    Object.defineProperty(window, "location", {
+      value: {
+        search:
+          "tileset=test-tileset-name&zoom=6&longitude=7&latitude=8&bearing=9&pitch=10",
+      },
+      writable: true,
+    });
+    const viewState = {
+      main: { zoom: 1, longitude: 2, latitude: 3, bearing: 4, pitch: 5 },
+    };
+    const result = urlParamsToViewState(viewState);
+    expect(result).toEqual({
+      zoom: 6,
+      longitude: 7,
+      latitude: 8,
+      bearing: 9,
+      pitch: 10,
+    });
   });
 });

@@ -22,7 +22,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import { PickingInfo } from "@deck.gl/core";
+import { PickingInfo, InteractionStateChange, ViewState } from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
@@ -38,7 +38,11 @@ import ColorMap, {
   makeRGBObjectFromColor,
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
+} from "../../utils/url-utils";
 import { validateTile } from "../../utils/debug/tile-debug";
 import {
   BottomToolsPanelWrapper,
@@ -149,7 +153,8 @@ export const DebugApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
-
+  const [stateUrlViewStateParams, setStateUrlViewStateParams] =
+    useState<ViewState>({});
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -187,6 +192,9 @@ export const DebugApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
+
+    setStateUrlViewStateParams(urlParamsToViewState(viewState));
+
     return () => {
       dispatch(resetDebugOptions());
       dispatch(setInitialBaseMaps());
@@ -278,6 +286,19 @@ export const DebugApp = () => {
 
     tilesetRef.current = tileset;
     setUpdateStatsNumber((prev) => prev + 1);
+    if (Object.keys(stateUrlViewStateParams).length > 0) {
+      const { longitude, latitude } = stateUrlViewStateParams;
+      setViewState({
+        ...viewState,
+        main: { ...viewState.main, ...stateUrlViewStateParams },
+        minimap: {
+          ...viewState.minimap,
+          longitude,
+          latitude,
+        },
+      });
+      setStateUrlViewStateParams({});
+    }
   };
 
   const handleValidateTile = (tile) => {
@@ -690,6 +711,22 @@ export const DebugApp = () => {
     }));
   }, []);
 
+  const onInteractionStateChange = (
+    interactionStateChange: InteractionStateChange
+  ) => {
+    const { isDragging, inTransition, isZooming, isPanning, isRotating } =
+      interactionStateChange;
+    if (
+      !isDragging &&
+      !inTransition &&
+      !isZooming &&
+      !isPanning &&
+      !isRotating
+    ) {
+      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
+    }
+  };
+
   return (
     <MapArea>
       {renderTilePanel()}
@@ -722,6 +759,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        onInteractionStateChange={onInteractionStateChange}
       />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
+import { InteractionStateChange, ViewState } from "@deck.gl/core";
 import { lumaStats } from "@luma.gl/core";
 import { loadFeatureAttributes, StatisticsInfo } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +14,11 @@ import { Tileset3D } from "@loaders.gl/tiles";
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
+} from "../../utils/url-utils";
 import {
   FeatureAttributes,
   Sublayer,
@@ -122,6 +127,8 @@ export const ViewerApp = () => {
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
+  const [stateUrlViewStateParams, setStateUrlViewStateParams] =
+    useState<ViewState>({});
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const filtersByAttribute = useSelector((state: RootState) =>
@@ -154,6 +161,9 @@ export const ViewerApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+
+    setStateUrlViewStateParams(urlParamsToViewState(viewState));
+
     return () => {
       dispatch(setInitialBaseMaps());
     };
@@ -228,6 +238,13 @@ export const ViewerApp = () => {
     );
     tilesetRef.current = tileset;
     setUpdateStatsNumber((prev) => prev + 1);
+    if (Object.keys(stateUrlViewStateParams).length > 0) {
+      setViewState({
+        ...viewState,
+        main: { ...viewState.main, ...stateUrlViewStateParams },
+      });
+      setStateUrlViewStateParams({});
+    }
   };
 
   const isLayerPickable = () => {
@@ -547,6 +564,22 @@ export const ViewerApp = () => {
     }));
   }, []);
 
+  const onInteractionStateChange = (
+    interactionStateChange: InteractionStateChange
+  ) => {
+    const { isDragging, inTransition, isZooming, isPanning, isRotating } =
+      interactionStateChange;
+    if (
+      !isDragging &&
+      !inTransition &&
+      !isZooming &&
+      !isPanning &&
+      !isRotating
+    ) {
+      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
+    }
+  };
+
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
@@ -573,6 +606,7 @@ export const ViewerApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        onInteractionStateChange={onInteractionStateChange}
       />
 
       {layout !== Layout.Mobile && (

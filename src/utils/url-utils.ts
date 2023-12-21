@@ -1,4 +1,4 @@
-import { TilesetType } from "../types";
+import { TilesetType, ViewStateSet } from "../types";
 
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
@@ -7,7 +7,7 @@ export const parseTilesetFromUrl = () => {
 
 export const parseTilesetUrlParams = (url, options) => {
   if (!url) {
-    return { ...options, tilesetUrl: '', token: '', metadataUrl: '' }
+    return { ...options, tilesetUrl: "", token: "", metadataUrl: "" };
   }
 
   const parsedUrl = new URL(url);
@@ -56,4 +56,43 @@ const prepareTilesetUrl = (parsedUrl) => {
     .replace(/\/?$/, "/")
     .concat("layers/0");
   return `${parsedUrl.origin}${replacedPathName}${parsedUrl.search}`;
+};
+
+/**
+ * Generate updated url search params according to the viewState
+ * @param viewState view state
+ * @returns updated url search params object
+ */
+export const viewStateToUrlParams = (viewState: ViewStateSet) => {
+  const search = Object.fromEntries(
+    new URLSearchParams(window.location.search)
+  );
+  const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
+  return {
+    ...search,
+    longitude,
+    latitude,
+    pitch,
+    bearing,
+    zoom,
+  };
+};
+
+/**
+ * Parse view state params from the url search params
+ * @param viewState view state
+ * @returns viewState params available in the url search params
+ */
+export const urlParamsToViewState = (viewState: ViewStateSet) => {
+  const search = new URLSearchParams(window.location.search);
+  const urlViewStateParams = {};
+  for (const viewStateParam of search) {
+    if (
+      Object.keys(viewState.main).includes(viewStateParam[0]) &&
+      !isNaN(parseFloat(viewStateParam[1]))
+    ) {
+      urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
+    }
+  }
+  return urlViewStateParams;
 };
