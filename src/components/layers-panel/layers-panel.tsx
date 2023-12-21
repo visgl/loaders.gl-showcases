@@ -38,6 +38,8 @@ import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
+import { getArcGisContent } from "../../redux/slices/arcgis-content-slice";
+import { ArcGisImportPanel } from "./arcgis-import-panel/arcgis-import-panel";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -149,6 +151,7 @@ type LayersPanelProps = {
   viewWidth?: number;
   viewHeight?: number;
   side?: ComparisonSideMode;
+  onArcGisImport: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
@@ -165,6 +168,7 @@ export const LayersPanel = ({
   layers,
   sublayers,
   selectedLayerIds,
+  onArcGisImport,
   onLayerInsert,
   onLayerSelect,
   onLayerDelete,
@@ -183,6 +187,7 @@ export const LayersPanel = ({
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [showLayerInsertPanel, setShowLayerInsertPanel] = useState(false);
   const [showSceneInsertPanel, setShowSceneInsertPanel] = useState(false);
+  const [showArcGisImportPanel, setShowArcGisImportPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const [showExistedError, setShowExistedError] = useState(false);
@@ -194,8 +199,35 @@ export const LayersPanel = ({
     useState(false);
   const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
   const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
-
+  
   useClickOutside([warningNode], () => setShowExistedError(false));
+
+  const handleArcGisImport = (layer: {
+    name: string;
+    url: string;
+    token?: string;
+  }) => {
+    const existedLayer = layers.some(
+      (exisLayer) => exisLayer.url.trim() === layer.url.trim()
+    );
+
+    if (existedLayer) {
+      setShowArcGisImportPanel(false);
+      setShowExistedError(true);
+      return;
+    }
+
+    const id = layer.url.replace(/" "/g, "-");
+    const newLayer: LayerExample = {
+      ...layer,
+      id,
+      custom: true,
+      type: getTilesetType(layer.url),
+    };
+
+    onArcGisImport(newLayer);
+    setShowArcGisImportPanel(false);
+  };
 
   const handleInsertLayer = (layer: {
     name: string;
@@ -370,6 +402,11 @@ export const LayersPanel = ({
                 onLayerSelect={onLayerSelect}
                 onLayerInsertClick={() => setShowLayerInsertPanel(true)}
                 onSceneInsertClick={() => setShowSceneInsertPanel(true)}
+                onArcGisImportClick={() => {
+                  dispatch(getArcGisContent());
+                  setShowArcGisImportPanel(true)
+                  }
+                }
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
                 onPointToLayer={onPointToLayer}
                 deleteLayer={onLayerDelete}
@@ -435,6 +472,14 @@ export const LayersPanel = ({
                 title={"Insert Scene"}
                 onInsert={(scene) => handleInsertScene(scene)}
                 onCancel={() => setShowSceneInsertPanel(false)}
+              />
+            </PanelWrapper>
+          )}
+          {showArcGisImportPanel && (
+            <PanelWrapper>
+              <ArcGisImportPanel
+                onImport={(item) => handleArcGisImport(item)}
+                onCancel={() => setShowArcGisImportPanel(false)}
               />
             </PanelWrapper>
           )}

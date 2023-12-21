@@ -70,10 +70,14 @@ const Title = styled.div`
   line-height: 45px;
 `;
 
-const ButtonsContainer = styled.div`
+type ButtonsContainerProps = {
+  justify: string;
+};
+
+const ButtonsContainer = styled.div<ButtonsContainerProps>`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: ${(props) => props.justify};
   margin: 32px;
   column-gap: 18px;
    {
@@ -102,8 +106,8 @@ const CloseCrossButton = styled(CloseIcon)`
 export const ModalDialog = ({
   title,
   children,
-  cancelButtonText = "Cancel",
-  okButtonText = "Ok",
+  cancelButtonText,
+  okButtonText,
   onCancel,
   onConfirm,
 }: LogoutPanelProps) => {
@@ -124,14 +128,18 @@ export const ModalDialog = ({
             <Title>{title}</Title>
             {children}
           </ContentContainer>
-          <ButtonsContainer>
-            <ActionButton
-              variant={ActionButtonVariant.secondary}
-              onClick={onCancel}
-            >
-              {cancelButtonText}
-            </ActionButton>
-            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
+          <ButtonsContainer justify={!!cancelButtonText ? "center" : "end"}>
+            {cancelButtonText ? (
+              <ActionButton
+                variant={ActionButtonVariant.secondary}
+                onClick={onCancel}
+              >
+                {cancelButtonText}
+              </ActionButton>
+            ) : (
+              <></>
+            )}
+            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>{" "}
           </ButtonsContainer>
         </Container>
       </WrapperContainer>

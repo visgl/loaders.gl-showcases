@@ -4,7 +4,7 @@ import {
   getAuthenticatedUser,
   arcGisRequestLogin,
   arcGisRequestLogout,
-} from "../../utils/arcgis-auth";
+} from "../../utils/arcgis";
 
 // Define a type for the slice state
 export interface ArcGisAuthState {

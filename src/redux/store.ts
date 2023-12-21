@@ -11,6 +11,7 @@ import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
 import symbolizationSliceReducer from "./slices/symbolization-slice";
 import arcGisAuthSliceReducer from "./slices/arcgis-auth-slice";
+import arcGisContentSliceReducer from "./slices/arcgis-content-slice";
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   symbolization: symbolizationSliceReducer,
   i3sStats: i3sStatsSliceReducer,
   arcGisAuth: arcGisAuthSliceReducer,
+  arcGisContent: arcGisContentSliceReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

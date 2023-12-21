@@ -33,6 +33,7 @@ type LayersControlPanelProps = {
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
+  onArcGisImportClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
@@ -100,6 +101,7 @@ export const LayersControlPanel = ({
   hasSettings = false,
   onLayerInsertClick,
   onSceneInsertClick,
+  onArcGisImportClick,
   onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
@@ -115,7 +117,11 @@ export const LayersControlPanel = ({
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
 
   const onArcGisActionClick = () => {
-    !isLoggedIn && dispatch(arcGisLogin());
+    if (isLoggedIn) {
+      onArcGisImportClick();
+    } else {
+      dispatch(arcGisLogin());
+    }
   };
   const onArcGisLogoutClick = () => {
     setShowLogoutWarning(true);
@@ -272,6 +278,7 @@ export const LayersControlPanel = ({
           <ModalDialog
             title={"Logout from ArcGIS"}
             okButtonText={"Log out"}
+            cancelButtonText={"Cancel"}
             onConfirm={() => {
               dispatch(arcGisLogout());
               setShowLogoutWarning(false);

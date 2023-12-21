@@ -19,13 +19,13 @@ import {
   arcGisRequestLogin,
   arcGisCompleteLogin,
   arcGisRequestLogout,
-} from "../../utils/arcgis-auth";
+} from "../../utils/arcgis";
 
 jest.mock("./list-item/list-item");
 jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./layer-options-menu/layer-options-menu");
-jest.mock("../../utils/arcgis-auth");
+jest.mock("../../utils/arcgis");
 
 const ListItemMock = ListItem as unknown as jest.Mocked<any>;
 const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
@@ -51,11 +51,13 @@ const onDeleteLayerMock = jest.fn();
 const onSelectLayerMock = jest.fn();
 const onLayerSettingsClickMock = jest.fn();
 const onPointToLayerMock = jest.fn();
+const onArcGisImportMock = jest.fn();
 
 const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
     <LayersControlPanel
       onSceneInsertClick={onInsertSceneMock}
+      onArcGisImportClick={onArcGisImportMock}
       layers={[]}
       selectedLayerIds={[]}
       type={0} // Radio Button type

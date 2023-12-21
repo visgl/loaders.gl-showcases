@@ -367,3 +367,11 @@ export type TilesetMetadata = {
   hasChildren: boolean;
   type?: TilesetType;
 };
+
+export type ArcGisContent = {
+  id: string;
+  url: string;
+  name: string;
+  token?: string;
+  created: number;
+};

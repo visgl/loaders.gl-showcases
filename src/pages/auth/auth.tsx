@@ -6,7 +6,7 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-import { arcGisCompleteLogin } from "../../utils/arcgis-auth";
+import { arcGisCompleteLogin } from "../../utils/arcgis";
 
 export type LayoutProps = {
   layout: string;

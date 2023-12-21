@@ -326,7 +326,23 @@ export const ViewerApp = () => {
     }
   };
 
-  const onLayerSelectHandler = (
+// Need?
+const onArcGisImportHandler = (
+  newLayer: LayerExample,
+  bookmarks?: Bookmark[]
+) => {
+  const newExamples = [...examples, newLayer];
+  setExamples(newExamples);
+  const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
+  setActiveLayers(newActiveLayers);
+  setPreventTransitions(false);
+
+  if (bookmarks?.length) {
+    updateBookmarks(bookmarks);
+  }
+};
+
+const onLayerSelectHandler = (
     layer: LayerExample,
     rootLayer?: LayerExample
   ) => {
@@ -607,6 +623,7 @@ export const ViewerApp = () => {
             pageId={PageId.viewer}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
+            onArcGisImport={onArcGisImportHandler}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
             onLayerDelete={(id) => onLayerDeleteHandler(id)}

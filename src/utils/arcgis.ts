@@ -1,5 +1,8 @@
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 
+import { getUserContent } from "@esri/arcgis-rest-portal";
+import { ArcGisContent } from "../types";
+
 const ARCGIS_REST_USER_SESSION = "__ARCGIS_REST_USER_SESSION__";
 const ARCGIS_REST_USER_INFO = "__ARCGIS_REST_USER_INFO__";
 
@@ -96,4 +99,29 @@ export const arcGisRequestLogout = async () => {
     await ArcGISIdentityManager.destroy(session);
   }
   return await updateSessionInfo();
+};
+
+export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
+  const contentItems: ArcGisContent[] = [];
+  const authentication = getArcGisSession();
+  if (authentication) {
+    const content = await getUserContent({ authentication });
+    for (const item of content.items) {
+      if (
+        item.url &&
+        item.type === "Scene Service" &&
+        item.typeKeywords &&
+        item.typeKeywords.includes("Hosted Service")
+      ) {
+        const contentItem: ArcGisContent = {
+          id: item.id,
+          name: item.title,
+          url: item.url,
+          created: item.created,
+        };
+        contentItems.push(contentItem);
+      }
+    }
+  }
+  return contentItems;
 };

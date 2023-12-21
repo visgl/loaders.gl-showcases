@@ -2,7 +2,7 @@ import {
   getAuthenticatedUser,
   arcGisRequestLogin,
   arcGisRequestLogout,
-} from "./arcgis-auth";
+} from "./arcgis";
 
 jest.mock("@esri/arcgis-rest-request");
 

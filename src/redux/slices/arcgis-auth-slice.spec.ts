@@ -10,9 +10,9 @@ import {
   arcGisRequestLogin,
   arcGisCompleteLogin,
   arcGisRequestLogout,
-} from "../../utils/arcgis-auth";
+} from "../../utils/arcgis";
 
-jest.mock("../../utils/arcgis-auth");
+jest.mock("../../utils/arcgis");
 
 const getAuthenticatedUserMock =
   getAuthenticatedUser as unknown as jest.Mocked<any>;
