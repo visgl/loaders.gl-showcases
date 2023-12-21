@@ -1,4 +1,4 @@
-import { TilesetType } from "../types";
+import { TilesetType, ViewStateSet } from "../types";
 
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
@@ -58,25 +58,32 @@ const prepareTilesetUrl = (parsedUrl) => {
   return `${parsedUrl.origin}${replacedPathName}${parsedUrl.search}`;
 };
 
-export const viewStateToUrlParams = (viewState, setSearchParams) => {
+/**
+ * Generate updated url search params according to the viewState
+ * @param viewState view state
+ * @returns updated url search params object
+ */
+export const viewStateToUrlParams = (viewState: ViewStateSet) => {
   const search = Object.fromEntries(
     new URLSearchParams(window.location.search)
   );
   const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
-  setSearchParams(
-    {
-      ...search,
-      longitude,
-      latitude,
-      pitch,
-      bearing,
-      zoom,
-    },
-    { replace: true }
-  );
+  return {
+    ...search,
+    longitude,
+    latitude,
+    pitch,
+    bearing,
+    zoom,
+  };
 };
 
-export const urlParamsToViewState = (viewState, setStateUrlViewStateParams) => {
+/**
+ * Parse view state params from the url search params
+ * @param viewState view state
+ * @returns viewState params available in the url search params
+ */
+export const urlParamsToViewState = (viewState: ViewStateSet) => {
   const search = new URLSearchParams(window.location.search);
   const urlViewStateParams = {};
   for (const viewStateParam of search) {
@@ -87,5 +94,5 @@ export const urlParamsToViewState = (viewState, setStateUrlViewStateParams) => {
       urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
     }
   }
-  setStateUrlViewStateParams(urlViewStateParams);
+  return urlViewStateParams;
 };

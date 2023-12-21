@@ -162,7 +162,7 @@ export const ViewerApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
 
-    urlParamsToViewState(viewState, setStateUrlViewStateParams);
+    setStateUrlViewStateParams(urlParamsToViewState(viewState));
 
     return () => {
       dispatch(setInitialBaseMaps());
@@ -576,7 +576,7 @@ export const ViewerApp = () => {
       !isPanning &&
       !isRotating
     ) {
-      viewStateToUrlParams(viewState, setSearchParams);
+      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
     }
   };
 

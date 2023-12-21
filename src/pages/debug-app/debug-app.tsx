@@ -193,7 +193,7 @@ export const DebugApp = () => {
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
 
-    urlParamsToViewState(viewState, setStateUrlViewStateParams);
+    setStateUrlViewStateParams(urlParamsToViewState(viewState));
 
     return () => {
       dispatch(resetDebugOptions());
@@ -723,7 +723,7 @@ export const DebugApp = () => {
       !isPanning &&
       !isRotating
     ) {
-      viewStateToUrlParams(viewState, setSearchParams);
+      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
     }
   };
 
