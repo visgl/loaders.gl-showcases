@@ -34,7 +34,10 @@ import { Layout } from "../../utils/enums";
 import { useAppDispatch } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
-import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import {
+  deleteBaseMaps,
+  setInitialBaseMaps,
+} from "../../redux/slices/base-maps-slice";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -140,6 +143,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setBookmarks([]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    dispatch(deleteBaseMaps("Terrain"));
     return () => {
       dispatch(setInitialBaseMaps());
     };
