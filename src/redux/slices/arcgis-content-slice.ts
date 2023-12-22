@@ -94,11 +94,13 @@ export const selectArcGisContent = (state: RootState): ArcGisContent[] =>
 export const selectArcGisContentSelected = (state: RootState): string =>
   state.arcGisContent.arcGisContentSelected;
 
-export const { setInitialArcGisContent } = arcGisContentSlice.actions;
-export const { addArcGisContent } = arcGisContentSlice.actions;
-export const { setArcGisContentSelected } = arcGisContentSlice.actions;
-export const { resetArcGisContentSelected } = arcGisContentSlice.actions;
-export const { deleteArcGisContent } = arcGisContentSlice.actions;
-export const { setSortOrder } = arcGisContentSlice.actions;
+export const {
+  setInitialArcGisContent,
+  addArcGisContent,
+  setArcGisContentSelected,
+  resetArcGisContentSelected,
+  deleteArcGisContent,
+  setSortOrder,
+} = arcGisContentSlice.actions;
 
 export default arcGisContentSlice.reducer;

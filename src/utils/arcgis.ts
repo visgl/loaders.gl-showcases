@@ -101,6 +101,10 @@ export const arcGisRequestLogout = async () => {
   return await updateSessionInfo();
 };
 
+/**
+ * Gets the ArcGIS user's content list.
+ * @returns The content list containig enough info to load the content items.
+ */
 export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
   const contentItems: ArcGisContent[] = [];
   const authentication = getArcGisSession();
@@ -113,11 +117,13 @@ export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
         item.typeKeywords &&
         item.typeKeywords.includes("Hosted Service")
       ) {
+        const token = await authentication.getToken(item.url);
         const contentItem: ArcGisContent = {
           id: item.id,
           name: item.title,
           url: item.url,
           created: item.created,
+          token: token,
         };
         contentItems.push(contentItem);
       }
