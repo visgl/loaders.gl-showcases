@@ -202,7 +202,7 @@ export const LayersPanel = ({
     const urlObject = new URL(url);
 
     let param: string | null = null;
-    for(const paramName of ["id", "webscene", "layers"]) {
+    for (const paramName of ["id", "webscene", "layers"]) {
       param = urlObject.searchParams.get(paramName);
       if (param) {
         break;
@@ -211,12 +211,12 @@ export const LayersPanel = ({
     if (param) {
       urlRest += param + "/data";
     } else {
-        // The url cannot be converted. Use it "as is".
-        return url;
+      // The url cannot be converted. Use it "as is".
+      return url;
     }
     return urlRest;
-  }
-  
+  };
+
   const handleInsertLayer = (layer: {
     name: string;
     url: string;
