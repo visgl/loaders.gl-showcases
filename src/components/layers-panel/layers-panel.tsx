@@ -5,7 +5,7 @@ import type {
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { load } from "@loaders.gl/core";
+import { forEach, load } from "@loaders.gl/core";
 
 import {
   LayerExample,
@@ -197,11 +197,33 @@ export const LayersPanel = ({
 
   useClickOutside([warningNode], () => setShowExistedError(false));
 
+  const convertUrlToRestFormat = (url: string): string => {
+    let urlRest = "https://www.arcgis.com/sharing/rest/content/items/";
+    const urlObject = new URL(url);
+
+    let param: string | null = null;
+    for(const paramName of ["id", "webscene", "layers"]) {
+      param = urlObject.searchParams.get(paramName);
+      if (param) {
+        break;
+      }
+    }
+    if (param) {
+      urlRest += param + "/data";
+    } else {
+        // The url cannot be converted. Use it "as is".
+        return url;
+    }
+    return urlRest;
+  }
+  
   const handleInsertLayer = (layer: {
     name: string;
     url: string;
     token?: string;
   }) => {
+    layer.url = convertUrlToRestFormat(layer.url);
+
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
@@ -253,6 +275,8 @@ export const LayersPanel = ({
     url: string;
     token?: string;
   }) => {
+    scene.url = convertUrlToRestFormat(scene.url);
+
     const existedScene = layers.some(
       (exisLayer) => exisLayer.url.trim() === scene.url.trim()
     );
