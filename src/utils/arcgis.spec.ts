@@ -2,12 +2,32 @@ import {
   getAuthenticatedUser,
   arcGisRequestLogin,
   arcGisRequestLogout,
+  getArcGisUserContent,
 } from "./arcgis";
 
 jest.mock("@esri/arcgis-rest-request");
+jest.mock("@esri/arcgis-rest-portal");
 
 const ARCGIS_REST_USER_INFO = "__ARCGIS_REST_USER_INFO__";
 const mockEmailExpected = "usermail@gmail.com";
+const mockContentExpected = [
+  {
+    id: "new-york",
+    name: "NewYork.slpk",
+    url: "https://123.com",
+    created: 123456,
+    title: "New York",
+    token: "token-https://123.com",
+  },
+  {
+    id: "turanga-library",
+    name: "TurangaLibrary.slpk",
+    url: "https://456.com",
+    created: 123457,
+    title: "Turanga Library",
+    token: "token-https://456.com",
+  },
+];
 
 let OLD_ENV = {};
 
@@ -40,5 +60,11 @@ describe("ArcGIS auth functions", () => {
   it("Should request logout and return empty string", async () => {
     const email = await arcGisRequestLogout();
     expect(email).toBe("");
+  });
+
+  it("Should return content with token", async () => {
+    const email = await arcGisRequestLogin();
+    const content = await getArcGisUserContent();
+    expect(content).toEqual(mockContentExpected);
   });
 });

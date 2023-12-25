@@ -8,15 +8,27 @@ import { ModalDialog } from "../../modal-dialog/modal-dialog";
 import {
   selectArcGisContent,
   selectArcGisContentSelected,
+  selectSortAscending,
+  selectSortColumn,
+  selectStatus,
+  setSortAscending,
+  setSortColumn,
   setArcGisContentSelected,
   resetArcGisContentSelected,
-  setSortOrder,
 } from "../../../redux/slices/arcgis-content-slice";
+import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
 
 type InsertLayerProps = {
   onImport: (object: { name: string; url: string; token?: string }) => void;
   onCancel: () => void;
 };
+
+const SpinnerContainer = styled.div<{ visible: boolean }>`
+  position: absolute;
+  left: calc(50% - 22px);
+  top: calc(50% - 22px);
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+`;
 
 const Table = styled.div`
   width: 584px;
@@ -112,24 +124,29 @@ const DateContainer = styled.div`
   justify-content: start;
   align-items: center;
   gap: 4px;
+  cursor: pointer;
 `;
 
-const IconContainer = styled.div`
+const IconContainer = styled.div<{ enabled: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 2px;
   width: 16px;
   height: 16px;
-  cursor: pointer;
   fill: ${({ theme }) => theme.colors.buttonDimIconColor};
+  visibility: ${({ enabled }) => (enabled ? "visible" : "hidden")};
 `;
 
 export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
   const dispatch = useAppDispatch();
   const arcGisContentArray = useAppSelector(selectArcGisContent);
   const arcGisContentSelected = useAppSelector(selectArcGisContentSelected);
-  const [sortDateOrder, setSortDateOrder] = useState(false);
+  const sortAscending = useAppSelector(selectSortAscending);
+  const sortColumn = useAppSelector(selectSortColumn);
+  const loadingStatus = useAppSelector(selectStatus);
+
+  const isLoading = loadingStatus === "loading";
 
   useEffect(() => {
     dispatch(resetArcGisContentSelected());
@@ -144,9 +161,12 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     }
   };
 
-  const onSort = () => {
-    setSortDateOrder((prevValue) => !prevValue);
-    dispatch(setSortOrder(sortDateOrder));
+  const onSort = (dataColumnName: string) => {
+    if (sortColumn === dataColumnName) {
+      dispatch(setSortAscending(!sortAscending));
+    } else {
+      dispatch(setSortColumn(dataColumnName));
+    }
   };
 
   const formatDate = (date: number) => {
@@ -168,25 +188,40 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     >
       <Table>
         <TableHeader>
-          <TableHeaderItem2>Title</TableHeaderItem2>
-          <TableHeaderItem3>
-            <DateContainer>
-              Date
-              <IconContainer onClick={onSort}>
+          <TableHeaderItem2>
+            <DateContainer onClick={() => onSort("title")}>
+              Title
+              <IconContainer enabled={sortColumn === "title"}>
                 <SortDownIcon
                   fill={theme.colors.buttonDimIconColor}
-                  transform={sortDateOrder ? "" : "rotate(180)"}
+                  transform={sortAscending ? "" : "rotate(180)"}
+                />
+              </IconContainer>
+            </DateContainer>
+          </TableHeaderItem2>
+
+          <TableHeaderItem3>
+            <DateContainer onClick={() => onSort("created")}>
+              Date
+              <IconContainer enabled={sortColumn === "created"}>
+                <SortDownIcon
+                  fill={theme.colors.buttonDimIconColor}
+                  transform={sortAscending ? "" : "rotate(180)"}
                 />
               </IconContainer>
             </DateContainer>
           </TableHeaderItem3>
         </TableHeader>
-        <TableContent key={`${sortDateOrder}`}>
+        <TableContent key={`${sortColumn}-${sortAscending}`}>
+          <SpinnerContainer visible={isLoading}>
+            <LoadingSpinner />
+          </SpinnerContainer>
+
           {arcGisContentArray.map((contentItem) => {
             const isMapSelected = arcGisContentSelected === contentItem.id;
 
             return (
-              <Fragment key={contentItem.name}>
+              <Fragment key={contentItem.id}>
                 <TableRow
                   checked={isMapSelected}
                   onClick={() => {
@@ -204,7 +239,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                       />
                     </Radio>
                   </TableRowItem1>
-                  <TableRowItem2>{contentItem.name}</TableRowItem2>
+                  <TableRowItem2>{contentItem.title}</TableRowItem2>
                   <TableRowItem3>
                     {formatDate(contentItem.created)}
                   </TableRowItem3>

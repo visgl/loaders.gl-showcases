@@ -7,18 +7,36 @@ import { getArcGisUserContent } from "../../utils/arcgis";
 interface ArcGisContentState {
   arcGisContent: ArcGisContent[];
   arcGisContentSelected: string;
-  sortOrder: boolean;
+  sortColumn: string;
+  sortAscending: boolean;
+  status: "idle" | "loading";
 }
+
 const initialState: ArcGisContentState = {
   arcGisContent: [],
   arcGisContentSelected: "",
-  sortOrder: false,
+  sortColumn: "",
+  sortAscending: false,
+  status: "idle",
 };
 
-const sortList = (state) => {
-  state.arcGisContent.sort((a: ArcGisContent, b: ArcGisContent) =>
-    state.sortOrder ? a.created - b.created : b.created - a.created
-  );
+const sortList = (state: ArcGisContentState) => {
+  const column = state.sortColumn;
+  if (column) {
+    state.arcGisContent.sort((a: ArcGisContent, b: ArcGisContent) => {
+      let ac = a[column];
+      let bc = b[column];
+      if (typeof ac === "string") {
+        ac = ac.toLowerCase();
+        bc = bc.toLowerCase();
+      }
+      if (ac === bc) {
+        return 0;
+      }
+      const comp = state.sortAscending ? ac > bc : ac < bc;
+      return comp ? -1 : 1;
+    });
+  }
 };
 
 const arcGisContentSlice = createSlice({
@@ -29,15 +47,22 @@ const arcGisContentSlice = createSlice({
       return initialState;
     },
 
-    setSortOrder: (
+    setSortAscending: (
       state: ArcGisContentState,
       action: PayloadAction<boolean>
     ) => {
-      state.sortOrder = action.payload;
+      state.sortAscending = action.payload;
       sortList(state);
     },
 
-    // Content
+    setSortColumn: (
+      state: ArcGisContentState,
+      action: PayloadAction<string>
+    ) => {
+      state.sortColumn = action.payload;
+      sortList(state);
+    },
+
     addArcGisContent: (
       state: ArcGisContentState,
       action: PayloadAction<ArcGisContent>
@@ -45,6 +70,7 @@ const arcGisContentSlice = createSlice({
       state.arcGisContent.push(action.payload);
       sortList(state);
     },
+
     deleteArcGisContent: (
       state: ArcGisContentState,
       action: PayloadAction<string>
@@ -58,7 +84,6 @@ const arcGisContentSlice = createSlice({
       sortList(state);
     },
 
-    // Content Selected
     setArcGisContentSelected: (
       state: ArcGisContentState,
       action: PayloadAction<string>
@@ -70,14 +95,21 @@ const arcGisContentSlice = createSlice({
         state.arcGisContentSelected = action.payload;
       }
     },
+
     resetArcGisContentSelected: (state: ArcGisContentState) => {
       state.arcGisContentSelected = "";
     },
   },
+
   extraReducers: (builder) => {
-    builder.addCase(getArcGisContent.fulfilled, (state, action) => {
-      state.arcGisContent = [...action.payload];
-    });
+    builder
+      .addCase(getArcGisContent.fulfilled, (state, action) => {
+        state.arcGisContent = [...action.payload];
+        state.status = "idle";
+      })
+      .addCase(getArcGisContent.pending, (state) => {
+        state.status = "loading";
+      });
   },
 });
 
@@ -93,6 +125,12 @@ export const selectArcGisContent = (state: RootState): ArcGisContent[] =>
   state.arcGisContent.arcGisContent;
 export const selectArcGisContentSelected = (state: RootState): string =>
   state.arcGisContent.arcGisContentSelected;
+export const selectSortAscending = (state: RootState): boolean =>
+  state.arcGisContent.sortAscending;
+export const selectSortColumn = (state: RootState): string =>
+  state.arcGisContent.sortColumn;
+export const selectStatus = (state: RootState): string =>
+  state.arcGisContent.status;
 
 export const {
   setInitialArcGisContent,
@@ -100,7 +138,8 @@ export const {
   setArcGisContentSelected,
   resetArcGisContentSelected,
   deleteArcGisContent,
-  setSortOrder,
+  setSortAscending,
+  setSortColumn,
 } = arcGisContentSlice.actions;
 
 export default arcGisContentSlice.reducer;

@@ -447,22 +447,6 @@ export const DebugApp = () => {
     }
   };
 
-  // Need? onArcGisInsertHandler
-  const onArcGisImportHandler = (
-    newLayer: LayerExample,
-    bookmarks?: Bookmark[]
-  ) => {
-    const newExamples = [...examples, newLayer];
-    setExamples(newExamples);
-    const newActiveLayers = handleSelectAllLeafsInGroup(newLayer);
-    setActiveLayers(newActiveLayers);
-    setPreventTransitions(false);
-
-    if (bookmarks?.length) {
-      updateBookmarks(bookmarks);
-    }
-  };
-
   const onLayerSelectHandler = (
     layer: LayerExample,
     rootLayer?: LayerExample
@@ -775,7 +759,7 @@ export const DebugApp = () => {
             pageId={PageId.debug}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
-            onArcGisImport={onArcGisImportHandler}
+            onArcGisImport={onLayerInsertHandler}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
             onLayerDelete={(id) => onLayerDeleteHandler(id)}

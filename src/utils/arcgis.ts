@@ -103,7 +103,7 @@ export const arcGisRequestLogout = async () => {
 
 /**
  * Gets the ArcGIS user's content list.
- * @returns The content list containig enough info to load the content items.
+ * @returns The content list containig the necessay info to load the content items.
  */
 export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
   const contentItems: ArcGisContent[] = [];
@@ -120,7 +120,8 @@ export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
         const token = await authentication.getToken(item.url);
         const contentItem: ArcGisContent = {
           id: item.id,
-          name: item.title,
+          name: item.name || item.title,
+          title: item.title,
           url: item.url,
           created: item.created,
           token: token,

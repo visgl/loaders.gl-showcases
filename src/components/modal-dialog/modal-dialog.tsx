@@ -129,17 +129,15 @@ export const ModalDialog = ({
             {children}
           </ContentContainer>
           <ButtonsContainer justify={!cancelButtonText ? "end" : "center"}>
-            {cancelButtonText ? (
+            {cancelButtonText && (
               <ActionButton
                 variant={ActionButtonVariant.secondary}
                 onClick={onCancel}
               >
                 {cancelButtonText}
               </ActionButton>
-            ) : (
-              <></>
             )}
-            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>{" "}
+            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
           </ButtonsContainer>
         </Container>
       </WrapperContainer>
