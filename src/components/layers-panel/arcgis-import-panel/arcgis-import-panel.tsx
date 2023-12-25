@@ -82,11 +82,7 @@ const TableContent = styled.div`
   max-height: 300px;
 `;
 
-type ContainerProps = {
-  checked: boolean;
-};
-
-const TableRow = styled.div<ContainerProps>`
+const TableRow = styled.div<{ checked: boolean }>`
   display: flex;
   flex-direction: row;
   justify-content: start;
@@ -118,7 +114,7 @@ const Radio = styled.div`
   height: 44px;
 `;
 
-const DateContainer = styled.div`
+const TitleCellContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: start;
@@ -189,7 +185,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
       <Table>
         <TableHeader>
           <TableHeaderItem2>
-            <DateContainer onClick={() => onSort("title")}>
+            <TitleCellContainer onClick={() => onSort("title")}>
               Title
               <IconContainer enabled={sortColumn === "title"}>
                 <SortDownIcon
@@ -197,11 +193,11 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                   transform={sortAscending ? "" : "rotate(180)"}
                 />
               </IconContainer>
-            </DateContainer>
+            </TitleCellContainer>
           </TableHeaderItem2>
 
           <TableHeaderItem3>
-            <DateContainer onClick={() => onSort("created")}>
+            <TitleCellContainer onClick={() => onSort("created")}>
               Date
               <IconContainer enabled={sortColumn === "created"}>
                 <SortDownIcon
@@ -209,7 +205,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                   transform={sortAscending ? "" : "rotate(180)"}
                 />
               </IconContainer>
-            </DateContainer>
+            </TitleCellContainer>
           </TableHeaderItem3>
         </TableHeader>
         <TableContent key={`${sortColumn}-${sortAscending}`}>

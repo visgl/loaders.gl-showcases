@@ -50,6 +50,7 @@ const IconContainer = styled.div`
   right: 14px;
   width: 44px;
   height: 44px;
+  cursor: pointer;
 `;
 
 const ContentContainer = styled.div`
@@ -97,7 +98,6 @@ type LogoutPanelProps = {
 };
 
 const CloseCrossButton = styled(CloseIcon)`
-  cursor: pointer;
   &:hover {
     fill: ${({ theme }) => theme.colors.mainDimColorInverted};
   }
@@ -118,11 +118,8 @@ export const ModalDialog = ({
       <Overlay />
       <WrapperContainer>
         <Container data-testid="modal-dialog-content">
-          <IconContainer>
-            <CloseCrossButton
-              fill={theme.colors.fontColor}
-              onClick={onCancel}
-            />
+          <IconContainer onClick={onCancel}>
+            <CloseCrossButton fill={theme.colors.fontColor} />
           </IconContainer>
           <ContentContainer>
             <Title>{title}</Title>
