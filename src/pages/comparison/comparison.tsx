@@ -179,11 +179,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           datasets: [
             {
               ...leftSideStats,
-              ellapsedTime: loadManagerRef.current.leftLoadingTime,
+              elapsedTime: loadManagerRef.current.leftLoadingTime,
             },
             {
               ...rightSideStats,
-              ellapsedTime: loadManagerRef.current.rightLoadingTime,
+              elapsedTime: loadManagerRef.current.rightLoadingTime,
             },
           ],
         };

@@ -302,7 +302,7 @@ export enum SelectionState {
 }
 
 type Dataset = StatsMap & {
-  ellapsedTime: number;
+  elapsedTime: number;
 };
 
 export type StatsData = {
