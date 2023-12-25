@@ -1,3 +1,5 @@
+import { PageId } from "../../types";
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -5,7 +7,8 @@ function sleep(ms) {
 export const checkLayersPanel = async (
   page,
   panelId: string,
-  hasSelectedLayer = false
+  hasSelectedLayer = false,
+  appMode = ""
 ) => {
   // Tabs
   const tabsContainer = await page.$(`${panelId} > :first-child`);
@@ -69,8 +72,14 @@ export const checkLayersPanel = async (
     `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > div`,
     (nodes) => nodes.map((node) => node.innerText)
   );
-  expect(baseMapsNames.length).toBe(3);
-  expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain"]);
+
+  if (appMode === PageId.comparison) {
+    expect(baseMapsNames.length).toBe(2);
+    expect(baseMapsNames).toEqual(["Dark", "Light"]);
+  } else {
+    expect(baseMapsNames.length).toBe(3);
+    expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain"]);
+  }
 
   // Dark is selected
   const darkMapBackground = await page.$eval(
