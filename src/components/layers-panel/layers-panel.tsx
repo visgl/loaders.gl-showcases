@@ -5,7 +5,7 @@ import type {
 
 import { useState } from "react";
 import styled, { css } from "styled-components";
-import { forEach, load } from "@loaders.gl/core";
+import { load } from "@loaders.gl/core";
 
 import {
   LayerExample,
@@ -34,7 +34,7 @@ import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 import { ArcGISWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
-import { getTilesetType } from "../../utils/url-utils";
+import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
@@ -197,33 +197,11 @@ export const LayersPanel = ({
 
   useClickOutside([warningNode], () => setShowExistedError(false));
 
-  const convertUrlToRestFormat = (url: string): string => {
-    let urlRest = "https://www.arcgis.com/sharing/rest/content/items/";
-    const urlObject = new URL(url);
-
-    let param: string | null = null;
-    for (const paramName of ["id", "webscene", "layers"]) {
-      param = urlObject.searchParams.get(paramName);
-      if (param) {
-        break;
-      }
-    }
-    if (param) {
-      urlRest += param + "/data";
-    } else {
-      // The url cannot be converted. Use it "as is".
-      return url;
-    }
-    return urlRest;
-  };
-
   const handleInsertLayer = (layer: {
     name: string;
     url: string;
     token?: string;
   }) => {
-    layer.url = convertUrlToRestFormat(layer.url);
-
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );

@@ -96,3 +96,30 @@ export const urlParamsToViewState = (viewState: ViewStateSet) => {
   }
   return urlViewStateParams;
 };
+
+/**
+ * Convert the link of a webscene that can be copied from ArcGIS
+ * to the format required by i3s-explorer to insert a webscene.
+ * @param url Url copied from ArcGIS.
+ * @returns Url converted.
+ */
+export const convertUrlToRestFormat = (url: string): string => {
+  let urlRest = "https://www.arcgis.com/sharing/rest/content/items/";
+  const urlObject = new URL(url);
+
+  let param: string | null = null;
+  for (const paramName of ["id", "webscene", "layers"]) {
+    param = urlObject.searchParams.get(paramName);
+    if (param) {
+      break;
+    }
+  }
+  if (param) {
+    urlRest += param + "/data";
+  } else {
+    // The url cannot be converted. Use it "as is".
+    return url;
+  }
+  return urlRest;
+};
+
