@@ -376,3 +376,5 @@ export type ArcGisContent = {
   token?: string;
   created: number;
 };
+
+export type ArcGisContentColumnName = keyof ArcGisContent;

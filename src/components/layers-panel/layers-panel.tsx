@@ -19,6 +19,7 @@ import {
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
+import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
 import {
   PanelContainer,
@@ -38,8 +39,6 @@ import { getTilesetType } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
-import { getArcGisContent } from "../../redux/slices/arcgis-content-slice";
-import { ArcGisImportPanel } from "./arcgis-import-panel/arcgis-import-panel";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -151,7 +150,6 @@ type LayersPanelProps = {
   viewWidth?: number;
   viewHeight?: number;
   side?: ComparisonSideMode;
-  onArcGisImport: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerInsert: (layer: LayerExample, bookmarks?: Bookmark[]) => void;
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerDelete: (id: string) => void;
@@ -168,7 +166,6 @@ export const LayersPanel = ({
   layers,
   sublayers,
   selectedLayerIds,
-  onArcGisImport,
   onLayerInsert,
   onLayerSelect,
   onLayerDelete,
@@ -187,7 +184,6 @@ export const LayersPanel = ({
   const [tab, setTab] = useState<Tabs>(Tabs.Layers);
   const [showLayerInsertPanel, setShowLayerInsertPanel] = useState(false);
   const [showSceneInsertPanel, setShowSceneInsertPanel] = useState(false);
-  const [showArcGisImportPanel, setShowArcGisImportPanel] = useState(false);
   const [showLayerSettings, setShowLayerSettings] = useState(false);
   const [showInsertMapPanel, setShowInsertMapPanel] = useState(false);
   const [showExistedError, setShowExistedError] = useState(false);
@@ -199,7 +195,7 @@ export const LayersPanel = ({
     useState(false);
   const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
   const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
-  
+
   useClickOutside([warningNode], () => setShowExistedError(false));
 
   const handleArcGisImport = (layer: {
@@ -212,7 +208,6 @@ export const LayersPanel = ({
     );
 
     if (existedLayer) {
-      setShowArcGisImportPanel(false);
       setShowExistedError(true);
       return;
     }
@@ -225,8 +220,7 @@ export const LayersPanel = ({
       type: getTilesetType(layer.url),
     };
 
-    onArcGisImport(newLayer);
-    setShowArcGisImportPanel(false);
+    onLayerInsert(newLayer);
   };
 
   const handleInsertLayer = (layer: {
@@ -402,11 +396,6 @@ export const LayersPanel = ({
                 onLayerSelect={onLayerSelect}
                 onLayerInsertClick={() => setShowLayerInsertPanel(true)}
                 onSceneInsertClick={() => setShowSceneInsertPanel(true)}
-                onArcGisImportClick={() => {
-                  dispatch(getArcGisContent());
-                  setShowArcGisImportPanel(true)
-                  }
-                }
                 onLayerSettingsClick={() => setShowLayerSettings(true)}
                 onPointToLayer={onPointToLayer}
                 deleteLayer={onLayerDelete}
@@ -418,6 +407,13 @@ export const LayersPanel = ({
               />
             )}
           </PanelContent>
+
+          <PanelHorizontalLine top={0} bottom={0} />
+
+          <PanelContent>
+            <ArcGisControlPanel onArcGisImportClick={handleArcGisImport} />
+          </PanelContent>
+
           {showExistedError && (
             <PanelWrapper ref={(element) => setWarningNode(element)}>
               <WarningPanel
@@ -472,14 +468,6 @@ export const LayersPanel = ({
                 title={"Insert Scene"}
                 onInsert={(scene) => handleInsertScene(scene)}
                 onCancel={() => setShowSceneInsertPanel(false)}
-              />
-            </PanelWrapper>
-          )}
-          {showArcGisImportPanel && (
-            <PanelWrapper>
-              <ArcGisImportPanel
-                onImport={(item) => handleArcGisImport(item)}
-                onCancel={() => setShowArcGisImportPanel(false)}
               />
             </PanelWrapper>
           )}

@@ -1,5 +1,6 @@
 import { setupStore } from "../store";
 import reducer, {
+  selectArcGisContent,
   selectArcGisContentSelected,
   selectSortAscending,
   selectSortColumn,
@@ -8,51 +9,92 @@ import reducer, {
   setSortColumn,
   setArcGisContentSelected,
   resetArcGisContentSelected,
-  addArcGisContent,
-  deleteArcGisContent,
+  getArcGisContent,
 } from "./arcgis-content-slice";
 
 import { getArcGisUserContent } from "../../utils/arcgis";
 
 jest.mock("../../utils/arcgis");
-
 const getArcGisUserContentMock =
   getArcGisUserContent as unknown as jest.Mocked<any>;
 
-const mockEmailExpected = "usermail@gmail.com";
-let mockStorageUserinfo = mockEmailExpected;
-const mockInitValueExpected = {
+const CONTENT_EXPECTED = [
+  {
+    id: "123",
+    name: "123.slpk",
+    url: "https://123.com",
+    created: 123453,
+    title: "City-123",
+    token: "token-https://123.com",
+  },
+  {
+    id: "789",
+    name: "789.slpk",
+    url: "https://789.com",
+    created: 123457,
+    title: "City-789",
+    token: "token-https://789.com",
+  },
+  {
+    id: "456",
+    name: "456.slpk",
+    url: "https://456.com",
+    created: 123454,
+    title: "City-456",
+    token: "token-https://456.com",
+  },
+];
+
+const CONTENT_SORTED_EXPECTED = [
+  {
+    id: "123",
+    name: "123.slpk",
+    url: "https://123.com",
+    created: 123453,
+    title: "City-123",
+    token: "token-https://123.com",
+  },
+  {
+    id: "456",
+    name: "456.slpk",
+    url: "https://456.com",
+    created: 123454,
+    title: "City-456",
+    token: "token-https://456.com",
+  },
+  {
+    id: "789",
+    name: "789.slpk",
+    url: "https://789.com",
+    created: 123457,
+    title: "City-789",
+    token: "token-https://789.com",
+  },
+];
+
+const INIT_VALUE_EXPECTED = {
   arcGisContent: [],
   arcGisContentSelected: "",
-  sortColumn: "",
-  sortAscending: false,
+  sortColumn: null,
+  sortAscending: true,
   status: "idle",
 };
 
-const contentItem = {
-  id: "123",
-  name: "NewYork.slpk",
-  url: "https://123.com",
-  created: 123456,
-  title: "New York",
-  token: "token-https://123.com",
-};
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 describe("slice: arcgis-content", () => {
   beforeAll(() => {
     getArcGisUserContentMock.mockImplementation(async () => {
-      mockStorageUserinfo = mockEmailExpected;
-      return mockStorageUserinfo;
+      sleep(10);
+      return CONTENT_EXPECTED;
     });
-  });
-
-  beforeEach(() => {
-    mockStorageUserinfo = mockEmailExpected;
   });
 
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual(
-      mockInitValueExpected
+      INIT_VALUE_EXPECTED
     );
   });
 
@@ -62,18 +104,11 @@ describe("slice: arcgis-content", () => {
     expect(selectStatus(state)).toEqual("idle");
   });
 
-  it("Selector should return the updated sort column", () => {
+  it("Selector should return 'loading' status", () => {
     const store = setupStore();
-    store.dispatch(setSortColumn("title"));
+    /* No await! */ store.dispatch(getArcGisContent());
     const state = store.getState();
-    expect(selectSortColumn(state)).toEqual("title");
-  });
-
-  it("Selector should return the updated sort order", () => {
-    const store = setupStore();
-    store.dispatch(setSortAscending(true));
-    const state = store.getState();
-    expect(selectSortAscending(state)).toEqual(true);
+    expect(selectStatus(state)).toEqual("loading");
   });
 
   it("Selector should return empty string if no content added", () => {
@@ -83,29 +118,45 @@ describe("slice: arcgis-content", () => {
     expect(selectArcGisContentSelected(state)).toEqual("");
   });
 
-  it("Selector should return id of selected item", () => {
+  it("Selector should return id of selected item", async () => {
     const store = setupStore();
-    store.dispatch(addArcGisContent(contentItem));
-    store.dispatch(setArcGisContentSelected("123"));
+    await store.dispatch(getArcGisContent());
+    store.dispatch(setArcGisContentSelected("456"));
     const state = store.getState();
-    expect(selectArcGisContentSelected(state)).toEqual("123");
+    expect(selectArcGisContentSelected(state)).toEqual("456");
   });
 
-  it("Selector should return empty string if no content added", () => {
+  it("Selector should return empty string if nothing is selected", async () => {
     const store = setupStore();
-    store.dispatch(addArcGisContent(contentItem));
-    store.dispatch(setArcGisContentSelected("123"));
-    store.dispatch(deleteArcGisContent("123"));
-    const state = store.getState();
-    expect(selectArcGisContentSelected(state)).toEqual("");
-  });
-
-  it("Selector should return empty string", () => {
-    const store = setupStore();
-    store.dispatch(addArcGisContent(contentItem));
+    await store.dispatch(getArcGisContent());
     store.dispatch(setArcGisContentSelected("123"));
     store.dispatch(resetArcGisContentSelected());
     const state = store.getState();
     expect(selectArcGisContentSelected(state)).toEqual("");
+  });
+
+  it("Selector should return content received (unsorted)", async () => {
+    const store = setupStore();
+    await store.dispatch(getArcGisContent());
+    const state = store.getState();
+    expect(selectArcGisContent(state)).toEqual(CONTENT_EXPECTED);
+    expect(selectStatus(state)).toEqual("idle");
+  });
+
+  it("Selector should return content received (sorted)", async () => {
+    const store = setupStore();
+    store.dispatch(setSortColumn("title"));
+    store.dispatch(setSortAscending(true));
+
+    await store.dispatch(getArcGisContent());
+    let state = store.getState();
+    expect(selectSortColumn(state)).toEqual("title");
+    expect(selectSortAscending(state)).toEqual(true);
+    expect(selectArcGisContent(state)).toEqual(CONTENT_SORTED_EXPECTED);
+
+    store.dispatch(setSortColumn("created"));
+    store.dispatch(setSortAscending(true));
+    state = store.getState();
+    expect(selectArcGisContent(state)).toEqual(CONTENT_SORTED_EXPECTED);
   });
 });

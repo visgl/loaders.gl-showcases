@@ -73,7 +73,6 @@ beforeAll(() => {
   ));
 });
 
-const arcGisImportMock = jest.fn();
 const layerInsertMock = jest.fn();
 const layerSelectMock = jest.fn();
 const layerDeleteMock = jest.fn();
@@ -91,7 +90,6 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
       sublayers={[]}
       selectedLayerIds={[]}
       type={0}
-      onArcGisImport={arcGisImportMock}
       onLayerInsert={layerInsertMock}
       onLayerSelect={layerSelectMock}
       onLayerDelete={layerDeleteMock}

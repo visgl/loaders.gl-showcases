@@ -8,22 +8,11 @@ import {
 } from "../../types";
 import { ListItem } from "./list-item/list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
-import ImportIcon from "../../../public/icons/import.svg";
-import EsriImage from "../../../public/images/esri.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import { AcrGisUser } from "../arcgis-user/arcgis-user";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
 import { ButtonSize } from "../../types";
-import { PanelHorizontalLine } from "../common";
-import {
-  arcGisLogin,
-  arcGisLogout,
-  selectUser,
-} from "../../redux/slices/arcgis-auth-slice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { ModalDialog } from "../modal-dialog/modal-dialog";
 
 type LayersControlPanelProps = {
   layers: LayerExample[];
@@ -33,7 +22,6 @@ type LayersControlPanelProps = {
   onLayerSelect: (layer: LayerExample, rootLayer?: LayerExample) => void;
   onLayerInsertClick: () => void;
   onSceneInsertClick: () => void;
-  onArcGisImportClick: () => void;
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
@@ -57,6 +45,7 @@ const InsertButtons = styled.div`
   flex-direction: column;
   row-gap: 8px;
   margin-top: 8px;
+  margin-bottom: 8px;
 `;
 
 const ChildrenContainer = styled.div`
@@ -67,32 +56,6 @@ const ChildrenContainer = styled.div`
   padding-left: 12px;
 `;
 
-const ActionIconButtonContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: center;
-`;
-
-const EsriStyledImage = styled(EsriImage)`
-  margin-left: 16px;
-  fill: ${({ theme }) => theme.colors.esriImageColor};
-`;
-
-const TextInfo = styled.div`
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-`;
-
-const TextUser = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 19px;
-`;
-
 export const LayersControlPanel = ({
   layers,
   type,
@@ -101,31 +64,13 @@ export const LayersControlPanel = ({
   hasSettings = false,
   onLayerInsertClick,
   onSceneInsertClick,
-  onArcGisImportClick,
   onLayerSettingsClick,
   onPointToLayer,
   deleteLayer,
 }: LayersControlPanelProps) => {
-  const dispatch = useAppDispatch();
-
-  const username = useAppSelector(selectUser);
-  const isLoggedIn = !!username;
-
-  const [showLogoutWarning, setShowLogoutWarning] = useState(false);
   const [settingsLayerId, setSettingsLayerId] = useState<string>("");
   const [showLayerSettings, setShowLayerSettings] = useState<boolean>(false);
   const [layerToDeleteId, setLayerToDeleteId] = useState<string>("");
-
-  const onArcGisActionClick = () => {
-    if (isLoggedIn) {
-      onArcGisImportClick();
-    } else {
-      dispatch(arcGisLogin());
-    }
-  };
-  const onArcGisLogoutClick = () => {
-    setShowLogoutWarning(true);
-  };
 
   const isListItemSelected = (
     layer: LayerExample,
@@ -254,44 +199,6 @@ export const LayersControlPanel = ({
         >
           Insert scene
         </ActionIconButton>
-
-        <PanelHorizontalLine top={0} bottom={0} />
-
-        <ActionIconButtonContainer>
-          <ActionIconButton
-            Icon={ImportIcon}
-            style={isLoggedIn ? "active" : "disabled"}
-            size={ButtonSize.Small}
-            onClick={onArcGisActionClick}
-          >
-            {!isLoggedIn && "Login to ArcGIS"}
-            {isLoggedIn && "Import from ArcGIS"}
-          </ActionIconButton>
-          <EsriStyledImage />
-        </ActionIconButtonContainer>
-
-        {isLoggedIn && (
-          <AcrGisUser onClick={onArcGisLogoutClick}>{username}</AcrGisUser>
-        )}
-
-        {showLogoutWarning && (
-          <ModalDialog
-            title={"Logout from ArcGIS"}
-            okButtonText={"Log out"}
-            cancelButtonText={"Cancel"}
-            onConfirm={() => {
-              dispatch(arcGisLogout());
-              setShowLogoutWarning(false);
-            }}
-            onCancel={() => {
-              setShowLogoutWarning(false);
-            }}
-          >
-            <TextInfo>Are you sure you want to log out?</TextInfo>
-            <TextInfo>You are logged in as</TextInfo>
-            <TextUser>{username}</TextUser>
-          </ModalDialog>
-        )}
       </InsertButtons>
     </LayersContainer>
   );

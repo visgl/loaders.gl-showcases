@@ -1,11 +1,6 @@
-import { act, screen, within } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersControlPanel } from "./layers-control-panel";
-import userEvent from "@testing-library/user-event";
-import {
-  arcGisLogin,
-  arcGisLogout,
-} from "../../redux/slices/arcgis-auth-slice";
 
 // Mocked components
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
@@ -14,18 +9,10 @@ import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { ListItem } from "./list-item/list-item";
 import { setupStore } from "../../redux/store";
 
-import {
-  getAuthenticatedUser,
-  arcGisRequestLogin,
-  arcGisCompleteLogin,
-  arcGisRequestLogout,
-} from "../../utils/arcgis";
-
 jest.mock("./list-item/list-item");
 jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./layer-options-menu/layer-options-menu");
-jest.mock("../../utils/arcgis");
 
 const ListItemMock = ListItem as unknown as jest.Mocked<any>;
 const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
@@ -33,31 +20,17 @@ const DeleteConfirmationMock =
   DeleteConfirmation as unknown as jest.Mocked<any>;
 const LayerOptionsMenuMock = LayerOptionsMenu as unknown as jest.Mocked<any>;
 
-const getAuthenticatedUserMock =
-  getAuthenticatedUser as unknown as jest.Mocked<any>;
-const arcGisRequestLoginMock =
-  arcGisRequestLogin as unknown as jest.Mocked<any>;
-const arcGisCompleteLoginMock =
-  arcGisCompleteLogin as unknown as jest.Mocked<any>;
-const arcGisRequestLogoutMock =
-  arcGisRequestLogout as unknown as jest.Mocked<any>;
-
-const mockEmailExpected = "usermail@gmail.com";
-let mockStorageUserinfo = "";
-
 const onInsertLayerMock = jest.fn();
 const onInsertSceneMock = jest.fn();
 const onDeleteLayerMock = jest.fn();
 const onSelectLayerMock = jest.fn();
 const onLayerSettingsClickMock = jest.fn();
 const onPointToLayerMock = jest.fn();
-const onArcGisImportMock = jest.fn();
 
 const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
     <LayersControlPanel
       onSceneInsertClick={onInsertSceneMock}
-      onArcGisImportClick={onArcGisImportMock}
       layers={[]}
       selectedLayerIds={[]}
       type={0} // Radio Button type
@@ -84,118 +57,6 @@ beforeAll(() => {
     <div>Delete Conformation</div>
   ));
   LayerOptionsMenuMock.mockImplementation(() => <div>Layers Options</div>);
-});
-
-describe("Layers Control Panel - ArcGIS auth", () => {
-  beforeAll(() => {
-    arcGisRequestLoginMock.mockImplementation(async () => {
-      mockStorageUserinfo = mockEmailExpected;
-      return mockStorageUserinfo;
-    });
-    arcGisCompleteLoginMock.mockImplementation(async () => {
-      return mockStorageUserinfo;
-    });
-    arcGisRequestLogoutMock.mockImplementation(async () => {
-      mockStorageUserinfo = "";
-      return mockStorageUserinfo;
-    });
-    getAuthenticatedUserMock.mockImplementation(() => {
-      return mockStorageUserinfo;
-    });
-  });
-
-  it("Should render ArcGIS Login button", async () => {
-    const store = setupStore();
-    // Let's Log out...
-    await store.dispatch(arcGisLogout());
-    const { container } = callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
-    expect(container).toBeInTheDocument();
-    expect(arcGisRequestLogoutMock).toHaveBeenCalledTimes(1);
-
-    // We are in the "Logged out" state, so the "Log in" button should be there.
-    const loginButton = await screen.findByText("Login to ArcGIS");
-    expect(loginButton).toBeInTheDocument();
-    loginButton && userEvent.click(loginButton);
-    expect(arcGisRequestLoginMock).toHaveBeenCalledTimes(1);
-
-    const importButton = screen.queryByText("Import from ArcGIS");
-    expect(importButton).not.toBeInTheDocument();
-  });
-
-  it("Should render ArcGIS Import and Logout buttons", async () => {
-    const store = setupStore();
-    // Let's Log in...
-    await store.dispatch(arcGisLogin());
-    const { container } = callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
-    expect(container).toBeInTheDocument();
-    expect(arcGisRequestLoginMock).toHaveBeenCalledTimes(1);
-
-    // We are in the "Logged in" state, so the "Log in" button should NOT be there.
-    const importButton = await screen.findByText("Import from ArcGIS");
-    expect(importButton).toBeInTheDocument();
-
-    const logoutUserInfo = await screen.findByText(mockEmailExpected);
-    expect(logoutUserInfo).toBeInTheDocument();
-
-    const loginButton = screen.queryByText("Login to ArcGIS");
-    expect(loginButton).not.toBeInTheDocument();
-  });
-
-  it("Should respond to action on the ArcGIS Login button", async () => {
-    const store = setupStore();
-    // Let's Log out...
-    await store.dispatch(arcGisLogout());
-    const { container } = callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
-    expect(container).toBeInTheDocument();
-
-    const loginButton = screen.getByText("Login to ArcGIS");
-    loginButton && userEvent.click(loginButton);
-    expect(arcGisRequestLoginMock).toHaveBeenCalledTimes(1);
-
-    const importButton = await screen.findByText("Import from ArcGIS");
-    expect(importButton).toBeInTheDocument();
-
-    const loginButtonHidden = screen.queryByText("Login to ArcGIS");
-    expect(loginButtonHidden).not.toBeInTheDocument();
-  });
-
-  it("Should respond to action on ArcGIS Logout button", async () => {
-    const store = setupStore();
-    // Let's Log in...
-    await store.dispatch(arcGisLogin());
-    const { container } = callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
-
-    const logoutButton = await screen.findByTestId("userinfo-button");
-    logoutButton && userEvent.click(logoutButton);
-
-    const modalDialog = await screen.findByTestId("modal-dialog-content");
-    expect(modalDialog).toContainHTML("Are you sure you want to log out?");
-
-    const cancelButton = within(modalDialog).getByText("Log out");
-    cancelButton && userEvent.click(cancelButton);
-
-    const modalDialogHidden = screen.queryByTestId("modal-dialog-content");
-    expect(modalDialogHidden).not.toBeInTheDocument();
-
-    const loginButton = await screen.findByText("Login to ArcGIS");
-    expect(loginButton).toBeInTheDocument();
-  });
 });
 
 describe("Layers Control Panel", () => {

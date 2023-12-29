@@ -1,8 +1,6 @@
 import styled, { css, useTheme } from "styled-components";
 import { RadioButton } from "../../radio-button/radio-button";
-import { Fragment, useEffect, useState } from "react";
-import { PanelHorizontalLine } from "../../common";
-import SortDownIcon from "../../../../public/icons/arrow-down.svg";
+import { Fragment, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { ModalDialog } from "../../modal-dialog/modal-dialog";
 import {
@@ -16,12 +14,13 @@ import {
   setArcGisContentSelected,
   resetArcGisContentSelected,
 } from "../../../redux/slices/arcgis-content-slice";
+import {
+  ArcGisContentColumnName,
+  ExpandState,
+  CollapseDirection,
+} from "../../../types";
 import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
-
-type InsertLayerProps = {
-  onImport: (object: { name: string; url: string; token?: string }) => void;
-  onCancel: () => void;
-};
+import { ExpandIcon } from "../../expand-icon/expand-icon";
 
 const SpinnerContainer = styled.div<{ visible: boolean }>`
   position: absolute;
@@ -30,50 +29,57 @@ const SpinnerContainer = styled.div<{ visible: boolean }>`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
 `;
 
-const Table = styled.div`
+const Table = styled.table`
   width: 584px;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  row-gap: 16px;
+  border-collapse: collapse;
 `;
 
-const TableHeader = styled.div`
+const TableHeader = styled.thead`
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
+  color: ${({ theme }) => theme.colors.secondaryFontColor};
   overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  column-gap: 24px;
 `;
 
-const TableHeaderItem2 = styled.div`
-  margin-left: 68px;
-  width: 343px;
-`;
-const TableHeaderItem3 = styled.div`
-  width: 149px;
-`;
-
-const TableRowItem1 = styled.div`
+const TableHeaderItem1 = styled.th`
   width: 44px;
+  padding: 0;
 `;
-const TableRowItem2 = styled.div`
-  font-weight: 700;
+const TableHeaderItem2 = styled.th`
   width: 343px;
+  padding: 0;
 `;
-const TableRowItem3 = styled.div`
+const TableHeaderItem3 = styled.th`
   width: 149px;
+  padding: 0;
 `;
 
-const TableContent = styled.div`
+const TableRowItem1 = styled.td`
+  width: 44px;
+  padding: 0;
+`;
+const TableRowItem2 = styled.td`
+  width: 343px;
+  padding: 0;
+  font-weight: 700;
+`;
+const TableRowItem3 = styled.td`
+  width: 149px;
+  padding: 0;
+`;
+
+const CellDiv = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  row-gap: 8px;
+  justify-content: center;
+  align-items: start;
+  margin: 8px 0 8px 0;
+  height: 44px;
+`;
+
+const TableContent = styled.tbody`
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
@@ -82,26 +88,46 @@ const TableContent = styled.div`
   max-height: 300px;
 `;
 
-const TableRow = styled.div<{ checked: boolean }>`
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: center;
-  column-gap: 24px;
-
+const TableRow = styled.tr<{ checked: boolean }>`
   background: transparent;
   cursor: pointer;
+  border: 0;
+  border-style: solid;
+  border-bottom: 1px solid
+    ${({ theme }) => `${theme.colors.mainHiglightColorInverted}1f`};
+  border-radius: 1px;
+
   ${({ checked }) =>
     checked &&
     css`
-      background: ${({ theme }) => theme.colors.mainHiglightColor};
+      > * > :first-child {
+        background: ${({ theme }) => theme.colors.mainHiglightColor};
+      }
+      > :first-child > :first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+      }
+      > :last-child > :first-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+      }
+
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
     `}
   &:hover {
-    background: ${({ theme }) => theme.colors.mainDimColor};
+    > * > :first-child {
+      background: ${({ theme }) => theme.colors.mainDimColor};
+    }
+    > :first-child > :first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    > :last-child > :first-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
     box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
   }
 `;
 
@@ -127,12 +153,17 @@ const IconContainer = styled.div<{ enabled: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 2px;
+  margin-top: 2px;
   width: 16px;
   height: 16px;
   fill: ${({ theme }) => theme.colors.buttonDimIconColor};
   visibility: ${({ enabled }) => (enabled ? "visible" : "hidden")};
 `;
+
+type InsertLayerProps = {
+  onImport: (object: { name: string; url: string; token?: string }) => void;
+  onCancel: () => void;
+};
 
 export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
   const dispatch = useAppDispatch();
@@ -157,7 +188,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     }
   };
 
-  const onSort = (dataColumnName: string) => {
+  const onSort = (dataColumnName: ArcGisContentColumnName) => {
     if (sortColumn === dataColumnName) {
       dispatch(setSortAscending(!sortAscending));
     } else {
@@ -184,13 +215,21 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     >
       <Table>
         <TableHeader>
+          <TableHeaderItem1></TableHeaderItem1>
           <TableHeaderItem2>
             <TitleCellContainer onClick={() => onSort("title")}>
               Title
               <IconContainer enabled={sortColumn === "title"}>
-                <SortDownIcon
-                  fill={theme.colors.buttonDimIconColor}
-                  transform={sortAscending ? "" : "rotate(180)"}
+                <ExpandIcon
+                  expandState={ExpandState.expanded}
+                  collapseDirection={
+                    sortAscending
+                      ? CollapseDirection.top
+                      : CollapseDirection.bottom
+                  }
+                  onClick={() => onSort("title")}
+                  fillExpanded={theme.colors.buttonDimIconColor}
+                  width={6}
                 />
               </IconContainer>
             </TitleCellContainer>
@@ -200,14 +239,22 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
             <TitleCellContainer onClick={() => onSort("created")}>
               Date
               <IconContainer enabled={sortColumn === "created"}>
-                <SortDownIcon
-                  fill={theme.colors.buttonDimIconColor}
-                  transform={sortAscending ? "" : "rotate(180)"}
+                <ExpandIcon
+                  expandState={ExpandState.expanded}
+                  collapseDirection={
+                    sortAscending
+                      ? CollapseDirection.top
+                      : CollapseDirection.bottom
+                  }
+                  onClick={() => onSort("created")}
+                  fillExpanded={theme.colors.buttonDimIconColor}
+                  width={6}
                 />
               </IconContainer>
             </TitleCellContainer>
           </TableHeaderItem3>
         </TableHeader>
+
         <TableContent key={`${sortColumn}-${sortAscending}`}>
           <SpinnerContainer visible={isLoading}>
             <LoadingSpinner />
@@ -225,22 +272,26 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                   }}
                 >
                   <TableRowItem1>
-                    <Radio>
-                      <RadioButton
-                        id={contentItem.id}
-                        checked={isMapSelected}
-                        onChange={() => {
-                          dispatch(setArcGisContentSelected(contentItem.id));
-                        }}
-                      />
-                    </Radio>
+                    <CellDiv>
+                      <Radio>
+                        <RadioButton
+                          id={contentItem.id}
+                          checked={isMapSelected}
+                          onChange={() => {
+                            dispatch(setArcGisContentSelected(contentItem.id));
+                          }}
+                        />
+                      </Radio>
+                    </CellDiv>
                   </TableRowItem1>
-                  <TableRowItem2>{contentItem.title}</TableRowItem2>
+
+                  <TableRowItem2>
+                    <CellDiv>{contentItem.title}</CellDiv>
+                  </TableRowItem2>
                   <TableRowItem3>
-                    {formatDate(contentItem.created)}
+                    <CellDiv>{formatDate(contentItem.created)}</CellDiv>
                   </TableRowItem3>
                 </TableRow>
-                <PanelHorizontalLine top={0} bottom={0} left={0} right={0} />
               </Fragment>
             );
           })}

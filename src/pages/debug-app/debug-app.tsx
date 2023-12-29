@@ -759,7 +759,6 @@ export const DebugApp = () => {
             pageId={PageId.debug}
             layers={examples}
             selectedLayerIds={selectedLayerIds}
-            onArcGisImport={onLayerInsertHandler}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
             onLayerDelete={(id) => onLayerDeleteHandler(id)}
