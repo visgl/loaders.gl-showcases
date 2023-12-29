@@ -23,48 +23,48 @@ const arcGisCompleteLoginMock =
 const arcGisRequestLogoutMock =
   arcGisRequestLogout as unknown as jest.Mocked<any>;
 
-const mockEmailExpected = "usermail@gmail.com";
-let mockStorageUserinfo = mockEmailExpected;
+const EMAIL_EXPECTED = "usermail@gmail.com";
+let storageUserinfo = EMAIL_EXPECTED;
 
 describe("slice: arcgis-auth", () => {
   beforeAll(() => {
     arcGisRequestLoginMock.mockImplementation(async () => {
-      mockStorageUserinfo = mockEmailExpected;
-      return mockStorageUserinfo;
+      storageUserinfo = EMAIL_EXPECTED;
+      return storageUserinfo;
     });
     arcGisCompleteLoginMock.mockImplementation(async () => {
-      return mockStorageUserinfo;
+      return storageUserinfo;
     });
     arcGisRequestLogoutMock.mockImplementation(async () => {
-      mockStorageUserinfo = "";
-      return mockStorageUserinfo;
+      storageUserinfo = "";
+      return storageUserinfo;
     });
     getAuthenticatedUserMock.mockImplementation(() => {
-      return mockStorageUserinfo;
+      return storageUserinfo;
     });
   });
 
   beforeEach(() => {
-    mockStorageUserinfo = mockEmailExpected;
+    storageUserinfo = EMAIL_EXPECTED;
   });
 
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
-      user: mockEmailExpected,
+      user: EMAIL_EXPECTED,
     });
   });
 
   it("Selector should return the initial state", () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectUser(state)).toEqual(mockEmailExpected);
+    expect(selectUser(state)).toEqual(EMAIL_EXPECTED);
   });
 
   it("Selector should return the updated value after Login", async () => {
     const store = setupStore();
     await store.dispatch(arcGisLogin());
     const state = store.getState();
-    expect(selectUser(state)).toEqual(mockEmailExpected);
+    expect(selectUser(state)).toEqual(EMAIL_EXPECTED);
   });
 
   it("Selector should return the updated value after Logout", async () => {

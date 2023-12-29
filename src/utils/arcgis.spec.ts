@@ -9,8 +9,8 @@ jest.mock("@esri/arcgis-rest-request");
 jest.mock("@esri/arcgis-rest-portal");
 
 const ARCGIS_REST_USER_INFO = "__ARCGIS_REST_USER_INFO__";
-const mockEmailExpected = "usermail@gmail.com";
-const mockContentExpected = [
+const EMAIL_EXPECTED = "usermail@gmail.com";
+const CONTENT_EXPECTED = [
   {
     id: "new-york",
     name: "NewYork.slpk",
@@ -47,14 +47,14 @@ describe("ArcGIS auth functions", () => {
   });
 
   it("Should return email of user logged in", () => {
-    localStorage.setItem(ARCGIS_REST_USER_INFO, mockEmailExpected);
+    localStorage.setItem(ARCGIS_REST_USER_INFO, EMAIL_EXPECTED);
     const email = getAuthenticatedUser();
-    expect(email).toEqual(mockEmailExpected);
+    expect(email).toEqual(EMAIL_EXPECTED);
   });
 
   it("Should request login and return email of user", async () => {
     const email = await arcGisRequestLogin();
-    expect(email).toBe(mockEmailExpected);
+    expect(email).toBe(EMAIL_EXPECTED);
   });
 
   it("Should request logout and return empty string", async () => {
@@ -63,8 +63,8 @@ describe("ArcGIS auth functions", () => {
   });
 
   it("Should return content with token", async () => {
-    const email = await arcGisRequestLogin();
+    await arcGisRequestLogin();
     const content = await getArcGisUserContent();
-    expect(content).toEqual(mockContentExpected);
+    expect(content).toEqual(CONTENT_EXPECTED);
   });
 });
