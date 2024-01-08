@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import { clickAndNavigate } from "../../utils/testing-utils/utils";
 
 describe("Dashboard Default View", () => {
   let browser;
@@ -50,9 +51,12 @@ describe("Dashboard Default View", () => {
   it("Should go to the Viewer page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
-    await page.click("a[href='/viewer']");
-    await page.waitForTimeout(5000);
-    const currentUrl = page.url();
+
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/viewer']",
+      "tileset="
+    );
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
@@ -63,9 +67,11 @@ describe("Dashboard Default View", () => {
   it("Should go to the Debug page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
-    await page.click("a[href='/debug']");
-    await page.waitForTimeout(5000);
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/debug']",
+      "tileset="
+    );
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
@@ -78,9 +84,10 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#compare-default-button");
     await page.click("#compare-default-button");
     await page.hover("a[href='/compare-across-layers']");
-    await page.click("a[href='/compare-across-layers']");
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/compare-across-layers']"
+    );
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 
@@ -89,28 +96,28 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#compare-default-button");
     await page.click("#compare-default-button");
     await page.hover("a[href='/compare-within-layer']");
-    await page.click("a[href='/compare-within-layer']");
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/compare-within-layer']"
+    );
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 
   it("Should go to the project GitHub page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#header-links-default");
-    await page.click("a[href='https://github.com/visgl/loaders.gl-showcases']");
-    await page.waitForTimeout(5000);
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='https://github.com/visgl/loaders.gl-showcases']"
+    );
 
-    const currentUrl = page.url();
     expect(currentUrl).toBe("https://github.com/visgl/loaders.gl-showcases");
     await page.goto("http://localhost:3000");
   });
 
   it("Should return from viewer page to Dashboard", async () => {
     await page.goto("http://localhost:3000/viewer");
-    await page.waitForSelector("#header-links-default");
-    await page.click("a[href='/dashboard']");
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(page, "a[href='/dashboard']");
     expect(currentUrl).toBe("http://localhost:3000/dashboard");
     const dashboardCanvas = await page.$$("#dashboard-app");
     expect(dashboardCanvas).toBeDefined();
@@ -286,10 +293,8 @@ describe("Dashboard Default View", () => {
   });
 
   it("Should go to viewer page from tools description", async () => {
-    await page.waitForSelector("#viewer-link");
-    await page.click("#viewer-link");
-
-    const currentUrl = page.url();
+    const el = await page.waitForSelector("#viewer-link");
+    const currentUrl = await clickAndNavigate(page, "#viewer-link", "tileset=");
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
@@ -298,9 +303,7 @@ describe("Dashboard Default View", () => {
   it("Should go to debug page from tools description", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
-    await page.click("#debug-link");
-    await page.waitForTimeout(5000);
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(page, "#debug-link", "tileset=");
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
@@ -309,9 +312,11 @@ describe("Dashboard Default View", () => {
   it("Should go to the Comparison Across Layers Page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#comparison-link");
-    await page.click("#comparison-link");
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "#comparison-link",
+      "tileset="
+    );
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 });
@@ -412,10 +417,11 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
-    await page.click("a[href='/viewer']");
-    await page.waitForTimeout(5000);
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/viewer']",
+      "tileset="
+    );
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
@@ -429,10 +435,11 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
-    await page.click("a[href='/debug']");
-    await page.waitForTimeout(5000);
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/debug']",
+      "tileset="
+    );
     expect(currentUrl).toBe(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
@@ -446,10 +453,11 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
-    await page.click("a[href='https://github.com/visgl/loaders.gl-showcases']");
-    await page.waitForTimeout(5000);
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='https://github.com/visgl/loaders.gl-showcases']"
+    );
 
-    const currentUrl = page.url();
     expect(currentUrl).toBe("https://github.com/visgl/loaders.gl-showcases");
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
@@ -459,9 +467,7 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#burger-menu");
     await page.click("#burger-menu");
     await page.waitForSelector("#header-links");
-    await page.click("a[href='/dashboard']");
-
-    const currentUrl = page.url();
+    const currentUrl = await clickAndNavigate(page, "a[href='/dashboard']");
     expect(currentUrl).toBe("http://localhost:3000/dashboard");
     const dashboardCanvas = await page.$$("#dashboard-app");
     expect(dashboardCanvas).toBeDefined();
@@ -501,15 +507,16 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("#compare-tablet-or-mobile-button");
 
     await page.hover("a[href='/compare-across-layers']");
-    await page.click("a[href='/compare-across-layers']");
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/compare-across-layers']"
+    );
 
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
     expect(await page.$$("#left-deck-container")).toBeDefined();
     expect(await page.$$("#right-deck-container")).toBeDefined();
-
-    const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 
@@ -521,15 +528,16 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.click("#compare-tablet-or-mobile-button");
 
     await page.hover("a[href='/compare-within-layer']");
-    await page.click("a[href='/compare-within-layer']");
+    const currentUrl = await clickAndNavigate(
+      page,
+      "a[href='/compare-within-layer']"
+    );
 
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
     expect(await page.$$("#left-deck-container")).toBeDefined();
     expect(await page.$$("#right-deck-container")).toBeDefined();
-
-    const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 });

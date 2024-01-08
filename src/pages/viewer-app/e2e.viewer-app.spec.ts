@@ -31,7 +31,7 @@ describe("Viewer", () => {
     expect(
       await page.$eval(
         "#header-links-default>a[active='1']",
-        (node) => node.innerText
+        (node) => node.textContent
       )
     ).toEqual("Viewer");
   });
@@ -118,7 +118,7 @@ describe("Viewer - Layers panel", () => {
     expect(
       await page.$eval(
         "#viewer--layers-panel #san-francisco-v1_7>input",
-        (node) => node.checked
+        (node) => (node as HTMLInputElement).checked
       )
     ).toBeTruthy();
   });
