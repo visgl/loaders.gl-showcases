@@ -98,9 +98,9 @@ export const urlParamsToViewState = (viewState: ViewStateSet) => {
 };
 
 /**
- * Convert the link of a webscene that can be copied from ArcGIS
+ * Converts the link of a webscene that can be copied from ArcGIS
  * to the format required by i3s-explorer to insert a webscene.
- * @param url Url copied from ArcGIS.
+ * @param url - Url copied from ArcGIS.
  * @returns Url converted.
  */
 export const convertUrlToRestFormat = (url: string): string => {
@@ -108,7 +108,7 @@ export const convertUrlToRestFormat = (url: string): string => {
   const urlObject = new URL(url);
 
   let param: string | null = null;
-  for (const paramName of ["id", "webscene", "layers"]) {
+  for (const paramName of ["id", "webscene"]) {
     param = urlObject.searchParams.get(paramName);
     if (param) {
       break;
@@ -122,4 +122,3 @@ export const convertUrlToRestFormat = (url: string): string => {
   }
   return urlRest;
 };
-
