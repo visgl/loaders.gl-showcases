@@ -5,6 +5,7 @@ import {
   parseTilesetUrlParams,
   urlParamsToViewState,
   viewStateToUrlParams,
+  convertUrlToRestFormat,
 } from "./url-utils";
 
 const mockResponse = jest.fn();
@@ -177,5 +178,18 @@ describe("Url Utils - urlParamsToViewState", () => {
       bearing: 9,
       pitch: 10,
     });
+  });
+});
+
+describe("Url Utils - convertUrlToRestFormat", () => {
+  test("Should convert to the format required", () => {
+    const urlExpected = "https://www.arcgis.com/sharing/rest/content/items/ae34b234d390148/data";
+
+    const urlItem = "https://some.maps.arcgis.com/home/item.html?id=ae34b234d390148";
+    const urlViewer = "https://some.maps.arcgis.com/home/webscene/viewer.html?webscene=ae34b234d390148";
+    expect(convertUrlToRestFormat(urlItem)).toEqual(urlExpected);
+    expect(convertUrlToRestFormat(urlViewer)).toEqual(urlExpected);
+
+    expect(convertUrlToRestFormat(urlExpected)).toEqual(urlExpected);
   });
 });
