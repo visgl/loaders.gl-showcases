@@ -293,7 +293,7 @@ describe("Dashboard Default View", () => {
   });
 
   it("Should go to viewer page from tools description", async () => {
-    const el = await page.waitForSelector("#viewer-link");
+    await page.waitForSelector("#viewer-link");
     const currentUrl = await clickAndNavigate(page, "#viewer-link", "tileset=");
     expect(currentUrl).toBe(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
