@@ -126,7 +126,7 @@ describe("Layers Control Panel - ArcGIS auth", () => {
     const store = setupStore();
     // Let's Log in...
     await store.dispatch(arcGisLogin());
-    const { container } = callRender(
+    callRender(
       renderWithThemeProviders,
       undefined,
       store

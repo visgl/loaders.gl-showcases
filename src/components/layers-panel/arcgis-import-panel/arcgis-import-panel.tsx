@@ -1,6 +1,6 @@
 import styled, { css, useTheme } from "styled-components";
 import { RadioButton } from "../../radio-button/radio-button";
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { ModalDialog } from "../../modal-dialog/modal-dialog";
 import {
@@ -15,6 +15,7 @@ import {
   resetArcGisContentSelected,
 } from "../../../redux/slices/arcgis-content-slice";
 import {
+  ArcGisContent,
   ArcGisContentColumnName,
   ExpandState,
   CollapseDirection,
@@ -43,31 +44,24 @@ const TableHeader = styled.thead`
   overflow: hidden;
 `;
 
-const TableHeaderItem1 = styled.th`
-  width: 44px;
-  padding: 0;
-`;
-const TableHeaderItem2 = styled.th`
-  width: 343px;
-  padding: 0;
-`;
-const TableHeaderItem3 = styled.th`
-  width: 149px;
+const TableHeaderRow = styled.tr``;
+
+const TableHeaderItem = styled.th<{ width: number }>`
+  width: ${({ width }) => `${width}px`};
   padding: 0;
 `;
 
-const TableRowItem1 = styled.td`
-  width: 44px;
+const TableRowItem = styled.td<{
+  width: number;
+  fontWeight: number | undefined;
+}>`
+  width: ${({ width }) => `${width}px`};
   padding: 0;
-`;
-const TableRowItem2 = styled.td`
-  width: 343px;
-  padding: 0;
-  font-weight: 700;
-`;
-const TableRowItem3 = styled.td`
-  width: 149px;
-  padding: 0;
+  ${({ fontWeight }) =>
+    fontWeight !== undefined &&
+    css`
+      font-weight: ${fontWeight};
+    `}
 `;
 
 const CellDiv = styled.div`
@@ -196,13 +190,91 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     }
   };
 
-  const formatDate = (date: number) => {
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
-    });
-    return formatter.format(date);
+  type Column = {
+    width: number;
+    fontWeight?: number;
+    dataColumnName?: ArcGisContentColumnName;
+    sortDataColumnName?: ArcGisContentColumnName;
+    columnName?: string;
+  };
+
+  const columns: Column[] = [
+    {
+      width: 44,
+    },
+    {
+      width: 343,
+      fontWeight: 700,
+      dataColumnName: "title",
+      columnName: "Title",
+    },
+    {
+      width: 149,
+      dataColumnName: "createdFormatted",
+      sortDataColumnName: "created",
+      columnName: "Date",
+    },
+  ];
+
+  const renderHeaderCell = (column: Column): JSX.Element => {
+    const sortDataColumnName =
+      column.sortDataColumnName || column.dataColumnName;
+    return (
+      <TableHeaderItem
+        width={column.width}
+        key={sortDataColumnName ? sortDataColumnName : ""}
+      >
+        {typeof sortDataColumnName !== "undefined" && (
+          <TitleCellContainer onClick={() => onSort(sortDataColumnName)}>
+            {column.columnName || ""}
+            <IconContainer enabled={sortColumn === sortDataColumnName}>
+              <ExpandIcon
+                expandState={ExpandState.expanded}
+                collapseDirection={
+                  sortAscending
+                    ? CollapseDirection.top
+                    : CollapseDirection.bottom
+                }
+                onClick={() => onSort(sortDataColumnName)}
+                fillExpanded={theme.colors.buttonDimIconColor}
+                width={6}
+              />
+            </IconContainer>
+          </TitleCellContainer>
+        )}
+      </TableHeaderItem>
+    );
+  };
+
+  const renderRowCell = (
+    column: Column,
+    contentItem: ArcGisContent,
+    isRowSelected: boolean
+  ): JSX.Element => {
+    const dataColumnName = column.dataColumnName;
+    return (
+      <TableRowItem
+        width={column.width}
+        fontWeight={column.fontWeight}
+        key={`${dataColumnName ? dataColumnName : ""}${contentItem.id}`}
+      >
+        <CellDiv>
+          {dataColumnName ? (
+            contentItem[dataColumnName]
+          ) : (
+            <Radio>
+              <RadioButton
+                id={contentItem.id}
+                checked={isRowSelected}
+                onChange={() => {
+                  dispatch(setArcGisContentSelected(contentItem.id));
+                }}
+              />
+            </Radio>
+          )}
+        </CellDiv>
+      </TableRowItem>
+    );
   };
 
   const theme = useTheme();
@@ -213,86 +285,32 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
       onConfirm={handleImport}
       onCancel={onCancel}
     >
+      <SpinnerContainer visible={isLoading}>
+        <LoadingSpinner />
+      </SpinnerContainer>
+
       <Table>
         <TableHeader>
-          <TableHeaderItem1></TableHeaderItem1>
-          <TableHeaderItem2>
-            <TitleCellContainer onClick={() => onSort("title")}>
-              Title
-              <IconContainer enabled={sortColumn === "title"}>
-                <ExpandIcon
-                  expandState={ExpandState.expanded}
-                  collapseDirection={
-                    sortAscending
-                      ? CollapseDirection.top
-                      : CollapseDirection.bottom
-                  }
-                  onClick={() => onSort("title")}
-                  fillExpanded={theme.colors.buttonDimIconColor}
-                  width={6}
-                />
-              </IconContainer>
-            </TitleCellContainer>
-          </TableHeaderItem2>
-
-          <TableHeaderItem3>
-            <TitleCellContainer onClick={() => onSort("created")}>
-              Date
-              <IconContainer enabled={sortColumn === "created"}>
-                <ExpandIcon
-                  expandState={ExpandState.expanded}
-                  collapseDirection={
-                    sortAscending
-                      ? CollapseDirection.top
-                      : CollapseDirection.bottom
-                  }
-                  onClick={() => onSort("created")}
-                  fillExpanded={theme.colors.buttonDimIconColor}
-                  width={6}
-                />
-              </IconContainer>
-            </TitleCellContainer>
-          </TableHeaderItem3>
+          <TableHeaderRow>
+            {columns.map((column: Column) => renderHeaderCell(column))}
+          </TableHeaderRow>
         </TableHeader>
-
-        <TableContent key={`${sortColumn}-${sortAscending}`}>
-          <SpinnerContainer visible={isLoading}>
-            <LoadingSpinner />
-          </SpinnerContainer>
-
+        <TableContent>
           {arcGisContentArray.map((contentItem) => {
-            const isMapSelected = arcGisContentSelected === contentItem.id;
+            const isRowSelected = arcGisContentSelected === contentItem.id;
 
             return (
-              <Fragment key={contentItem.id}>
-                <TableRow
-                  checked={isMapSelected}
-                  onClick={() => {
-                    dispatch(setArcGisContentSelected(contentItem.id));
-                  }}
-                >
-                  <TableRowItem1>
-                    <CellDiv>
-                      <Radio>
-                        <RadioButton
-                          id={contentItem.id}
-                          checked={isMapSelected}
-                          onChange={() => {
-                            dispatch(setArcGisContentSelected(contentItem.id));
-                          }}
-                        />
-                      </Radio>
-                    </CellDiv>
-                  </TableRowItem1>
-
-                  <TableRowItem2>
-                    <CellDiv>{contentItem.title}</CellDiv>
-                  </TableRowItem2>
-                  <TableRowItem3>
-                    <CellDiv>{formatDate(contentItem.created)}</CellDiv>
-                  </TableRowItem3>
-                </TableRow>
-              </Fragment>
+              <TableRow
+                key={contentItem.id}
+                checked={isRowSelected}
+                onClick={() => {
+                  dispatch(setArcGisContentSelected(contentItem.id));
+                }}
+              >
+                {columns.map((column: Column) =>
+                  renderRowCell(column, contentItem, isRowSelected)
+                )}
+              </TableRow>
             );
           })}
         </TableContent>
