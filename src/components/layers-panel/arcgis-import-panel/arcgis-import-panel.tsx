@@ -46,14 +46,14 @@ const TableHeader = styled.thead`
 
 const TableHeaderRow = styled.tr``;
 
-const TableHeaderItem = styled.th<{ width: number }>`
+const TableHeaderCell = styled.th<{ width: number }>`
   width: ${({ width }) => `${width}px`};
   padding: 0;
 `;
 
-const TableRowItem = styled.td<{
+const TableRowCell = styled.td<{
   width: number;
-  fontWeight: number | undefined;
+  fontWeight?: number;
 }>`
   width: ${({ width }) => `${width}px`};
   padding: 0;
@@ -220,7 +220,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     const sortDataColumnName =
       column.sortDataColumnName || column.dataColumnName;
     return (
-      <TableHeaderItem
+      <TableHeaderCell
         width={column.width}
         key={sortDataColumnName ? sortDataColumnName : ""}
       >
@@ -242,7 +242,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
             </IconContainer>
           </TitleCellContainer>
         )}
-      </TableHeaderItem>
+      </TableHeaderCell>
     );
   };
 
@@ -253,7 +253,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
   ): JSX.Element => {
     const dataColumnName = column.dataColumnName;
     return (
-      <TableRowItem
+      <TableRowCell
         width={column.width}
         fontWeight={column.fontWeight}
         key={`${dataColumnName ? dataColumnName : ""}${contentItem.id}`}
@@ -273,7 +273,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
             </Radio>
           )}
         </CellDiv>
-      </TableRowItem>
+      </TableRowCell>
     );
   };
 
