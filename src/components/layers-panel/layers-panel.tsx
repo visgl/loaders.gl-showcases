@@ -198,31 +198,6 @@ export const LayersPanel = ({
 
   useClickOutside([warningNode], () => setShowExistedError(false));
 
-  const handleArcGisImport = (layer: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
-    const existedLayer = layers.some(
-      (exisLayer) => exisLayer.url.trim() === layer.url.trim()
-    );
-
-    if (existedLayer) {
-      setShowExistedError(true);
-      return;
-    }
-
-    const id = layer.url.replace(/" "/g, "-");
-    const newLayer: LayerExample = {
-      ...layer,
-      id,
-      custom: true,
-      type: getTilesetType(layer.url),
-    };
-
-    onLayerInsert(newLayer);
-  };
-
   const handleInsertLayer = (layer: {
     name: string;
     url: string;
@@ -233,7 +208,6 @@ export const LayersPanel = ({
     );
 
     if (existedLayer) {
-      setShowLayerInsertPanel(false);
       setShowExistedError(true);
       return;
     }
@@ -247,7 +221,6 @@ export const LayersPanel = ({
     };
 
     onLayerInsert(newLayer);
-    setShowLayerInsertPanel(false);
   };
 
   const prepareLayerExamples = (layers: OperationalLayer[]): LayerExample[] => {
@@ -411,7 +384,7 @@ export const LayersPanel = ({
           <PanelHorizontalLine top={0} bottom={0} />
 
           <PanelContent>
-            <ArcGisControlPanel onArcGisImportClick={handleArcGisImport} />
+            <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />
           </PanelContent>
 
           {showExistedError && (
@@ -457,7 +430,10 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
-                onInsert={(layer) => handleInsertLayer(layer)}
+                onInsert={(layer) => {
+                  handleInsertLayer(layer);
+                  setShowLayerInsertPanel(false);
+                }}
                 onCancel={() => setShowLayerInsertPanel(false)}
               />
             </PanelWrapper>
