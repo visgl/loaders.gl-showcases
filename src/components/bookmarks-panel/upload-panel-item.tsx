@@ -28,21 +28,26 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-const ButtonsContainer = styled.div`
+const ButtonsContainer = styled.div<{ justify: string }>`
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: ${(props) => props.justify};
 `;
 
 type UploadPanelItemProps = {
   title?: string;
   children: React.ReactNode;
+  okButtonText?: string;
+  cancelButtonText?: string;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 };
 
 export const UploadPanelItem = ({
   title,
   children,
+  cancelButtonText,
+  okButtonText,
   onCancel,
   onConfirm,
 }: UploadPanelItemProps) => {
@@ -53,14 +58,22 @@ export const UploadPanelItem = ({
       <Content>
         <Title>{title ? title : <WarningIcon />}</Title>
         {children}
-        <ButtonsContainer>
-          <ActionButton
-            variant={ActionButtonVariant.secondary}
-            onClick={onCancel}
-          >
-            Cancel
-          </ActionButton>
-          <ActionButton onClick={onConfirm}>Upload</ActionButton>
+        <ButtonsContainer
+          justify={
+            okButtonText && cancelButtonText ? "space-between" : "center"
+          }
+        >
+          {cancelButtonText && (
+            <ActionButton
+              variant={ActionButtonVariant.secondary}
+              onClick={onCancel}
+            >
+              {cancelButtonText}
+            </ActionButton>
+          )}
+          {okButtonText && onConfirm && (
+            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
+          )}
         </ButtonsContainer>
       </Content>
     </Container>

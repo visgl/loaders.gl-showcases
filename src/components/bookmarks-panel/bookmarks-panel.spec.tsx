@@ -177,7 +177,8 @@ describe("BookmarksPanel", () => {
     userEvent.click(uploadOption);
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
-    const uploadButton = getByText("Upload");
+//    const uploadButton = getByText("Upload");
+    const uploadButton = getByText("Next");
     userEvent.click(uploadButton);
     expect(popover).toContainHTML(dragAndDropText);
   });
@@ -207,7 +208,8 @@ describe("BookmarksPanel", () => {
     userEvent.click(uploadOption);
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
-    const uploadButton = getByText("Upload");
+//    const uploadButton = getByText("Upload");
+    const uploadButton = getByText("Next");
     userEvent.click(uploadButton);
     const cancelButton = getByText("Cancel");
     userEvent.click(cancelButton);

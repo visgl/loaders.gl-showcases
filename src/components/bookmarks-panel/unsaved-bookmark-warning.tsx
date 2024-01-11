@@ -32,7 +32,7 @@ export const UnsavedBookmarkWarning = ({
   onConfirmWarning,
 }: ExistedLayerWarningProps) => {
   return (
-    <UploadPanelItem onCancel={onCancel} onConfirm={onConfirmWarning}>
+    <UploadPanelItem onCancel={onCancel} onConfirm={onConfirmWarning} cancelButtonText={"Cancel"}  okButtonText={"Next"}>
       <Continer>
         <BoldTextItem>
           You have unsaved bookmarks. After uploading the file, they will be

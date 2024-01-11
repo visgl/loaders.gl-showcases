@@ -9,6 +9,8 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <UploadPanelItem
       title="Test item"
+      cancelButtonText="Cancel"
+      okButtonText="Upload"
       onCancel={onCancel}
       onConfirm={onConfirm}
       {...props}
