@@ -567,7 +567,6 @@ export const DebugApp = () => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
@@ -583,6 +582,7 @@ export const DebugApp = () => {
           activeLayersIdsRightSide: [],
         },
       ]);
+      setSelectedBookmarkId(newBookmarkId);
     });
   };
 

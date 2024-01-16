@@ -365,7 +365,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
@@ -380,6 +379,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           activeLayersIdsRightSide: [...activeLayersIdsRightSide],
         },
       ]);
+      setSelectedBookmarkId(newBookmarkId);
     });
   };
 
