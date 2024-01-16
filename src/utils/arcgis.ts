@@ -1,7 +1,6 @@
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
-
 import { getUserContent, IItem } from "@esri/arcgis-rest-portal";
-import { ArcGisContent } from "../types";
+import { IArcGisContent } from "../types";
 import { formatTimestamp } from "../utils/format/format-utils";
 
 const ARCGIS_REST_USER_SESSION = "__ARCGIS_REST_USER_SESSION__";
@@ -102,7 +101,7 @@ export const arcGisRequestLogout = async () => {
   return await updateSessionInfo();
 };
 
-class ArcGisContentClass implements ArcGisContent {
+class ArcGisContent implements IArcGisContent {
   id = "";
   url = "";
   name = "";
@@ -127,8 +126,8 @@ class ArcGisContentClass implements ArcGisContent {
  * Gets the ArcGIS user's content list.
  * @returns The content list containig the necessay info to load the content items.
  */
-export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
-  const contentItems: ArcGisContent[] = [];
+export const getArcGisUserContent = async (): Promise<IArcGisContent[]> => {
+  const contentItems: IArcGisContent[] = [];
   const authentication = getArcGisSession();
   if (authentication) {
     const content = await getUserContent({ authentication });
@@ -140,7 +139,7 @@ export const getArcGisUserContent = async (): Promise<ArcGisContent[]> => {
         item.typeKeywords.includes("Hosted Service")
       ) {
         const token = await authentication.getToken(item.url);
-        const contentItem: ArcGisContent = new ArcGisContentClass(item, token);
+        const contentItem: ArcGisContent = new ArcGisContent(item, token);
         contentItems.push(contentItem);
       }
     }

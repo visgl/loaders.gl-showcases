@@ -15,7 +15,7 @@ import {
   resetArcGisContentSelected,
 } from "../../../redux/slices/arcgis-content-slice";
 import {
-  ArcGisContent,
+  IArcGisContent,
   ArcGisContentColumnName,
   ExpandState,
   CollapseDirection,
@@ -43,8 +43,6 @@ const TableHeader = styled.thead`
   color: ${({ theme }) => theme.colors.secondaryFontColor};
   overflow: hidden;
 `;
-
-const TableHeaderRow = styled.tr``;
 
 const TableHeaderCell = styled.th<{ width: number }>`
   width: ${({ width }) => `${width}px`};
@@ -154,6 +152,36 @@ const IconContainer = styled.div<{ enabled: boolean }>`
   visibility: ${({ enabled }) => (enabled ? "visible" : "hidden")};
 `;
 
+type Column = {
+  id: string;
+  width: number;
+  fontWeight?: number;
+  dataColumnName?: ArcGisContentColumnName;
+  sortDataColumnName?: ArcGisContentColumnName;
+  columnName?: string;
+};
+
+const columns: Column[] = [
+  {
+    id: "radio",
+    width: 44,
+  },
+  {
+    id: "title",
+    width: 343,
+    fontWeight: 700,
+    dataColumnName: "title",
+    columnName: "Title",
+  },
+  {
+    id: "created",
+    width: 149,
+    dataColumnName: "createdFormatted",
+    sortDataColumnName: "created",
+    columnName: "Date",
+  },
+];
+
 type InsertLayerProps = {
   onImport: (object: { name: string; url: string; token?: string }) => void;
   onCancel: () => void;
@@ -190,39 +218,13 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
     }
   };
 
-  type Column = {
-    width: number;
-    fontWeight?: number;
-    dataColumnName?: ArcGisContentColumnName;
-    sortDataColumnName?: ArcGisContentColumnName;
-    columnName?: string;
-  };
-
-  const columns: Column[] = [
-    {
-      width: 44,
-    },
-    {
-      width: 343,
-      fontWeight: 700,
-      dataColumnName: "title",
-      columnName: "Title",
-    },
-    {
-      width: 149,
-      dataColumnName: "createdFormatted",
-      sortDataColumnName: "created",
-      columnName: "Date",
-    },
-  ];
-
   const renderHeaderCell = (column: Column): JSX.Element => {
     const sortDataColumnName =
       column.sortDataColumnName || column.dataColumnName;
     return (
       <TableHeaderCell
         width={column.width}
-        key={sortDataColumnName ? sortDataColumnName : ""}
+        key={column.id}
       >
         {typeof sortDataColumnName !== "undefined" && (
           <TitleCellContainer onClick={() => onSort(sortDataColumnName)}>
@@ -248,7 +250,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
 
   const renderRowCell = (
     column: Column,
-    contentItem: ArcGisContent,
+    contentItem: IArcGisContent,
     isRowSelected: boolean
   ): JSX.Element => {
     const dataColumnName = column.dataColumnName;
@@ -256,7 +258,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
       <TableRowCell
         width={column.width}
         fontWeight={column.fontWeight}
-        key={`${dataColumnName ? dataColumnName : ""}${contentItem.id}`}
+        key={`${column.id}-${contentItem.id}`}
       >
         <CellDiv>
           {dataColumnName ? (
@@ -291,9 +293,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
 
       <Table>
         <TableHeader>
-          <TableHeaderRow>
-            {columns.map((column: Column) => renderHeaderCell(column))}
-          </TableHeaderRow>
+          <tr>{columns.map((column: Column) => renderHeaderCell(column))}</tr>
         </TableHeader>
         <TableContent>
           {arcGisContentArray.map((contentItem) => {

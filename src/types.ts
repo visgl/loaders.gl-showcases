@@ -368,7 +368,7 @@ export type TilesetMetadata = {
   type?: TilesetType;
 };
 
-export type ArcGisContent = {
+export interface IArcGisContent {
   id: string;
   url: string;
   name: string;
@@ -376,6 +376,6 @@ export type ArcGisContent = {
   token?: string;
   created: number;
   createdFormatted: string;
-};
+}
 
-export type ArcGisContentColumnName = keyof ArcGisContent;
+export type ArcGisContentColumnName = keyof IArcGisContent;

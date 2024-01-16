@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { ArcGisContent, ArcGisContentColumnName } from "../../types";
+import { IArcGisContent, ArcGisContentColumnName } from "../../types";
 import { RootState } from "../store";
 import { getArcGisUserContent } from "../../utils/arcgis";
 
 // Define a type for the slice state
 interface ArcGisContentState {
   /** Array of user's content items taken from ArcGIS */
-  arcGisContent: ArcGisContent[];
+  arcGisContent: IArcGisContent[];
   /** Content item selected in UI */
   arcGisContentSelected: string;
   /** Column name to sort the list by */
@@ -28,7 +28,7 @@ const initialState: ArcGisContentState = {
 const sortList = (state: ArcGisContentState) => {
   const column = state.sortColumn;
   if (column) {
-    state.arcGisContent.sort((a: ArcGisContent, b: ArcGisContent) => {
+    state.arcGisContent.sort((a: IArcGisContent, b: IArcGisContent) => {
       let ac = a[column];
       let bc = b[column];
       if (ac === undefined || bc === undefined || ac === null || bc === null) {
@@ -99,15 +99,15 @@ const arcGisContentSlice = createSlice({
   },
 });
 
-export const getArcGisContent = createAsyncThunk<ArcGisContent[]>(
+export const getArcGisContent = createAsyncThunk<IArcGisContent[]>(
   "getArcGisContent",
-  async (): Promise<ArcGisContent[]> => {
-    const response: ArcGisContent[] = await getArcGisUserContent();
+  async (): Promise<IArcGisContent[]> => {
+    const response: IArcGisContent[] = await getArcGisUserContent();
     return response;
   }
 );
 
-export const selectArcGisContent = (state: RootState): ArcGisContent[] =>
+export const selectArcGisContent = (state: RootState): IArcGisContent[] =>
   state.arcGisContent.arcGisContent;
 
 export const selectArcGisContentSelected = (state: RootState): string =>
