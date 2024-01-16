@@ -282,7 +282,7 @@ describe("Compare - Map Control Panel", () => {
 
     // Dropdown button
     const dropdownButton = await page.$eval(
-      `${panelId} > :first-child > svg`,
+      `${panelId} > :first-child > :first-child > svg`,
       (node) => node.innerHTML
     );
     expect(dropdownButton).toBe(chevronSvgHtml);

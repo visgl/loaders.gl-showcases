@@ -50,6 +50,7 @@ const IconContainer = styled.div`
   right: 14px;
   width: 44px;
   height: 44px;
+  cursor: pointer;
 `;
 
 const ContentContainer = styled.div`
@@ -70,10 +71,14 @@ const Title = styled.div`
   line-height: 45px;
 `;
 
-const ButtonsContainer = styled.div`
+type ButtonsContainerProps = {
+  justify: string;
+};
+
+const ButtonsContainer = styled.div<ButtonsContainerProps>`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: ${(props) => props.justify};
   margin: 32px;
   column-gap: 18px;
    {
@@ -93,7 +98,6 @@ type LogoutPanelProps = {
 };
 
 const CloseCrossButton = styled(CloseIcon)`
-  cursor: pointer;
   &:hover {
     fill: ${({ theme }) => theme.colors.mainDimColorInverted};
   }
@@ -102,8 +106,8 @@ const CloseCrossButton = styled(CloseIcon)`
 export const ModalDialog = ({
   title,
   children,
-  cancelButtonText = "Cancel",
-  okButtonText = "Ok",
+  cancelButtonText,
+  okButtonText,
   onCancel,
   onConfirm,
 }: LogoutPanelProps) => {
@@ -114,23 +118,22 @@ export const ModalDialog = ({
       <Overlay />
       <WrapperContainer>
         <Container data-testid="modal-dialog-content">
-          <IconContainer>
-            <CloseCrossButton
-              fill={theme.colors.fontColor}
-              onClick={onCancel}
-            />
+          <IconContainer onClick={onCancel}>
+            <CloseCrossButton fill={theme.colors.fontColor} />
           </IconContainer>
           <ContentContainer>
             <Title>{title}</Title>
             {children}
           </ContentContainer>
-          <ButtonsContainer>
-            <ActionButton
-              variant={ActionButtonVariant.secondary}
-              onClick={onCancel}
-            >
-              {cancelButtonText}
-            </ActionButton>
+          <ButtonsContainer justify={!cancelButtonText ? "end" : "center"}>
+            {cancelButtonText && (
+              <ActionButton
+                variant={ActionButtonVariant.secondary}
+                onClick={onCancel}
+              >
+                {cancelButtonText}
+              </ActionButton>
+            )}
             <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
           </ButtonsContainer>
         </Container>

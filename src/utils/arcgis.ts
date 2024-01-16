@@ -1,4 +1,7 @@
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
+import { getUserContent, IItem } from "@esri/arcgis-rest-portal";
+import { IArcGisContent } from "../types";
+import { formatTimestamp } from "../utils/format/format-utils";
 
 const ARCGIS_REST_USER_SESSION = "__ARCGIS_REST_USER_SESSION__";
 const ARCGIS_REST_USER_INFO = "__ARCGIS_REST_USER_INFO__";
@@ -96,4 +99,50 @@ export const arcGisRequestLogout = async () => {
     await ArcGISIdentityManager.destroy(session);
   }
   return await updateSessionInfo();
+};
+
+class ArcGisContent implements IArcGisContent {
+  id = "";
+  url = "";
+  name = "";
+  title = "";
+  token? = "";
+  created = 0;
+  get createdFormatted(): string {
+    return formatTimestamp(this.created);
+  }
+
+  constructor(item: IItem, token: string) {
+    this.id = item.id;
+    this.url = item.url || "";
+    this.name = item.name || item.title;
+    this.title = item.title;
+    this.token = token;
+    this.created = item.created;
+  }
+}
+
+/**
+ * Gets the ArcGIS user's content list.
+ * @returns The content list containig the necessay info to load the content items.
+ */
+export const getArcGisUserContent = async (): Promise<IArcGisContent[]> => {
+  const contentItems: IArcGisContent[] = [];
+  const authentication = getArcGisSession();
+  if (authentication) {
+    const content = await getUserContent({ authentication });
+    for (const item of content.items) {
+      if (
+        item.url &&
+        item.type === "Scene Service" &&
+        item.typeKeywords &&
+        item.typeKeywords.includes("Hosted Service")
+      ) {
+        const token = await authentication.getToken(item.url);
+        const contentItem: ArcGisContent = new ArcGisContent(item, token);
+        contentItems.push(contentItem);
+      }
+    }
+  }
+  return contentItems;
 };

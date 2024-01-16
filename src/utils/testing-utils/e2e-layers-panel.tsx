@@ -110,7 +110,7 @@ export const inserAndDeleteLayer = async (
     `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child`
   );
   await insertButton.click();
-  let insertPanel = await page.$(`${panelId} > :nth-child(5)`);
+  let insertPanel = await page.$(`${panelId} > :nth-child(7)`);
 
   // Header
   const insertPanelHeaderText = await insertPanel.$eval(
@@ -156,19 +156,19 @@ export const inserAndDeleteLayer = async (
     `${panelId} form.insert-form button[type='submit']`
   );
   await submitInsert.click();
-  await page.waitForSelector(`${panelId} > :nth-child(5)`);
-  const warningPanel = await page.$(`${panelId} > :nth-child(5)`);
+  await page.waitForSelector(`${panelId} > :nth-child(7)`);
+  const warningPanel = await page.$(`${panelId} > :nth-child(7)`);
   const warningText = await warningPanel.$eval(
     `:first-child > :first-child`,
     (node) => node.innerText
   );
   expect(warningText).toBe("You are trying to add an existing area to the map");
   await expect(page).toClick("button", { text: "Ok" });
-  let anyExtraPanel = await page.$(`${panelId} > :nth-child(5)`);
+  let anyExtraPanel = await page.$(`${panelId} > :nth-child(7)`);
   expect(anyExtraPanel).toBeNull();
 
   await insertButton.click();
-  insertPanel = await page.$(`${panelId} > :nth-child(5)`);
+  insertPanel = await page.$(`${panelId} > :nth-child(7)`);
 
   // Add layer
   await fillForm(page, `${panelId} form.insert-form`, {
@@ -180,7 +180,7 @@ export const inserAndDeleteLayer = async (
     `${panelId} form.insert-form button[type='submit']`
   );
   await submitInsert.click();
-  anyExtraPanel = await page.$(`${panelId} > :nth-child(5)`);
+  anyExtraPanel = await page.$(`${panelId} > :nth-child(7)`);
   expect(anyExtraPanel).toBeNull();
 
   let layers = await page.$$(

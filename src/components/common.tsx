@@ -64,8 +64,10 @@ export const PanelContent = styled.div`
 export const PanelHorizontalLine = styled.div<{
   top?: number;
   bottom?: number;
+  left?: number;
+  right?: number;
 }>`
-  margin: ${({ top = 24, bottom = 16 }) => `${top}px 16px ${bottom}px 16px`};
+  margin: ${({ top = 24, bottom = 16, left = 16, right = 16 }) => `${top}px ${right}px ${bottom}px ${left}px`};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};

@@ -367,3 +367,15 @@ export type TilesetMetadata = {
   hasChildren: boolean;
   type?: TilesetType;
 };
+
+export interface IArcGisContent {
+  id: string;
+  url: string;
+  name: string;
+  title: string;
+  token?: string;
+  created: number;
+  createdFormatted: string;
+}
+
+export type ArcGisContentColumnName = keyof IArcGisContent;
