@@ -35,7 +35,7 @@ import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 import { ArcGISWebSceneLoader } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
-import { getTilesetType } from "../../utils/url-utils";
+import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
@@ -252,6 +252,8 @@ export const LayersPanel = ({
     url: string;
     token?: string;
   }) => {
+    scene.url = convertUrlToRestFormat(scene.url);
+
     const existedScene = layers.some(
       (exisLayer) => exisLayer.url.trim() === scene.url.trim()
     );
