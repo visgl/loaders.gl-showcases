@@ -37,8 +37,6 @@ const ButtonsContainer = styled.div<{ justify: string }>`
 type UploadPanelItemProps = {
   title?: string;
   children: React.ReactNode;
-  okButtonText?: string;
-  cancelButtonText?: string;
   onCancel: () => void;
   onConfirm?: () => void;
 };
@@ -46,8 +44,6 @@ type UploadPanelItemProps = {
 export const UploadPanelItem = ({
   title,
   children,
-  cancelButtonText,
-  okButtonText,
   onCancel,
   onConfirm,
 }: UploadPanelItemProps) => {
@@ -58,22 +54,14 @@ export const UploadPanelItem = ({
       <Content>
         <Title>{title ? title : <WarningIcon />}</Title>
         {children}
-        <ButtonsContainer
-          justify={
-            okButtonText && cancelButtonText ? "space-between" : "center"
-          }
-        >
-          {cancelButtonText && (
-            <ActionButton
-              variant={ActionButtonVariant.secondary}
-              onClick={onCancel}
-            >
-              {cancelButtonText}
-            </ActionButton>
-          )}
-          {okButtonText && onConfirm && (
-            <ActionButton onClick={onConfirm}>{okButtonText}</ActionButton>
-          )}
+        <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
+          <ActionButton
+            variant={ActionButtonVariant.secondary}
+            onClick={onCancel}
+          >
+            Cancel
+          </ActionButton>
+          {onConfirm && <ActionButton onClick={onConfirm}>Next</ActionButton>}
         </ButtonsContainer>
       </Content>
     </Container>

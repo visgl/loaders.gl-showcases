@@ -64,7 +64,6 @@ const UploadInput = styled.input`
 
 type ExistedLayerWarningProps = {
   onCancel: () => void;
-  onConfirmWarning: () => void;
   onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
 };
 
@@ -72,7 +71,6 @@ export const dragAndDropText = "Drag and drop you json file here";
 
 export const UploadPanel = ({
   onCancel,
-  onConfirmWarning,
   onBookmarksUploaded,
 }: ExistedLayerWarningProps) => {
   const layout = useAppLayout();
@@ -131,9 +129,7 @@ export const UploadPanel = ({
   return (
     <UploadPanelItem
       title={"Upload Bookmarks"}
-      cancelButtonText={"Cancel"}
       onCancel={onCancel}
-      onConfirm={onConfirmWarning}
     >
       <UploadInput
         ref={inputRef}
