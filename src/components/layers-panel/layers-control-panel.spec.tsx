@@ -1,23 +1,50 @@
 import { act, screen } from "@testing-library/react";
-import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
+import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersControlPanel } from "./layers-control-panel";
 
 // Mocked components
-import { PlusButton } from "../plus-button/plus-button";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { ListItem } from "./list-item/list-item";
+import { setupStore } from "../../redux/store";
 
 jest.mock("./list-item/list-item");
-jest.mock("../plus-button/plus-button");
+jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./layer-options-menu/layer-options-menu");
 
 const ListItemMock = ListItem as unknown as jest.Mocked<any>;
-const PlusButtonMock = PlusButton as unknown as jest.Mocked<any>;
+const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
 const DeleteConfirmationMock =
   DeleteConfirmation as unknown as jest.Mocked<any>;
 const LayerOptionsMenuMock = LayerOptionsMenu as unknown as jest.Mocked<any>;
+
+const onInsertLayerMock = jest.fn();
+const onInsertSceneMock = jest.fn();
+const onDeleteLayerMock = jest.fn();
+const onSelectLayerMock = jest.fn();
+const onLayerSettingsClickMock = jest.fn();
+const onPointToLayerMock = jest.fn();
+
+const callRender = (renderFunc, props = {}, store = setupStore()) => {
+  return renderFunc(
+    <LayersControlPanel
+      onSceneInsertClick={onInsertSceneMock}
+      layers={[]}
+      selectedLayerIds={[]}
+      type={0} // Radio Button type
+      hasSettings={false}
+      onLayerSelect={onSelectLayerMock}
+      onLayerInsertClick={onInsertLayerMock}
+      onLayerSettingsClick={onLayerSettingsClickMock}
+      onPointToLayer={onPointToLayerMock}
+      deleteLayer={onDeleteLayerMock}
+      {...props}
+    />,
+    store
+  );
+};
 
 beforeAll(() => {
   ListItemMock.mockImplementation((props) => (
@@ -32,34 +59,14 @@ beforeAll(() => {
   LayerOptionsMenuMock.mockImplementation(() => <div>Layers Options</div>);
 });
 
-const onInsertLayerMock = jest.fn();
-const onInsertSceneMock = jest.fn();
-const onDeleteLayerMock = jest.fn();
-const onSelectLayerMock = jest.fn();
-const onLayerSettingsClickMock = jest.fn();
-const onPointToLayerMock = jest.fn();
-
-const callRender = (renderFunc, props = {}) => {
-  return renderFunc(
-    <LayersControlPanel
-      onSceneInsertClick={onInsertSceneMock}
-      layers={[]}
-      selectedLayerIds={[]}
-      type={0} // Radio Button type
-      hasSettings={false}
-      onLayerSelect={onSelectLayerMock}
-      onLayerInsertClick={onInsertLayerMock}
-      onLayerSettingsClick={onLayerSettingsClickMock}
-      onPointToLayer={onPointToLayerMock}
-      deleteLayer={onDeleteLayerMock}
-      {...props}
-    />
-  );
-};
-
 describe("Layers Control Panel", () => {
   it("Should render LayersControlPanel without layers", () => {
-    const { container } = callRender(renderWithTheme);
+    const store = setupStore();
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
     expect(container).toBeInTheDocument();
 
     // Insert Buttons should be present
@@ -68,37 +75,42 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should render LayersControlPanel with layers", () => {
-    const { container } = callRender(renderWithTheme, {
-      layers: [
-        { id: "first", name: "first name", url: "https://first-url.com" },
-        { id: "second", name: "second name", url: "https://second-url.com" },
-        {
-          id: "third",
-          name: "third name",
-          url: "",
-          layers: [
-            {
-              id: "fourth",
-              name: "fourth name",
-              url: "https://fourth-url.com",
-            },
-            { id: "fith", name: "fith name", url: "https://fith-url.com" },
-            {
-              id: "sixth",
-              name: "sixth name",
-              url: "https://sixth-url.com",
-              layers: [
-                {
-                  id: "seventh",
-                  name: "seventh name",
-                  url: "https://seventh-url.com",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
+    const store = setupStore();
+    const { container } = callRender(
+      renderWithThemeProviders,
+      {
+        layers: [
+          { id: "first", name: "first name", url: "https://first-url.com" },
+          { id: "second", name: "second name", url: "https://second-url.com" },
+          {
+            id: "third",
+            name: "third name",
+            url: "",
+            layers: [
+              {
+                id: "fourth",
+                name: "fourth name",
+                url: "https://fourth-url.com",
+              },
+              { id: "fith", name: "fith name", url: "https://fith-url.com" },
+              {
+                id: "sixth",
+                name: "sixth name",
+                url: "https://sixth-url.com",
+                layers: [
+                  {
+                    id: "seventh",
+                    name: "seventh name",
+                    url: "https://seventh-url.com",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      store
+    );
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("ListItem-first")).toBeInTheDocument();
@@ -111,7 +123,7 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should be able to call functions", () => {
-    const { container } = callRender(renderWithTheme, {
+    const { container } = callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", mapUrl: "https://first-url.com" },
       ],
@@ -139,7 +151,7 @@ describe("Layers Control Panel", () => {
   });
 
   it("Should render conformation panel", () => {
-    callRender(renderWithTheme, {
+    callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", mapUrl: "https://first-url.com" },
         // Candidate to delete

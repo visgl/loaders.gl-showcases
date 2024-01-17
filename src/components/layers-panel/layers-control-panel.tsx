@@ -1,11 +1,14 @@
 import { Fragment, ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-
-import { SelectionState, LayerExample, LayerViewState, ListItemType } from "../../types";
-
+import {
+  SelectionState,
+  LayerExample,
+  LayerViewState,
+  ListItemType,
+} from "../../types";
 import { ListItem } from "./list-item/list-item";
-import { PlusButton } from "../plus-button/plus-button";
-
+import PlusIcon from "../../../public/icons/plus.svg";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
@@ -35,18 +38,14 @@ const LayersList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
-  > * {
-    &:first-child {
-      margin-bottom: 28px;
-    }
-  }
+  row-gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 `;
 
 const ChildrenContainer = styled.div`
@@ -82,23 +81,31 @@ export const LayersControlPanel = ({
     let selectedState = SelectionState.unselected;
 
     if (!childLayers.length) {
-      selectedState = selectedLayerIds.includes(layer.id) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = selectedLayerIds.includes(layer.id)
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && !parentLayer) {
-      selectedState = groupLeafs.some((leaf) => selectedLayerIds.includes(leaf.id)) ? SelectionState.selected : SelectionState.unselected;
+      selectedState = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      )
+        ? SelectionState.selected
+        : SelectionState.unselected;
     }
 
     if (childLayers.length && parentLayer) {
       const isAllChildLayersSelected = !groupLeafs.some(
-        (leaf) => !selectedLayerIds.includes(leaf.id));
-      const isAnyChildLayerSelected = groupLeafs.some(
-        (leaf) => selectedLayerIds.includes(leaf.id));
+        (leaf) => !selectedLayerIds.includes(leaf.id)
+      );
+      const isAnyChildLayerSelected = groupLeafs.some((leaf) =>
+        selectedLayerIds.includes(leaf.id)
+      );
 
       if (isAllChildLayersSelected) {
         selectedState = SelectionState.selected;
       } else if (isAnyChildLayerSelected) {
-        selectedState = SelectionState.indeterminate
+        selectedState = SelectionState.indeterminate;
       }
     }
 
@@ -178,12 +185,20 @@ export const LayersControlPanel = ({
     <LayersContainer>
       <LayersList>{renderLayers(layers)}</LayersList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onLayerInsertClick}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onLayerInsertClick}
+        >
           Insert layer
-        </PlusButton>
-        <PlusButton buttonSize={ButtonSize.Small} onClick={onSceneInsertClick}>
+        </ActionIconButton>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={onSceneInsertClick}
+        >
           Insert scene
-        </PlusButton>
+        </ActionIconButton>
       </InsertButtons>
     </LayersContainer>
   );
