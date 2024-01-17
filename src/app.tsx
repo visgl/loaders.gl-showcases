@@ -21,8 +21,6 @@ import {
   color_brand_secondary_dark,
   color_accent_primary,
   color_accent_tertiary,
-  color_brand_tertiary,
-  dim_brand_tertinary
 } from "./constants/colors";
 import * as Pages from "./pages";
 import { AppThemes, ComparisonMode, Theme } from "./types";
