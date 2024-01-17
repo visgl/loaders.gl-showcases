@@ -368,6 +368,18 @@ export type TilesetMetadata = {
   type?: TilesetType;
 };
 
+export interface IArcGisContent {
+  id: string;
+  url: string;
+  name: string;
+  title: string;
+  token?: string;
+  created: number;
+  createdFormatted: string;
+}
+
+export type ArcGisContentColumnName = keyof IArcGisContent;
+
 export enum FetchingStatus {
   pending = "pending",
   ready = "ready",

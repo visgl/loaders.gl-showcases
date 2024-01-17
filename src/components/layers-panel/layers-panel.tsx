@@ -19,6 +19,7 @@ import {
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
+import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
 import {
   PanelContainer,
@@ -207,7 +208,6 @@ export const LayersPanel = ({
     );
 
     if (existedLayer) {
-      setShowLayerInsertPanel(false);
       setShowExistedError(true);
       return;
     }
@@ -221,7 +221,6 @@ export const LayersPanel = ({
     };
 
     onLayerInsert(newLayer);
-    setShowLayerInsertPanel(false);
   };
 
   const prepareLayerExamples = (layers: OperationalLayer[]): LayerExample[] => {
@@ -383,6 +382,13 @@ export const LayersPanel = ({
               />
             )}
           </PanelContent>
+
+          <PanelHorizontalLine top={0} bottom={0} />
+
+          <PanelContent>
+            <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />
+          </PanelContent>
+
           {showExistedError && (
             <PanelWrapper ref={(element) => setWarningNode(element)}>
               <WarningPanel
@@ -426,7 +432,10 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
-                onInsert={(layer) => handleInsertLayer(layer)}
+                onInsert={(layer) => {
+                  handleInsertLayer(layer);
+                  setShowLayerInsertPanel(false);
+                }}
                 onCancel={() => setShowLayerInsertPanel(false)}
               />
             </PanelWrapper>

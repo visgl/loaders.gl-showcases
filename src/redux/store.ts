@@ -10,6 +10,8 @@ import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
 import symbolizationSliceReducer from "./slices/symbolization-slice";
+import arcGisAuthSliceReducer from "./slices/arcgis-auth-slice";
+import arcGisContentSliceReducer from "./slices/arcgis-content-slice";
 import layerNamesSliceReducer from "./slices/layer-names-slice";
 
 // Create the root reducer separately so we can extract the RootState type
@@ -21,6 +23,8 @@ const rootReducer = combineReducers({
   baseMaps: baseMapsSliceReducer,
   symbolization: symbolizationSliceReducer,
   i3sStats: i3sStatsSliceReducer,
+  arcGisAuth: arcGisAuthSliceReducer,
+  arcGisContent: arcGisContentSliceReducer,
   layerNames: layerNamesSliceReducer,
 });
 

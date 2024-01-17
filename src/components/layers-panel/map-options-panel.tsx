@@ -1,7 +1,8 @@
 import { useState, Fragment } from "react";
 import styled from "styled-components";
 import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { SelectionState } from "../../types";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
@@ -41,19 +42,12 @@ const MapList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const InsertButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
-
-  > * {
-    &:first-child {
-      margin-bottom: 0px;
-    }
-  }
+  row-gap: 8px;
 `;
 
 export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
@@ -120,9 +114,9 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
         })}
       </MapList>
       <InsertButtons>
-        <PlusButton buttonSize={ButtonSize.Big} onClick={insertBaseMap}>
+        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Big} onClick={insertBaseMap}>
           Insert Base Map
-        </PlusButton>
+        </ActionIconButton>
       </InsertButtons>
     </MapOptionsContainer>
   );
