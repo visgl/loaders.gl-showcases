@@ -384,3 +384,9 @@ export enum FetchingStatus {
   pending = "pending",
   ready = "ready",
 }
+
+export enum TooltipPosition {
+  OnTop,
+  OnBottom,
+}
+

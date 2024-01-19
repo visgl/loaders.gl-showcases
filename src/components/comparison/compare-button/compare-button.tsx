@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef } from "react";
 import styled, { css } from "styled-components";
-import { CompareButtonMode, Layout, LayoutProps } from "../../../types";
+import { CompareButtonMode, Layout, LayoutProps, TooltipPosition } from "../../../types";
 import { Title } from "../../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
@@ -9,6 +9,7 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../../utils/hooks/layout";
+import { Tooltip } from "../../tooltip/tooltip";
 
 const Container = styled.div<LayoutProps & { disableButton: boolean }>`
   position: absolute;
@@ -18,7 +19,7 @@ const Container = styled.div<LayoutProps & { disableButton: boolean }>`
     mobile: "top: 50%",
   })};
   left: ${getCurrentLayoutProperty({
-    desktop: "calc(50% - 95px)",
+    desktop: "calc(50% - 89px)",
     tablet: "calc(50% - 85px)",
     mobile: "calc(50% - 85px)",
   })};
@@ -71,42 +72,6 @@ const Button = styled.button<
   }
 `;
 
-const Tooltip = styled.div<{ isMobile: boolean }>`
-  position: absolute;
-  top: 70px;
-  left: calc(50% - 200px);
-  background-color: ${({ theme }) => theme.colors.mainHiglightColor};
-  border-radius: 8px;
-  padding: 8px;
-  z-index: 1;
-  font-weight: 500;
-  font-style: normal;
-  font-size: 16px;
-  line-height: 19px;
-  color: ${({ theme }) => theme.colors.fontColor};
-  white-space: nowrap;
-
-  ${({ isMobile }) =>
-    isMobile &&
-    css`
-      height: 38px;
-      width: 250px;
-      left: calc(50% - 130px);
-      top: 65px;
-      white-space: normal;
-      text-align: center;
-    `}
-
-  &:before {
-    content: "";
-    position: absolute;
-    bottom: 95%;
-    left: calc(50% - 15px);
-    border: 9px solid transparent;
-    border-bottom-color: ${({ theme }) => theme.colors.mainHiglightColor};
-  }
-`;
-
 const ButtonTitle = styled(Title)`
   margin: 0 0 0 8px;
   font-weight: 500;
@@ -130,20 +95,11 @@ export const CompareButton = ({
   onCompareModeToggle,
   onDownloadClick,
 }: CompareButtonProps) => {
-  const [isHovering, setIsHovering] = useState<boolean>(false);
-
   const layout = useAppLayout();
   const isMobileLayout = layout !== Layout.Desktop;
 
-  const showTooltip = (isHovering || isMobileLayout) && disableButton;
-
-  const onPointerEnter = () => {
-    setIsHovering(true);
-  };
-
-  const onPointerLeave = () => {
-    setIsHovering(false);
-  };
+  const refCompare = useRef(null);
+  const refDownload = useRef(null);
 
   return (
     <Container
@@ -152,12 +108,11 @@ export const CompareButton = ({
       disableButton={disableButton}
     >
       <Button
+        ref={refCompare}
         layout={layout}
         isMobile={isMobileLayout}
         disabled={disableButton}
         onClick={onCompareModeToggle}
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
       >
         {compareButtonMode === CompareButtonMode.Start && (
           <>
@@ -174,6 +129,7 @@ export const CompareButton = ({
       </Button>
       {downloadStats && (
         <Button
+          ref={refDownload}
           layout={layout}
           disabled={disableDownloadButton}
           onClick={onDownloadClick}
@@ -181,11 +137,17 @@ export const CompareButton = ({
           <DownloadIcon />
         </Button>
       )}
-      {showTooltip && (
-        <Tooltip isMobile={isMobileLayout}>
-          You can start comparison when all tiles are fully loaded
-        </Tooltip>
-      )}
+      <Tooltip
+        refElement={refCompare}
+        position={TooltipPosition.OnBottom}
+        disabled={!disableButton}
+      >
+        You can start comparison when all tiles are fully loaded
+      </Tooltip>
+
+      <Tooltip refElement={refDownload} position={TooltipPosition.OnBottom}>
+        Download comparison results
+      </Tooltip>
     </Container>
   );
 };

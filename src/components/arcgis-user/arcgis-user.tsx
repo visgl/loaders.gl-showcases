@@ -1,6 +1,9 @@
+import { useRef } from "react";
 import styled from "styled-components";
 import LogoutIcon from "../../../public/icons/logout.svg";
 import { color_canvas_secondary_inverted } from "../../constants/colors";
+import { Tooltip } from "../tooltip/tooltip";
+import { TooltipPosition } from "../../types";
 
 const Container = styled.div`
   display: flex;
@@ -43,12 +46,24 @@ type ArcGisUserProps = {
 };
 
 export const AcrGisUser = ({ children, onClick }: ArcGisUserProps) => {
+  const refLogout = useRef(null);
   return (
-    <Container>
-      <UserInfo>{children}</UserInfo>
-      <IconButton onClick={onClick} data-testid="userinfo-button">
-        <StyledIcon />
-      </IconButton>
-    </Container>
+    <>
+      <Container>
+        <UserInfo>{children}</UserInfo>
+        <IconButton onClick={onClick} data-testid="userinfo-button">
+          <div ref={refLogout}>
+            <StyledIcon />
+          </div>
+        </IconButton>
+      </Container>
+      <Tooltip
+        refElement={refLogout}
+        position={TooltipPosition.OnTop}
+        margin={0}
+      >
+        Logout from ArcGIS
+      </Tooltip>
+    </>
   );
 };
