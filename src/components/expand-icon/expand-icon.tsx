@@ -47,6 +47,17 @@ const IconButton = styled.div<{
   }
 `;
 
+const IconButtonContainer = styled.div<{
+  width: number;
+  height: number;
+}>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${({ width }) => `${width}px`}}
+  height: ${({ height }) => `${height}px`}}
+`;
+
 type ExpandIconProps = {
   /** expanded/collapsed */
   expandState: ExpandState;
@@ -56,6 +67,10 @@ type ExpandIconProps = {
   fillExpanded?: string;
   /** icon color for collapsed state */
   fillCollapsed?: string;
+  /** Width of the icon */
+  width?: number;
+  /** Height of the icon */
+  height?: number;
   /** click event handler */
   onClick: (e: SyntheticEvent) => void;
 };
@@ -65,6 +80,8 @@ export const ExpandIcon = ({
   fillExpanded,
   fillCollapsed,
   collapseDirection = CollapseDirection.top,
+  width = 8,
+  height = 12,
 }: ExpandIconProps) => {
   return (
     <IconButton
@@ -74,7 +91,9 @@ export const ExpandIcon = ({
       fillCollapsed={fillCollapsed}
       onClick={onClick}
     >
-      <ChevronIcon />
+      <IconButtonContainer width={width} height={height}>
+        <ChevronIcon />
+      </IconButtonContainer>
     </IconButton>
   );
 };

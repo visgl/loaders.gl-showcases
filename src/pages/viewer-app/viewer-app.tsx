@@ -437,7 +437,6 @@ export const ViewerApp = () => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
@@ -452,6 +451,7 @@ export const ViewerApp = () => {
           activeLayersIdsRightSide: [],
         },
       ]);
+      setSelectedBookmarkId(newBookmarkId);
     });
   };
 

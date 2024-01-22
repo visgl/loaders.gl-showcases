@@ -77,6 +77,13 @@ const THEMES: AppThemes = {
       validateTileOk: color_brand_secondary_dark,
       validateTileWarning: color_accent_tertiary,
       filtrationImage: color_brand_quaternary,
+      actionIconButtonDisabledColor: color_canvas_primary,
+      actionIconButtonDisabledBG: dim_canvas_primary,
+      actionIconButtonTextDisabledColor: dim_canvas_primary,
+      actionIconButtonTextDisabledColorHover: dim_brand_tertinary,
+      logoutButtonTextColor: dim_canvas_primary,
+      logoutButtonIconColorHover: dim_brand_tertinary,
+      esriImageColor: color_canvas_secondary_inverted,
       switchDisabledBackground: hilite_canvas_primary,
       switchDisabledBackgroundHovered: dim_canvas_primary,
       switchCheckedBackground: color_brand_tertiary,
@@ -112,6 +119,13 @@ const THEMES: AppThemes = {
       validateTileOk: color_brand_secondary,
       validateTileWarning: color_accent_primary,
       filtrationImage: color_canvas_secondary,
+      actionIconButtonDisabledColor: color_canvas_secondary,
+      actionIconButtonDisabledBG: `${color_brand_tertiary}66`,
+      actionIconButtonTextDisabledColor: `${color_brand_tertiary}66`,
+      actionIconButtonTextDisabledColorHover: color_brand_tertiary,
+      logoutButtonTextColor: color_brand_quaternary,
+      logoutButtonIconColorHover: color_brand_tertiary,
+      esriImageColor: `${color_brand_tertiary}66`,
       switchDisabledBackground: dim_canvas_secondary,
       switchDisabledBackgroundHovered: color_canvas_secondary_inverted,
       switchCheckedBackground: color_brand_tertiary,
@@ -152,6 +166,7 @@ export const App = () => {
               <Route path={"dashboard"} element={<Pages.Dashboard />} />
               <Route path={"viewer"} element={<Pages.ViewerApp />} />
               <Route path={"debug"} element={<Pages.DebugApp />} />
+              <Route path={"auth"} element={<Pages.AuthApp />} />
               <Route
                 path={"compare-across-layers"}
                 element={

@@ -1,4 +1,10 @@
-import { formatBoolean, formatFloatNumber, formatIntValue, formatStringValue } from "./format-utils";
+import {
+  formatBoolean,
+  formatFloatNumber,
+  formatIntValue,
+  formatStringValue,
+  formatTimestamp,
+} from "./format-utils";
 
 describe("Format Utils", () => {
   describe("formatStringValue", () => {
@@ -52,6 +58,12 @@ describe("Format Utils", () => {
     it("Should return 'No'", () => {
       const result1 = formatBoolean(false);
       expect(result1).toBe("No");
+    });
+  });
+
+  describe("formatTimestamp", () => {
+    it("Should return date formatted", () => {
+      expect(formatTimestamp(1704877308897)).toBe("January 10, 2024");
     });
   });
 });
