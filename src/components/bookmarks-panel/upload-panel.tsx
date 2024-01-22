@@ -64,7 +64,6 @@ const UploadInput = styled.input`
 
 type ExistedLayerWarningProps = {
   onCancel: () => void;
-  onConfirmWarning: () => void;
   onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
 };
 
@@ -72,7 +71,6 @@ export const dragAndDropText = "Drag and drop you json file here";
 
 export const UploadPanel = ({
   onCancel,
-  onConfirmWarning,
   onBookmarksUploaded,
 }: ExistedLayerWarningProps) => {
   const layout = useAppLayout();
@@ -92,7 +90,7 @@ export const UploadPanel = ({
         const validator: Validator = await JsonSchema.validate(schema);
         result = JSON.parse(event.target.result);
         const validationResult: Result = validator(result);
-        if (validationResult.valid) { 
+        if (validationResult.valid) {
           onBookmarksUploaded(result);
         }
       } catch {
@@ -132,7 +130,6 @@ export const UploadPanel = ({
     <UploadPanelItem
       title={"Upload Bookmarks"}
       onCancel={onCancel}
-      onConfirm={onConfirmWarning}
     >
       <UploadInput
         ref={inputRef}
@@ -152,9 +149,7 @@ export const UploadPanel = ({
             <BrosweFileText>or</BrosweFileText>
           </>
         )}
-        <BrosweFileLink>
-          browse file
-        </BrosweFileLink>
+        <BrosweFileLink>browse file</BrosweFileLink>
         {dragActive && (
           <DragAndDropOverlay
             data-testid="dnd-overlay"
