@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import {
   LayerExample,
@@ -91,6 +92,7 @@ import {
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -118,6 +120,17 @@ const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show norm
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
+
+const WarningContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -155,6 +168,9 @@ export const DebugApp = () => {
     useState<boolean>(false);
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
+  const [showWrongBookmarkWarning, setShowWrongBookmarkWarning] = useState<
+    PageId | false
+  >(false);
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -656,9 +672,7 @@ export const DebugApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the debug app`
-      );
+      setShowWrongBookmarkWarning(bookmarksPageId);
     }
   };
 
@@ -865,6 +879,14 @@ export const DebugApp = () => {
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
       />
+      {showWrongBookmarkWarning !== false && (
+        <WarningContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${showWrongBookmarkWarning} mode`}
+            onConfirm={() => setShowWrongBookmarkWarning(false)}
+          />
+        </WarningContainer>
+      )}
     </MapArea>
   );
 };

@@ -38,6 +38,7 @@ import {
   deleteBaseMaps,
   setInitialBaseMaps,
 } from "../../redux/slices/base-maps-slice";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -89,6 +90,17 @@ const Devider = styled.div<LayoutProps>`
   background-color: ${color_brand_primary};
 `;
 
+const WarningContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   const loadManagerRef = useRef<ComparisonLoadManager>(
     new ComparisonLoadManager()
@@ -132,6 +144,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(false);
   const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
     useState<boolean>(false);
+  const [showWrongBookmarkWarning, setShowWrongBookmarkWarning] = useState<
+    PageId | false
+  >(false);
   const dispatch = useAppDispatch();
 
   const layout = useAppLayout();
@@ -305,9 +320,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`
-      );
+      setShowWrongBookmarkWarning(bookmarksPageId);
     }
   };
 
@@ -550,6 +563,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
         />
+      )}
+      {showWrongBookmarkWarning !== false && (
+        <WarningContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${showWrongBookmarkWarning} mode`}
+            onConfirm={() => setShowWrongBookmarkWarning(false)}
+          />
+        </WarningContainer>
       )}
     </Container>
   );

@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { InteractionStateChange, ViewState } from "@deck.gl/core";
@@ -78,6 +79,7 @@ import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { getBSLStatisticsSummary } from "../../redux/slices/i3s-stats-slice";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -93,6 +95,17 @@ const INITIAL_VIEW_STATE = {
     transitionInterpolator: null,
   },
 };
+
+const WarningContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export const ViewerApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
@@ -134,6 +147,9 @@ export const ViewerApp = () => {
   const filtersByAttribute = useSelector((state: RootState) =>
     selectFiltersByAttribute(state)
   );
+  const [showWrongBookmarkWarning, setShowWrongBookmarkWarning] = useState<
+    PageId | false
+  >(false);
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -518,9 +534,7 @@ export const ViewerApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the viewer app`
-      );
+      setShowWrongBookmarkWarning(bookmarksPageId);
     }
   };
 
@@ -692,6 +706,14 @@ export const ViewerApp = () => {
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
       />
+      {showWrongBookmarkWarning !== false && (
+        <WarningContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${showWrongBookmarkWarning} mode`}
+            onConfirm={() => setShowWrongBookmarkWarning(false)}
+          />
+        </WarningContainer>
+      )}
     </MapArea>
   );
 };
