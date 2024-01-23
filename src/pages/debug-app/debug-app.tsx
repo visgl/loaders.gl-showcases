@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import {
   LayerExample,
@@ -50,6 +49,7 @@ import {
   MapArea,
   RightSidePanelWrapper,
   OnlyToolsPanelWrapper,
+  CenteredContainer,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -121,17 +121,6 @@ const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
 
 const colorMap = new ColorMap();
 
-const WarningContainer = styled.div`
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
@@ -168,9 +157,9 @@ export const DebugApp = () => {
     useState<boolean>(false);
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
-  const [showWrongBookmarkWarning, setShowWrongBookmarkWarning] = useState<
-    PageId | false
-  >(false);
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -672,7 +661,7 @@ export const DebugApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      setShowWrongBookmarkWarning(bookmarksPageId);
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -879,13 +868,13 @@ export const DebugApp = () => {
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
       />
-      {showWrongBookmarkWarning !== false && (
-        <WarningContainer>
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
           <WarningPanel
-            title={`This bookmark is only suitable for ${showWrongBookmarkWarning} mode`}
-            onConfirm={() => setShowWrongBookmarkWarning(false)}
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => setWrongBookmarkPageId(null)}
           />
-        </WarningContainer>
+        </CenteredContainer>
       )}
     </MapArea>
   );

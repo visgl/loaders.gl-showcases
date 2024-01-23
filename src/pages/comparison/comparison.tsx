@@ -39,6 +39,7 @@ import {
   setInitialBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
+import { CenteredContainer } from "../../components/common";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -90,17 +91,6 @@ const Devider = styled.div<LayoutProps>`
   background-color: ${color_brand_primary};
 `;
 
-const WarningContainer = styled.div`
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   const loadManagerRef = useRef<ComparisonLoadManager>(
     new ComparisonLoadManager()
@@ -144,9 +134,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(false);
   const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
     useState<boolean>(false);
-  const [showWrongBookmarkWarning, setShowWrongBookmarkWarning] = useState<
-    PageId | false
-  >(false);
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const dispatch = useAppDispatch();
 
   const layout = useAppLayout();
@@ -320,7 +310,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      setShowWrongBookmarkWarning(bookmarksPageId);
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -564,13 +554,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           bottom={layout === Layout.Mobile ? 8 : 16}
         />
       )}
-      {showWrongBookmarkWarning !== false && (
-        <WarningContainer>
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
           <WarningPanel
-            title={`This bookmark is only suitable for ${showWrongBookmarkWarning} mode`}
-            onConfirm={() => setShowWrongBookmarkWarning(false)}
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => setWrongBookmarkPageId(null)}
           />
-        </WarningContainer>
+        </CenteredContainer>
       )}
     </Container>
   );
