@@ -83,6 +83,17 @@ describe("CompareButton", () => {
   });
 
   it.skip("Should show desktop tooltip when button is disabled", () => {
+  /*
+    The test is temporarily skipped because of the following issue.
+    "@testing-library/user-event" of version 13.5.0 doesn't support pointer related events like PoinerEnter.
+    According to the documentation version 14.5.2 does support these events,
+    but actually neither PoinerEnter nor PoinerLeave are being fired on "hover".
+    The same issue is observed if fireEvent.pointerEnter is used.
+    Note, all userEvent methods (like click) have become async and require await in the new version of the library,
+    which requires appropriate changes in all the tests using such methods.
+    It would make sense to try "@testing-library/react" of the latest version,
+    but the problem is that the support of react of ver.17 (currently used) is dropped.
+  */
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { container, getByText } = callRender(renderWithTheme, {
       disableButton: true,
