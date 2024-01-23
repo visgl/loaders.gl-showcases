@@ -15,6 +15,7 @@ import {
   Bookmark,
   PageId,
   ComparisonSideMode,
+  TilesetType
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
@@ -198,6 +199,13 @@ export const LayersPanel = ({
 
   useClickOutside([warningNode], () => setShowExistedError(false));
 
+  const onLayerInsertWithCheck = (layer: LayerExample, bookmarks?: Bookmark[]) => {
+    if (!layer.type || !(layer.type in TilesetType)) {
+      throw new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR");
+    }
+    onLayerInsert(layer, bookmarks);
+  }
+
   const handleInsertLayer = (layer: {
     name: string;
     url: string;
@@ -220,7 +228,7 @@ export const LayersPanel = ({
       type: getTilesetType(layer.url),
     };
 
-    onLayerInsert(newLayer);
+    onLayerInsertWithCheck(newLayer);
   };
 
   const prepareLayerExamples = (layers: OperationalLayer[]): LayerExample[] => {
@@ -298,8 +306,8 @@ export const LayersPanel = ({
         setShowAddingSlidesWarning(true);
       }
 
-      // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
-      onLayerInsert(newLayer, bookmarks);
+      onLayerInsertWithCheck(newLayer, bookmarks);
+
     } catch (error) {
       if (error instanceof Error) {
         switch (error.message) {
