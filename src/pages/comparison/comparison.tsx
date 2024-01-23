@@ -292,7 +292,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const downloadClickHandler = () => {
-    downloadJsonFile(comparisonStats, "bookmarks-stats.json");
+    downloadJsonFile(comparisonStats, "comparison-results-stats.json");
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
