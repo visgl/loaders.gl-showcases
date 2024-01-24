@@ -52,9 +52,12 @@ const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE =
 
 // defined in loaders-gl/modules/i3s/src/lib/parsers/parse-arcgis-webscene.ts
 class LayerError extends Error {
-  constructor(message: string, public details: string) {
+  constructor(
+    message: string,
+    public details: any
+  ) {
     super(message);
-    this.name = "LayerError";
+    this.name = 'LayerError';
   }
 }
 
