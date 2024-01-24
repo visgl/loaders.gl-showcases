@@ -265,6 +265,18 @@ export const LayersPanel = ({
     return layersList;
   };
 
+  const saveLayerTypes = (layers) => {
+    const layerTypes: string[] = [];
+    if (layers) {
+      for (const layer of layers) {
+        if (!layerTypes.find((item) => item === layer.layerType)) {
+          layerTypes.push(layer.layerType);
+        }
+      }
+    }
+    setUnsupportedLayers(layerTypes);
+  };
+
   // TODO Add loader to show webscene loading
   const handleInsertScene = async (scene: {
     name: string;
@@ -288,6 +300,12 @@ export const LayersPanel = ({
         scene.url,
         ArcGISWebSceneLoader
       )) as ArcGISWebSceneData;
+
+      if (webScene.unsupportedLayers?.length) {
+        saveLayerTypes(webScene.unsupportedLayers);
+        setShowNoSupportedLayersInSceneError(true);
+      }
+
       const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
@@ -322,19 +340,8 @@ export const LayersPanel = ({
       if (error instanceof Error) {
         switch (error.message) {
           case "NO_AVAILABLE_SUPPORTED_LAYERS_ERROR": {
-            const errorDetailsString = (error as LayerError).details;
-            if (errorDetailsString) {
-              const layers = JSON.parse(errorDetailsString);
-              const layerTypes: string[] = [];
-              if (layers) {
-                for (const layer of layers) {
-                  if (!layerTypes.find((item) => item === layer.layerType)) {
-                    layerTypes.push(layer.layerType);
-                  }
-                }
-              }
-              setUnsupportedLayers(layerTypes);
-            }
+            const layers = (error as LayerError).details;
+            saveLayerTypes(layers);
             setShowSceneInsertPanel(false);
             setShowNoSupportedLayersInSceneError(true);
             break;
