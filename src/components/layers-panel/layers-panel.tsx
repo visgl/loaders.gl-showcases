@@ -54,7 +54,7 @@ const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE =
 class LayerError extends Error {
   constructor(
     message: string,
-    public details: any
+    public details: unknown
   ) {
     super(message);
     this.name = 'LayerError';
