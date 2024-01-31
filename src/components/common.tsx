@@ -26,7 +26,10 @@ export const PanelContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${({ theme }) => `${theme.colors.mainCanvasColor}${theme.name === Theme.Dark ? 'e6' : 'ff'}` };
+  background: ${({ theme }) =>
+    `${theme.colors.mainCanvasColor}${
+      theme.name === Theme.Dark ? "e6" : "ff"
+    }`};
   border-radius: 8px;
   padding-bottom: 26px;
   position: relative;
@@ -67,7 +70,8 @@ export const PanelHorizontalLine = styled.div<{
   left?: number;
   right?: number;
 }>`
-  margin: ${({ top = 24, bottom = 16, left = 16, right = 16 }) => `${top}px ${right}px ${bottom}px ${left}px`};
+  margin: ${({ top = 24, bottom = 16, left = 16, right = 16 }) =>
+    `${top}px ${right}px ${bottom}px ${left}px`};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
@@ -106,7 +110,6 @@ export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
     mobile: "bottom: 8px;",
   })};
 `;
-
 
 export const OnlyToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   left: auto;
@@ -230,8 +233,13 @@ export const OptionsIcon = styled.div<{ panel: number }>`
   }
 `;
 
-export const Title = styled.div<{top?: number; bottom?: number; left?: number }>`
-  margin: ${({top = 0, bottom = 0, left = 0 }) => `${top}px 0 ${bottom}px ${left}px`};
+export const Title = styled.div<{
+  top?: number;
+  bottom?: number;
+  left?: number;
+}>`
+  margin: ${({ top = 0, bottom = 0, left = 0 }) =>
+    `${top}px 0 ${bottom}px ${left}px`};
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -301,4 +309,15 @@ export const TileInfoSectionWrapper = styled.div`
   align-items: center;
   width: 100%;
   margin: 24px 0;
+`;
+
+export const CenteredContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

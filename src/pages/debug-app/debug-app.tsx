@@ -49,6 +49,7 @@ import {
   MapArea,
   RightSidePanelWrapper,
   OnlyToolsPanelWrapper,
+  CenteredContainer,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -91,6 +92,7 @@ import {
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -155,6 +157,9 @@ export const DebugApp = () => {
     useState<boolean>(false);
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -656,9 +661,7 @@ export const DebugApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the debug app`
-      );
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -865,6 +868,14 @@ export const DebugApp = () => {
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
       />
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => setWrongBookmarkPageId(null)}
+          />
+        </CenteredContainer>
+      )}
     </MapArea>
   );
 };
