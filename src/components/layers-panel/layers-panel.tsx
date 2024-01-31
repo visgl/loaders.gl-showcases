@@ -31,7 +31,7 @@ import {
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
-import { ArcGISWebSceneLoader } from "@loaders.gl/i3s";
+import { ArcGISWebSceneLoader, LayerError } from "@loaders.gl/i3s";
 import { ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
@@ -49,17 +49,6 @@ const NOT_SUPPORTED_CRS_ERROR =
 
 const DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE =
   "Webscene slides cannot be loaded in Across Layers mode";
-
-// defined in loaders-gl/modules/i3s/src/lib/parsers/parse-arcgis-webscene.ts
-class LayerError extends Error {
-  constructor(
-    message: string,
-    public details: unknown
-  ) {
-    super(message);
-    this.name = 'LayerError';
-  }
-}
 
 enum Tabs {
   Layers,
