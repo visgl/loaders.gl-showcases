@@ -1,5 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+require("dotenv").config({ path: "./.env" });
 
 const LOADERS_LOCAL_DEPENDENCY = "loaders";
 const DECK_LOCAL_DEPENDENCY = "deck";
@@ -98,6 +100,7 @@ module.exports = (env) => {
     devServer: {
       open: true,
       port: 3000,
+      server: 'https',
       client: {
         overlay: {
           errors: true,
@@ -182,6 +185,9 @@ module.exports = (env) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.join(__dirname, "src", "index.html"),
+      }),
+      new webpack.DefinePlugin({
+        "process.env": JSON.stringify(process.env),
       }),
     ],
   };

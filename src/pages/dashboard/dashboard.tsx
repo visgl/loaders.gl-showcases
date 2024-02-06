@@ -28,7 +28,7 @@ import {
 } from "../../utils/hooks/layout";
 import { LayoutProps } from "../../types";
 
-const TILESET_URL = `https://tiles.arcgis.com/tiles/UE5k7ygNe76vVJgy/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
+const TILESET_URL = `https://tiles.arcgis.com/tiles/fGAUuR7Wy4yySdod/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
 const DEFAULT_MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 

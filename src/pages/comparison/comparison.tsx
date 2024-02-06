@@ -33,12 +33,17 @@ import { Layout } from "../../utils/enums";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
-import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
+import {
+  deleteBaseMaps,
+  setInitialBaseMaps,
+  selectSelectedBaseMapId
+} from "../../redux/slices/base-maps-slice";
 import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
+import { CenteredContainer } from "../../components/common";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
@@ -134,6 +139,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(false);
   const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
     useState<boolean>(false);
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const dispatch = useAppDispatch();
 
   const layout = useAppLayout();
@@ -146,6 +154,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setViewState(INITIAL_VIEW_STATE));
+    dispatch(deleteBaseMaps("Terrain"));
     return () => {
       dispatch(setInitialBaseMaps());
     };
@@ -181,11 +190,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           datasets: [
             {
               ...leftSideStats,
-              ellapsedTime: loadManagerRef.current.leftLoadingTime,
+              elapsedTime: loadManagerRef.current.leftLoadingTime,
             },
             {
               ...rightSideStats,
-              ellapsedTime: loadManagerRef.current.rightLoadingTime,
+              elapsedTime: loadManagerRef.current.rightLoadingTime,
             },
           ],
         };
@@ -293,7 +302,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const downloadClickHandler = () => {
-    downloadJsonFile(comparisonStats, "bookmarks-stats.json");
+    downloadJsonFile(comparisonStats, "comparison-results-stats.json");
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
@@ -306,9 +315,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`
-      );
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -366,7 +373,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
@@ -381,6 +387,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           activeLayersIdsRightSide: [...activeLayersIdsRightSide],
         },
       ]);
+      setSelectedBookmarkId(newBookmarkId);
     });
   };
 
@@ -548,6 +555,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           bottom={layout === Layout.Mobile ? 8 : 16}
           isDragModeVisible={selectedBaseMapId !== "ArcGis"}
         />
+      )}
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => setWrongBookmarkPageId(null)}
+          />
+        </CenteredContainer>
       )}
     </Container>
   );

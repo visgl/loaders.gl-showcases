@@ -1,7 +1,14 @@
+import { PageId } from "../../types";
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const checkLayersPanel = async (
   page,
   panelId: string,
-  hasSelectedLayer = false
+  hasSelectedLayer = false,
+  appMode = ""
 ) => {
   // Tabs
   const tabsContainer = await page.$(`${panelId} > :first-child`);
@@ -37,12 +44,12 @@ export const checkLayersPanel = async (
 
   // Insert buttons
   const insertLayerText = await page.$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child :last-child`,
+    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child > :last-child`,
     (node) => node.innerText
   );
   expect(insertLayerText).toBe("Insert layer");
   const insertSceneText = await page.$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :last-child  :last-child`,
+    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :nth-child(2) > :last-child`,
     (node) => node.innerText
   );
   expect(insertSceneText).toBe("Insert scene");
@@ -65,8 +72,14 @@ export const checkLayersPanel = async (
     `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > div`,
     (nodes) => nodes.map((node) => node.innerText)
   );
-  expect(baseMapsNames.length).toBe(4);
-  expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain", "ArcGis"]);
+
+  if (appMode === PageId.comparison) {
+    expect(baseMapsNames.length).toBe(3);
+    expect(baseMapsNames).toEqual(["Dark", "Light", "ArcGis"]);
+  } else {
+    expect(baseMapsNames.length).toBe(4);
+    expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain", "ArcGis"]);
+  }
 
   // Dark is selected
   const darkMapBackground = await page.$eval(
@@ -110,7 +123,7 @@ export const inserAndDeleteLayer = async (
     `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child`
   );
   await insertButton.click();
-  let insertPanel = await page.$(`${panelId} > :nth-child(5)`);
+  let insertPanel = await page.$(`${panelId} > :nth-child(7)`);
 
   // Header
   const insertPanelHeaderText = await insertPanel.$eval(
@@ -124,6 +137,7 @@ export const inserAndDeleteLayer = async (
     Name: "",
   });
   await page.keyboard.press("Enter");
+  await sleep(200);
   const nameWarning = await insertPanel.$eval(
     `${panelId} form.insert-form span`,
     (node) => node.innerText
@@ -156,19 +170,19 @@ export const inserAndDeleteLayer = async (
     `${panelId} form.insert-form button[type='submit']`
   );
   await submitInsert.click();
-  await page.waitForSelector(`${panelId} > :nth-child(5)`);
-  const warningPanel = await page.$(`${panelId} > :nth-child(5)`);
+  await page.waitForSelector(`${panelId} > :nth-child(7)`);
+  const warningPanel = await page.$(`${panelId} > :nth-child(7)`);
   const warningText = await warningPanel.$eval(
     `:first-child > :first-child`,
     (node) => node.innerText
   );
   expect(warningText).toBe("You are trying to add an existing area to the map");
   await expect(page).toClick("button", { text: "Ok" });
-  let anyExtraPanel = await page.$(`${panelId} > :nth-child(5)`);
+  let anyExtraPanel = await page.$(`${panelId} > :nth-child(7)`);
   expect(anyExtraPanel).toBeNull();
 
   await insertButton.click();
-  insertPanel = await page.$(`${panelId} > :nth-child(5)`);
+  insertPanel = await page.$(`${panelId} > :nth-child(7)`);
 
   // Add layer
   await fillForm(page, `${panelId} form.insert-form`, {
@@ -180,7 +194,7 @@ export const inserAndDeleteLayer = async (
     `${panelId} form.insert-form button[type='submit']`
   );
   await submitInsert.click();
-  anyExtraPanel = await page.$(`${panelId} > :nth-child(5)`);
+  anyExtraPanel = await page.$(`${panelId} > :nth-child(7)`);
   expect(anyExtraPanel).toBeNull();
 
   let layers = await page.$$(

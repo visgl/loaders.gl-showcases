@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { ActionButtonVariant } from "../../../types";
+import {
+  ActionButtonVariant,
+  FetchingStatus,
+  TilesetType,
+} from "../../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
 import { InputText } from "./input-text/input-text";
+import { getTilesetType } from "../../../utils/url-utils";
+import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import {
+  getLayerNameInfo,
+  selectLayerNames,
+} from "../../../redux/slices/layer-names-slice";
 
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
@@ -21,6 +32,10 @@ type InsertLayerProps = {
 
 type LayoutProps = {
   layout: string;
+};
+
+type VisibilityProps = {
+  visible: boolean;
 };
 
 const Container = styled.div<LayoutProps>`
@@ -65,6 +80,16 @@ const ButtonsWrapper = styled.div`
   padding: 0 6px;
 `;
 
+const SpinnerContainer = styled.div<VisibilityProps>`
+  background: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  left: calc(50% - 44px);
+  top: calc(50% - 44px);
+  padding: 22px;
+  border-radius: 8px;
+  visibility: ${({ visible }) => (visible ? "visible" : "hidden")};
+`;
+
 export const InsertPanel = ({
   title,
   onInsert,
@@ -77,14 +102,13 @@ export const InsertPanel = ({
 
   const [nameError, setNameError] = useState("");
   const [urlError, setUrlError] = useState("");
+  const [isValidateInProgress, setValidateInProgress] = useState(false);
+  const layerNames = useAppSelector(selectLayerNames);
+  const dispatch = useAppDispatch();
 
   const validateFields = () => {
     let isFormValid = true;
-
-    if (!name) {
-      setNameError(NO_NAME_ERROR);
-      isFormValid = false;
-    }
+    const type = getTilesetType(url);
 
     try {
       new URL(url);
@@ -93,16 +117,43 @@ export const InsertPanel = ({
       isFormValid = false;
     }
 
-    return isFormValid;
-  };
-
-  const handleInsert = (event) => {
-    const isFormValid = validateFields();
+    if (
+      (type !== TilesetType.I3S && !name) ||
+      (type === TilesetType.I3S && !name && !layerNames[url]?.name)
+    ) {
+      setNameError(NO_NAME_ERROR);
+      isFormValid = false;
+    }
 
     if (isFormValid) {
-      onInsert({ name, url, token });
+      onInsert({ name: name || layerNames[url]?.name, url, token });
     }
+  };
+
+  useEffect(() => {
+    const type = getTilesetType(url);
+    if (isValidateInProgress && type === TilesetType.I3S) {
+      if (
+        (layerNames[url] !== undefined &&
+          layerNames[url].status === FetchingStatus.ready) ||
+        name.length > 0
+      ) {
+        setValidateInProgress(false);
+        validateFields();
+      } else if (!layerNames[url]) {
+        dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
+      }
+    }
+  }, [isValidateInProgress, layerNames]);
+
+  const handleInsert = async (event) => {
     event.preventDefault();
+
+    if (getTilesetType(url) !== TilesetType.I3S) {
+      validateFields();
+    } else {
+      setValidateInProgress(true);
+    }
   };
 
   const handleInputChange = (event) => {
@@ -122,11 +173,19 @@ export const InsertPanel = ({
     }
   };
 
+  const onCancelHandler = () => {
+    setValidateInProgress(false);
+    onCancel();
+  };
+
   const layout = useAppLayout();
 
   return (
     <Container layout={layout}>
       <Title>{title}</Title>
+      <SpinnerContainer visible={isValidateInProgress}>
+        <LoadingSpinner />
+      </SpinnerContainer>
       <form className="insert-form" onSubmit={handleInsert}>
         <InputsWrapper>
           <InputText
@@ -151,7 +210,10 @@ export const InsertPanel = ({
           />
         </InputsWrapper>
         <ButtonsWrapper>
-          <ActionButton variant={ActionButtonVariant.cancel} onClick={onCancel}>
+          <ActionButton
+            variant={ActionButtonVariant.cancel}
+            onClick={onCancelHandler}
+          >
             Cancel
           </ActionButton>
           <ActionButton type="submit">Insert</ActionButton>

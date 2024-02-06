@@ -28,16 +28,17 @@ const Title = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-const ButtonsContainer = styled.div`
+const ButtonsContainer = styled.div<{ justify: string }>`
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: ${(props) => props.justify};
 `;
 
 type UploadPanelItemProps = {
   title?: string;
   children: React.ReactNode;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 };
 
 export const UploadPanelItem = ({
@@ -53,14 +54,14 @@ export const UploadPanelItem = ({
       <Content>
         <Title>{title ? title : <WarningIcon />}</Title>
         {children}
-        <ButtonsContainer>
+        <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
           <ActionButton
             variant={ActionButtonVariant.secondary}
             onClick={onCancel}
           >
             Cancel
           </ActionButton>
-          <ActionButton onClick={onConfirm}>Upload</ActionButton>
+          {onConfirm && <ActionButton onClick={onConfirm}>Next</ActionButton>}
         </ButtonsContainer>
       </Content>
     </Container>

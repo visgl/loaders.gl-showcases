@@ -1,4 +1,4 @@
-import { TilesetType } from "../types";
+import { TilesetType, ViewStateSet } from "../types";
 
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
@@ -7,7 +7,7 @@ export const parseTilesetFromUrl = () => {
 
 export const parseTilesetUrlParams = (url, options) => {
   if (!url) {
-    return { ...options, tilesetUrl: '', token: '', metadataUrl: '' }
+    return { ...options, tilesetUrl: "", token: "", metadataUrl: "" };
   }
 
   const parsedUrl = new URL(url);
@@ -56,4 +56,69 @@ const prepareTilesetUrl = (parsedUrl) => {
     .replace(/\/?$/, "/")
     .concat("layers/0");
   return `${parsedUrl.origin}${replacedPathName}${parsedUrl.search}`;
+};
+
+/**
+ * Generate updated url search params according to the viewState
+ * @param viewState view state
+ * @returns updated url search params object
+ */
+export const viewStateToUrlParams = (viewState: ViewStateSet) => {
+  const search = Object.fromEntries(
+    new URLSearchParams(window.location.search)
+  );
+  const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
+  return {
+    ...search,
+    longitude,
+    latitude,
+    pitch,
+    bearing,
+    zoom,
+  };
+};
+
+/**
+ * Parse view state params from the url search params
+ * @param viewState view state
+ * @returns viewState params available in the url search params
+ */
+export const urlParamsToViewState = (viewState: ViewStateSet) => {
+  const search = new URLSearchParams(window.location.search);
+  const urlViewStateParams = {};
+  for (const viewStateParam of search) {
+    if (
+      Object.keys(viewState.main).includes(viewStateParam[0]) &&
+      !isNaN(parseFloat(viewStateParam[1]))
+    ) {
+      urlViewStateParams[viewStateParam[0]] = parseFloat(viewStateParam[1]);
+    }
+  }
+  return urlViewStateParams;
+};
+
+/**
+ * Converts the link of a webscene that can be copied from ArcGIS
+ * to the format required by i3s-explorer to insert a webscene.
+ * @param url - Url copied from ArcGIS.
+ * @returns Url converted.
+ */
+export const convertUrlToRestFormat = (url: string): string => {
+  let urlRest = "https://www.arcgis.com/sharing/rest/content/items/";
+  const urlObject = new URL(url);
+
+  let param: string | null = null;
+  for (const paramName of ["id", "webscene"]) {
+    param = urlObject.searchParams.get(paramName);
+    if (param) {
+      break;
+    }
+  }
+  if (param) {
+    urlRest += param + "/data";
+  } else {
+    // The url cannot be converted. Use it "as is".
+    return url;
+  }
+  return urlRest;
 };

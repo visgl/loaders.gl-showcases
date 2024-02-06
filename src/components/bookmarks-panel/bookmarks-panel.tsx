@@ -257,7 +257,6 @@ export const BookmarksPanel = ({
       return (
         <UploadPanel
           onCancel={() => setPopoverType(PopoverType.none)}
-          onConfirmWarning={() => console.log("not implemented yet")}
           onBookmarksUploaded={onBookmarksUploadedHandler}
         />
       );
