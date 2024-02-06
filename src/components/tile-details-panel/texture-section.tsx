@@ -181,6 +181,7 @@ const TextureButton = styled.button<{
   border: 0;
   background-image: ${({ image }) => `${image}`};
   background-repeat: no-repeat;
+  cursor: inherit;
 `;
 
 const createCompressedTexture2D = (gl, images) => {
