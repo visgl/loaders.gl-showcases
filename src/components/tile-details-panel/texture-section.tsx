@@ -256,8 +256,8 @@ void main() {
 }
 `;
 
-const MAX_AREA_SIZE = 149;
-const MAX_PREVIEW_AREA_SIZE = 592;
+const AREA_SIZE = 149;
+const PREVIEW_AREA_SIZE = 592;
 
 const createWebglElement = (
   data,
@@ -279,9 +279,9 @@ const createWebglElement = (
 
   const imageSizeMax = imageWidth > imageHeight ? imageWidth : imageHeight;
 
-  const koeff = imageSizeMax / maxAreaSize;
-  const areaWidth = imageWidth / koeff;
-  const areaHeight = imageHeight / koeff;
+  const coeff = imageSizeMax / maxAreaSize;
+  const areaWidth = imageWidth / coeff;
+  const areaHeight = imageHeight / coeff;
 
   outputCanvas.width = areaWidth;
   outputCanvas.height = areaHeight;
@@ -300,12 +300,12 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
   const [showPreviewTexture, setShowPreviewTexture] = useState<boolean>(false);
 
   const [size, setSize] = useState<SIZE>({
-    width: MAX_AREA_SIZE,
-    height: MAX_AREA_SIZE,
+    width: AREA_SIZE,
+    height: AREA_SIZE,
   });
   const [previewSize, setPreviewSize] = useState<SIZE>({
-    width: MAX_PREVIEW_AREA_SIZE,
-    height: MAX_PREVIEW_AREA_SIZE,
+    width: PREVIEW_AREA_SIZE,
+    height: PREVIEW_AREA_SIZE,
   });
 
   const contentImage =
@@ -317,14 +317,14 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
 
   useEffect(() => {
     if (image?.compressed) {
-      const canvas = createWebglElement(image, MAX_AREA_SIZE);
+      const canvas = createWebglElement(image, AREA_SIZE);
       const dataUrl = canvas?.toDataURL() || "";
       const canvasWidth = canvas?.width || 0;
       const canvasHeight = canvas?.height || 0;
       setSize({ width: canvasWidth, height: canvasHeight });
       setTexture(dataUrl);
 
-      const previewCanvas = createWebglElement(image, MAX_PREVIEW_AREA_SIZE);
+      const previewCanvas = createWebglElement(image, PREVIEW_AREA_SIZE);
       const previewDataUrl = previewCanvas?.toDataURL() || "";
       const previewCanvasWidth = previewCanvas?.width || 0;
       const previewCanvasHeight = previewCanvas?.height || 0;
