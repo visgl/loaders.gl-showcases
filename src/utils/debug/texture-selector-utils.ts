@@ -22,6 +22,27 @@ export function selectOriginalTextureForTileset() {
   }
 }
 
+const cropTexture = async (texture, width, height) => {
+  const bitmap = await createImageBitmap(texture);
+
+  const coeffWidth = texture.width / width;
+  const coeffHeight = texture.height / height;
+  const coeff = coeffWidth < coeffHeight ? coeffWidth : coeffHeight;
+  const sw = width * coeff;
+  const sh = height * coeff;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = sw;
+  canvas.height = sh;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  ctx.drawImage(bitmap, 0, 0, sw, sh);
+  return canvas;
+};
+
 export function selectDebugTextureForTile(tile, uvDebugTexture) {
   tiles[tile.id] = tile;
   if (!uvDebugTexture) {
@@ -42,14 +63,29 @@ export function selectDebugTextureForTile(tile, uvDebugTexture) {
       tile.userData.originalTexture =
         material.pbrMetallicRoughness.baseColorTexture.texture.source.image;
     }
-    material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
-      uvDebugTexture;
-    tile.content.material = { ...tile.content.material };
+    const width =
+      material.pbrMetallicRoughness.baseColorTexture.texture.source.image.width;
+    const height =
+      material.pbrMetallicRoughness.baseColorTexture.texture.source.image
+        .height;
+    cropTexture(uvDebugTexture, width, height).then((uvDebugTexture) => {
+      material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
+        uvDebugTexture;
+      tile.content.material = { ...tile.content.material };
+    });
   } else if (texture) {
     if (!tile.userData.originalTexture) {
       tile.userData.originalTexture = texture;
     }
-    tile.content.texture = uvDebugTexture;
+
+    const width =
+      material.pbrMetallicRoughness.baseColorTexture.texture.source.image.width;
+    const height =
+      material.pbrMetallicRoughness.baseColorTexture.texture.source.image
+        .height;
+    cropTexture(uvDebugTexture, width, height).then((uvDebugTexture) => {
+      tile.content.texture = uvDebugTexture;
+    });
   }
 }
 
