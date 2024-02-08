@@ -734,6 +734,9 @@ export const DebugApp = () => {
     <MapArea>
       {renderTilePanel()}
       <DeckGlWrapper
+
+//        useCompressedTextures={false}
+
         id="debug-deck-container"
         parentViewState={{
           ...viewState,
