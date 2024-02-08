@@ -302,7 +302,7 @@ export enum SelectionState {
 }
 
 type Dataset = StatsMap & {
-  ellapsedTime: number;
+  elapsedTime: number;
 };
 
 export type StatsData = {
@@ -367,3 +367,20 @@ export type TilesetMetadata = {
   hasChildren: boolean;
   type?: TilesetType;
 };
+
+export interface IArcGisContent {
+  id: string;
+  url: string;
+  name: string;
+  title: string;
+  token?: string;
+  created: number;
+  createdFormatted: string;
+}
+
+export type ArcGisContentColumnName = keyof IArcGisContent;
+
+export enum FetchingStatus {
+  pending = "pending",
+  ready = "ready",
+}

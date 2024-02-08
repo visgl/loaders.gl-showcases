@@ -4,6 +4,7 @@ import {
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
+import { PageId } from "../../types";
 
 describe("Compare", () => {
   let browser;
@@ -141,14 +142,14 @@ describe("Compare - Layers Panel Across Layers mode", () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
-    await checkLayersPanel(page, panelId);
+    await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Should show right layers panel", async () => {
     const panelId = "#right-layers-panel";
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
-    await checkLayersPanel(page, panelId);
+    await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Should select layers", async () => {
@@ -224,7 +225,7 @@ describe("Compare - Layers Panel Within Layer mode", () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
-    await checkLayersPanel(page, panelId);
+    await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Shouldn't show right layers panel", async () => {
@@ -282,7 +283,7 @@ describe("Compare - Map Control Panel", () => {
 
     // Dropdown button
     const dropdownButton = await page.$eval(
-      `${panelId} > :first-child > svg`,
+      `${panelId} > :first-child > :first-child > svg`,
       (node) => node.innerHTML
     );
     expect(dropdownButton).toBe(chevronSvgHtml);

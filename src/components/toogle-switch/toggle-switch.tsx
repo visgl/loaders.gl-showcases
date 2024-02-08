@@ -37,7 +37,7 @@ const Slider = styled.span`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(250, 250, 250, 0.2);
+  background-color: ${({ theme }) => theme.colors.switchDisabledBackground};
   transition: 0.4s;
   border-radius: 8px;
   &::after {
@@ -54,9 +54,16 @@ const Slider = styled.span`
     transition: 0.4s;
     border-radius: 8px;
   }
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.colors.switchDisabledBackgroundHovered};
+  }
 
   ${Input}:checked + & {
-    background: #4f52cc;
+    background: ${({ theme }) => theme.colors.switchCheckedBackground};
+    &:hover {
+      background: ${({ theme }) => theme.colors.switchCheckedBackgroundHovered};
+    }
   }
 
   ${Input}:checked + &::before {

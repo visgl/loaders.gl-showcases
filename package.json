@@ -29,19 +29,25 @@
     "@deck.gl/mesh-layers": "^8.9.32",
     "@deck.gl/react": "^8.9.32",
     "@esri/react-arcgis": "^5.2.0",
+    "@esri/arcgis-rest-auth": "^3.7.0",
+    "@esri/arcgis-rest-request": "^4.2.0",
+    "@esri/arcgis-rest-portal": "^4.4.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@hyperjump/json-schema": "^0.23.2",
-    "@loaders.gl/3d-tiles": "^4.0.0-beta.8",
-    "@loaders.gl/core": "^4.0.0-beta.8",
-    "@loaders.gl/i3s": "^4.0.0-beta.8",
-    "@loaders.gl/tiles": "^4.0.0-beta.8",
+    "@loaders.gl/3d-tiles": "^4.1.0-alpha.11",
+    "@loaders.gl/core": "^4.1.0-alpha.11",
+    "@loaders.gl/i3s": "^4.1.0-alpha.11",
+    "@loaders.gl/tiles": "^4.1.0-alpha.11",
+    "@luma.gl/core": "^8.5.14",
     "@math.gl/core": "^3.6.0",
     "@math.gl/proj4": "^3.6.3",
     "@probe.gl/stats": "^4.0.4",
     "@reduxjs/toolkit": "^1.9.5",
     "apache-arrow": "^13.0.0",
+    "deck.gl": "^8.8.3",
+    "dotenv": "^16.3.1",
     "html2canvas": "^1.4.1",
     "maplibre-gl": "^3.5.2",
     "normalize.css": "^8.0.1",
@@ -96,7 +102,7 @@
     "webpack-dev-server": "^4.7.4"
   },
   "resolutions": {
-    "@loaders.gl/tiles": "^4.0.0-beta.8"
+    "@loaders.gl/tiles": "^4.1.0-alpha.11"
   },
   "volta": {
     "node": "18.18.2",

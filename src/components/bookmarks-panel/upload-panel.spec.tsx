@@ -14,14 +14,12 @@ jest.mock('@hyperjump/json-schema', () => ({
 }));
 
 const onCancel = jest.fn();
-const onConfirmWarning = jest.fn();
 const onBookmarksUploaded = jest.fn();
 
 const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <UploadPanel
       onCancel={onCancel}
-      onConfirmWarning={onConfirmWarning}
       onBookmarksUploaded={onBookmarksUploaded}
       {...props}
     />

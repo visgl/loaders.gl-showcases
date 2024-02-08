@@ -31,7 +31,7 @@ describe("Debug", () => {
     expect(
       await page.$eval(
         "#header-links-default>a[active='1']",
-        (node) => node.innerText
+        (node) => node.textContent
       )
     ).toEqual("Debug");
   });
@@ -134,7 +134,7 @@ describe("Debug - Layers panel", () => {
     expect(
       await page.$eval(
         "#debug--layers-panel #san-francisco-v1_7>input",
-        (node) => node.checked
+        (node) => (node as HTMLInputElement).checked
       )
     ).toBeTruthy();
   });
@@ -333,7 +333,7 @@ describe("Debug - Map Control Panel", () => {
 
     // Dropdown button
     const dropdownButton = await page.$eval(
-      `${panelId} > :first-child > svg`,
+      `${panelId} > :first-child > :first-child > svg`,
       (node) => node.innerHTML
     );
     expect(dropdownButton).toBe(chevronSvgHtml);

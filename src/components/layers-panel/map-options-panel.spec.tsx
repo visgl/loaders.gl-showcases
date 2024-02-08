@@ -4,7 +4,7 @@ import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-
 import { MapOptionPanel } from "./map-options-panel";
 
 import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
-import { PlusButton } from "../plus-button/plus-button";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 import { setupStore } from "../../redux/store";
@@ -20,12 +20,12 @@ jest.mock("@loaders.gl/i3s", () => {
   });
 });
 jest.mock("./base-map-list-item/base-map-list-item");
-jest.mock("../plus-button/plus-button");
+jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./basemap-options-menu/basemap-options-menu");
 
 const BaseMapListItemMock = BaseMapListItem as unknown as jest.Mocked<any>;
-const PlusButtonMock = PlusButton as unknown as jest.Mocked<any>;
+const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
 const DeleteConfirmationMock =
   DeleteConfirmation as unknown as jest.Mocked<any>;
 const BaseMapOptionsMenuMock =

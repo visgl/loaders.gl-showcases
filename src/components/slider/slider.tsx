@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import styled, { css } from "styled-components";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 import { SliderListItem } from "./slider-list-item";
@@ -94,9 +94,6 @@ type SliderProps = {
   onDelete?: (id: string) => void;
 };
 
-const BOOKMARKS_OFFSET = 150;
-const OFFSET = 54;
-
 export const Slider = ({
   data,
   editingMode,
@@ -114,6 +111,74 @@ export const Slider = ({
     }
   };
 
+  const handleLeftArrowClick = () => {
+    const currentSelectedIndex = data.findIndex(
+      (item) => item.id === selectedItemId
+    );
+    const prevItemId = data[currentSelectedIndex - 1]?.id;
+    onSelectHandler(prevItemId);
+  };
+
+  const handleRightArrowClick = () => {
+    const currentSelectedIndex = data.findIndex(
+      (item) => item.id === selectedItemId
+    );
+    const nextItemId = data[currentSelectedIndex + 1]?.id;
+    onSelectHandler(nextItemId);
+  };
+
+  const onSelectHandler = (id: string): void => {
+    if (id) {
+      scrollItemIntoView(id);
+      onSelect(id);
+    }
+  };
+
+  const isItemVisible = (item: HTMLDivElement | undefined): boolean => {
+    const listElement = sliderItemsListRef?.current;
+    if (!item || !listElement) {
+      return false;
+    }
+    const listLeft = listElement.offsetLeft;
+    const listTop = listElement.offsetTop;
+    const listRight = listLeft + listElement.offsetWidth;
+    const listBottom = listTop + listElement.offsetHeight;
+
+    const itemLeft = item.offsetLeft - listElement.scrollLeft;
+    const itemTop = item.offsetTop - listElement.scrollTop;
+    const itemRight = itemLeft + item.offsetWidth;
+    const itemBottom = itemTop + item.offsetHeight;
+
+    const isVisible =
+      itemLeft >= listLeft &&
+      itemRight <= listRight &&
+      itemTop >= listTop &&
+      itemBottom <= listBottom;
+    return isVisible;
+  };
+
+  const scrollItemIntoView = (id: string): void => {
+    if (!id) {
+      return;
+    }
+    const listItem = listItems.current?.find(
+      (item: HTMLDivElement) => item.id === id
+    );
+
+    const isVisible = isItemVisible(listItem);
+    if (!isVisible) {
+      if (isBookmarkSlider || isPhaseSlider) {
+        listItem?.scrollIntoView({ behavior: "smooth", inline: "nearest" });
+      } else {
+        listItem?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    scrollItemIntoView(selectedItemId);
+  }, [selectedItemId]);
+
   const disableLeftArrow = selectedItemId === data[0]?.id || !selectedItemId;
   const disableRightArrow =
     selectedItemId === data[data.length - 1]?.id || !selectedItemId;
@@ -123,47 +188,6 @@ export const Slider = ({
   const isFloorsSlider = sliderType === SliderType.Floors;
 
   const layout = useAppLayout();
-
-  const handleLeftArrowClick = () => {
-    const currentSelectedIndex = data.findIndex(
-      (item) => item.id === selectedItemId
-    );
-    const prevItemId = data[currentSelectedIndex - 1].id;
-    onSelect(prevItemId);
-
-    sliderItemsListRef?.current?.scrollBy({
-      top: isFloorsSlider ? OFFSET : 0,
-      left: isBookmarkSlider ? -BOOKMARKS_OFFSET : isPhaseSlider ? -OFFSET : 0,
-      behavior: "smooth",
-    });
-  };
-
-  const handleRightArrowClick = () => {
-    const currentSelectedIndex = data.findIndex(
-      (item) => item.id === selectedItemId
-    );
-    const nextItemId = data[currentSelectedIndex + 1].id;
-    onSelect(nextItemId);
-
-    sliderItemsListRef?.current?.scrollBy({
-      top: isFloorsSlider ? -OFFSET : 0,
-      left: isBookmarkSlider ? BOOKMARKS_OFFSET : isPhaseSlider ? OFFSET : 0,
-      behavior: "smooth",
-    });
-  };
-
-  const onSelectHandler = (id: string): void => {
-    onSelect(id);
-    const listItem = listItems.current?.find(
-      (item: HTMLDivElement) => item.id === id
-    );
-
-    if (isBookmarkSlider || isPhaseSlider) {
-      listItem?.scrollIntoView({ behavior: "smooth", inline: "center" });
-    } else {
-      listItem?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
 
   return (
     <>

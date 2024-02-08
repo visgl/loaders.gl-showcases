@@ -11,6 +11,7 @@ const Title = styled.div`
   font-size: 16px;
   line-height: 19px;
   overflow: hidden;
+  word-wrap: break-word;
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
@@ -24,6 +25,7 @@ const Subtitle = styled.div`
 `;
 
 const ItemContent = styled.div`
+  min-width: 0;
   margin-left: 16px;
 `;
 
@@ -76,7 +78,11 @@ export const ListItem = ({
         <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
       )}
       {type === ListItemType.Radio && (
-        <RadioButton id={id} checked={selected === SelectionState.selected} onChange={() => onChange(id)} />
+        <RadioButton
+          id={id}
+          checked={selected === SelectionState.selected}
+          onChange={() => onChange(id)}
+        />
       )}
       <ItemContent data-testid="list-item-content">
         <Title>{title}</Title>

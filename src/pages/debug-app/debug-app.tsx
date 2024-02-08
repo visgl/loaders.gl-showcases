@@ -21,7 +21,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import { PickingInfo } from "@deck.gl/core";
+import { PickingInfo, InteractionStateChange, ViewState } from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
 import { Stats } from "@probe.gl/stats";
@@ -37,13 +37,18 @@ import ColorMap, {
   makeRGBObjectFromColor,
 } from "../../utils/debug/colors-map";
 import { initStats, sumTilesetsStats } from "../../utils/stats";
-import { parseTilesetUrlParams } from "../../utils/url-utils";
+import {
+  parseTilesetUrlParams,
+  urlParamsToViewState,
+  viewStateToUrlParams,
+} from "../../utils/url-utils";
 import { validateTile } from "../../utils/debug/tile-debug";
 import {
   BottomToolsPanelWrapper,
   MapArea,
   RightSidePanelWrapper,
   OnlyToolsPanelWrapper,
+  CenteredContainer,
 } from "../../components/common";
 import { MainToolsPanel } from "../../components/main-tools-panel/main-tools-panel";
 import { LayersPanel } from "../../components/layers-panel/layers-panel";
@@ -92,28 +97,7 @@ import {
 } from "../../redux/slices/view-state-slice";
 import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
-
-const INITIAL_VIEW_STATE = {
-  main: {
-    longitude: 0,
-    latitude: 0,
-    pitch: 45,
-    maxPitch: 90,
-    bearing: 0,
-    minZoom: 2,
-    maxZoom: 24,
-    zoom: 2,
-    transitionDuration: 0,
-    transitionInterpolator: null,
-  },
-  minimap: {
-    latitude: 0,
-    longitude: 0,
-    zoom: 9,
-    pitch: 0,
-    bearing: 0,
-  },
-};
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -158,6 +142,11 @@ export const DebugApp = () => {
   const MapWrapper =
     selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
 
+  const [stateUrlViewStateParams, setStateUrlViewStateParams] =
+    useState<ViewState>({});
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
@@ -195,7 +184,9 @@ export const DebugApp = () => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
-    dispatch(setViewState(INITIAL_VIEW_STATE));
+
+    setStateUrlViewStateParams(urlParamsToViewState(globalViewState));
+
     return () => {
       dispatch(resetDebugOptions());
       dispatch(setInitialBaseMaps());
@@ -287,6 +278,19 @@ export const DebugApp = () => {
 
     tilesetRef.current = tileset;
     setUpdateStatsNumber((prev) => prev + 1);
+    if (Object.keys(stateUrlViewStateParams).length > 0) {
+      const { longitude, latitude } = stateUrlViewStateParams;
+      setViewState({
+        ...globalViewState,
+        main: { ...globalViewState.main, ...stateUrlViewStateParams },
+        minimap: {
+          ...globalViewState.minimap,
+          longitude,
+          latitude,
+        },
+      });
+      setStateUrlViewStateParams({});
+    }
   };
 
   const handleValidateTile = (tile) => {
@@ -553,7 +557,6 @@ export const DebugApp = () => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
     makeScreenshot().then((imageUrl) => {
       setBookmarks((prev) => [
         ...prev,
@@ -569,6 +572,7 @@ export const DebugApp = () => {
           activeLayersIdsRightSide: [],
         },
       ]);
+      setSelectedBookmarkId(newBookmarkId);
     });
   };
 
@@ -642,9 +646,7 @@ export const DebugApp = () => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the debug app`
-      );
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -695,6 +697,22 @@ export const DebugApp = () => {
     );
   }, [globalViewState]);
 
+  const onInteractionStateChange = (
+    interactionStateChange: InteractionStateChange
+  ) => {
+    const { isDragging, inTransition, isZooming, isPanning, isRotating } =
+      interactionStateChange;
+    if (
+      !isDragging &&
+      !inTransition &&
+      !isZooming &&
+      !isPanning &&
+      !isRotating
+    ) {
+      setSearchParams(viewStateToUrlParams(globalViewState), { replace: true });
+    }
+  };
+
   return (
     <MapArea>
       {renderTilePanel()}
@@ -720,6 +738,7 @@ export const DebugApp = () => {
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
+        onInteractionStateChange={onInteractionStateChange}
       />
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
@@ -826,6 +845,14 @@ export const DebugApp = () => {
         onCompassClick={onCompassClick}
         isDragModeVisible={selectedBaseMapId !== "ArcGis"}
       />
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => setWrongBookmarkPageId(null)}
+          />
+        </CenteredContainer>
+      )}
     </MapArea>
   );
 };
