@@ -216,9 +216,10 @@ const renderCompressedTexture = (gl, program, images) => {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
 
-const createAndFillBufferObject = (gl) => {
+const createAndFillBufferObject = (gl, program) => {
   const data = new Float32Array([-1, -1, -1, 1, 1, -1, 1, 1]);
-  const startingArrayIndex = 0;
+  const positionArrayLocation =
+    program.configuration.attributeInfosByName.position.location;
   const bufferId = gl.createBuffer();
 
   if (!bufferId) {
@@ -226,9 +227,9 @@ const createAndFillBufferObject = (gl) => {
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-  gl.enableVertexAttribArray(startingArrayIndex);
+  gl.enableVertexAttribArray(positionArrayLocation);
   gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-  gl.vertexAttribPointer(startingArrayIndex, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(positionArrayLocation, 2, gl.FLOAT, false, 0, 0);
 };
 
 // TEXTURE SHADERS
@@ -301,8 +302,9 @@ const drawCompressedTexture = async (
   if (!gl) {
     return null;
   }
-  createAndFillBufferObject(gl);
+
   const program = new Program(gl, { vs, fs });
+  createAndFillBufferObject(gl, program);
 
   const images = [data.data[0]]; // The first image only
   // const images = data.data;       // All images
@@ -311,6 +313,9 @@ const drawCompressedTexture = async (
 
   canvas.width = imageWidth;
   canvas.height = imageHeight;
+
+  gl.viewport(0, 0, imageWidth, imageHeight);
+
   renderCompressedTexture(gl, program.handle, images);
 
   return await drawBitmapTexture(canvas, maxAreaSize);
