@@ -4,15 +4,15 @@
 // We need to store tiles when we replace texture
 const tiles = {};
 
-export function selectDebugTextureForTileset(tileset, uvDebugTexture) {
+export async function selectDebugTextureForTileset(tileset, uvDebugTexture) {
   if (!uvDebugTexture) {
     return;
   }
   for (const tile of tileset.tiles) {
-    selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile, uvDebugTexture);
   }
   for (const tileId in tiles) {
-    selectDebugTextureForTile(tiles[tileId], uvDebugTexture);
+    await selectDebugTextureForTile(tiles[tileId], uvDebugTexture);
   }
 }
 
@@ -23,6 +23,9 @@ export function selectOriginalTextureForTileset() {
 }
 
 const cropTexture = async (texture, width, height) => {
+  if (!width || !height) {
+    return texture;
+  }
   const bitmap = await createImageBitmap(texture);
 
   const coeffWidth = texture.width / width;
@@ -43,7 +46,7 @@ const cropTexture = async (texture, width, height) => {
   return canvas;
 };
 
-export function selectDebugTextureForTile(tile, uvDebugTexture) {
+export async function selectDebugTextureForTile(tile, uvDebugTexture) {
   tiles[tile.id] = tile;
   if (!uvDebugTexture) {
     return;
@@ -68,24 +71,27 @@ export function selectDebugTextureForTile(tile, uvDebugTexture) {
     const height =
       material.pbrMetallicRoughness.baseColorTexture.texture.source.image
         .height;
-    cropTexture(uvDebugTexture, width, height).then((uvDebugTexture) => {
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
-        uvDebugTexture;
-      tile.content.material = { ...tile.content.material };
-    });
+    const uvDebugTextureCropped = await cropTexture(
+      uvDebugTexture,
+      width,
+      height
+    );
+    material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
+      uvDebugTextureCropped;
+    tile.content.material = { ...tile.content.material };
   } else if (texture) {
     if (!tile.userData.originalTexture) {
       tile.userData.originalTexture = texture;
     }
 
-    const width =
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image.width;
-    const height =
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image
-        .height;
-    cropTexture(uvDebugTexture, width, height).then((uvDebugTexture) => {
-      tile.content.texture = uvDebugTexture;
-    });
+    const width = texture.width;
+    const height = texture.height;
+    const uvDebugTextureCropped = await cropTexture(
+      uvDebugTexture,
+      width,
+      height
+    );
+    tile.content.texture = uvDebugTextureCropped;
   }
 }
 

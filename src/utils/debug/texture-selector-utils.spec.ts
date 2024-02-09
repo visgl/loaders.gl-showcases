@@ -6,17 +6,17 @@ import {
 } from "./texture-selector-utils";
 
 describe("Texture Selector Utils - selectDebugTextureForTileset", () => {
-  test("Should return undefined if no uvDebugTexture", () => {
+  test("Should return undefined if no uvDebugTexture", async () => {
     const tileset = {};
     const uvDebugTexture = null;
-    const result = selectDebugTextureForTileset(tileset, uvDebugTexture);
+    const result = await selectDebugTextureForTileset(tileset, uvDebugTexture);
     expect(result).toBeUndefined();
   });
 
-  test.skip("Should return undefined if no uvDebugTexture", () => {
+  test("Should return undefined if no uvDebugTexture", async () => {
     const tileset = { tiles: [{ userData: {} }] };
     const uvDebugTexture = "Test texture";
-    selectDebugTextureForTileset(tileset, uvDebugTexture);
+    await selectDebugTextureForTileset(tileset, uvDebugTexture);
   });
 });
 
@@ -27,21 +27,21 @@ describe("Texture Selector Utils - selectOriginalTextureForTileset", () => {
 });
 
 describe("Texture Selector Utils - selectDebugTextureForTile", () => {
-  test("Should return undefined if no uvDebugTexture", () => {
+  test("Should return undefined if no uvDebugTexture", async () => {
     const tile = { userData: {} };
     const uvDebugTexture = null;
-    const result = selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(result).toBeUndefined();
   });
 
-  test.skip("Should return undefined if originalTexture exists", () => {
+  test("Should return undefined if originalTexture exists", async () => {
     const tile = { userData: { originalTexture: "Test texture" } };
     const uvDebugTexture = "Test texture";
-    const result = selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(result).toBeUndefined();
   });
 
-  test("Should return undefined if material exists but baseColorTexture is not", () => {
+  test("Should return undefined if material exists but baseColorTexture is not", async () => {
     const tile = {
       userData: {},
       content: {
@@ -53,11 +53,11 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
       },
     };
     const uvDebugTexture = "Test texture";
-    const result = selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(result).toBeUndefined();
   });
 
-  test.skip("Should add original texture to userData and apply debug texture", () => {
+  test("Should add original texture to userData and apply debug texture", async () => {
     const tile = {
       userData: {
         originalTexture: null,
@@ -78,7 +78,7 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
       },
     };
     const uvDebugTexture = "Test texture";
-    selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(tile.userData.originalTexture).toStrictEqual("Testing Image");
     expect(
       tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source
@@ -86,7 +86,7 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
     ).toStrictEqual("Test texture");
   });
 
-  test.skip("Should skip adding original texture to userData if already exist and apply debug texture", () => {
+  test("Should skip adding original texture to userData if already exist and apply debug texture", async () => {
     const tile = {
       userData: {
         originalTexture: {
@@ -120,7 +120,7 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
       },
     };
     const uvDebugTexture = "Test texture";
-    selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(
       tile.userData.originalTexture.material.pbrMetallicRoughness
         .baseColorTexture.texture.source.image
@@ -131,7 +131,7 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
     ).toStrictEqual("Test texture");
   });
 
-  test.skip("Should add original texture to userData and apply debug texture if no material", () => {
+  test("Should add original texture to userData and apply debug texture if no material", async () => {
     const tile = {
       userData: {
         originalTexture: null,
@@ -142,14 +142,14 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
       },
     };
     const uvDebugTexture = "uvDebugTexture";
-    selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile, uvDebugTexture);
     expect(tile.userData.originalTexture).toStrictEqual("Test texture");
     expect(tile.content.texture).toStrictEqual("uvDebugTexture");
   });
 });
 
 describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
-  test.skip("Should return undefined if no original texture", () => {
+  test("Should return undefined if no original texture", () => {
     const tile = {
       userData: {
         originalTexture: null,
@@ -163,7 +163,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
     expect(result).toBeUndefined();
   });
 
-  test.skip("Should return undefined if tile has material but it doesn't have baseColorTexture", () => {
+  test("Should return undefined if tile has material but it doesn't have baseColorTexture", () => {
     const tile = {
       userData: {
         originalTexture: "Original Texture",
@@ -210,7 +210,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
     expect(tile.userData.originalTexture).toBeUndefined();
   });
 
-  test.skip("Should add original texture to baseColorTexture and replace content material with material object", () => {
+  test("Should add original texture to baseColorTexture and replace content material with material object", () => {
     const tile = {
       userData: {
         originalTexture: "Original Texture",

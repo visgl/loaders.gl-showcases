@@ -326,9 +326,9 @@ export const DeckGlWrapper = ({
   }, [loadTiles]);
 
   useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
+    loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
-        selectDebugTextureForTileset(tileset, uvDebugTexture);
+        await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
       }
