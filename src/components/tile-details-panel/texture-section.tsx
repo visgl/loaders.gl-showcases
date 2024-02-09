@@ -216,9 +216,10 @@ const renderCompressedTexture = (gl, program, images) => {
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
 
-const createAndFillBufferObject = (gl) => {
+const createAndFillBufferObject = (gl, program) => {
   const data = new Float32Array([-1, -1, -1, 1, 1, -1, 1, 1]);
-  const startingArrayIndex = 0;
+  const positionArrayLocation =
+    program.configuration.attributeInfosByName.position.location;
   const bufferId = gl.createBuffer();
 
   if (!bufferId) {
@@ -226,9 +227,9 @@ const createAndFillBufferObject = (gl) => {
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-  gl.enableVertexAttribArray(startingArrayIndex);
+  gl.enableVertexAttribArray(positionArrayLocation);
   gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-  gl.vertexAttribPointer(startingArrayIndex, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(positionArrayLocation, 2, gl.FLOAT, false, 0, 0);
 };
 
 // TEXTURE SHADERS
@@ -263,17 +264,7 @@ const createWebglElement = (
   data,
   maxAreaSize: number
 ): HTMLCanvasElement | null => {
-  const outputCanvas = document.createElement("canvas");
-  const gl = outputCanvas.getContext("webgl");
-  instrumentGLContext(gl);
-  if (!gl) {
-    return null;
-  }
-  createAndFillBufferObject(gl);
-  const program = new Program(gl, { vs, fs });
-
   const images = [data.data[0]];
-  //const images = data.data;
   const imageWidth = data.width;
   const imageHeight = data.height;
 
@@ -283,8 +274,21 @@ const createWebglElement = (
   const areaWidth = imageWidth / coeff;
   const areaHeight = imageHeight / coeff;
 
+  const outputCanvas = document.createElement("canvas");
   outputCanvas.width = areaWidth;
   outputCanvas.height = areaHeight;
+
+  const gl = outputCanvas.getContext("webgl");
+  instrumentGLContext(gl);
+  if (!gl) {
+    return null;
+  }
+
+  gl.viewport(0, 0, areaWidth, areaHeight);
+
+  const program = new Program(gl, { vs, fs });
+  createAndFillBufferObject(gl, program);
+
   renderCompressedTexture(gl, program.handle, images);
 
   return outputCanvas;
