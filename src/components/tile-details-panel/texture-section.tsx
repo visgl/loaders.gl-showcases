@@ -51,7 +51,6 @@ const {
   COMPRESSED_SRGB8_ALPHA8_ASTC_12X10_KHR,
   COMPRESSED_SRGB8_ALPHA8_ASTC_12X12_KHR,
   COMPRESSED_R11_EAC,
-  // COMPRESSED_SIGNED,
   COMPRESSED_RG11_EAC,
   COMPRESSED_SIGNED_RG11_EAC,
   COMPRESSED_RGB8_ETC2,
@@ -202,7 +201,7 @@ const createCompressedTexture2D = (gl, images) => {
 };
 
 const renderCompressedTexture = (gl, program, images) => {
-  // We take the first image because it has main propeties of compressed image.
+  // We take the first image because it has main properties of compressed image.
   const { format } = images[0];
 
   if (!isFormatSupported(gl, format)) {
@@ -263,13 +262,13 @@ const PREVIEW_AREA_SIZE = 592;
 const drawBitmapTexture = async (
   image: ImageData | HTMLCanvasElement,
   maxAreaSize: number
-): Promise<{ url: string; width: number; height: number } | null> => {
+): Promise<{ url: string; width: number; height: number }> => {
   const bitmap = await createImageBitmap(image);
 
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) {
-    return null;
+    throw new Error("No 2d context");
   }
   const imageWidth = image.width;
   const imageHeight = image.height;
@@ -295,19 +294,18 @@ const drawBitmapTexture = async (
 const drawCompressedTexture = async (
   data,
   maxAreaSize: number
-): Promise<{ url: string; width: number; height: number } | null> => {
+): Promise<{ url: string; width: number; height: number }> => {
   const canvas = document.createElement("canvas");
   const gl = canvas.getContext("webgl");
   instrumentGLContext(gl);
   if (!gl) {
-    return null;
+    throw new Error("No webgl context");
   }
 
   const program = new Program(gl, { vs, fs });
   createAndFillBufferObject(gl, program);
 
   const images = [data.data[0]]; // The first image only
-  // const images = data.data;       // All images
   const imageWidth = data.width;
   const imageHeight = data.height;
 
@@ -315,7 +313,6 @@ const drawCompressedTexture = async (
   canvas.height = imageHeight;
 
   gl.viewport(0, 0, imageWidth, imageHeight);
-
   renderCompressedTexture(gl, program.handle, images);
 
   return await drawBitmapTexture(canvas, maxAreaSize);
@@ -326,10 +323,6 @@ type TextureSectionProps = {
 };
 
 export const TextureSection = ({ tile }: TextureSectionProps) => {
-  // TODO: { To debug only. Remove it for release.
-  const [hint, setHint] = useState<string>("");
-  // TODO: } To debug only. Remove it for release.
-
   const [texture, setTexture] = useState<string>("");
   const [previewTexture, setPreviewTexture] = useState<string>("");
   const [showPreviewTexture, setShowPreviewTexture] = useState<boolean>(false);
@@ -352,62 +345,47 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
 
   useEffect(() => {
     if (image) {
-      // TODO: { To debug only. Remove it for release.
-      const hintStr =
-        `${tile.header.textureFormat}, ${image.width}x${image.height}, ` +
-        tile.header.textureUrl;
-      setHint(hintStr);
-      // TODO: } To debug only. Remove it for release.
-
       if (image.compressed) {
         drawCompressedTexture(image, AREA_SIZE).then((ret) => {
-          const dataUrl = ret?.url || "";
-          const canvasWidth = ret?.width || 0;
-          const canvasHeight = ret?.height || 0;
-          setSize({ width: canvasWidth, height: canvasHeight });
-          setTexture(dataUrl);
-        });
-
-        drawCompressedTexture(image, PREVIEW_AREA_SIZE).then((ret) => {
-          const dataUrl = ret?.url || "";
-          const canvasWidth = ret?.width || 0;
-          const canvasHeight = ret?.height || 0;
-
-          setPreviewSize({
-            width: canvasWidth,
-            height: canvasHeight,
-          });
-          setPreviewTexture(dataUrl);
+          const { url, width, height } = ret;
+          setSize({ width, height });
+          setTexture(url);
         });
       } else {
         drawBitmapTexture(image, AREA_SIZE).then((ret) => {
-          const dataUrl = ret?.url || "";
-          const canvasWidth = ret?.width || 0;
-          const canvasHeight = ret?.height || 0;
-          setSize({ width: canvasWidth, height: canvasHeight });
-          setTexture(dataUrl);
-        });
-
-        drawBitmapTexture(image, PREVIEW_AREA_SIZE).then((ret) => {
-          const dataUrl = ret?.url || "";
-          const canvasWidth = ret?.width || 0;
-          const canvasHeight = ret?.height || 0;
-          setPreviewSize({ width: canvasWidth, height: canvasHeight });
-          setPreviewTexture(dataUrl);
+          const { url, width, height } = ret;
+          setSize({ width: width, height: height });
+          setTexture(url);
         });
       }
     }
   }, [image]);
 
+  const onClickHandler = () => {
+    if (image) {
+      if (image.compressed) {
+        drawCompressedTexture(image, PREVIEW_AREA_SIZE).then((ret) => {
+          const { url, width, height } = ret;
+          setPreviewSize({ width: width, height: height });
+          setPreviewTexture(url);
+        });
+      } else {
+        drawBitmapTexture(image, PREVIEW_AREA_SIZE).then((ret) => {
+          const { url, width, height } = ret;
+          setPreviewSize({ width: width, height: height });
+          setPreviewTexture(url);
+        });
+      }
+    }
+
+    setShowPreviewTexture(true);
+  };
+
   return (
     <>
       <TileInfoSectionWrapper>
         <Title left={16}>Texture:</Title>
-        <TextureContainer
-          onClick={() => {
-            setShowPreviewTexture(true);
-          }}
-        >
+        <TextureContainer onClick={onClickHandler}>
           <TextureButton
             image={`url(${texture})`}
             width={size.width}
@@ -428,7 +406,6 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
             setShowPreviewTexture(false);
           }}
         >
-          <div>{hint}</div>
           <TextureButton
             image={`url(${previewTexture})`}
             width={previewSize.width}
