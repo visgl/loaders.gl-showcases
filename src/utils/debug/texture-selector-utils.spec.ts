@@ -5,6 +5,46 @@ import {
   selectOriginalTextureForTile,
 } from "./texture-selector-utils";
 
+const mockDrawImage = jest.fn();
+
+Object.defineProperty(window, "createImageBitmap", {
+  writable: true,
+  value: jest.fn().mockImplementation(() => ({})),
+});
+
+describe("Crop texture", () => {
+  beforeAll(() => {
+    HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
+      drawImage: mockDrawImage,
+    });
+  });
+
+  test("Should crop texture", async () => {
+    const tile = {
+      userData: {
+        originalTexture: null,
+      },
+      content: {
+        material: {
+          pbrMetallicRoughness: {
+            baseColorTexture: {
+              texture: {
+                source: {
+                  image: { width: 16, height: 2048, image: "contentTexture" },
+                },
+              },
+            },
+          },
+          texture: "Test texture",
+        },
+      },
+    };
+    const uvDebugTexture = { width: 256, height: 256, image: "uvDebugTexture" };
+    await selectDebugTextureForTile(tile, uvDebugTexture);
+    expect(mockDrawImage).toBeCalledTimes(1);
+  });
+});
+
 describe("Texture Selector Utils - selectDebugTextureForTileset", () => {
   test("Should return undefined if no uvDebugTexture", async () => {
     const tileset = {};
