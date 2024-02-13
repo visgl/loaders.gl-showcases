@@ -1,15 +1,25 @@
+import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+
 // TODO Need to separate multiple export functions from file and split logic for better testing
 
 // The tiles list in the tileset mutates continually.
 // We need to store tiles when we replace texture
-const tiles = {};
+const tiles: Record<string, Tile3D> = {};
 
-export async function selectDebugTextureForTileset(tileset, uvDebugTexture) {
+/**
+ * Replaces original textures in the tileset with uvDebug texture
+ * @param tileset Tileset where textures should be replaced
+ * @param uvDebugTexture uvDebug texture
+ */
+export async function selectDebugTextureForTileset(
+  tileset: Tileset3D,
+  uvDebugTexture: ImageBitmap | null
+) {
   if (!uvDebugTexture) {
     return;
   }
   for (const tile of tileset.tiles) {
-    await selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile as Tile3D, uvDebugTexture);
   }
   for (const tileId in tiles) {
     await selectDebugTextureForTile(tiles[tileId], uvDebugTexture);
@@ -22,7 +32,18 @@ export function selectOriginalTextureForTileset() {
   }
 }
 
-const cropTexture = async (texture, width, height) => {
+/**
+ * Crops the texture with the specified width and height
+ * @param texture - Texture to crop
+ * @param width - width of the cropped texture
+ * @param height - height of the cropped texture
+ * @returns cropped texture
+ */
+const cropTexture = async (
+  texture: ImageBitmap,
+  width: number,
+  height: number
+) => {
   if (!width || !height) {
     return texture;
   }
@@ -46,7 +67,15 @@ const cropTexture = async (texture, width, height) => {
   return canvas;
 };
 
-export async function selectDebugTextureForTile(tile, uvDebugTexture) {
+/**
+ * Replaces original textures in the tile with uvDebug texture
+ * @param tile - Tile where textures should be replaced
+ * @param uvDebugTexture uvDebug texture
+ */
+export async function selectDebugTextureForTile(
+  tile: Tile3D,
+  uvDebugTexture: ImageBitmap | null
+) {
   tiles[tile.id] = tile;
   if (!uvDebugTexture) {
     return;
@@ -55,7 +84,6 @@ export async function selectDebugTextureForTile(tile, uvDebugTexture) {
   if (material) {
     if (
       !(
-        material &&
         material.pbrMetallicRoughness &&
         material.pbrMetallicRoughness.baseColorTexture
       )
@@ -66,11 +94,8 @@ export async function selectDebugTextureForTile(tile, uvDebugTexture) {
       tile.userData.originalTexture =
         material.pbrMetallicRoughness.baseColorTexture.texture.source.image;
     }
-    const width =
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image.width;
-    const height =
-      material.pbrMetallicRoughness.baseColorTexture.texture.source.image
-        .height;
+    const width = tile.userData.originalTexture.width;
+    const height = tile.userData.originalTexture.height;
     const uvDebugTextureCropped = await cropTexture(
       uvDebugTexture,
       width,
@@ -95,7 +120,11 @@ export async function selectDebugTextureForTile(tile, uvDebugTexture) {
   }
 }
 
-export function selectOriginalTextureForTile(tile) {
+/**
+ * Replaces uvDebug texture in the tile back with original ones
+ * @param tile - Tile where textures should be replaced
+ */
+export function selectOriginalTextureForTile(tile: Tile3D) {
   tiles[tile.id] = tile;
   const {
     content,
@@ -108,7 +137,6 @@ export function selectOriginalTextureForTile(tile) {
   if (material) {
     if (
       !(
-        material &&
         material.pbrMetallicRoughness &&
         material.pbrMetallicRoughness.baseColorTexture
       )

@@ -4,6 +4,7 @@ import {
   selectDebugTextureForTile,
   selectOriginalTextureForTile,
 } from "./texture-selector-utils";
+import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 
 const mockDrawImage = jest.fn();
 
@@ -11,6 +12,32 @@ Object.defineProperty(window, "createImageBitmap", {
   writable: true,
   value: jest.fn().mockImplementation(() => ({})),
 });
+
+Object.defineProperty(window, "ImageBitmap", {
+  writable: true,
+  value: jest
+    .fn()
+    .mockImplementation((name, width, height) => ({
+      name: name,
+      width: width,
+      height: height,
+    })),
+});
+
+class MyImageBitmap extends ImageBitmap {
+  name: string;
+  width: number;
+  height: number;
+  constructor(name: string, width: number, height: number) {
+    super();
+    this.name = name;
+    this.width = width;
+    this.height = height;
+  }
+}
+
+const contentTexture: ImageBitmap = new MyImageBitmap("c", 0, 0);
+const uvDebugTexture: ImageBitmap = new MyImageBitmap("uv", 0, 0);
 
 describe("Crop texture", () => {
   beforeAll(() => {
@@ -20,6 +47,9 @@ describe("Crop texture", () => {
   });
 
   test("Should crop texture", async () => {
+    const contentTexture: ImageBitmap = new MyImageBitmap("c", 1, 1);
+    const uvDebugTexture: ImageBitmap = new MyImageBitmap("uv", 2, 2);
+
     const tile = {
       userData: {
         originalTexture: null,
@@ -30,17 +60,16 @@ describe("Crop texture", () => {
             baseColorTexture: {
               texture: {
                 source: {
-                  image: { width: 16, height: 2048, image: "contentTexture" },
+                  image: contentTexture,
                 },
               },
             },
           },
-          texture: "Test texture",
+          texture: uvDebugTexture,
         },
       },
     };
-    const uvDebugTexture = { width: 256, height: 256, image: "uvDebugTexture" };
-    await selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
     expect(mockDrawImage).toBeCalledTimes(1);
   });
 });
@@ -49,14 +78,19 @@ describe("Texture Selector Utils - selectDebugTextureForTileset", () => {
   test("Should return undefined if no uvDebugTexture", async () => {
     const tileset = {};
     const uvDebugTexture = null;
-    const result = await selectDebugTextureForTileset(tileset, uvDebugTexture);
+    const result = await selectDebugTextureForTileset(
+      tileset as unknown as Tileset3D,
+      uvDebugTexture
+    );
     expect(result).toBeUndefined();
   });
 
   test("Should return undefined if no uvDebugTexture", async () => {
     const tileset = { tiles: [{ userData: {} }] };
-    const uvDebugTexture = "Test texture";
-    await selectDebugTextureForTileset(tileset, uvDebugTexture);
+    await selectDebugTextureForTileset(
+      tileset as unknown as Tileset3D,
+      uvDebugTexture
+    );
   });
 });
 
@@ -70,14 +104,19 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
   test("Should return undefined if no uvDebugTexture", async () => {
     const tile = { userData: {} };
     const uvDebugTexture = null;
-    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(
+      tile as unknown as Tile3D,
+      uvDebugTexture
+    );
     expect(result).toBeUndefined();
   });
 
   test("Should return undefined if originalTexture exists", async () => {
     const tile = { userData: { originalTexture: "Test texture" } };
-    const uvDebugTexture = "Test texture";
-    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(
+      tile as unknown as Tile3D,
+      uvDebugTexture
+    );
     expect(result).toBeUndefined();
   });
 
@@ -92,8 +131,10 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
         },
       },
     };
-    const uvDebugTexture = "Test texture";
-    const result = await selectDebugTextureForTile(tile, uvDebugTexture);
+    const result = await selectDebugTextureForTile(
+      tile as unknown as Tile3D,
+      uvDebugTexture
+    );
     expect(result).toBeUndefined();
   });
 
@@ -108,22 +149,21 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
             baseColorTexture: {
               texture: {
                 source: {
-                  image: "Testing Image",
+                  image: contentTexture,
                 },
               },
             },
           },
-          texture: "Test texture",
+          texture: uvDebugTexture,
         },
       },
     };
-    const uvDebugTexture = "Test texture";
-    await selectDebugTextureForTile(tile, uvDebugTexture);
-    expect(tile.userData.originalTexture).toStrictEqual("Testing Image");
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
+    expect(tile.userData.originalTexture).toStrictEqual(contentTexture);
     expect(
       tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source
         .image
-    ).toStrictEqual("Test texture");
+    ).toStrictEqual(uvDebugTexture);
   });
 
   test("Should skip adding original texture to userData if already exist and apply debug texture", async () => {
@@ -135,12 +175,12 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
               baseColorTexture: {
                 texture: {
                   source: {
-                    image: "Testing Image",
+                    image: contentTexture,
                   },
                 },
               },
             },
-            texture: "Test texture",
+            texture: uvDebugTexture,
           },
         },
       },
@@ -150,25 +190,24 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
             baseColorTexture: {
               texture: {
                 source: {
-                  image: "Testing Image",
+                  image: contentTexture,
                 },
               },
             },
           },
-          texture: "Test texture",
+          texture: uvDebugTexture,
         },
       },
     };
-    const uvDebugTexture = "Test texture";
-    await selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
     expect(
       tile.userData.originalTexture.material.pbrMetallicRoughness
         .baseColorTexture.texture.source.image
-    ).toStrictEqual("Testing Image");
+    ).toStrictEqual(contentTexture);
     expect(
       tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source
         .image
-    ).toStrictEqual("Test texture");
+    ).toStrictEqual(uvDebugTexture);
   });
 
   test("Should add original texture to userData and apply debug texture if no material", async () => {
@@ -178,13 +217,12 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
       },
       content: {
         material: null,
-        texture: "Test texture",
+        texture: contentTexture,
       },
     };
-    const uvDebugTexture = "uvDebugTexture";
-    await selectDebugTextureForTile(tile, uvDebugTexture);
-    expect(tile.userData.originalTexture).toStrictEqual("Test texture");
-    expect(tile.content.texture).toStrictEqual("uvDebugTexture");
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
+    expect(tile.userData.originalTexture).toStrictEqual(contentTexture);
+    expect(tile.content.texture).toStrictEqual(uvDebugTexture);
   });
 });
 
@@ -199,7 +237,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         texture: "Test texture",
       },
     };
-    const result = selectOriginalTextureForTile(tile);
+    const result = selectOriginalTextureForTile(tile as unknown as Tile3D);
     expect(result).toBeUndefined();
   });
 
@@ -218,7 +256,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         texture: "Test texture",
       },
     };
-    const result = selectOriginalTextureForTile(tile);
+    const result = selectOriginalTextureForTile(tile as unknown as Tile3D);
     expect(result).toBeUndefined();
   });
 
@@ -242,7 +280,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         },
       },
     };
-    selectOriginalTextureForTile(tile);
+    selectOriginalTextureForTile(tile as unknown as Tile3D);
     expect(
       tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source
         .image
@@ -260,7 +298,7 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         texture: "Test texture",
       },
     };
-    selectOriginalTextureForTile(tile);
+    selectOriginalTextureForTile(tile as unknown as Tile3D);
     expect(tile.content.texture).toStrictEqual("Original Texture");
     expect(tile.userData.originalTexture).toBeUndefined();
   });
