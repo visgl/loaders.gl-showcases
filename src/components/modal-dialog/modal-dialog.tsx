@@ -88,7 +88,7 @@ const ButtonsContainer = styled.div<ButtonsContainerProps>`
   }
 `;
 
-const AfterButtonsContainer = styled.div`
+const AfterButtonsPlaceholder = styled.div`
   margin: 0 32px 32px 32px;
 `;
 
@@ -144,7 +144,7 @@ export const ModalDialog = ({
               )}
             </ButtonsContainer>
           )}
-          <AfterButtonsContainer />
+          <AfterButtonsPlaceholder />
         </Container>
       </WrapperContainer>
     </>
