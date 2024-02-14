@@ -65,6 +65,25 @@ import {
 } from "../../redux/slices/base-maps-slice";
 import { colorizeTile } from "../../utils/colorize-tile";
 import { filterTile } from "../../utils/tiles-filtering/filter-tile";
+import styled from "styled-components";
+
+const WrapperAttributionContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+`;
+
+const AttributionContainer = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  margin: 8px;
+`;
 
 const TRANSITION_DURAITON = 4000;
 const INITIAL_VIEW_STATE = {
@@ -804,6 +823,19 @@ export const DeckGlWrapper = ({
             preserveDrawingBuffer
           />
         </View>
+      )}
+      {showTerrain && (
+        <WrapperAttributionContainer>
+          <AttributionContainer>
+            <div>
+              &copy;
+              <a href="http://www.openstreetmap.org/copyright/" target="_blank">
+                OpenStreetMap
+              </a>{" "}
+              contributors
+            </div>
+          </AttributionContainer>
+        </WrapperAttributionContainer>
       )}
     </DeckGL>
   );
