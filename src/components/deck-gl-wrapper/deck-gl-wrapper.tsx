@@ -82,8 +82,8 @@ const INITIAL_VIEW_STATE = {
 
 // https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
 const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
-const ARCGIS_STREET_MAP_SURFACE_IMAGES =
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const TERRAIN_TEXTURE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
 const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
   rScaler: 256,
   gScaler: 1,
@@ -707,7 +707,7 @@ export const DeckGlWrapper = ({
         maxZoom: TERRAIN_LAYER_MAX_ZOOM,
         elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
         elevationData: MAPZEN_TERRAIN_IMAGES,
-        texture: ARCGIS_STREET_MAP_SURFACE_IMAGES,
+        texture: TERRAIN_TEXTURE,
         onTileLoad: (tile) => onTerrainTileLoad(tile),
         color: [255, 255, 255],
       });
