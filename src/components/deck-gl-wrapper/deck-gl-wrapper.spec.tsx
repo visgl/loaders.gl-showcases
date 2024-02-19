@@ -396,14 +396,14 @@ describe("Deck.gl I3S map component", () => {
       });
     });
 
-    it("Should call Tile3DLayer tileset callbacks", () => {
+    it("Should call Tile3DLayer tileset callbacks", async () => {
       const { rerender } = callRender(renderWithProvider);
       expect(CustomTile3DLayer).toHaveBeenCalled();
       const { onTileLoad, onTilesetLoad, onTileUnload } = (
         CustomTile3DLayer as any
       ).mock.lastCall[0];
       const tile3d = getTile3d();
-      act(() => onTileLoad(tile3d));
+      await act(() => onTileLoad(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(1);
 
       // TODO: couldn't mock MapView.ViewportType. expect toThrow instead
@@ -418,7 +418,7 @@ describe("Deck.gl I3S map component", () => {
       callRender(rerender, { onTileLoad: undefined });
       const { onTileLoad: onTileLoad2 } = (CustomTile3DLayer as any).mock
         .lastCall[0];
-      act(() => onTileLoad2(tile3d));
+      await act(() => onTileLoad2(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileUnload: undefined });
@@ -448,24 +448,24 @@ describe("Deck.gl I3S map component", () => {
       });
     });
 
-    it("Should remove featureIds", () => {
+    it("Should remove featureIds", async () => {
       callRender(renderWithProvider, { featurePicking: false });
       expect(CustomTile3DLayer).toHaveBeenCalled();
       const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
       tile3d.content.featureIds = new Uint32Array([10, 20, 30]);
-      act(() => onTileLoad(tile3d));
+      await act(() => onTileLoad(tile3d));
       expect(tile3d.content.featureIds).toBeFalsy();
     });
 
-    it("Should update debug texture on a tile", () => {
+    it("Should update debug texture on a tile", async () => {
       const store = setupStore();
       store.dispatch(setDebugOptions({ showUVDebugTexture: false }));
       const { rerender } = callRender(renderWithProvider, undefined, store);
       expect(CustomTile3DLayer).toHaveBeenCalled();
       const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
-      act(() => onTileLoad(tile3d));
+      await act(() => onTileLoad(tile3d));
       expect(selectOriginalTextureForTile).toHaveBeenCalledWith(tile3d);
       expect(selectDebugTextureForTile).not.toHaveBeenCalled();
 
@@ -473,7 +473,7 @@ describe("Deck.gl I3S map component", () => {
       callRender(rerender, undefined, store);
       const { onTileLoad: onTileLoadSecond } = (CustomTile3DLayer as any).mock
         .lastCall[0];
-      act(() => onTileLoadSecond(tile3d));
+      await act(() => onTileLoadSecond(tile3d));
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
     });
