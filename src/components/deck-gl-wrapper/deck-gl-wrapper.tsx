@@ -326,9 +326,9 @@ export const DeckGlWrapper = ({
   }, [loadTiles]);
 
   useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
+    loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
-        selectDebugTextureForTileset(tileset, uvDebugTexture);
+        await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
       }
@@ -489,13 +489,13 @@ export const DeckGlWrapper = ({
     onTilesetLoad(tileset);
   };
 
-  const onTileLoadHandler = (tile) => {
+  const onTileLoadHandler = async (tile) => {
     if (!featurePicking) {
       // delete featureIds from data to have instance picking instead of feature picking
       delete tile.content.featureIds;
     }
     if (showDebugTextureRef.current) {
-      selectDebugTextureForTile(tile, uvDebugTextureRef.current);
+      await selectDebugTextureForTile(tile, uvDebugTextureRef.current);
     } else {
       selectOriginalTextureForTile(tile);
     }
