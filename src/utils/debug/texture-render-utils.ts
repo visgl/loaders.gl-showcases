@@ -3,6 +3,7 @@ import {
   GL_EXTENSIONS_CONSTANTS,
 } from "@loaders.gl/textures";
 
+import type { TextureLevel } from "@loaders.gl/schema";
 import { Texture2D, instrumentGLContext, Program } from "@luma.gl/core";
 
 const {
@@ -66,7 +67,10 @@ const {
 } = GL_EXTENSIONS_CONSTANTS;
 
 // eslint-disable-next-line complexity
-const isFormatSupported = (gl: WebGLRenderingContext, format: number) => {
+const isFormatSupported = (
+  gl: WebGLRenderingContext,
+  format: number | undefined
+) => {
   if (typeof format !== "number") {
     throw new Error("Invalid internal format of compressed texture");
   }
@@ -158,7 +162,7 @@ const isFormatSupported = (gl: WebGLRenderingContext, format: number) => {
  */
 const createCompressedTexture2D = (
   gl: WebGLRenderingContext,
-  images: any
+  images: unknown[]
 ): WebGLTexture => {
   const texture = new Texture2D(gl, {
     data: images,
@@ -185,7 +189,7 @@ const createCompressedTexture2D = (
 const renderCompressedTexture = (
   gl: WebGLRenderingContext,
   program: WebGLProgram,
-  images: any
+  images: TextureLevel[]
 ) => {
   // We take the first image because it has main properties of compressed image.
   const { format } = images[0];
@@ -287,7 +291,13 @@ export const drawBitmapTexture = async (
  * @returns texture drawn and its size
  */
 export const drawCompressedTexture = async (
-  data: any,
+  data: {
+    compressed: boolean;
+    mipmaps: boolean;
+    width: number;
+    height: number;
+    data: TextureLevel[];
+  },
   size: number
 ): Promise<{ url: string; width: number; height: number }> => {
   const canvas = document.createElement("canvas");
