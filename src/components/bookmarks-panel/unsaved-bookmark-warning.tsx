@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { UploadPanelItem } from "./upload-panel-item";
+import { UploadPanelItem } from "../upload-panel/upload-panel-item";
 
 const Continer = styled.div`
   box-sizing: border-box;

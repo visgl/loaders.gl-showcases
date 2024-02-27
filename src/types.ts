@@ -384,3 +384,26 @@ export enum FetchingStatus {
   pending = "pending",
   ready = "ready",
 }
+
+export enum PickPaneSetName {
+  uvDebugTexture = "uvDebugTexture",
+  baseMap = "baseMap",
+}
+
+export interface IPickPane {
+  id: string;
+  icon: string;
+  group: string;
+  name?: string;
+  custom?: boolean;
+  fetchPickPane: (fetchContent: boolean) => Promise<void>;
+}
+
+export interface ITexture extends IPickPane {
+  image: ImageBitmap | null;
+}
+
+export enum FileType {
+  binary = "binary",
+  text = "text",
+}

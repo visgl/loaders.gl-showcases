@@ -4,7 +4,7 @@ const mockDrawImage = jest.fn();
 
 Object.defineProperty(window, "createImageBitmap", {
   writable: true,
-  value: jest.fn().mockImplementation(() => ({})),
+  value: jest.fn().mockImplementation((image) => image),
 });
 
 Object.defineProperty(window, "ImageBitmap", {

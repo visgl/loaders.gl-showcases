@@ -1,5 +1,24 @@
 import { ReactEventHandler } from "react";
 import styled from "styled-components";
+import { useState, useMemo } from "react";
+import {
+  selectPickPaneArray,
+  addPickPane,
+} from "../../redux/slices/pick-pane-slice";
+import { PickPaneSetName } from "../../types";
+import {
+  Texture,
+  initTexturePickPanes,
+  TEXTURE_ICON_SIZE,
+  TEXTURE_GROUP_PREDEFINED,
+  TEXTURE_GROUP_CUSTOM,
+} from "../../utils/texture";
+import { PickPanePanel } from "../pick-pane-panel/pick-pane-panel";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import { ButtonSize } from "../../types";
+import { UploadPanel } from "../upload-panel/upload-panel";
+import { FileType } from "../../types";
 
 import {
   BoundingVolumeColoredBy,
@@ -56,6 +75,18 @@ const RadioButtonWrapper = styled.div`
   margin: 0 16px;
 `;
 
+const TextureControlPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 16px;
+  margin-left: 16px;
+`;
+
 type DebugPanelProps = {
   onClose: ReactEventHandler;
 };
@@ -63,7 +94,21 @@ type DebugPanelProps = {
 export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();
   const dispatch = useAppDispatch();
+  const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
+  const uvDebugTextureArray = useAppSelector(
+    selectPickPaneArray(PickPaneSetName.uvDebugTexture)
+  );
+
+  useMemo(() => {
+    if (!uvDebugTextureArray.length) {
+      initTexturePickPanes(dispatch);
+    }
+  }, []);
+
+  const onTextureInsertClick = () => {
+    setShowFileUploadPanel(true);
+  };
 
   return (
     <PanelContainer layout={layout}>
@@ -159,6 +204,62 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             }
           />
         </ItemContainer>
+        {debugOptions.showUVDebugTexture && (
+          <TextureControlPanel>
+            <PickPanePanel
+              pickPaneSetName={PickPaneSetName.uvDebugTexture}
+              group={TEXTURE_GROUP_PREDEFINED}
+              panelLength={5}
+              imageWidth={TEXTURE_ICON_SIZE}
+              imageHeight={TEXTURE_ICON_SIZE}
+            />
+            <PickPanePanel
+              pickPaneSetName={PickPaneSetName.uvDebugTexture}
+              group={TEXTURE_GROUP_CUSTOM}
+              panelLength={5}
+              imageWidth={TEXTURE_ICON_SIZE}
+              imageHeight={TEXTURE_ICON_SIZE}
+            />
+
+            <ActionIconButton
+              Icon={PlusIcon}
+              size={ButtonSize.Small}
+              onClick={onTextureInsertClick}
+            >
+              Insert Texture
+            </ActionIconButton>
+          </TextureControlPanel>
+        )}
+
+        {showFileUploadPanel && (
+          <UploadPanel
+            title={"Upload Texture"}
+            dragAndDropText={"Drag and drop your texture file here"}
+            fileType={FileType.binary}
+            multipleFiles={true}
+            onCancel={() => {
+              setShowFileUploadPanel(false);
+            }}
+            onFileUploaded={async ({ fileContent, info }) => {
+              setShowFileUploadPanel(false);
+              const texture = new Texture({
+                imageUrl: info.url as string,
+                imageArrayBuffer: fileContent,
+                iconPanelSize: TEXTURE_ICON_SIZE,
+                group: TEXTURE_GROUP_CUSTOM,
+                custom: true,
+              });
+              await dispatch(
+                addPickPane({
+                  pickPaneSetName: PickPaneSetName.uvDebugTexture,
+                  pickPane: texture,
+                  setCurrent: true,
+                })
+              );
+            }}
+          />
+        )}
+
         <Title top={8} left={16} bottom={16} id={"color-section-title"}>
           Color
         </Title>

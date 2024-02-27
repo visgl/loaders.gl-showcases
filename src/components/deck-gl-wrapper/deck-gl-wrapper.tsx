@@ -41,13 +41,11 @@ import {
 } from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
-import {
-  fetchUVDebugTexture,
-  selectUVDebugTexture,
-} from "../../redux/slices/uv-debug-texture-slice";
+import { selectPickPanePicked } from "../../redux/slices/pick-pane-slice";
+import { ITexture, PickPaneSetName } from "../../types";
 import {
   selectMiniMap,
   selectMiniMapViewPort,
@@ -66,6 +64,7 @@ import {
 import { colorizeTile } from "../../utils/colorize-tile";
 import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 import styled from "styled-components";
+import { initTexturePickPanes } from "../../utils/texture";
 
 const WrapperAttributionContainer = styled.div`
   position: fixed;
@@ -248,6 +247,21 @@ export const DeckGlWrapper = ({
   const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
   const showTerrain = selectedBaseMap?.id === "Terrain";
   const mapStyle = selectedBaseMap?.mapUrl;
+
+  const [terrainTiles, setTerrainTiles] = useState({});
+  const uvDebugTexture = useAppSelector(
+    selectPickPanePicked(PickPaneSetName.uvDebugTexture)
+  ) as ITexture;
+  const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
+  uvDebugTextureRef.current = uvDebugTexture?.image || null;
+  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
+  const showDebugTextureRef = useRef<boolean>(false);
+  showDebugTextureRef.current = showDebugTexture;
+
+  let currentViewport: WebMercatorViewport = null;
+
+  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
+
   const VIEWS = useMemo(
     () => [
       new MapView({
@@ -289,27 +303,25 @@ export const DeckGlWrapper = ({
       bearing: 0,
     },
   });
-  const [terrainTiles, setTerrainTiles] = useState({});
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
-  const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
-  uvDebugTextureRef.current = uvDebugTexture;
-  const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
-
-  const showDebugTextureRef = useRef<boolean>(false);
-  showDebugTextureRef.current = showDebugTexture;
-
-  let currentViewport: WebMercatorViewport = null;
-
-  const colorsByAttribute = useAppSelector(selectColorsByAttribute);
-
   const dispatch = useAppDispatch();
-
   /** Load debug texture if necessary */
   useEffect(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchUVDebugTexture());
+//  useMemo(() => {
+      if (loadDebugTextureImage && !uvDebugTexture) {
+      initTexturePickPanes(dispatch);
+      //dispatch(fetchUVDebugTexture());
     }
   }, [loadDebugTextureImage]);
+
+  useMemo(() => {
+    loadedTilesets.forEach((tileset) => {
+      if (showDebugTexture) {
+        selectDebugTextureForTileset(tileset, uvDebugTexture?.image);
+      } else {
+        selectOriginalTextureForTileset();
+      }
+    });
+  }, [showDebugTexture, uvDebugTexture]);
 
   /**
    * Hook to call multiple changing function based on selected tileset.
@@ -343,16 +355,6 @@ export const DeckGlWrapper = ({
       tileset.selectTiles();
     });
   }, [loadTiles]);
-
-  useEffect(() => {
-    loadedTilesets.forEach(async (tileset) => {
-      if (showDebugTexture) {
-        await selectDebugTextureForTileset(tileset, uvDebugTexture);
-      } else {
-        selectOriginalTextureForTileset();
-      }
-    });
-  }, [showDebugTexture]);
 
   const getViewState = () =>
     parentViewState || (showMinimap && viewState) || { main: viewState.main };
