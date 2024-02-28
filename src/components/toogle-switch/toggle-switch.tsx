@@ -1,7 +1,14 @@
 import styled, { css } from "styled-components";
-import { color_canvas_primary_inverted } from "../../constants/colors";
+import {
+  color_canvas_primary_inverted,
+  dim_canvas_tertiary,
+} from "../../constants/colors";
 
-const color_control_disabled = "#808080";
+const Switch = styled.div`
+  position: relative;
+  width: 28px;
+  height: 18px;
+`;
 
 const Input = styled.input`
   height: 0;
@@ -13,11 +20,17 @@ const Input = styled.input`
 const Label = styled.label<{
   title?: string;
   htmlFor?: string;
+  disabled: boolean;
 }>`
   font-size: 6px;
   width: 28px;
   height: 18px;
   border-radius: 8px;
+  ${({ disabled }) =>
+    !disabled &&
+    css`
+      cursor: pointer;
+    `}
   ${Input} {
     opacity: 0;
     width: 0;
@@ -25,7 +38,7 @@ const Label = styled.label<{
   }
 `;
 
-const Slider = styled.span`
+const Slider = styled.span<{ disabled: boolean }>`
   position: absolute;
   top: 1px;
   left: 0;
@@ -48,16 +61,25 @@ const Slider = styled.span`
     transition: 0.4s;
     border-radius: 8px;
   }
-  &:hover {
-    background-color: ${({ theme }) =>
-      theme.colors.switchDisabledBackgroundHovered};
-  }
+  ${({ disabled }) =>
+    !disabled &&
+    css`
+      &:hover {
+        background-color: ${({ theme }) =>
+          theme.colors.switchDisabledBackgroundHovered};
+      }
+    `}
 
   ${Input}:checked + & {
     background: ${({ theme }) => theme.colors.switchCheckedBackground};
-    &:hover {
-      background: ${({ theme }) => theme.colors.switchCheckedBackgroundHovered};
-    }
+    ${({ disabled }) =>
+      !disabled &&
+      css`
+        &:hover {
+          background: ${({ theme }) =>
+            theme.colors.switchCheckedBackgroundHovered};
+        }
+      `}
   }
 
   ${Input}:checked + &::before {
@@ -67,20 +89,7 @@ const Slider = styled.span`
   }
 
   ${Input}:disabled + &::before {
-    background-color: ${color_control_disabled};
-  }
-`;
-
-const Switch = styled.div<{ disabled?: boolean }>`
-  position: relative;
-  width: 28px;
-  height: 18px;
-  ${Label} {
-    ${({ disabled }) =>
-      !disabled &&
-      css`
-        cursor: pointer;
-      `}
+    background-color: ${dim_canvas_tertiary};
   }
 `;
 
@@ -102,8 +111,8 @@ export const ToggleSwitch = ({
   disabled = false,
 }: ToggleSwitchProps) => {
   return (
-    <Switch disabled={disabled}>
-      <Label htmlFor={id} title={title}>
+    <Switch>
+      <Label htmlFor={id} title={title} disabled={disabled}>
         <Input
           id={id}
           type="checkbox"
@@ -113,7 +122,7 @@ export const ToggleSwitch = ({
           title={title}
           onChange={onChange}
         />
-        <Slider />
+        <Slider disabled={disabled} />
       </Label>
     </Switch>
   );
