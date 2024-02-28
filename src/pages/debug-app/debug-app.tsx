@@ -236,7 +236,7 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     dispatch(resetDebugOptions());
-    dispatch(setDebugOptions({ minimap: true }));
+    dispatch(setDebugOptions({ minimap: !(selectedBaseMapId === "ArcGis") }));
     dispatch(clearBSLStatisitcsSummary());
     dispatch(setFiltersByAttrubute({ filter: null }));
   }, [activeLayers, buildingExplorerOpened]);
