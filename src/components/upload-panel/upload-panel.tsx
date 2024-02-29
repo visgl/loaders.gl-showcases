@@ -133,7 +133,7 @@ export const UploadPanel = ({
         ref={inputRef}
         id={UPLOAD_INPUT_ID}
         type="file"
-        multiple={multipleFiles ? true : undefined}
+        multiple={multipleFiles || undefined}
         onChange={onUploadChangeHandler}
       />
       <FileInteractionContainer
