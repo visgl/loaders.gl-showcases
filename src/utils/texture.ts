@@ -15,8 +15,8 @@ import uv4Icon from "../../public/images/uvTexture4.thumb.png";
 import uv5 from "../../public/images/uvTexture5.png";
 import uv5Icon from "../../public/images/uvTexture5.thumb.png";
 
-import { addPickPane } from "../redux/slices/pick-pane-slice";
-import { PickPaneSetName } from "../types";
+import { addIconItem } from "../redux/slices/icon-list-slice";
+import { IconListSetName } from "../types";
 
 export const TEXTURE_ICON_SIZE = 54;
 export const TEXTURE_GROUP_PREDEFINED = "predefined";
@@ -50,7 +50,7 @@ export class Texture implements ITexture {
     custom?: boolean;
   }) {
     this.iconUrl = texture.iconUrl;
-    this.icon = texture.iconUrl || "";
+    this.icon = texture.iconUrl || texture.imageUrl || "";
 
     this.iconPanelSize = texture.iconPanelSize;
     this.group = texture.group;
@@ -109,9 +109,9 @@ export const initTexturePickPanes = async (dispatch) => {
     });
 
     await dispatch(
-      addPickPane({
-        pickPaneSetName: PickPaneSetName.uvDebugTexture,
-        pickPane: texture,
+      addIconItem({
+        iconListSetName: IconListSetName.uvDebugTexture,
+        iconItem: texture,
         setCurrent: tex.id === "uv1",
       })
     );

@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
-import pickPaneSliceReducer from "./slices/pick-pane-slice";
+import iconListSliceReducer from "./slices/icon-list-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
@@ -18,7 +18,7 @@ import layerNamesSliceReducer from "./slices/layer-names-slice";
 const rootReducer = combineReducers({
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
-  pickPane: pickPaneSliceReducer,
+  iconList: iconListSliceReducer,
   debugOptions: debugOptionsSliceReducer,
   baseMaps: baseMapsSliceReducer,
   symbolization: symbolizationSliceReducer,
@@ -36,9 +36,12 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types
-          ignoredActions: ["addPickPane/fulfilled", "setPickPanePicked/fulfilled"],
+          ignoredActions: [
+            "addIconItem/fulfilled",
+            "setIconItemPicked/fulfilled",
+          ],
           // Ignore these paths in the state
-          ignoredPaths: ["pickPane.pickPanesSets"],
+          ignoredPaths: ["iconList.iconListSets"],
         },
       }),
   });

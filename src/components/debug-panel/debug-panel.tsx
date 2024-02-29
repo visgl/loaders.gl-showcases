@@ -2,10 +2,10 @@ import { ReactEventHandler } from "react";
 import styled from "styled-components";
 import { useState, useMemo } from "react";
 import {
-  selectPickPaneArray,
-  addPickPane,
-} from "../../redux/slices/pick-pane-slice";
-import { PickPaneSetName } from "../../types";
+  selectIconList,
+  addIconItem,
+} from "../../redux/slices/icon-list-slice";
+import { IconListSetName } from "../../types";
 import {
   Texture,
   initTexturePickPanes,
@@ -13,7 +13,7 @@ import {
   TEXTURE_GROUP_PREDEFINED,
   TEXTURE_GROUP_CUSTOM,
 } from "../../utils/texture";
-import { PickPanePanel } from "../pick-pane-panel/pick-pane-panel";
+import { IconListPanel } from "../icon-list-panel/icon-list-panel";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ButtonSize } from "../../types";
@@ -97,7 +97,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
   const uvDebugTextureArray = useAppSelector(
-    selectPickPaneArray(PickPaneSetName.uvDebugTexture)
+    selectIconList(IconListSetName.uvDebugTexture)
   );
 
   useMemo(() => {
@@ -206,19 +206,17 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         </ItemContainer>
         {debugOptions.showUVDebugTexture && (
           <TextureControlPanel>
-            <PickPanePanel
-              pickPaneSetName={PickPaneSetName.uvDebugTexture}
+            <IconListPanel
+              iconListSetName={IconListSetName.uvDebugTexture}
               group={TEXTURE_GROUP_PREDEFINED}
-              panelLength={5}
-              imageWidth={TEXTURE_ICON_SIZE}
-              imageHeight={TEXTURE_ICON_SIZE}
+              iconWidth={TEXTURE_ICON_SIZE}
+              iconHeight={TEXTURE_ICON_SIZE}
             />
-            <PickPanePanel
-              pickPaneSetName={PickPaneSetName.uvDebugTexture}
+            <IconListPanel
+              iconListSetName={IconListSetName.uvDebugTexture}
               group={TEXTURE_GROUP_CUSTOM}
-              panelLength={5}
-              imageWidth={TEXTURE_ICON_SIZE}
-              imageHeight={TEXTURE_ICON_SIZE}
+              iconWidth={TEXTURE_ICON_SIZE}
+              iconHeight={TEXTURE_ICON_SIZE}
             />
 
             <ActionIconButton
@@ -250,9 +248,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
                 custom: true,
               });
               await dispatch(
-                addPickPane({
-                  pickPaneSetName: PickPaneSetName.uvDebugTexture,
-                  pickPane: texture,
+                addIconItem({
+                  iconListSetName: IconListSetName.uvDebugTexture,
+                  iconItem: texture,
                   setCurrent: true,
                 })
               );

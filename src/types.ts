@@ -385,12 +385,12 @@ export enum FetchingStatus {
   ready = "ready",
 }
 
-export enum PickPaneSetName {
+export enum IconListSetName {
   uvDebugTexture = "uvDebugTexture",
   baseMap = "baseMap",
 }
 
-export interface IPickPane {
+export interface IIconItem {
   id: string;
   icon: string;
   group: string;
@@ -399,7 +399,7 @@ export interface IPickPane {
   fetchPickPane: (fetchContent: boolean) => Promise<void>;
 }
 
-export interface ITexture extends IPickPane {
+export interface ITexture extends IIconItem {
   image: ImageBitmap | null;
 }
 
