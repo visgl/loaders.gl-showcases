@@ -34,7 +34,7 @@ const TextureIcon = styled.div<{
   width: ${({ width }) => `${width}px`};
   margin: 0;
   background-image: ${({ icon }) => `url(${icon})`};
-  background-size: auto;
+  background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
   border-width: 0;
