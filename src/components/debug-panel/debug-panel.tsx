@@ -24,6 +24,7 @@ import {
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 const CloseButtonWrapper = styled.div`
   position: absolute;
@@ -64,6 +65,11 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();
   const dispatch = useAppDispatch();
   const debugOptions = useAppSelector(selectDebugOptions);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const minimapDisabled = selectedBaseMapId === "ArcGis";
+  if (minimapDisabled && debugOptions.minimap) {
+    dispatch(setDebugOptions({ minimap: false }));
+  }
 
   return (
     <PanelContainer layout={layout}>
@@ -84,6 +90,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           <ToggleSwitch
             id={"toggle-minimap"}
             checked={debugOptions.minimap}
+            disabled={minimapDisabled}
             onChange={() =>
               dispatch(setDebugOptions({ minimap: !debugOptions.minimap }))
             }
