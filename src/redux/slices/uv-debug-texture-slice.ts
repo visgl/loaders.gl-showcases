@@ -136,7 +136,7 @@ export const fetchUVDebugTexture = createAsyncThunk<
   return { image: null, imageUrl: "", iconId: "" };
 });
 
-export const initTextures = createAsyncThunk<uvDebugTextureState, never>(
+export const initTextures = createAsyncThunk<void, never>(
   "initTextures",
   async (some, { dispatch }) => {
     const array: ImageWithLinkedIcon[] = [];
@@ -165,15 +165,14 @@ export const initTextures = createAsyncThunk<uvDebugTextureState, never>(
         addUVDebugTexture({ texture: texture, setCurrent: tex.id === "uv1" })
       );
     }
-    return { images: array };
   }
 );
 
 export const selectUVDebugTexture =
-  (iconItemPickedId: string) =>
+  (iconId: string) =>
   (state: RootState): ImageBitmap | null => {
     const textureObj = state.uvDebugTexture.images.find(
-      (item) => item.iconId === iconItemPickedId
+      (item) => item.iconId === iconId
     );
     return textureObj ? textureObj.image : null;
   };
