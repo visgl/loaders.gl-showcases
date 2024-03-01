@@ -139,7 +139,6 @@ export const fetchUVDebugTexture = createAsyncThunk<
 export const initTextures = createAsyncThunk<void, never>(
   "initTextures",
   async (some, { dispatch }) => {
-    const array: ImageWithLinkedIcon[] = [];
     const UV_DEBUG_TEXTURE_URL_ARRAY: {
       id: string;
       uv: string;
