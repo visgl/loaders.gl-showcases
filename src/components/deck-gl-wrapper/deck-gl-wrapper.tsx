@@ -46,7 +46,7 @@ import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice"
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
 import { selectIconItemPickedId } from "../../redux/slices/icon-list-slice";
 import {
-  fetchInitTextures,
+  initTextures,
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
@@ -313,7 +313,7 @@ export const DeckGlWrapper = ({
   /** Load debug texture if necessary */
   useMemo(() => {
     if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchInitTextures());
+      dispatch(initTextures());
     }
   }, [loadDebugTextureImage]);
 

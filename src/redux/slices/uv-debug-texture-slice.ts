@@ -20,7 +20,7 @@ export const TEXTURE_ICON_SIZE = 54;
 export const TEXTURE_GROUP_PREDEFINED = "predefined";
 export const TEXTURE_GROUP_CUSTOM = "custom";
 
-type ImageLinkedIcon = {
+type ImageWithLinkedIcon = {
   image: ImageBitmap | null;
   imageUrl: string;
   iconId: string;
@@ -29,7 +29,7 @@ type ImageLinkedIcon = {
 // Define a type for the slice state
 interface uvDebugTextureState {
   /** Array of Image Bitmap with linked icons for the debug texture */
-  images: ImageLinkedIcon[];
+  images: ImageWithLinkedIcon[];
 }
 
 const initialState: uvDebugTextureState = {
@@ -40,9 +40,9 @@ const uvDebugTextureSlice = createSlice({
   name: "uvDebugTexture",
   initialState,
   reducers: {
-    addLink: (
+    addTexture: (
       state: uvDebugTextureState,
-      action: PayloadAction<ImageLinkedIcon>
+      action: PayloadAction<ImageWithLinkedIcon>
     ) => {
       const texture = action.payload;
       const textureObj = state.images.find(
@@ -56,7 +56,10 @@ const uvDebugTextureSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(
       fetchUVDebugTexture.fulfilled,
-      (state: uvDebugTextureState, action: PayloadAction<ImageLinkedIcon>) => {
+      (
+        state: uvDebugTextureState,
+        action: PayloadAction<ImageWithLinkedIcon>
+      ) => {
         const iconItemPickedId = action.payload.iconId;
         const textureObj = state.images.find(
           (item) => item.iconId === iconItemPickedId
@@ -71,7 +74,7 @@ const uvDebugTextureSlice = createSlice({
 });
 
 export const addUVDebugTexture = createAsyncThunk<
-  ImageLinkedIcon,
+  ImageWithLinkedIcon,
   { texture: ITexture; setCurrent: boolean }
 >(
   "addUVDebugTexture",
@@ -80,12 +83,12 @@ export const addUVDebugTexture = createAsyncThunk<
     const textureObj = state.images.find((item) => item.iconId === texture.id);
 
     if (!textureObj) {
-      const imageLinkedIcon: ImageLinkedIcon = {
+      const imageLinkedIcon: ImageWithLinkedIcon = {
         image: null,
         imageUrl: texture.imageUrl,
         iconId: texture.id,
       };
-      dispatch(uvDebugTextureSlice.actions.addLink(imageLinkedIcon));
+      dispatch(uvDebugTextureSlice.actions.addTexture(imageLinkedIcon));
 
       const iconItem: IIconItem = {
         id: texture.id,
@@ -112,34 +115,31 @@ export const addUVDebugTexture = createAsyncThunk<
   }
 );
 
-export const fetchUVDebugTexture = createAsyncThunk<ImageLinkedIcon, string>(
-  "fetchUVDebugTexture",
-  async (iconItemPickedId: string, { getState }) => {
-    const state = (getState() as RootState).uvDebugTexture;
-    const textureObj = state.images.find(
-      (item) => item.iconId === iconItemPickedId
-    );
+export const fetchUVDebugTexture = createAsyncThunk<
+  ImageWithLinkedIcon,
+  string
+>("fetchUVDebugTexture", async (iconItemPickedId: string, { getState }) => {
+  const state = (getState() as RootState).uvDebugTexture;
+  const textureObj = state.images.find(
+    (item) => item.iconId === iconItemPickedId
+  );
 
-    if (textureObj) {
-      const image = (await load(
-        textureObj.imageUrl,
-        ImageLoader
-      )) as ImageBitmap;
-      return {
-        image: image,
-        imageUrl: textureObj.imageUrl,
-        iconId: iconItemPickedId,
-      };
-    }
-
-    return { image: null, imageUrl: "", iconId: "" };
+  if (textureObj) {
+    const image = (await load(textureObj.imageUrl, ImageLoader)) as ImageBitmap;
+    return {
+      image: image,
+      imageUrl: textureObj.imageUrl,
+      iconId: iconItemPickedId,
+    };
   }
-);
 
-export const fetchInitTextures = createAsyncThunk<uvDebugTextureState, never>(
-  "fetchInitTextures",
+  return { image: null, imageUrl: "", iconId: "" };
+});
+
+export const initTextures = createAsyncThunk<uvDebugTextureState, never>(
+  "initTextures",
   async (some, { dispatch }) => {
-    const array: ImageLinkedIcon[] = [];
+    const array: ImageWithLinkedIcon[] = [];
     const UV_DEBUG_TEXTURE_URL_ARRAY: {
       id: string;
       uv: string;

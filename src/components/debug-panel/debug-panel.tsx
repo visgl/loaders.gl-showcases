@@ -9,7 +9,7 @@ import {
   TEXTURE_GROUP_PREDEFINED,
   TEXTURE_GROUP_CUSTOM,
   addUVDebugTexture,
-  fetchInitTextures,
+  initTextures,
 } from "../../redux/slices/uv-debug-texture-slice";
 import { IconListPanel } from "../icon-list-panel/icon-list-panel";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
@@ -100,7 +100,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
 
   useMemo(() => {
     if (!uvDebugTextureArray.length) {
-      dispatch(fetchInitTextures());
+      dispatch(initTextures());
     }
   }, []);
 
