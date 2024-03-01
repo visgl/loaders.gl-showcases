@@ -44,9 +44,13 @@ import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
-import { selectIconItemPicked } from "../../redux/slices/icon-list-slice";
-import { ITexture, IconListSetName } from "../../types";
-import { initTexturePickPanes } from "../../utils/texture";
+import { selectIconItemPickedId } from "../../redux/slices/icon-list-slice";
+import {
+  fetchInitTextures,
+  fetchUVDebugTexture,
+  selectUVDebugTexture,
+} from "../../redux/slices/uv-debug-texture-slice";
+import { IconListSetName } from "../../types";
 import {
   selectMiniMap,
   selectMiniMapViewPort,
@@ -289,11 +293,12 @@ export const DeckGlWrapper = ({
     },
   });
   const [terrainTiles, setTerrainTiles] = useState({});
-  const uvDebugTexture = useAppSelector(
-    selectIconItemPicked(IconListSetName.uvDebugTexture)
-  ) as ITexture;
+  const iconItemPickedId = useAppSelector(
+    selectIconItemPickedId(IconListSetName.uvDebugTexture)
+  );
+  const uvDebugTexture = useAppSelector(selectUVDebugTexture(iconItemPickedId));
   const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
-  uvDebugTextureRef.current = uvDebugTexture?.image || null;
+  uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
 
   const showDebugTextureRef = useRef<boolean>(false);
@@ -306,12 +311,17 @@ export const DeckGlWrapper = ({
   const dispatch = useAppDispatch();
 
   /** Load debug texture if necessary */
-  useEffect(() => {
+  useMemo(() => {
     if (loadDebugTextureImage && !uvDebugTexture) {
-      initTexturePickPanes(dispatch);
-      //dispatch(fetchUVDebugTexture());
+      dispatch(fetchInitTextures());
     }
   }, [loadDebugTextureImage]);
+
+  useMemo(() => {
+    if (!uvDebugTexture && iconItemPickedId) {
+      dispatch(fetchUVDebugTexture(iconItemPickedId));
+    }
+  }, [iconItemPickedId]);
 
   /**
    * Hook to call multiple changing function based on selected tileset.
@@ -346,10 +356,10 @@ export const DeckGlWrapper = ({
     });
   }, [loadTiles]);
 
-  useEffect(() => {
+  useMemo(() => {
     loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
-        await selectDebugTextureForTileset(tileset, uvDebugTexture?.image);
+        await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
       }

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { IIconItem } from "../../types";
 
@@ -43,6 +43,44 @@ const iconListSlice = createSlice({
   name: "iconList",
   initialState,
   reducers: {
+    addIconItem: (
+      state: IIconListState,
+      action: PayloadAction<{
+        iconListSetName: string;
+        iconItem: IIconItem;
+        setCurrent: boolean;
+      }>
+    ) => {
+      const arg = action.payload;
+      if (!state.iconListSets[arg.iconListSetName]) {
+        state.iconListSets[arg.iconListSetName] = {
+          iconList: [],
+          iconItemIdPicked: "",
+        };
+      }
+      const element =
+        arg.iconItem.id &&
+        state.iconListSets[arg.iconListSetName].iconList.find(
+          (item) => item.id === arg.iconItem.id
+        );
+      if (!element) {
+        state.iconListSets[arg.iconListSetName].iconList.push(arg.iconItem);
+      }
+      if (arg.setCurrent) {
+        state.iconListSets[arg.iconListSetName].iconItemIdPicked =
+          arg.iconItem.id;
+      }
+    },
+    setIconItemPicked: (
+      state: IIconListState,
+      action: PayloadAction<{
+        iconListSetName: string;
+        id: string;
+      }>
+    ) => {
+      const arg = action.payload;
+      state.iconListSets[arg.iconListSetName].iconItemIdPicked = arg.id;
+    },
     deleteIconItem: (
       state: IIconListState,
       action: PayloadAction<{
@@ -62,107 +100,6 @@ const iconListSlice = createSlice({
       }
     },
   },
-
-  extraReducers: (builder) => {
-    builder
-      .addCase(
-        addIconItem.fulfilled,
-        (
-          state: IIconListState,
-          action: PayloadAction<{
-            iconListSetName: string;
-            iconItem: IIconItem;
-            picked: string | null;
-            index: number | undefined;
-          }>
-        ) => {
-          const arg = action.payload;
-          if (!state.iconListSets[arg.iconListSetName]) {
-            state.iconListSets[arg.iconListSetName] = {
-              iconList: [],
-              iconItemIdPicked: "",
-            };
-          }
-          const element =
-            arg.iconItem.id &&
-            state.iconListSets[arg.iconListSetName].iconList.find(
-              (item) => item.id === arg.iconItem.id
-            );
-          if (!element) {
-            if (typeof arg.index === "number") {
-              state.iconListSets[arg.iconListSetName].iconList.splice(
-                arg.index,
-                0,
-                arg.iconItem
-              );
-            } else {
-              state.iconListSets[arg.iconListSetName].iconList.push(
-                arg.iconItem
-              );
-            }
-          }
-          if (arg.picked) {
-            state.iconListSets[arg.iconListSetName].iconItemIdPicked =
-              arg.iconItem.id;
-          }
-        }
-      )
-      .addCase(
-        setIconItemPicked.fulfilled,
-        (
-          state: IIconListState,
-          action: PayloadAction<{
-            iconListSetName: string;
-            iconList: IIconItem | null;
-          }>
-        ) => {
-          const arg = action.payload;
-          state.iconListSets[arg.iconListSetName].iconItemIdPicked =
-            arg.iconList?.id || "";
-        }
-      );
-  },
-});
-
-export const addIconItem = createAsyncThunk<
-  {
-    iconListSetName: string;
-    iconItem: IIconItem;
-    picked: string | null;
-    index: number | undefined;
-  },
-  {
-    iconListSetName: string;
-    iconItem: IIconItem;
-    setCurrent: boolean;
-    index?: number;
-  }
->("addIconItem", async ({ iconListSetName, iconItem, setCurrent, index }) => {
-  // if setCurrent === true, we need to fetch the content
-  // if setCurrent === false, it's enough to fetch the icon only.
-  // The content will be fetched when the user pick an icon.
-
-  await iconItem.fetchPickPane(setCurrent);
-  const picked = setCurrent ? iconItem.id : null;
-  return {
-    iconListSetName: iconListSetName,
-    iconItem: iconItem,
-    picked: picked,
-    index: index,
-  };
-});
-
-export const setIconItemPicked = createAsyncThunk<
-  { iconListSetName: string; iconList: IIconItem | null },
-  { iconListSetName: string; id: string }
->("setIconItemPicked", async ({ iconListSetName, id }, { getState }) => {
-  const state = (getState() as RootState).iconList;
-  const sets = state.iconListSets[iconListSetName];
-  const pickedItem = sets?.iconList.find((item) => item.id === id);
-  if (pickedItem) {
-    await pickedItem.fetchPickPane(true);
-  }
-  return { iconListSetName: iconListSetName, iconList: pickedItem || null };
 });
 
 export const selectIconList =
@@ -189,6 +126,7 @@ export const selectIconItemPickedId =
     return iconListSet?.iconItemIdPicked || "";
   };
 
-export const { deleteIconItem } = iconListSlice.actions;
+export const { addIconItem, deleteIconItem, setIconItemPicked } =
+  iconListSlice.actions;
 
 export default iconListSlice.reducer;

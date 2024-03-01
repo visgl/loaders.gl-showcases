@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
+import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
 import iconListSliceReducer from "./slices/icon-list-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
@@ -18,6 +19,7 @@ import layerNamesSliceReducer from "./slices/layer-names-slice";
 const rootReducer = combineReducers({
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
+  uvDebugTexture: uvDebugTextureSliceReducer,
   iconList: iconListSliceReducer,
   debugOptions: debugOptionsSliceReducer,
   baseMaps: baseMapsSliceReducer,
@@ -36,12 +38,9 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types
-          ignoredActions: [
-            "addIconItem/fulfilled",
-            "setIconItemPicked/fulfilled",
-          ],
+          ignoredActions: ["fetchUVDebugTexture/fulfilled"],
           // Ignore these paths in the state
-          ignoredPaths: ["iconList.iconListSets"],
+          ignoredPaths: ["uvDebugTexture.images"],
         },
       }),
   });

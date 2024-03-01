@@ -396,11 +396,11 @@ export interface IIconItem {
   group: string;
   name?: string;
   custom?: boolean;
-  fetchPickPane: (fetchContent: boolean) => Promise<void>;
 }
 
 export interface ITexture extends IIconItem {
   image: ImageBitmap | null;
+  imageUrl: string;
 }
 
 export enum FileType {

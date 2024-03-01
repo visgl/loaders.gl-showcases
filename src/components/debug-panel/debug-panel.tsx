@@ -1,18 +1,16 @@
 import { ReactEventHandler } from "react";
 import styled from "styled-components";
 import { useState, useMemo } from "react";
+import { selectIconList } from "../../redux/slices/icon-list-slice";
+import { ITexture, IconListSetName } from "../../types";
+import md5 from "md5";
 import {
-  selectIconList,
-  addIconItem,
-} from "../../redux/slices/icon-list-slice";
-import { IconListSetName } from "../../types";
-import {
-  Texture,
-  initTexturePickPanes,
   TEXTURE_ICON_SIZE,
   TEXTURE_GROUP_PREDEFINED,
   TEXTURE_GROUP_CUSTOM,
-} from "../../utils/texture";
+  addUVDebugTexture,
+  fetchInitTextures,
+} from "../../redux/slices/uv-debug-texture-slice";
 import { IconListPanel } from "../icon-list-panel/icon-list-panel";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -102,7 +100,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
 
   useMemo(() => {
     if (!uvDebugTextureArray.length) {
-      initTexturePickPanes(dispatch);
+      dispatch(fetchInitTextures());
     }
   }, []);
 
@@ -238,21 +236,21 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             onCancel={() => {
               setShowFileUploadPanel(false);
             }}
-            onFileUploaded={async ({ fileContent, info }) => {
+            onFileUploaded={async ({ info }) => {
               setShowFileUploadPanel(false);
-              const texture = new Texture({
-                imageUrl: info.url as string,
-                imageArrayBuffer: fileContent,
-                iconPanelSize: TEXTURE_ICON_SIZE,
-                group: TEXTURE_GROUP_CUSTOM,
+              const url = info.url as string;
+              const hash = md5(url);
+
+              const texture: ITexture = {
+                id: `${hash}`,
+                image: null,
+                imageUrl: url,
+                icon: url,
+                group: TEXTURE_GROUP_PREDEFINED,
                 custom: true,
-              });
+              };
               await dispatch(
-                addIconItem({
-                  iconListSetName: IconListSetName.uvDebugTexture,
-                  iconItem: texture,
-                  setCurrent: true,
-                })
+                addUVDebugTexture({ texture: texture, setCurrent: true })
               );
             }}
           />
