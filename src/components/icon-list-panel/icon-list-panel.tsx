@@ -24,14 +24,13 @@ const TexturePanel = styled.div`
 
 const TextureIcon = styled.div<{
   icon: string;
-  width: number;
-  height: number;
+  size: number;
   active?: boolean;
 }>`
   display: flex;
   position: relative;
-  height: ${({ height }) => `${height}px`};
-  width: ${({ width }) => `${width}px`};
+  height: ${({ size }) => `${size}px`};
+  width: ${({ size }) => `${size}px`};
   margin: 0;
   background-image: ${({ icon }) => `url(${icon})`};
   background-size: cover;
@@ -51,16 +50,14 @@ const TextureIcon = styled.div<{
 
 type IconListPanelProps = {
   iconListSetName: IconListSetName;
-  group: string;
-  iconWidth: number;
-  iconHeight: number;
+  group?: string;
+  iconSize: number;
 };
 
 export const IconListPanel = ({
   iconListSetName,
   group,
-  iconWidth,
-  iconHeight,
+  iconSize,
 }: IconListPanelProps) => {
   const dispatch = useAppDispatch();
 
@@ -76,8 +73,7 @@ export const IconListPanel = ({
           <TextureIcon
             key={`${item.id}`}
             icon={`${item.icon}`}
-            width={iconWidth}
-            height={iconHeight}
+            size={iconSize}
             active={imagePickedKey === item.id}
             onClick={() => {
               dispatch(

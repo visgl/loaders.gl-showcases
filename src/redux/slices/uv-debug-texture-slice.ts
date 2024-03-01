@@ -16,10 +16,6 @@ import uv4Icon from "../../../public/images/uvTexture4.thumb.png";
 import uv5 from "../../../public/images/uvTexture5.png";
 import uv5Icon from "../../../public/images/uvTexture5.thumb.png";
 
-export const TEXTURE_ICON_SIZE = 54;
-export const TEXTURE_GROUP_PREDEFINED = "predefined";
-export const TEXTURE_GROUP_CUSTOM = "custom";
-
 type ImageWithLinkedIcon = {
   image: ImageBitmap | null;
   imageUrl: string;
@@ -157,7 +153,6 @@ export const initTextures = createAsyncThunk<void, never>(
         icon: tex.icon,
         image: null,
         imageUrl: tex.uv,
-        group: TEXTURE_GROUP_PREDEFINED,
         custom: false,
       };
       await dispatch(

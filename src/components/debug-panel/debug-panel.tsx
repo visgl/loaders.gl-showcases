@@ -5,9 +5,6 @@ import { selectIconList } from "../../redux/slices/icon-list-slice";
 import { ITexture, IconListSetName } from "../../types";
 import md5 from "md5";
 import {
-  TEXTURE_ICON_SIZE,
-  TEXTURE_GROUP_PREDEFINED,
-  TEXTURE_GROUP_CUSTOM,
   addUVDebugTexture,
   initTextures,
 } from "../../redux/slices/uv-debug-texture-slice";
@@ -41,6 +38,8 @@ import {
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
+
+export const TEXTURE_ICON_SIZE = 54;
 
 const CloseButtonWrapper = styled.div`
   position: absolute;
@@ -206,17 +205,8 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           <TextureControlPanel>
             <IconListPanel
               iconListSetName={IconListSetName.uvDebugTexture}
-              group={TEXTURE_GROUP_PREDEFINED}
-              iconWidth={TEXTURE_ICON_SIZE}
-              iconHeight={TEXTURE_ICON_SIZE}
+              iconSize={TEXTURE_ICON_SIZE}
             />
-            <IconListPanel
-              iconListSetName={IconListSetName.uvDebugTexture}
-              group={TEXTURE_GROUP_CUSTOM}
-              iconWidth={TEXTURE_ICON_SIZE}
-              iconHeight={TEXTURE_ICON_SIZE}
-            />
-
             <ActionIconButton
               Icon={PlusIcon}
               size={ButtonSize.Small}
@@ -246,7 +236,6 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
                 image: null,
                 imageUrl: url,
                 icon: url,
-                group: TEXTURE_GROUP_PREDEFINED,
                 custom: true,
               };
               await dispatch(

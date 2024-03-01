@@ -393,7 +393,7 @@ export enum IconListSetName {
 export interface IIconItem {
   id: string;
   icon: string;
-  group: string;
+  group?: string;
   name?: string;
   custom?: boolean;
 }
