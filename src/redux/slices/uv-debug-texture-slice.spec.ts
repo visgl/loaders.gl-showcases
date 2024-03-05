@@ -3,8 +3,8 @@ import { setupStore } from "../store";
 import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
-  initTextures,
 } from "./uv-debug-texture-slice";
+import { ImageLoader } from "@loaders.gl/images";
 
 jest.mock("@loaders.gl/core");
 
@@ -24,14 +24,15 @@ describe("slice: uv-debug-texture", () => {
   it("fetchUVDebugTexture should call loading mocked texture and put it into the slice state", async () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectUVDebugTexture("uv1")(state)).toEqual(null);
+    const imageUrl = "https://localhost:3000/images/uvTexture1.png";
+    expect(selectUVDebugTexture(imageUrl)(state)).toEqual(null);
 
-    await store.dispatch(initTextures());
-    await store.dispatch(fetchUVDebugTexture("uv1"));
+    await store.dispatch(fetchUVDebugTexture(imageUrl));
 
     expect(load).toHaveBeenCalledTimes(1);
+    expect(load).toHaveBeenCalledWith(imageUrl, ImageLoader);
 
     const newState = store.getState();
-    expect(selectUVDebugTexture("uv1")(newState)).toEqual(imageStubObject);
+    expect(selectUVDebugTexture(imageUrl)(newState)).toEqual(imageStubObject);
   });
 });

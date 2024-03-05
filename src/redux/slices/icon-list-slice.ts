@@ -1,6 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { IIconItem } from "../../types";
+import { IIconItem, IconListSetName } from "../../types";
+
+import uv1 from "../../../public/images/uvTexture1.png";
+import uv1Icon from "../../../public/images/uvTexture1.thumb.png";
+import uv2 from "../../../public/images/uvTexture2.png";
+import uv2Icon from "../../../public/images/uvTexture2.thumb.png";
+import uv3 from "../../../public/images/uvTexture3.png";
+import uv3Icon from "../../../public/images/uvTexture3.thumb.png";
+import uv4 from "../../../public/images/uvTexture4.png";
+import uv4Icon from "../../../public/images/uvTexture4.thumb.png";
+import uv5 from "../../../public/images/uvTexture5.png";
+import uv5Icon from "../../../public/images/uvTexture5.thumb.png";
 
 /**
  *  IconListSet "BaseMap"
@@ -35,8 +46,34 @@ interface IIconListState {
   iconListSets: Record<string, IIconListSet>;
 }
 
-const initialState: IIconListState = {
-  iconListSets: {},
+const initialState = (): IIconListState => {
+  const initState = { iconListSets: {} };
+  const UV_DEBUG_TEXTURE_URL_ARRAY: {
+    id: string;
+    uv: string;
+    icon: string;
+  }[] = [
+    { id: "uv1", uv: uv1, icon: uv1Icon },
+    { id: "uv2", uv: uv2, icon: uv2Icon },
+    { id: "uv3", uv: uv3, icon: uv3Icon },
+    { id: "uv4", uv: uv4, icon: uv4Icon },
+    { id: "uv5", uv: uv5, icon: uv5Icon },
+  ];
+
+  for (const tex of UV_DEBUG_TEXTURE_URL_ARRAY) {
+    const texture: IIconItem = {
+      id: tex.id,
+      icon: tex.icon,
+      extData: { imageUrl: tex.uv },
+      custom: false,
+    };
+    addItem(initState, {
+      iconListSetName: IconListSetName.uvDebugTexture,
+      iconItem: texture,
+      setCurrent: tex.id === "uv1",
+    });
+  }
+  return initState;
 };
 
 const iconListSlice = createSlice({
@@ -51,25 +88,7 @@ const iconListSlice = createSlice({
         setCurrent: boolean;
       }>
     ) => {
-      const arg = action.payload;
-      if (!state.iconListSets[arg.iconListSetName]) {
-        state.iconListSets[arg.iconListSetName] = {
-          iconList: [],
-          iconItemIdPicked: "",
-        };
-      }
-      const element =
-        arg.iconItem.id &&
-        state.iconListSets[arg.iconListSetName].iconList.find(
-          (item) => item.id === arg.iconItem.id
-        );
-      if (!element) {
-        state.iconListSets[arg.iconListSetName].iconList.push(arg.iconItem);
-      }
-      if (arg.setCurrent) {
-        state.iconListSets[arg.iconListSetName].iconItemIdPicked =
-          arg.iconItem.id;
-      }
+      addItem(state, action.payload);
     },
     setIconItemPicked: (
       state: IIconListState,
@@ -101,6 +120,33 @@ const iconListSlice = createSlice({
     },
   },
 });
+
+const addItem = (
+  state: IIconListState,
+  arg: {
+    iconListSetName: string;
+    iconItem: IIconItem;
+    setCurrent: boolean;
+  }
+) => {
+  if (!state.iconListSets[arg.iconListSetName]) {
+    state.iconListSets[arg.iconListSetName] = {
+      iconList: [],
+      iconItemIdPicked: "",
+    };
+  }
+  const element =
+    arg.iconItem.id &&
+    state.iconListSets[arg.iconListSetName].iconList.find(
+      (item) => item.id === arg.iconItem.id
+    );
+  if (!element) {
+    state.iconListSets[arg.iconListSetName].iconList.push(arg.iconItem);
+  }
+  if (arg.setCurrent) {
+    state.iconListSets[arg.iconListSetName].iconItemIdPicked = arg.iconItem.id;
+  }
+};
 
 export const selectIconList =
   (iconListSetName: string, group?: string) =>

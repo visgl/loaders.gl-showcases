@@ -43,8 +43,6 @@ const TextureIcon = styled.div<{
     active &&
     css`
       box-shadow: 0 0 0 2px #000000, 0 0 0 4px #ffffff;
-      -moz-box-shadow: 0 0 0 2px #000000, 0 0 0 4px #ffffff;
-      -webkit-shadow: 0 0 0 2px #000000, 0 0 0 4px #ffffff;
     `}
 `;
 

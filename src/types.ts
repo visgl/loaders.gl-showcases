@@ -396,14 +396,15 @@ export interface IIconItem {
   group?: string;
   name?: string;
   custom?: boolean;
-}
-
-export interface ITexture extends IIconItem {
-  image: ImageBitmap | null;
-  imageUrl: string;
+  extData: Record<string, string | number>;
 }
 
 export enum FileType {
   binary = "binary",
   text = "text",
 }
+
+export type FileUploaded = {
+  fileContent: string | ArrayBuffer;
+  info: Record<string, unknown>;
+};

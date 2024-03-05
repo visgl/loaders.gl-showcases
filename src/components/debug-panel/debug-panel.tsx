@@ -1,19 +1,15 @@
 import { ReactEventHandler } from "react";
 import styled from "styled-components";
-import { useState, useMemo } from "react";
-import { selectIconList } from "../../redux/slices/icon-list-slice";
-import { ITexture, IconListSetName } from "../../types";
+import { useState } from "react";
+import { addIconItem } from "../../redux/slices/icon-list-slice";
+import { IIconItem, IconListSetName } from "../../types";
 import md5 from "md5";
-import {
-  addUVDebugTexture,
-  initTextures,
-} from "../../redux/slices/uv-debug-texture-slice";
 import { IconListPanel } from "../icon-list-panel/icon-list-panel";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ButtonSize } from "../../types";
 import { UploadPanel } from "../upload-panel/upload-panel";
-import { FileType } from "../../types";
+import { FileType, FileUploaded } from "../../types";
 
 import {
   BoundingVolumeColoredBy,
@@ -93,18 +89,29 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const dispatch = useAppDispatch();
   const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
-  const uvDebugTextureArray = useAppSelector(
-    selectIconList(IconListSetName.uvDebugTexture)
-  );
-
-  useMemo(() => {
-    if (!uvDebugTextureArray.length) {
-      dispatch(initTextures());
-    }
-  }, []);
 
   const onTextureInsertClick = () => {
     setShowFileUploadPanel(true);
+  };
+
+  const onFileUploadedHandler = async ({ info }: FileUploaded) => {
+    setShowFileUploadPanel(false);
+    const url = info.url as string;
+    const hash = md5(url);
+
+    const texture: IIconItem = {
+      id: `${hash}`,
+      icon: url,
+      extData: { imageUrl: url },
+      custom: false,
+    };
+    dispatch(
+      addIconItem({
+        iconListSetName: IconListSetName.uvDebugTexture,
+        iconItem: texture,
+        setCurrent: true,
+      })
+    );
   };
 
   return (
@@ -226,22 +233,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             onCancel={() => {
               setShowFileUploadPanel(false);
             }}
-            onFileUploaded={async ({ info }) => {
-              setShowFileUploadPanel(false);
-              const url = info.url as string;
-              const hash = md5(url);
-
-              const texture: ITexture = {
-                id: `${hash}`,
-                image: null,
-                imageUrl: url,
-                icon: url,
-                custom: true,
-              };
-              await dispatch(
-                addUVDebugTexture({ texture: texture, setCurrent: true })
-              );
-            }}
+            onFileUploaded={onFileUploadedHandler}
           />
         )}
 

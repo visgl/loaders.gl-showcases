@@ -27,7 +27,7 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-import { FileType } from "../../types";
+import { FileType, FileUploaded } from "../../types";
 import { parseBookmarks } from "../../utils/bookmarks-utils";
 
 enum PopoverType {
@@ -241,10 +241,12 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
   };
 
-  const onBookmarksUploadedHandler = async (bookmarks) => {
+  const onBookmarksUploadedHandler = async ({ fileContent }: FileUploaded) => {
     setPopoverType(PopoverType.none);
-    const bookmarksParsed = await parseBookmarks(bookmarks);
-    bookmarksParsed && onBookmarksUploaded(bookmarksParsed);
+    if (typeof fileContent === "string") {
+      const bookmarksParsed = await parseBookmarks(fileContent);
+      bookmarksParsed && onBookmarksUploaded(bookmarksParsed);
+    }
   };
 
   const renderPopoverContent = () => {

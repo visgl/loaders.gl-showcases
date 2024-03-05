@@ -469,7 +469,15 @@ describe("Deck.gl I3S map component", () => {
       const { onTileLoad: onTileLoadSecond } = (CustomTile3DLayer as any).mock
         .lastCall[0];
       await act(() => onTileLoadSecond(tile3d));
-      expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
+      const imageStubObject = {
+        width: 1024,
+        height: 1024,
+        data: new ArrayBuffer(0),
+      };
+      expect(selectDebugTextureForTile).toHaveBeenCalledWith(
+        tile3d,
+        imageStubObject
+      );
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);
     });
 

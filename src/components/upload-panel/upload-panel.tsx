@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { FileType } from "../../types";
+import { FileType, FileUploaded } from "../../types";
 import { UploadPanelItem } from "./upload-panel-item";
 
 import UploadIcon from "../../../public/icons/upload.svg";
@@ -61,10 +61,7 @@ type UploadProps = {
   fileType: FileType;
   multipleFiles?: boolean;
   onCancel: () => void;
-  onFileUploaded: (fileUploaded: {
-    fileContent: string | ArrayBuffer;
-    info: Record<string, unknown>;
-  }) => void;
+  onFileUploaded: (fileUploaded: FileUploaded) => void;
 };
 
 export const UploadPanel = ({

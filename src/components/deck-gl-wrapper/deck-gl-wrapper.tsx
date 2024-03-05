@@ -44,9 +44,8 @@ import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
-import { selectIconItemPickedId } from "../../redux/slices/icon-list-slice";
+import { selectIconItemPicked } from "../../redux/slices/icon-list-slice";
 import {
-  initTextures,
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
@@ -293,10 +292,11 @@ export const DeckGlWrapper = ({
     },
   });
   const [terrainTiles, setTerrainTiles] = useState({});
-  const iconItemPickedId = useAppSelector(
-    selectIconItemPickedId(IconListSetName.uvDebugTexture)
+  const iconItemPicked = useAppSelector(
+    selectIconItemPicked(IconListSetName.uvDebugTexture)
   );
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture(iconItemPickedId));
+  const imageUrl = (iconItemPicked?.extData.imageUrl as string) || "";
+  const uvDebugTexture = useAppSelector(selectUVDebugTexture(imageUrl));
   const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
   uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
@@ -310,18 +310,11 @@ export const DeckGlWrapper = ({
 
   const dispatch = useAppDispatch();
 
-  /** Load debug texture if necessary */
   useMemo(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(initTextures());
+    if (imageUrl) {
+      dispatch(fetchUVDebugTexture(imageUrl));
     }
-  }, [loadDebugTextureImage]);
-
-  useMemo(() => {
-    if (!uvDebugTexture && iconItemPickedId) {
-      dispatch(fetchUVDebugTexture(iconItemPickedId));
-    }
-  }, [iconItemPickedId]);
+  }, [imageUrl]);
 
   /**
    * Hook to call multiple changing function based on selected tileset.
