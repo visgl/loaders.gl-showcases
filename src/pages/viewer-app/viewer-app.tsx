@@ -140,6 +140,15 @@ export const ViewerApp = () => {
     null
   );
 
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
     [activeLayers]
@@ -232,7 +241,9 @@ export const ViewerApp = () => {
 
   const onTileLoad = () => {
     setTimeout(() => {
-      setUpdateStatsNumber((prev) => prev + 1);
+      if (isMounted.current) {
+        setUpdateStatsNumber((prev) => prev + 1);
+      }
     }, IS_LOADED_DELAY);
   };
 
@@ -577,7 +588,8 @@ export const ViewerApp = () => {
       !inTransition &&
       !isZooming &&
       !isPanning &&
-      !isRotating
+      !isRotating &&
+      isMounted.current
     ) {
       setSearchParams(viewStateToUrlParams(viewState), { replace: true });
     }
