@@ -73,11 +73,11 @@ const TextureControlPanel = styled.div`
   flex-direction: column;
   justify-content: start;
   align-items: start;
+  margin: 0px 16px 0px 16px;
+`;
 
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-right: 16px;
-  margin-left: 16px;
+const UploadPanelContainer = styled.div`
+  margin: 0 16px 0 16px;
 `;
 
 type DebugPanelProps = {
@@ -94,16 +94,18 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
     setShowFileUploadPanel(true);
   };
 
-  const onFileUploadedHandler = async ({ info }: FileUploaded) => {
+  const onFileUploadedHandler = async ({ fileContent, info }: FileUploaded) => {
     setShowFileUploadPanel(false);
     const url = info.url as string;
     const hash = md5(url);
+    const blob = new Blob([fileContent as ArrayBuffer]);
+    const objectURL = URL.createObjectURL(blob);
 
     const texture: IIconItem = {
       id: `${hash}`,
-      icon: url,
-      extData: { imageUrl: url },
-      custom: false,
+      icon: objectURL,
+      extData: { imageUrl: fileContent },
+      custom: true,
     };
     dispatch(
       addIconItem({
@@ -225,16 +227,18 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         )}
 
         {showFileUploadPanel && (
-          <UploadPanel
-            title={"Upload Texture"}
-            dragAndDropText={"Drag and drop your texture file here"}
-            fileType={FileType.binary}
-            multipleFiles={true}
-            onCancel={() => {
-              setShowFileUploadPanel(false);
-            }}
-            onFileUploaded={onFileUploadedHandler}
-          />
+          <UploadPanelContainer>
+            <UploadPanel
+              title={"Upload Texture"}
+              dragAndDropText={"Drag and drop your texture file here"}
+              fileType={FileType.binary}
+              multipleFiles
+              onCancel={() => {
+                setShowFileUploadPanel(false);
+              }}
+              onFileUploaded={onFileUploadedHandler}
+            />
+          </UploadPanelContainer>
         )}
 
         <Title top={8} left={16} bottom={16} id={"color-section-title"}>

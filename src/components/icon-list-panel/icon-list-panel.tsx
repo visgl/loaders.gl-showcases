@@ -7,7 +7,7 @@ import {
   selectIconItemPickedId,
 } from "../../redux/slices/icon-list-slice";
 
-import { IIconItem, IconListSetName } from "../../types";
+import { IconListSetName } from "../../types";
 
 const TexturePanel = styled.div`
   display: flex;
@@ -64,28 +64,24 @@ export const IconListPanel = ({
     selectIconItemPickedId(iconListSetName)
   );
 
-  const renderTexturePanel = (array: IIconItem[]): JSX.Element => {
-    return (
-      <TexturePanel>
-        {array.map((item) => (
-          <TextureIcon
-            key={`${item.id}`}
-            icon={`${item.icon}`}
-            size={iconSize}
-            active={imagePickedKey === item.id}
-            onClick={() => {
-              dispatch(
-                setIconItemPicked({
-                  iconListSetName: iconListSetName,
-                  id: item.id,
-                })
-              );
-            }}
-          />
-        ))}
-      </TexturePanel>
-    );
-  };
-
-  return renderTexturePanel(imageArray);
+  return (
+    <TexturePanel>
+      {imageArray.map((item) => (
+        <TextureIcon
+          key={`${item.id}`}
+          icon={`${item.icon}`}
+          size={iconSize}
+          active={imagePickedKey === item.id}
+          onClick={() => {
+            dispatch(
+              setIconItemPicked({
+                iconListSetName: iconListSetName,
+                id: item.id,
+              })
+            );
+          }}
+        />
+      ))}
+    </TexturePanel>
+  );
 };

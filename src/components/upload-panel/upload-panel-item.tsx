@@ -5,7 +5,7 @@ import WarningIcon from "../../../public/icons/warning.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
 const Container = styled.div<LayoutProps>`
-  width: 335px;
+  width: 295px;
   height: 329px;
   padding: 16px;
   border-radius: 8px;

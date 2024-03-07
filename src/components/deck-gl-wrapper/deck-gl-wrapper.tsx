@@ -295,11 +295,13 @@ export const DeckGlWrapper = ({
   const iconItemPicked = useAppSelector(
     selectIconItemPicked(IconListSetName.uvDebugTexture)
   );
-  const imageUrl = (iconItemPicked?.extData.imageUrl as string) || "";
+  const imageUrl = (iconItemPicked?.extData?.imageUrl as string) || "";
   const uvDebugTexture = useAppSelector(selectUVDebugTexture(imageUrl));
   const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
   uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
+
+  const [forceRefresh, setForceRefresh] = useState(false);
 
   const showDebugTextureRef = useRef<boolean>(false);
   showDebugTextureRef.current = showDebugTexture;
@@ -310,8 +312,8 @@ export const DeckGlWrapper = ({
 
   const dispatch = useAppDispatch();
 
-  useMemo(() => {
-    if (imageUrl) {
+  useEffect(() => {
+    if (loadDebugTextureImage && imageUrl) {
       dispatch(fetchUVDebugTexture(imageUrl));
     }
   }, [imageUrl]);
@@ -349,12 +351,17 @@ export const DeckGlWrapper = ({
     });
   }, [loadTiles]);
 
-  useMemo(() => {
+  useEffect(() => {
+    let c = 0;
     loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
         await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
+      }
+      c++;
+      if (c === loadedTilesets.length) {
+        setForceRefresh(!forceRefresh);
       }
     });
   }, [showDebugTexture, uvDebugTexture]);

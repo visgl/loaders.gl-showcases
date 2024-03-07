@@ -25,16 +25,21 @@ const uvDebugTextureSlice = createSlice({
       fetchUVDebugTexture.fulfilled,
       (
         state: uvDebugTextureState,
-        action: PayloadAction<{ imageUrl: string; image: ImageBitmap | null }>
+        action: PayloadAction<{
+          imageUrl: string;
+          image: ImageBitmap | null;
+        } | null>
       ) => {
-        state.textureArray.push(action.payload);
+        if (action.payload) {
+          state.textureArray.push(action.payload);
+        }
       }
     );
   },
 });
 
 export const fetchUVDebugTexture = createAsyncThunk<
-  { imageUrl: string; image: ImageBitmap | null },
+  { imageUrl: string; image: ImageBitmap | null } | null,
   string
 >("fetchUVDebugTexture", async (imageUrl, { getState }) => {
   const state = (getState() as RootState).uvDebugTexture;
@@ -44,7 +49,7 @@ export const fetchUVDebugTexture = createAsyncThunk<
     const image = (await load(imageUrl, ImageLoader)) as ImageBitmap;
     return { imageUrl: imageUrl, image: image };
   }
-  return { imageUrl: imageUrl, image: null };
+  return null;
 });
 
 export const selectUVDebugTexture =

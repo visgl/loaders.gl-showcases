@@ -40,7 +40,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
           // Ignore these action types
           ignoredActions: ["fetchUVDebugTexture/fulfilled"],
           // Ignore these paths in the state
-          ignoredPaths: ["uvDebugTexture.images"],
+          ignoredPaths: ["uvDebugTexture.iconListSets"],
         },
       }),
   });
