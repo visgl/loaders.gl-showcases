@@ -77,7 +77,11 @@ const TextureControlPanel = styled.div`
 `;
 
 const UploadPanelContainer = styled.div`
-  margin: 0 16px 0 16px;
+  position: absolute;
+  top: 24px;
+  // Make upload panel centered related to debug panel.
+  // 168px is half upload panel width.
+  left: calc(50% - 168px);
 `;
 
 type DebugPanelProps = {
