@@ -41,13 +41,15 @@ import {
 } from "../../utils/debug/normals-utils";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
+import { selectIconItemPicked } from "../../redux/slices/icon-list-slice";
 import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
+import { IconListSetName } from "../../types";
 import {
   selectMiniMap,
   selectMiniMapViewPort,
@@ -290,10 +292,16 @@ export const DeckGlWrapper = ({
     },
   });
   const [terrainTiles, setTerrainTiles] = useState({});
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
+  const iconItemPicked = useAppSelector(
+    selectIconItemPicked(IconListSetName.uvDebugTexture)
+  );
+  const imageUrl = (iconItemPicked?.extData?.imageUrl as string) || "";
+  const uvDebugTexture = useAppSelector(selectUVDebugTexture(imageUrl));
   const uvDebugTextureRef = useRef<ImageBitmap | null>(null);
   uvDebugTextureRef.current = uvDebugTexture;
   const [needTransitionToTileset, setNeedTransitionToTileset] = useState(false);
+
+  const [forceRefresh, setForceRefresh] = useState(false);
 
   const showDebugTextureRef = useRef<boolean>(false);
   showDebugTextureRef.current = showDebugTexture;
@@ -304,12 +312,11 @@ export const DeckGlWrapper = ({
 
   const dispatch = useAppDispatch();
 
-  /** Load debug texture if necessary */
   useEffect(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchUVDebugTexture());
+    if (loadDebugTextureImage && imageUrl) {
+      dispatch(fetchUVDebugTexture(imageUrl));
     }
-  }, [loadDebugTextureImage]);
+  }, [imageUrl]);
 
   /**
    * Hook to call multiple changing function based on selected tileset.
@@ -345,14 +352,19 @@ export const DeckGlWrapper = ({
   }, [loadTiles]);
 
   useEffect(() => {
+    let c = 0;
     loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
         await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
       }
+      c++;
+      if (c === loadedTilesets.length) {
+        setForceRefresh(!forceRefresh);
+      }
     });
-  }, [showDebugTexture]);
+  }, [showDebugTexture, uvDebugTexture]);
 
   const getViewState = () =>
     parentViewState || (showMinimap && viewState) || { main: viewState.main };

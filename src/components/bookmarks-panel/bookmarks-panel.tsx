@@ -15,7 +15,7 @@ import ConfirmationIcon from "../../../public/icons/confirmation.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import ConfirmIcon from "../../../public/icons/confirmation.svg";
 import { BookmarkOptionsMenu } from "./bookmark-option-menu";
-import { UploadPanel } from "./upload-panel";
+import { UploadPanel } from "../upload-panel/upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
@@ -26,6 +26,9 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
+
+import { FileType, FileUploaded } from "../../types";
+import { parseBookmarks } from "../../utils/bookmarks-utils";
 
 enum PopoverType {
   options,
@@ -55,13 +58,13 @@ const Container = styled.div<LayoutProps>`
     tablet: "0",
     mobile: "0",
   })};
-  
-  bottom:  ${getCurrentLayoutProperty({
+
+  bottom: ${getCurrentLayoutProperty({
     desktop: "24px;",
     tablet: "0",
     mobile: "0",
   })};
-  
+
   width: ${getCurrentLayoutProperty({
     desktop: "60%",
     tablet: "100%",
@@ -238,9 +241,12 @@ export const BookmarksPanel = ({
     setPopoverType(PopoverType.none);
   };
 
-  const onBookmarksUploadedHandler = (bookmarks) => {
+  const onBookmarksUploadedHandler = async ({ fileContent }: FileUploaded) => {
     setPopoverType(PopoverType.none);
-    onBookmarksUploaded(bookmarks);
+    if (typeof fileContent === "string") {
+      const bookmarksParsed = await parseBookmarks(fileContent);
+      bookmarksParsed && onBookmarksUploaded(bookmarksParsed);
+    }
   };
 
   const renderPopoverContent = () => {
@@ -256,8 +262,11 @@ export const BookmarksPanel = ({
     if (popoverType === PopoverType.upload) {
       return (
         <UploadPanel
+          title={"Upload Bookmarks"}
+          dragAndDropText={"Drag and drop your json file here"}
+          fileType={FileType.text}
           onCancel={() => setPopoverType(PopoverType.none)}
-          onBookmarksUploaded={onBookmarksUploadedHandler}
+          onFileUploaded={onBookmarksUploadedHandler}
         />
       );
     }

@@ -37,7 +37,6 @@ import { MapController } from "@deck.gl/core";
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
 import { load } from "@loaders.gl/core";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
-import { ImageLoader } from "@loaders.gl/images";
 import { Tileset3D } from "@loaders.gl/tiles";
 import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import { COORDINATE_SYSTEM, I3SLoader } from "@loaders.gl/i3s";
@@ -184,14 +183,10 @@ describe("Deck.gl I3S map component", () => {
     expect(controller2).toEqual(controllerExpected);
   });
 
-  it("Should load UV debug texture", () => {
+  it("Should load UV debug texture", async () => {
     const { rerender } = callRender(renderWithProvider, {
       loadDebugTextureImage: true,
     });
-    expect(load).toHaveBeenCalledWith(
-      "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg",
-      ImageLoader
-    );
     expect(load).toHaveBeenCalledTimes(1);
     callRender(rerender);
     expect(load).toHaveBeenCalledTimes(1);

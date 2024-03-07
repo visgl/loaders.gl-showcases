@@ -18,21 +18,21 @@ describe("slice: uv-debug-texture", () => {
   it("Selector should return the initial state", () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectUVDebugTexture(state)).toEqual(null);
+    expect(selectUVDebugTexture("")(state)).toEqual(null);
   });
 
   it("fetchUVDebugTexture should call loading mocked texture and put it into the slice state", async () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectUVDebugTexture(state)).toEqual(null);
+    const imageUrl = "https://localhost:3000/images/uvTexture1.png";
+    expect(selectUVDebugTexture(imageUrl)(state)).toEqual(null);
 
-    await store.dispatch(fetchUVDebugTexture());
-    expect(load).toHaveBeenCalledWith(
-      "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg",
-      ImageLoader
-    );
+    await store.dispatch(fetchUVDebugTexture(imageUrl));
+
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(load).toHaveBeenCalledWith(imageUrl, ImageLoader);
 
     const newState = store.getState();
-    expect(selectUVDebugTexture(newState)).toEqual(imageStubObject);
+    expect(selectUVDebugTexture(imageUrl)(newState)).toEqual(imageStubObject);
   });
 });
