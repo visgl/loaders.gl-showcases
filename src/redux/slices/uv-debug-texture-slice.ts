@@ -27,7 +27,7 @@ const uvDebugTextureSlice = createSlice({
         state: uvDebugTextureState,
         action: PayloadAction<{
           imageUrl: string;
-          image: ImageBitmap | null;
+          image: ImageBitmap;
         } | null>
       ) => {
         if (action.payload) {
@@ -39,7 +39,7 @@ const uvDebugTextureSlice = createSlice({
 });
 
 export const fetchUVDebugTexture = createAsyncThunk<
-  { imageUrl: string; image: ImageBitmap | null } | null,
+  { imageUrl: string; image: ImageBitmap } | null,
   string
 >("fetchUVDebugTexture", async (imageUrl, { getState }) => {
   const state = (getState() as RootState).uvDebugTexture;
