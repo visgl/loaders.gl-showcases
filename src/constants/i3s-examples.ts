@@ -15,8 +15,8 @@ export const INITIAL_EXAMPLE: LayerExample = {
 
 export const EXAMPLES: LayerExample[] = [
   {
-    id: "san-francisco-v1_6",
-    name: "San Francisco v1.6",
+    id: "san-francisco-v1_8",
+    name: "San Francisco v1.8",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
     type: TilesetType.I3S,
     mapInfo: 'https://www.arcgis.com/home/item.html?id=d3344ba99c3f4efaa909ccfbcc052ed5'

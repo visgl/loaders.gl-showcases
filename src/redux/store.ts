@@ -6,6 +6,7 @@ import {
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
+import iconListSliceReducer from "./slices/icon-list-slice";
 import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   flattenedSublayers: flattenedSublayersSliceReducer,
   dragMode: dragModeSliceReducer,
   uvDebugTexture: uvDebugTextureSliceReducer,
+  iconList: iconListSliceReducer,
   debugOptions: debugOptionsSliceReducer,
   baseMaps: baseMapsSliceReducer,
   symbolization: symbolizationSliceReducer,
@@ -44,7 +46,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
           ],
           // Ignore these paths in the state
           ignoredPaths: [
-            "uvDebugTexture.value",
+            "uvDebugTexture.iconListSets",
             "viewState.main.transitionInterpolator",
             "viewState.minimap.transitionInterpolator",
           ],

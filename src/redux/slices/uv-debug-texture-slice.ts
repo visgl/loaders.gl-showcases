@@ -3,18 +3,18 @@ import { ImageLoader } from "@loaders.gl/images";
 import { load } from "@loaders.gl/core";
 import { RootState } from "../store";
 
+type Texture = {
+  imageUrl: string;
+  image: ImageBitmap | null;
+};
 // Define a type for the slice state
 interface uvDebugTextureState {
-  /** Image Bitmap for the debug texture */
-  value: ImageBitmap | null;
+  textureArray: Texture[];
 }
 
 const initialState: uvDebugTextureState = {
-  value: null,
+  textureArray: [],
 };
-
-const UV_DEBUG_TEXTURE_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/images/uv-debug-texture.jpg";
 
 const uvDebugTextureSlice = createSlice({
   name: "uvDebugTexture",
@@ -25,27 +25,40 @@ const uvDebugTextureSlice = createSlice({
       fetchUVDebugTexture.fulfilled,
       (
         state: uvDebugTextureState,
-        action: PayloadAction<uvDebugTextureState>
+        action: PayloadAction<{
+          imageUrl: string;
+          image: ImageBitmap;
+        } | null>
       ) => {
-        return action.payload;
+        if (action.payload) {
+          state.textureArray.push(action.payload);
+        }
       }
     );
   },
 });
 
-export const fetchUVDebugTexture = createAsyncThunk<uvDebugTextureState>(
-  "fetchUVDebugTexture",
-  async () => {
-    const image = (await load(
-      UV_DEBUG_TEXTURE_URL,
-      ImageLoader
-    )) as ImageBitmap;
+export const fetchUVDebugTexture = createAsyncThunk<
+  { imageUrl: string; image: ImageBitmap } | null,
+  string
+>("fetchUVDebugTexture", async (imageUrl, { getState }) => {
+  const state = (getState() as RootState).uvDebugTexture;
+  const el = state.textureArray.find((item) => item.imageUrl === imageUrl);
 
-    return { value: image };
+  if (!el || !el.image) {
+    const image = (await load(imageUrl, ImageLoader)) as ImageBitmap;
+    return { imageUrl: imageUrl, image: image };
   }
-);
+  return null;
+});
 
-export const selectUVDebugTexture = (state: RootState): ImageBitmap | null =>
-  state.uvDebugTexture.value;
+export const selectUVDebugTexture =
+  (imageUrl: string) =>
+  (state: RootState): ImageBitmap | null => {
+    const el = state.uvDebugTexture.textureArray.find(
+      (item) => item.imageUrl === imageUrl
+    );
+    return el?.image || null;
+  };
 
 export default uvDebugTextureSlice.reducer;

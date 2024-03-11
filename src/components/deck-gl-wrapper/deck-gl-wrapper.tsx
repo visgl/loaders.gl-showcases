@@ -1,6 +1,10 @@
 import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
-import { MapController, InteractionState, WebMercatorViewport } from "@deck.gl/core";
+import {
+  MapController,
+  InteractionState,
+  WebMercatorViewport,
+} from "@deck.gl/core";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { SceneLayer3D } from "@loaders.gl/i3s";
 import { FlyToInterpolator, PickingInfo, View } from "@deck.gl/core";
@@ -24,6 +28,26 @@ import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
 import { setViewState } from "../../redux/slices/view-state-slice";
 import { useDeckGl } from "../../hooks/use-deckgl-hook/use-deckgl-hook";
+
+import styled from "styled-components";
+
+const WrapperAttributionContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+`;
+
+const AttributionContainer = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  margin: 8px;
+`;
 
 const TRANSITION_DURAITON = 4000;
 
@@ -285,13 +309,13 @@ export const DeckGlWrapper = ({
     onTilesetLoad(tileset);
   };
 
-  const onTileLoadHandler = (tile) => {
+  const onTileLoadHandler = async (tile) => {
     if (!featurePicking) {
       // delete featureIds from data to have instance picking instead of feature picking
       delete tile.content.featureIds;
     }
     if (showDebugTextureRef.current) {
-      selectDebugTextureForTile(tile, uvDebugTextureRef.current);
+      await selectDebugTextureForTile(tile, uvDebugTextureRef.current);
     } else {
       selectOriginalTextureForTile(tile);
     }
@@ -386,6 +410,19 @@ export const DeckGlWrapper = ({
         <View id="minimap">
           <MaplibreMap mapStyle={CONTRAST_MAP_STYLES[mapStyle]}></MaplibreMap>
         </View>
+      )}
+      {showTerrain && (
+        <WrapperAttributionContainer>
+          <AttributionContainer>
+            <div>
+              &copy;
+              <a href="http://www.openstreetmap.org/copyright/" target="_blank">
+                OpenStreetMap
+              </a>{" "}
+              contributors
+            </div>
+          </AttributionContainer>
+        </WrapperAttributionContainer>
       )}
     </DeckGL>
   );
