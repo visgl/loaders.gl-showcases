@@ -24,6 +24,7 @@ import {
   formatStringValue,
 } from "../../utils/format/format-utils";
 import { getBoundingType } from "../../utils/debug/bounding-volume";
+import { TextureSection } from "./texture-section";
 
 enum ActiveTileInfoPanel {
   TileDetailsPanel,
@@ -162,7 +163,7 @@ export const TileDetailsPanel = ({
     lodMetricType,
     lodMetricValue,
     screenSpaceError,
-    depth
+    depth,
   } = tile;
   const childrenInfo = getChildrenInfo(tileChildren);
 
@@ -411,6 +412,7 @@ export const TileDetailsPanel = ({
             </ValidateButton>
             <TileMetadata tileInfo={TILE_INFO} />
             {children}
+            <TextureSection tile={tile} />
             <Normals
               tile={tile}
               trianglesPercentage={trianglesPercentage}

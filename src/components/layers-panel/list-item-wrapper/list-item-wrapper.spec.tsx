@@ -19,7 +19,7 @@ describe("List Item Wrapper", () => {
         onClick={onChange}
         optionsContent={<div>{"Hello world"}</div>}
       >
-        San Francisco v1.6
+        San Francisco v1.8
       </ListItemWrapper>
     );
     const optionsIcon = document.querySelector("#test-id");

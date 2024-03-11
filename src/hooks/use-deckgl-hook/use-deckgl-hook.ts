@@ -8,10 +8,12 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { selectColorsByAttribute } from "../../redux/slices/symbolization-slice";
 import { selectDragMode } from "../../redux/slices/drag-mode-slice";
+import { selectIconItemPicked } from "../../redux/slices/icon-list-slice";
 import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
+import { IconListSetName } from "../../types";
 import {
   selectMiniMap,
   selectMiniMapViewPort,
@@ -59,7 +61,13 @@ export function useDeckGl(
   const boundingVolumeType = useAppSelector(selectBoundingVolumeType);
   const colorsByAttribute = useAppSelector(selectColorsByAttribute);
   const globalViewState = useAppSelector(selectViewState);
-  const uvDebugTexture = useAppSelector(selectUVDebugTexture);
+  const iconItemPicked = useAppSelector(
+    selectIconItemPicked(IconListSetName.uvDebugTexture)
+  );
+  const imageUrl = (iconItemPicked?.extData?.imageUrl as string) || "";
+  const uvDebugTexture = useAppSelector(selectUVDebugTexture(imageUrl));
+
+  const [forceRefresh, setForceRefresh] = useState(false);
 
   const VIEWS = useMemo(
     () => [
@@ -104,10 +112,10 @@ export function useDeckGl(
 
   /** Load debug texture if necessary */
   useEffect(() => {
-    if (loadDebugTextureImage && !uvDebugTexture) {
-      dispatch(fetchUVDebugTexture());
+    if (loadDebugTextureImage && imageUrl) {
+      dispatch(fetchUVDebugTexture(imageUrl));
     }
-  }, [loadDebugTextureImage]);
+  }, [imageUrl]);
 
   /**
    * Hook to call multiple changing function based on selected tileset.
@@ -143,14 +151,19 @@ export function useDeckGl(
   }, [loadTiles]);
 
   useEffect(() => {
-    loadedTilesets.forEach((tileset) => {
+    let c = 0;
+    loadedTilesets.forEach(async (tileset) => {
       if (showDebugTexture) {
-        selectDebugTextureForTileset(tileset, uvDebugTexture);
+        await selectDebugTextureForTileset(tileset, uvDebugTexture);
       } else {
         selectOriginalTextureForTileset();
       }
+      c++;
+      if (c === loadedTilesets.length) {
+        setForceRefresh(!forceRefresh);
+      }
     });
-  }, [showDebugTexture]);
+  }, [showDebugTexture, uvDebugTexture]);
 
   const viewState = useMemo(() => {
     return (
