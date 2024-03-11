@@ -163,6 +163,15 @@ export const DebugApp = () => {
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
     [activeLayers]
@@ -277,7 +286,9 @@ export const DebugApp = () => {
 
   const onTileLoad = (tile) => {
     setTimeout(() => {
-      setUpdateStatsNumber((prev) => prev + 1);
+      if (isMounted.current) {
+        setUpdateStatsNumber((prev) => prev + 1);
+      }
     }, IS_LOADED_DELAY);
     handleValidateTile(tile);
   };
@@ -329,7 +340,7 @@ export const DebugApp = () => {
     const tileIndex = selectedTiles.findIndex(
       (tile: Tile3D) => tile === selectedTileRef.current
     );
-    if (tileIndex === -1) {
+    if (tileIndex === -1 && isMounted.current) {
       setSelectedTile(null);
     }
     return selectedTiles;
@@ -724,7 +735,8 @@ export const DebugApp = () => {
       !inTransition &&
       !isZooming &&
       !isPanning &&
-      !isRotating
+      !isRotating &&
+      isMounted.current
     ) {
       setSearchParams(viewStateToUrlParams(viewState), { replace: true });
     }
