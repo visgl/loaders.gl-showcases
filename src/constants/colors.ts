@@ -29,6 +29,7 @@ export const color_accent_tertiary = "#FDCECE";
 
 export const dim_canvas_primary = "#616678";
 export const dim_canvas_secondary = "#CDCFD6";
+export const dim_canvas_tertiary = "#808080";
 
 export const COLORS_BY_ATTRIBUTE: {
   min: {

@@ -1,14 +1,12 @@
-import { Map as MaplibreMap } from "react-map-gl/maplibre";
-import DeckGL from "@deck.gl/react";
+import { useArcgis } from "../../hooks/use-arcgis-hook/use-arcgis-hook";
+import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { SceneLayer3D } from "@loaders.gl/i3s";
 import {
-  MapController,
-  InteractionState,
+  FlyToInterpolator,
+  PickingInfo,
   WebMercatorViewport,
 } from "@deck.gl/core";
-import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import { SceneLayer3D } from "@loaders.gl/i3s";
-import { FlyToInterpolator, PickingInfo, View } from "@deck.gl/core";
-import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
+import { useRef } from "react";
 import {
   NormalsDebugData,
   TilesetType,
@@ -23,35 +21,24 @@ import { getElevationByCentralTile } from "../../utils/terrain-elevation";
 import { getLonLatWithElevationOffset } from "../../utils/elevation-utils";
 
 import { useAppDispatch } from "../../redux/hooks";
-
+import styled from "styled-components";
 import { renderLayers } from "../../utils/deckgl/render-layers";
 import { layerFilterCreator } from "../../utils/deckgl/layers-filter";
 import { setViewState } from "../../redux/slices/view-state-slice";
 import { useDeckGl } from "../../hooks/use-deckgl-hook/use-deckgl-hook";
 
-import styled from "styled-components";
-
-const WrapperAttributionContainer = styled.div`
-  position: fixed;
-  left: 0;
-  top: 0;
+export const StyledMapContainer = styled.div`
+  overflow: hidden;
+  position: absolute;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: end;
-  align-items: end;
-`;
-
-const AttributionContainer = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  margin: 8px;
+  left: 0;
+  top: 0;
 `;
 
 const TRANSITION_DURAITON = 4000;
 
-type DeckGlI3sProps = {
+type ArcGisMapProps = {
   /** DeckGL component id */
   id?: string;
   /** User selected tiles colors */
@@ -108,8 +95,6 @@ type DeckGlI3sProps = {
   onWebGLInitialized?: (gl: any) => void;
   /** DeckGL after render callback */
   onAfterRender?: () => void;
-  /** DeckGL onInteractionStateChange callback */
-  onInteractionStateChange?: (interactionState: InteractionState) => void;
   /** DeckGL callback. On layer hover behavior */
   getTooltip?: (info: { object: Tile3D; index: number; layer: any }) => void;
   /** DeckGL callback. On layer click behavior */
@@ -124,8 +109,7 @@ type DeckGlI3sProps = {
   onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
 };
 
-export const DeckGlWrapper = ({
-  id,
+export const ArcgisWrapper = ({
   coloredTilesMap,
   pickable = false,
   layers3d,
@@ -148,19 +132,14 @@ export const DeckGlWrapper = ({
   preventTransitions = false,
   minimapPosition,
   filtersByAttribute,
-  onWebGLInitialized,
-  onAfterRender,
-  onInteractionStateChange,
-  getTooltip,
   onClick,
   onTilesetLoad,
   onTileLoad,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onTileUnload = () => {},
   onTraversalComplete = (selectedTiles) => selectedTiles,
-}: DeckGlI3sProps) => {
+}: ArcGisMapProps) => {
   const {
-    dragMode,
     showMinimap,
     loadTiles,
     createIndependentMinimapViewport,
@@ -168,7 +147,6 @@ export const DeckGlWrapper = ({
     boundingVolumeColorMode,
     wireframe,
     showTerrain,
-    mapStyle,
     boundingVolume,
     boundingVolumeType,
     colorsByAttribute,
@@ -189,8 +167,7 @@ export const DeckGlWrapper = ({
     minimapPosition
   );
   const dispatch = useAppDispatch();
-  const getViews = () => (showMinimap ? VIEWS : [VIEWS[0]]);
-  let currentViewport: WebMercatorViewport = null;
+  const currentViewport: WebMercatorViewport = null;
 
   const onViewStateChangeHandler = ({
     interactionState,
@@ -298,24 +275,20 @@ export const DeckGlWrapper = ({
       dispatch(setViewState(newViewState));
     }
 
-    const viewportTraversersMap = {
-      main: "main",
-      minimap: createIndependentMinimapViewport ? "minimap" : "main",
-    };
     tileset.setProps({
-      viewportTraversersMap,
+      //todo: viewportTraversersMap,
       loadTiles,
     });
     onTilesetLoad(tileset);
   };
 
-  const onTileLoadHandler = async (tile) => {
+  const onTileLoadHandler = (tile) => {
     if (!featurePicking) {
       // delete featureIds from data to have instance picking instead of feature picking
       delete tile.content.featureIds;
     }
     if (showDebugTextureRef.current) {
-      await selectDebugTextureForTile(tile, uvDebugTextureRef.current);
+      selectDebugTextureForTile(tile, uvDebugTextureRef.current);
     } else {
       selectOriginalTextureForTile(tile);
     }
@@ -370,60 +343,15 @@ export const DeckGlWrapper = ({
       normalsDebugData,
     });
   };
-
-  return (
-    <DeckGL
-      id={id}
-      layers={doRenderLayers()}
-      viewState={viewState}
-      views={getViews()}
-      layerFilter={layerFilterCreator(showMinimap)}
-      onViewStateChange={onViewStateChangeHandler}
-      controller={
-        disableController
-          ? false
-          : {
-              type: MapController,
-              maxPitch: 60,
-              inertia: true,
-              scrollZoom: { speed: 0.01, smooth: true },
-              touchRotate: true,
-              dragMode,
-            }
-      }
-      glOptions={{
-        preserveDrawingBuffer: true,
-      }}
-      onWebGLInitialized={onWebGLInitialized}
-      onAfterRender={onAfterRender}
-      onInteractionStateChange={onInteractionStateChange}
-      getTooltip={getTooltip}
-      onClick={onClick}
-    >
-      {({ viewport }) => {
-        currentViewport = viewport;
-      }}
-      {!showTerrain && (
-        <MaplibreMap mapStyle={mapStyle} terrain={undefined}></MaplibreMap>
-      )}
-      {mapStyle && (
-        <View id="minimap">
-          <MaplibreMap mapStyle={CONTRAST_MAP_STYLES[mapStyle]}></MaplibreMap>
-        </View>
-      )}
-      {showTerrain && (
-        <WrapperAttributionContainer>
-          <AttributionContainer>
-            <div>
-              &copy;
-              <a href="http://www.openstreetmap.org/copyright/" target="_blank">
-                OpenStreetMap
-              </a>{" "}
-              contributors
-            </div>
-          </AttributionContainer>
-        </WrapperAttributionContainer>
-      )}
-    </DeckGL>
-  );
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const map = useArcgis(mapContainer, viewState, onViewStateChangeHandler);
+  if (map) {
+    const layers = doRenderLayers();
+    // @ts-expect-error @deck.gl/arcgis has no types
+    map.deck.set({ layers });
+    // @ts-expect-error @deck.gl/arcgis has no types
+    map.deck.layerFilter = layerFilterCreator(showMinimap);
+  }
+  return <StyledMapContainer ref={mapContainer} />;
 };
+export default ArcgisWrapper;

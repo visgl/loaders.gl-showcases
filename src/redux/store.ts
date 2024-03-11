@@ -11,6 +11,7 @@ import debugOptionsSliceReducer from "./slices/debug-options-slice";
 import i3sStatsSliceReducer from "./slices/i3s-stats-slice";
 import baseMapsSliceReducer from "./slices/base-maps-slice";
 import symbolizationSliceReducer from "./slices/symbolization-slice";
+import viewStateSliceReducer from "./slices/view-state-slice";
 import arcGisAuthSliceReducer from "./slices/arcgis-auth-slice";
 import arcGisContentSliceReducer from "./slices/arcgis-content-slice";
 import layerNamesSliceReducer from "./slices/layer-names-slice";
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   baseMaps: baseMapsSliceReducer,
   symbolization: symbolizationSliceReducer,
   i3sStats: i3sStatsSliceReducer,
+  viewState: viewStateSliceReducer,
   arcGisAuth: arcGisAuthSliceReducer,
   arcGisContent: arcGisContentSliceReducer,
   layerNames: layerNamesSliceReducer,
@@ -38,9 +40,16 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types
-          ignoredActions: ["fetchUVDebugTexture/fulfilled"],
+          ignoredActions: [
+            "fetchUVDebugTexture/fulfilled",
+            "viewState/setViewState",
+          ],
           // Ignore these paths in the state
-          ignoredPaths: ["uvDebugTexture.iconListSets"],
+          ignoredPaths: [
+            "uvDebugTexture.iconListSets",
+            "viewState.main.transitionInterpolator",
+            "viewState.minimap.transitionInterpolator",
+          ],
         },
       }),
   });

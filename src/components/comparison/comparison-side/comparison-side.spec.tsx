@@ -18,7 +18,46 @@ import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 import { setupStore } from "../../../redux/store";
 import { setDragMode } from "../../../redux/slices/drag-mode-slice";
 
-jest.mock("@loaders.gl/core");
+jest.mock("react-map-gl/maplibre", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/arcgis", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/core", () => {
+  return {
+    load: jest.fn(),
+  };
+});
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/3d-tiles", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/geo-layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("../../../layers/custom-tile-3d-layer/custom-tile-3d-layer", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../../layers-panel/layers-panel");
@@ -75,7 +114,6 @@ jest.mock("../../../constants/i3s-examples", () => ({
   ],
 }));
 
-const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
 const onChangeLayersMock = jest.fn();
 const onTilesetLoaded = jest.fn();
@@ -94,15 +132,12 @@ const parseTilesetUrlParamsMock =
   parseTilesetUrlParams as unknown as jest.Mocked<any>;
 
 describe("ComparisonSide", () => {
-  let viewState;
-
   const callRender = (renderFunc, props = {}, store = setupStore()) => {
     return renderFunc(
       <ComparisonSide
         activeLayersIds={[]}
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -113,7 +148,6 @@ describe("ComparisonSide", () => {
         buildingExplorerOpened={true}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
-        onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
         onLoadingStateChange={onLoadingStateChange}
@@ -135,23 +169,6 @@ describe("ComparisonSide", () => {
       tilesetUrl: "https://new.layer.url/layers/0",
       token: null,
     });
-  });
-
-  beforeEach(() => {
-    viewState = {
-      main: {
-        longitude: 0,
-        latitude: 0,
-        pitch: 45,
-        maxPitch: 90,
-        bearing: 0,
-        minZoom: 2,
-        maxZoom: 24,
-        zoom: 2,
-        transitionDuration: 0,
-        transitionInterpolator: null,
-      },
-    };
   });
 
   it("Should render left side", () => {

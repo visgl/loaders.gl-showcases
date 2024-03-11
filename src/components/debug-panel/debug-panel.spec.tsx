@@ -16,6 +16,11 @@ import {
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../../utils/hooks/layout");
 jest.mock("../close-button/close-button", () => ({
   CloseButton: ({ onClick }) => {

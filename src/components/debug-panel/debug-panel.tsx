@@ -34,6 +34,7 @@ import {
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 export const TEXTURE_ICON_SIZE = 54;
 
@@ -93,6 +94,11 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const dispatch = useAppDispatch();
   const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const minimapDisabled = selectedBaseMapId === "ArcGis";
+  if (minimapDisabled && debugOptions.minimap) {
+    dispatch(setDebugOptions({ minimap: false }));
+  }
 
   const onTextureInsertClick = () => {
     setShowFileUploadPanel(true);
@@ -139,6 +145,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           <ToggleSwitch
             id={"toggle-minimap"}
             checked={debugOptions.minimap}
+            disabled={minimapDisabled}
             onChange={() =>
               dispatch(setDebugOptions({ minimap: !debugOptions.minimap }))
             }

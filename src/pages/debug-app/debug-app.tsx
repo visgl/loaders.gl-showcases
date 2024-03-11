@@ -6,7 +6,6 @@ import {
   Sublayer,
   TilesetType,
   ActiveButton,
-  ViewStateSet,
   LayerViewState,
   ListItemType,
   TileColoredBy,
@@ -92,29 +91,13 @@ import {
 import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
-
-const INITIAL_VIEW_STATE = {
-  main: {
-    longitude: 0,
-    latitude: 0,
-    pitch: 45,
-    maxPitch: 90,
-    bearing: 0,
-    minZoom: 2,
-    maxZoom: 24,
-    zoom: 2,
-    transitionDuration: 0,
-    transitionInterpolator: null,
-  },
-  minimap: {
-    latitude: 0,
-    longitude: 0,
-    zoom: 9,
-    pitch: 0,
-    bearing: 0,
-  },
-};
 
 const DEFAULT_TRIANGLES_PERCENTAGE = 30; // Percentage of triangles to show normals for.
 const DEFAULT_NORMALS_LENGTH = 20; // Normals length in meters
@@ -125,6 +108,7 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
   const debugOptions = useAppSelector(selectDebugOptions);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -151,10 +135,13 @@ export const DebugApp = () => {
   const [preventTransitions, setPreventTransitions] = useState<boolean>(false);
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
-  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const globalViewState = useAppSelector(selectViewState);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
   const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
@@ -207,7 +194,7 @@ export const DebugApp = () => {
     dispatch(setDragMode(DragMode.pan));
     dispatch(setDebugOptions({ minimap: true }));
 
-    setStateUrlViewStateParams(urlParamsToViewState(viewState));
+    setStateUrlViewStateParams(urlParamsToViewState(globalViewState));
 
     return () => {
       dispatch(resetDebugOptions());
@@ -258,7 +245,7 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     dispatch(resetDebugOptions());
-    dispatch(setDebugOptions({ minimap: true }));
+    dispatch(setDebugOptions({ minimap: !(selectedBaseMapId === "ArcGis") }));
     dispatch(clearBSLStatisitcsSummary());
     dispatch(setFiltersByAttrubute({ filter: null }));
   }, [activeLayers, buildingExplorerOpened]);
@@ -305,10 +292,10 @@ export const DebugApp = () => {
     if (Object.keys(stateUrlViewStateParams).length > 0) {
       const { longitude, latitude } = stateUrlViewStateParams;
       setViewState({
-        ...viewState,
-        main: { ...viewState.main, ...stateUrlViewStateParams },
+        ...globalViewState,
+        main: { ...globalViewState.main, ...stateUrlViewStateParams },
         minimap: {
-          ...viewState.minimap,
+          ...globalViewState.minimap,
           longitude,
           latitude,
         },
@@ -515,27 +502,29 @@ export const DebugApp = () => {
     );
   };
 
-  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
-    if (layerViewState) {
-      setViewState((viewStatePrev) => {
+  const pointToTileset = useCallback(
+    (layerViewState?: LayerViewState) => {
+      if (layerViewState) {
         const { zoom, longitude, latitude } = layerViewState;
-        return {
+        const newViewState = {
           main: {
-            ...viewStatePrev.main,
+            ...globalViewState.main,
             zoom: zoom + 2.5,
             longitude,
             latitude,
             transitionDuration: 1000,
           },
           minimap: {
-            ...viewStatePrev.minimap,
+            ...globalViewState.minimap,
             longitude,
             latitude,
           },
         };
-      });
-    }
-  }, []);
+        dispatch(setViewState(newViewState));
+      }
+    },
+    [globalViewState]
+  );
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -551,10 +540,6 @@ export const DebugApp = () => {
         );
       }
     }
-  };
-
-  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    setViewState(viewStateSet);
   };
 
   const handleOnAfterRender = () => {
@@ -590,7 +575,7 @@ export const DebugApp = () => {
           id: newBookmarkId,
           pageId: PageId.debug,
           imageUrl,
-          viewState,
+          viewState: globalViewState,
           debugOptions,
           layersLeftSide: activeLayers,
           layersRightSide: [],
@@ -614,7 +599,7 @@ export const DebugApp = () => {
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
-    setViewState(bookmark.viewState);
+    dispatch(setViewState(bookmark.viewState));
     setExamples(bookmark.layersLeftSide);
     setActiveLayers(
       getActiveLayersByIds(
@@ -644,7 +629,7 @@ export const DebugApp = () => {
             ? {
                 ...bookmark,
                 imageUrl,
-                viewState,
+                viewState: globalViewState,
                 debugOptions,
                 layersLeftSide: activeLayers,
                 layersRightSide: [],
@@ -677,53 +662,51 @@ export const DebugApp = () => {
   };
 
   const onZoomIn = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, maxZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === maxZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-        minimap: {
-          ...viewStatePrev.minimap,
-        },
-      };
-    });
-  }, []);
-
-  const onZoomOut = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, minZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === minZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-        minimap: {
-          ...viewStatePrev.minimap,
-        },
-      };
-    });
-  }, []);
-
-  const onCompassClick = useCallback(() => {
-    setViewState((viewStatePrev) => ({
+    const { zoom, maxZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === maxZoom;
+    const newViewState = {
       main: {
-        ...viewStatePrev.main,
-        bearing: 0,
-        transitionDuration: 1000,
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
       },
       minimap: {
-        ...viewStatePrev.minimap,
+        ...globalViewState.minimap,
       },
-    }));
-  }, []);
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
+
+  const onZoomOut = useCallback(() => {
+    const { zoom, minZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === minZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+      minimap: {
+        ...globalViewState.minimap,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
+
+  const onCompassClick = useCallback(() => {
+    dispatch(
+      setViewState({
+        main: {
+          ...globalViewState.main,
+          bearing: 0,
+          transitionDuration: 1000,
+        },
+        minimap: {
+          ...globalViewState.minimap,
+        },
+      })
+    );
+  }, [globalViewState]);
 
   const onInteractionStateChange = (
     interactionStateChange: InteractionStateChange
@@ -738,21 +721,15 @@ export const DebugApp = () => {
       !isRotating &&
       isMounted.current
     ) {
-      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
+      setSearchParams(viewStateToUrlParams(globalViewState), { replace: true });
     }
   };
 
   return (
     <MapArea>
       {renderTilePanel()}
-      <DeckGlWrapper
+      <MapWrapper
         id="debug-deck-container"
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
         coloredTilesMap={coloredTilesMap}
         normalsTrianglesPercentage={trianglesPercentage}
         normalsLength={normalsLength}
@@ -769,7 +746,6 @@ export const DebugApp = () => {
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
-        onViewStateChange={onViewStateChangeHandler}
         onTilesetLoad={onTilesetLoad}
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
@@ -875,10 +851,11 @@ export const DebugApp = () => {
         />
       )}
       <MapControllPanel
-        bearing={viewState.main.bearing}
+        bearing={globalViewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
+        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
       />
       {wrongBookmarkPageId && (
         <CenteredContainer>

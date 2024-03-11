@@ -26,7 +26,6 @@ import {
   TilesetType,
   ActiveButton,
   LayerViewState,
-  ViewStateSet,
   ListItemType,
   Layout,
   Bookmark,
@@ -71,6 +70,8 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import {
   selectFiltersByAttribute,
   setColorsByAttrubute,
@@ -79,6 +80,10 @@ import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { getBSLStatisticsSummary } from "../../redux/slices/i3s-stats-slice";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
 const INITIAL_VIEW_STATE = {
@@ -111,6 +116,7 @@ export const ViewerApp = () => {
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const flattenedSublayers = useAppSelector(selectLayers);
   const bslSublayers = useAppSelector(selectSublayers);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -125,7 +131,7 @@ export const ViewerApp = () => {
   const [preventTransitions, setPreventTransitions] = useState<boolean>(false);
   const [examples, setExamples] = useState<LayerExample[]>(EXAMPLES);
   const [activeLayers, setActiveLayers] = useState<LayerExample[]>([]);
-  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const globalViewState = useAppSelector(selectViewState);
   const [sublayers, setSublayers] = useState<ActiveSublayer[]>([]);
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
@@ -133,6 +139,8 @@ export const ViewerApp = () => {
     useState<ViewState>({});
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
   const filtersByAttribute = useSelector((state: RootState) =>
     selectFiltersByAttribute(state)
   );
@@ -175,8 +183,9 @@ export const ViewerApp = () => {
     setActiveLayers([newActiveLayer]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    dispatch(setViewState(INITIAL_VIEW_STATE));
 
-    setStateUrlViewStateParams(urlParamsToViewState(viewState));
+    setStateUrlViewStateParams(urlParamsToViewState(globalViewState));
 
     return () => {
       dispatch(setInitialBaseMaps());
@@ -256,8 +265,8 @@ export const ViewerApp = () => {
     setUpdateStatsNumber((prev) => prev + 1);
     if (Object.keys(stateUrlViewStateParams).length > 0) {
       setViewState({
-        ...viewState,
-        main: { ...viewState.main, ...stateUrlViewStateParams },
+        ...globalViewState,
+        main: { ...globalViewState.main, ...stateUrlViewStateParams },
       });
       setStateUrlViewStateParams({});
     }
@@ -390,22 +399,24 @@ export const ViewerApp = () => {
     );
   };
 
-  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
-    if (layerViewState) {
-      setViewState((viewStatePrev) => {
+  const pointToTileset = useCallback(
+    (layerViewState?: LayerViewState) => {
+      if (layerViewState) {
         const { zoom, longitude, latitude } = layerViewState;
-        return {
+        const newViewState = {
           main: {
-            ...viewStatePrev.main,
+            ...globalViewState.main,
             zoom: zoom + 2.5,
             longitude,
             latitude,
             transitionDuration: 1000,
           },
         };
-      });
-    }
-  }, []);
+        dispatch(setViewState(newViewState));
+      }
+    },
+    [globalViewState]
+  );
 
   const onUpdateSublayerVisibilityHandler = (sublayer: Sublayer) => {
     if (sublayer.layerType === "3DObject") {
@@ -421,10 +432,6 @@ export const ViewerApp = () => {
         );
       }
     }
-  };
-
-  const onViewStateChangeHandler = (viewStateSet: ViewStateSet) => {
-    setViewState(viewStateSet);
   };
 
   const onWebGLInitialized = () => {
@@ -460,7 +467,7 @@ export const ViewerApp = () => {
           id: newBookmarkId,
           pageId: PageId.viewer,
           imageUrl,
-          viewState,
+          viewState: globalViewState,
           layersLeftSide: activeLayers,
           layersRightSide: [],
           activeLayersIdsLeftSide: [...selectedLayerIds],
@@ -483,7 +490,7 @@ export const ViewerApp = () => {
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
-    setViewState(bookmark.viewState);
+    dispatch(setViewState(bookmark.viewState));
     setExamples(bookmark.layersLeftSide);
     setActiveLayers(
       getActiveLayersByIds(
@@ -507,7 +514,7 @@ export const ViewerApp = () => {
             ? {
                 ...bookmark,
                 imageUrl,
-                viewState,
+                viewState: globalViewState,
                 layersLeftSide: activeLayers,
                 layersRightSide: [],
                 activeLayersIdsLeftSide: selectedLayerIds,
@@ -539,44 +546,43 @@ export const ViewerApp = () => {
   };
 
   const onZoomIn = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, maxZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === maxZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const { zoom, maxZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === maxZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onZoomOut = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, minZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === minZoom;
+    const { zoom, minZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === minZoom;
 
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onCompassClick = useCallback(() => {
-    setViewState((viewStatePrev) => ({
-      main: {
-        ...viewStatePrev.main,
-        bearing: 0,
-        transitionDuration: 1000,
-      },
-    }));
-  }, []);
+    dispatch(
+      setViewState({
+        main: {
+          ...globalViewState.main,
+          bearing: 0,
+          transitionDuration: 1000,
+        },
+      })
+    );
+  }, [globalViewState]);
 
   const onInteractionStateChange = (
     interactionStateChange: InteractionStateChange
@@ -591,21 +597,15 @@ export const ViewerApp = () => {
       !isRotating &&
       isMounted.current
     ) {
-      setSearchParams(viewStateToUrlParams(viewState), { replace: true });
+      setSearchParams(viewStateToUrlParams(globalViewState), { replace: true });
     }
   };
 
   return (
     <MapArea>
       {selectedFeatureAttributes && renderAttributesPanel()}
-      <DeckGlWrapper
+      <MapWrapper
         id="viewer-deck-container"
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
         pickable={isLayerPickable()}
         layers3d={layers3d}
         lastLayerSelectedId={selectedLayerIds[0] || ""}
@@ -616,14 +616,12 @@ export const ViewerApp = () => {
         onAfterRender={handleOnAfterRender}
         getTooltip={getTooltip}
         onClick={handleClick}
-        onViewStateChange={onViewStateChangeHandler}
         onTilesetLoad={onTilesetLoad}
         onTileLoad={onTileLoad}
         onWebGLInitialized={onWebGLInitialized}
         preventTransitions={preventTransitions}
         onInteractionStateChange={onInteractionStateChange}
       />
-
       {layout !== Layout.Mobile && (
         <OnlyToolsPanelWrapper layout={layout}>
           <MainToolsPanel
@@ -702,10 +700,11 @@ export const ViewerApp = () => {
         />
       )}
       <MapControllPanel
-        bearing={viewState.main.bearing}
+        bearing={globalViewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
+        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
       />
       {wrongBookmarkPageId && (
         <CenteredContainer>
