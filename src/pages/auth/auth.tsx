@@ -7,10 +7,7 @@ import {
 } from "../../utils/hooks/layout";
 
 import { arcGisCompleteLogin } from "../../utils/arcgis";
-
-export type LayoutProps = {
-  layout: string;
-};
+import { LayoutProps } from "../../types";
 
 const AuthContainer = styled.div<LayoutProps>`
   display: flex;
@@ -40,5 +37,5 @@ export const AuthApp = () => {
   useEffect(() => {
     arcGisCompleteLogin();
   }, []);
-  return <AuthContainer id="auth-container" layout={layout} />;
+  return <AuthContainer id="auth-container" $layout={layout} />;
 };

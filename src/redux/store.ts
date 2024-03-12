@@ -1,8 +1,4 @@
-import {
-  PreloadedState,
-  combineReducers,
-  configureStore,
-} from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import flattenedSublayersSliceReducer from "./slices/flattened-sublayers-slice";
 import dragModeSliceReducer from "./slices/drag-mode-slice";
 import uvDebugTextureSliceReducer from "./slices/uv-debug-texture-slice";
@@ -28,7 +24,7 @@ const rootReducer = combineReducers({
   layerNames: layerNamesSliceReducer,
 });
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+export const setupStore = (preloadedState?: RootState) => {
   return configureStore({
     reducer: rootReducer,
     preloadedState,

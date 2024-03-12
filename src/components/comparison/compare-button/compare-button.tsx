@@ -210,12 +210,12 @@ export const CompareButton = ({
   return (
     <Container
       id="compare-button"
-      layout={layout}
+      $layout={layout}
       disableButton={disableButton}
     >
       <Button
         ref={refCompare}
-        layout={layout}
+        $layout={layout}
         isMobile={isMobileLayout}
         disabled={disableButton}
         onClick={onCompareModeToggle}
@@ -238,7 +238,7 @@ export const CompareButton = ({
       {downloadStats && (
         <Button
           ref={refDownload}
-          layout={layout}
+          $layout={layout}
           disabled={disableDownloadButton}
           onClick={onDownloadClick}
           onPointerEnter={onPointerEnterDownload}

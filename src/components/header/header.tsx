@@ -23,7 +23,7 @@ type HeaderProps = {
 };
 
 type PropsWithLayout = {
-  layout: string;
+  $layout: string;
 };
 
 const HeaderContainer = styled.div<PropsWithLayout>`
@@ -86,9 +86,9 @@ export const Header = ({
   };
 
   return (
-    <HeaderContainer id="header-container" layout={layout}>
+    <HeaderContainer id="header-container" $layout={layout}>
       <HeaderLogo
-        layout={layout}
+        $layout={layout}
         id="header-logo"
         to="/"
         onClick={redirectHandler}

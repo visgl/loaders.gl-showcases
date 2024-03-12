@@ -19,7 +19,7 @@ import { UploadPanel } from "./upload-panel";
 import { UnsavedBookmarkWarning } from "./unsaved-bookmark-warning";
 import { Popover } from "react-tiny-popover";
 import { color_brand_tertiary } from "../../constants/colors";
-import { Bookmark, SliderType } from "../../types";
+import { Bookmark, LayoutProps, SliderType } from "../../types";
 import { SliderInnerButton } from "../slider/slider-inner-button";
 import { ConfirmDeletingPanel } from "../slider/confirm-deleting-panel";
 import {
@@ -34,10 +34,6 @@ enum PopoverType {
   clearBookmarks,
   none,
 }
-
-type LayoutProps = {
-  layout: string;
-};
 
 const Container = styled.div<LayoutProps>`
   position: absolute;
@@ -55,13 +51,13 @@ const Container = styled.div<LayoutProps>`
     tablet: "0",
     mobile: "0",
   })};
-  
-  bottom:  ${getCurrentLayoutProperty({
+
+  bottom: ${getCurrentLayoutProperty({
     desktop: "24px;",
     tablet: "0",
     mobile: "0",
   })};
-  
+
   width: ${getCurrentLayoutProperty({
     desktop: "60%",
     tablet: "100%",
@@ -319,29 +315,30 @@ export const BookmarksPanel = ({
 
     return (
       <SliderInnerButton onInnerClick={() => setClearBookmarksMode(false)}>
-        <OptionsIcon panel={Panels.Bookmarks} />
+        <OptionsIcon $panel={Panels.Bookmarks} />
       </SliderInnerButton>
     );
   };
 
+  console.log(layout);
   return (
     <>
-      <Container id={id} layout={layout}>
+      <Container id={id} $layout={layout}>
         {layout === Layout.Desktop && (
           <>
-            <BookmarkPanelHeader panel={Panels.Bookmarks}>
-              <Title left={16}>Bookmarks Panel</Title>
+            <BookmarkPanelHeader $panel={Panels.Bookmarks}>
+              <Title $left={16}>Bookmarks Panel</Title>
               <CloseButton
                 id="bookmarks-panel-close-button"
                 onClick={onClose}
               />
             </BookmarkPanelHeader>
-            <PanelHorizontalLine top={10} />
+            <PanelHorizontalLine $top={10} />
           </>
         )}
 
-        <ItemsList layout={layout}>
-          <ButtonWrapper layout={layout}>
+        <ItemsList $layout={layout}>
+          <ButtonWrapper $layout={layout}>
             <SliderInnerButton
               disabled={disableAddButton || disableBookmarksAdding}
               blurButton={disableAddButton || disableBookmarksAdding}
@@ -363,7 +360,7 @@ export const BookmarksPanel = ({
           ) : (
             <Title>Bookmarks list is empty</Title>
           )}
-          <ButtonWrapper layout={layout}>
+          <ButtonWrapper $layout={layout}>
             <Popover
               isOpen={popoverType !== PopoverType.none}
               reposition={false}
@@ -388,7 +385,7 @@ export const BookmarksPanel = ({
                     hide={clearBookmarks}
                     onInnerClick={() => setPopoverType(PopoverType.options)}
                   >
-                    <OptionsIcon panel={Panels.Bookmarks} />
+                    <OptionsIcon $panel={Panels.Bookmarks} />
                   </SliderInnerButton>
                 )}
                 {clearBookmarks && renderClearBookmarksContent()}

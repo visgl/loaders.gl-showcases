@@ -261,7 +261,7 @@ export const SliderListItem = forwardRef(
         <ListItem
           id={id}
           ref={ref}
-          layout={layout}
+          $layout={layout}
           url={url}
           sliderType={sliderType}
           editingMode={editingMode}

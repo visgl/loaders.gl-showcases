@@ -19,6 +19,7 @@ import {
   Bookmark,
   PageId,
   TilesetMetadata,
+  LayoutProps,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -60,10 +61,6 @@ import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
-
-type LayoutProps = {
-  layout: string;
-};
 
 const Container = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
@@ -462,7 +459,7 @@ export const ComparisonSide = ({
   };
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <DeckGlWrapper
         id={sideId}
         parentViewState={{
@@ -488,7 +485,7 @@ export const ComparisonSide = ({
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
-          <ToolsPanelWrapper layout={layout}>
+          <ToolsPanelWrapper $layout={layout}>
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
@@ -501,7 +498,7 @@ export const ComparisonSide = ({
             />
           </ToolsPanelWrapper>
           {activeButton === ActiveButton.options && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <LayersPanel
                 id={`${side}-layers-panel`}
                 pageId={PageId.comparison}
@@ -530,7 +527,7 @@ export const ComparisonSide = ({
             </OptionsPanelWrapper>
           )}
           {activeButton === ActiveButton.settings && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <ComparisonParamsPanel
                 id={`${side}-comparison-params-panel`}
                 isCompressedGeometry={isCompressedGeometry}
@@ -548,7 +545,7 @@ export const ComparisonSide = ({
             </OptionsPanelWrapper>
           )}
           {activeButton === ActiveButton.memory && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <MemoryUsagePanel
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}

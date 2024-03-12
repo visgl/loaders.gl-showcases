@@ -56,7 +56,7 @@ const BrosweFileText = styled(FileTextItem)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
 `;
 
-const BrosweFileLink = FileTextItem.withComponent("a");
+const BrosweFileLink = styled(FileTextItem).attrs({ as: "a" })``;
 
 const UploadInput = styled.input`
   display: none;
@@ -127,10 +127,7 @@ export const UploadPanel = ({
   };
 
   return (
-    <UploadPanelItem
-      title={"Upload Bookmarks"}
-      onCancel={onCancel}
-    >
+    <UploadPanelItem title={"Upload Bookmarks"} onCancel={onCancel}>
       <UploadInput
         ref={inputRef}
         id={UPLOAD_INPUT_ID}

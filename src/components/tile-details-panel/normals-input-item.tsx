@@ -33,7 +33,7 @@ export const NormalsInputItem = ({
 }: NormalsProps) => {
   return (
     <TileInfoSectionWrapper>
-      <NormalsLabel as={"label"} htmlFor={id} left={16}>
+      <NormalsLabel as={"label"} htmlFor={id} $left={16}>
         {title}
       </NormalsLabel>
       <NormalsInput

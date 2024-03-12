@@ -1,7 +1,10 @@
 import styled, { css } from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
 import { LayoutProps } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 export const InnerButton = styled.button<
   {
@@ -76,7 +79,7 @@ export const SliderInnerButton = ({
 
   return (
     <InnerButton
-      layout={layout}
+      $layout={layout}
       blurButton={blurButton}
       hide={hide}
       width={width}

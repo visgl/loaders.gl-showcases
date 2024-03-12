@@ -92,7 +92,7 @@ export const TileColorSection = ({
   return (
     <>
       <TileInfoSectionWrapper>
-        <Title left={16}>Tile color:</Title>
+        <Title $left={16}>Tile color:</Title>
         <SelectedColorContainer>
           <SelectedColor tileSelectedColor={tileSelectedColor} />
           <ExpandIcon

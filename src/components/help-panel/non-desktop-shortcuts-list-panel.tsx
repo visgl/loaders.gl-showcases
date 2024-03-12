@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { HelpShortcutItem } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 import { NonDesktopShortcutItem } from "./non-desktop-shortcut-item";
 
 type NonDesktopShortcutsListPanelProps = {
@@ -9,7 +12,7 @@ type NonDesktopShortcutsListPanelProps = {
 };
 
 type ContainerProps = {
-  layout: string;
+  $layout: string;
 };
 
 const Container = styled.div<ContainerProps>`
@@ -42,7 +45,7 @@ export const NonDesktopShortcutsListPanel = ({
 }: NonDesktopShortcutsListPanelProps) => {
   const layout = useAppLayout();
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       {shortcuts.map((shortcut) => (
         <NonDesktopShortcutItem
           key={shortcut.id}

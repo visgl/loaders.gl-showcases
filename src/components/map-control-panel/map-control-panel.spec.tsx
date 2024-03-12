@@ -1,11 +1,11 @@
 import userEvent from "@testing-library/user-event";
 import { DragMode } from "../../types";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
-import { MapControllPanel } from "./map-control-panel";
+import { MapControlPanel } from "./map-control-panel";
 import { setupStore } from "../../redux/store";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
-describe("MapControllPanel", () => {
+describe("MapControlPanel", () => {
   let componentElement;
   let buttons;
   let store;
@@ -17,7 +17,7 @@ describe("MapControllPanel", () => {
     const initStore = setupStore();
     initStore.dispatch(setDragMode(DragMode.pan));
     const { container, getAllByRole } = renderWithThemeProviders(
-      <MapControllPanel
+      <MapControlPanel
         bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
@@ -43,7 +43,7 @@ describe("MapControllPanel", () => {
     expect(expander).toBeInTheDocument();
     userEvent.click(expander);
     renderWithThemeProviders(
-      <MapControllPanel
+      <MapControlPanel
         bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
@@ -55,7 +55,7 @@ describe("MapControllPanel", () => {
 
     userEvent.click(expander);
     renderWithThemeProviders(
-      <MapControllPanel
+      <MapControlPanel
         bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
@@ -91,7 +91,7 @@ describe("MapControllPanel", () => {
 
     store.dispatch(setDragMode(DragMode.rotate));
     renderWithThemeProviders(
-      <MapControllPanel
+      <MapControlPanel
         bearing={90}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}

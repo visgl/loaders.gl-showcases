@@ -26,25 +26,25 @@ const ThemeToggleWrapper = styled.div`
   }
 `;
 
-const Button = styled.div<{ theme: DefaultTheme; active: boolean }>`
+const Button = styled.div<{ theme: DefaultTheme; $active: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 28px;
   height: 28px;
   border-radius: 10px;
-  background-color: ${({ theme, active }) =>
-    active ? theme.colors.mainColor : "transparent"};
+  background-color: ${({ theme, $active }) =>
+    $active ? theme.colors.mainColor : "transparent"};
   cursor: pointer;
 `;
 
-type ActiveProps = { active: boolean };
+type ActiveProps = { $active: boolean };
 const IconWrapper = styled.div.attrs<ActiveProps>((props) => ({
-  className: !props.active ? "inactive" : "",
+  className: !props.$active ? "inactive" : "",
 }))<ActiveProps>`
   height: 16px;
-  fill: ${({ theme, active }) =>
-    active ? theme.colors.fontColor : theme.colors.iconInactiveColor};
+  fill: ${({ theme, $active }) =>
+    $active ? theme.colors.fontColor : theme.colors.iconInactiveColor};
   }
   dispaly: flex;
   justify-content: center;
@@ -71,13 +71,13 @@ export const ThemeToggler = ({
       data-testid="toggle-theme-button"
       onClick={() => toggleTheme()}
     >
-      <Button active={theme === Theme.Dark} id="toggle-dark-default">
-        <IconWrapper active={theme === Theme.Dark}>
+      <Button $active={theme === Theme.Dark} id="toggle-dark-default">
+        <IconWrapper $active={theme === Theme.Dark}>
           <DarkModeIcon />
         </IconWrapper>
       </Button>
-      <Button active={theme === Theme.Light} id="toggle-light-default">
-        <IconWrapper active={theme === Theme.Light}>
+      <Button $active={theme === Theme.Light} id="toggle-light-default">
+        <IconWrapper $active={theme === Theme.Light}>
           <LightModeIcon />
         </IconWrapper>
       </Button>

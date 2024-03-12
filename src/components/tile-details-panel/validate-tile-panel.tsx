@@ -20,7 +20,7 @@ export const ValidateTilePanel = ({
         />
       )}
       {validatedTileWarnings.length > 0 && validatedTileOk.length > 0 && (
-        <PanelHorizontalLine top={0} bottom={0} />
+        <PanelHorizontalLine $top={0} $bottom={0} />
       )}
       {validatedTileWarnings.length > 0 && (
         <ValidateTileSection

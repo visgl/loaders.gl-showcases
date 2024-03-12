@@ -58,7 +58,7 @@ import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usa
 import { IS_LOADED_DELAY } from "../../constants/common";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
-import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
@@ -306,7 +306,7 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => (
-    <AttributesSidePanelWrapper layout={layout}>
+    <AttributesSidePanelWrapper $layout={layout}>
       <AttributesPanel
         title={
           selectedFeatureAttributes?.NAME ||
@@ -613,7 +613,7 @@ export const ViewerApp = () => {
       />
 
       {layout !== Layout.Mobile && (
-        <OnlyToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper $layout={layout}>
           <MainToolsPanel
             id="viewer--tools-panel"
             activeButton={activeButton}
@@ -626,7 +626,7 @@ export const ViewerApp = () => {
         </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
-        <BottomToolsPanelWrapper layout={layout}>
+        <BottomToolsPanelWrapper $layout={layout}>
           <MobileToolsPanel
             id={"mobile-viewer-tools-panel"}
             activeButton={activeButton}
@@ -638,7 +638,7 @@ export const ViewerApp = () => {
         </BottomToolsPanelWrapper>
       )}
       {activeButton === ActiveButton.options && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <LayersPanel
             id="viewer--layers-panel"
             pageId={PageId.viewer}
@@ -659,7 +659,7 @@ export const ViewerApp = () => {
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.memory && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <MemoryUsagePanel
             id={"viewer-memory-usage-panel"}
             memoryStats={memoryStats}
@@ -689,7 +689,7 @@ export const ViewerApp = () => {
           onEditBookmark={onEditBookmarkHandler}
         />
       )}
-      <MapControllPanel
+      <MapControlPanel
         bearing={viewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}

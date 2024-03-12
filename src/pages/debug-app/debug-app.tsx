@@ -68,7 +68,7 @@ import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-too
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
-import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { ColorResult } from "react-color";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
@@ -765,7 +765,7 @@ export const DebugApp = () => {
         onInteractionStateChange={onInteractionStateChange}
       />
       {layout !== Layout.Mobile && (
-        <OnlyToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper $layout={layout}>
           <MainToolsPanel
             id="debug-tools-panel"
             activeButton={activeButton}
@@ -780,7 +780,7 @@ export const DebugApp = () => {
         </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
-        <BottomToolsPanelWrapper layout={layout}>
+        <BottomToolsPanelWrapper $layout={layout}>
           <MobileToolsPanel
             id={"mobile-debug-tools-panel"}
             activeButton={activeButton}
@@ -794,7 +794,7 @@ export const DebugApp = () => {
         </BottomToolsPanelWrapper>
       )}
       {activeButton === ActiveButton.options && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <LayersPanel
             id="debug--layers-panel"
             pageId={PageId.debug}
@@ -815,14 +815,14 @@ export const DebugApp = () => {
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.debug && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <DebugPanel
             onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
           />
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.validator && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <SemanticValidator
             warnings={warnings}
             clearWarnings={handleClearWarnings}
@@ -833,7 +833,7 @@ export const DebugApp = () => {
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.memory && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <MemoryUsagePanel
             id={"debug-memory-usage-panel"}
             memoryStats={memoryStats}
@@ -862,7 +862,7 @@ export const DebugApp = () => {
           onEditBookmark={onEditBookmarkHandler}
         />
       )}
-      <MapControllPanel
+      <MapControlPanel
         bearing={viewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
