@@ -14,6 +14,11 @@ import {
   selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("./base-map-list-item/base-map-list-item");
 jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
@@ -175,6 +180,7 @@ describe("Map Options Panel", () => {
         name: "Light",
       },
       { id: "Terrain", mapUrl: "", name: "Terrain" },
+      { id: "ArcGis", name: "ArcGis", mapUrl: "" },
       { id: "first", mapUrl: "https://first-url.com", name: "first name" },
     ]);
 

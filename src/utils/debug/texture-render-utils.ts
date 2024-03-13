@@ -246,25 +246,17 @@ void main() {
 }
 `;
 
-/**
- * Draws and rescales the image provided
- * @param image - image to draw
- * @param size - size of the image drawn
- * @returns texture drawn and its size
- */
-export const drawBitmapTexture = async (
-  image: ImageData | HTMLCanvasElement,
+export const drawBitmap =  (
+  bitmap: ImageBitmap,
   size: number
-): Promise<{ url: string; width: number; height: number }> => {
-  const bitmap = await createImageBitmap(image);
-
+): { url: string; width: number; height: number } => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     throw new Error("No 2d context");
   }
-  const imageWidth = image.width;
-  const imageHeight = image.height;
+  const imageWidth = bitmap.width;
+  const imageHeight = bitmap.height;
 
   canvas.width = imageWidth;
   canvas.height = imageHeight;
@@ -282,6 +274,21 @@ export const drawBitmapTexture = async (
     width: areaWidth,
     height: areaHeight,
   };
+}
+
+
+/**
+ * Draws and rescales the image provided
+ * @param image - image to draw
+ * @param size - size of the image drawn
+ * @returns texture drawn and its size
+ */
+export const drawBitmapTexture = async (
+  image: ImageData | HTMLCanvasElement,
+  size: number
+): Promise<{ url: string; width: number; height: number }> => {
+  const bitmap = await createImageBitmap(image);
+  return drawBitmap(bitmap, size);
 };
 
 /**

@@ -9,7 +9,11 @@ import { setupStore } from "../../../redux/store";
 import { setColorsByAttrubute } from "../../../redux/slices/symbolization-slice";
 
 jest.mock("@loaders.gl/core");
-
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../histogram", () => ({
   HistogramChart: jest.fn().mockImplementation(() => <div>HistogramChart</div>),
 }));

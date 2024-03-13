@@ -73,7 +73,7 @@ const THEMES: AppThemes = {
       mainAttibuteItemColor: color_brand_primary,
       mainAttributeHighlightColor: hilite_canvas_primary,
       mainHistogramColor: color_brand_secondary,
-      bookmarkFileInteracrions: dim_canvas_primary,
+      bookmarkFileInteractions: dim_canvas_primary,
       validateTileOk: color_brand_secondary_dark,
       validateTileWarning: color_accent_tertiary,
       filtrationImage: color_brand_quaternary,

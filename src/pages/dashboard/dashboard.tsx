@@ -1,5 +1,5 @@
+import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import { useState, useCallback } from "react";
-import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
 import { I3SLoader } from "@loaders.gl/i3s";
@@ -322,7 +322,7 @@ export const Dashboard = () => {
           layers={[tile3DLayer]}
           initialViewState={viewState}
         >
-          <StaticMap mapStyle={DEFAULT_MAP_STYLE} />
+          <MaplibreMap mapStyle={DEFAULT_MAP_STYLE}></MaplibreMap>
         </DeckGL>
       </DeckWithTitleWrapper>
       <Wrapper id="tools-wrapper" $layout={layout}>

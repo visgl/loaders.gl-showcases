@@ -11,7 +11,6 @@ import {
   LayerExample,
   ListItemType,
   Sublayer,
-  ViewStateSet,
   CompareButtonMode,
   StatsMap,
   TilesetType,
@@ -61,6 +60,9 @@ import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
+import { selectViewState } from "../../../redux/slices/view-state-slice";
+import { selectSelectedBaseMapId } from "../../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../../components/arcgis-wrapper/arcgis-wrapper";
 
 const Container = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
@@ -75,7 +77,6 @@ const Container = styled.div<LayoutProps>`
 type ComparisonSideProps = {
   mode: ComparisonMode;
   side: ComparisonSideMode;
-  viewState: ViewStateSet;
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
@@ -90,7 +91,6 @@ type ComparisonSideProps = {
   forcedSublayers?: ActiveSublayer[] | null;
   buildingExplorerOpened: boolean;
   onBuildingExplorerOpened: (opened: boolean) => void;
-  onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
   onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
@@ -104,7 +104,6 @@ type ComparisonSideProps = {
 export const ComparisonSide = ({
   mode,
   side,
-  viewState,
   showLayerOptions,
   showComparisonSettings,
   staticLayers,
@@ -119,7 +118,6 @@ export const ComparisonSide = ({
   forcedSublayers,
   buildingExplorerOpened,
   onBuildingExplorerOpened,
-  onViewStateChange,
   pointToTileset,
   onChangeLayers,
   onLoadingStateChange,
@@ -140,6 +138,9 @@ export const ComparisonSide = ({
       ? selectLeftSublayers
       : selectRightSublayers
   );
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const MapWrapper =
+    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =
@@ -162,6 +163,7 @@ export const ComparisonSide = ({
       mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
     )
   );
+  const globalViewState = useAppSelector(selectViewState);
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -460,14 +462,8 @@ export const ComparisonSide = ({
 
   return (
     <Container $layout={layout}>
-      <DeckGlWrapper
+      <MapWrapper
         id={sideId}
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
         loadNumber={loadNumber}
@@ -476,7 +472,6 @@ export const ComparisonSide = ({
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
         filtersByAttribute={filtersByAttribute}
-        onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
         onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
         onTileLoad={onTileLoad}
@@ -504,8 +499,8 @@ export const ComparisonSide = ({
                 pageId={PageId.comparison}
                 layers={examples}
                 selectedLayerIds={selectedLayerIds}
-                viewWidth={viewState?.main?.width}
-                viewHeight={viewState?.main?.height}
+                viewWidth={globalViewState?.main?.width}
+                viewHeight={globalViewState?.main?.height}
                 side={
                   mode === ComparisonMode.withinLayer
                     ? ComparisonSideMode.left

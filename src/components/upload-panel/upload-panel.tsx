@@ -1,21 +1,14 @@
 import styled from "styled-components";
-import JsonSchema, {
-  Result,
-  SchemaDocument,
-  Validator,
-} from "@hyperjump/json-schema";
+
+import { FileType, FileUploaded } from "../../types";
 import { UploadPanelItem } from "./upload-panel-item";
+
 import UploadIcon from "../../../public/icons/upload.svg";
 import { Layout } from "../../utils/enums";
 import { useRef, useState } from "react";
-import {
-  bookmarksSchemaId,
-  bookmarksSchemaJson,
-} from "../../constants/json-schemas/bookmarks";
-import { Bookmark } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-const UPLOAD_INPUT_ID = "upload-bookmarks-input";
+const UPLOAD_INPUT_ID = "upload-file-input";
 
 const FileInteractionContainer = styled.label`
   box-sizing: border-box;
@@ -26,7 +19,7 @@ const FileInteractionContainer = styled.label`
   width: 100%;
   height: 178px;
   background: ${({ theme }) => theme.colors.mainHiglightColor};
-  border: 1px dashed ${({ theme }) => theme.colors.bookmarkFileInteracrions};
+  border: 1px dashed ${({ theme }) => theme.colors.bookmarkFileInteractions};
   border-radius: 4px;
   cursor: pointer;
 `;
@@ -62,45 +55,48 @@ const UploadInput = styled.input`
   display: none;
 `;
 
-type ExistedLayerWarningProps = {
+type UploadProps = {
+  title: string;
+  dragAndDropText: string;
+  fileType: FileType;
+  multipleFiles?: boolean;
   onCancel: () => void;
-  onBookmarksUploaded: (bookmarks: Bookmark[]) => void;
+  onFileUploaded: (fileUploaded: FileUploaded) => void;
 };
 
-export const dragAndDropText = "Drag and drop you json file here";
-
 export const UploadPanel = ({
+  title,
+  dragAndDropText,
+  fileType,
+  multipleFiles,
   onCancel,
-  onBookmarksUploaded,
-}: ExistedLayerWarningProps) => {
+  onFileUploaded,
+}: UploadProps) => {
   const layout = useAppLayout();
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const parseFile = async (file) => {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      if (typeof event?.target?.result !== "string") {
-        return;
-      }
-      JsonSchema.add(bookmarksSchemaJson);
-      const schema: SchemaDocument = await JsonSchema.get(bookmarksSchemaId);
-      let result;
-      try {
-        const validator: Validator = await JsonSchema.validate(schema);
-        result = JSON.parse(event.target.result);
-        const validationResult: Result = validator(result);
-        if (validationResult.valid) {
-          onBookmarksUploaded(result);
+  const readFile = async (files: FileList) => {
+    for (const file of files) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        if (!event?.target?.result) {
+          return;
         }
-      } catch {
-        // do nothing
+        const info: Record<string, unknown> = {
+          url: file.name,
+        };
+        onFileUploaded({ fileContent: event?.target?.result, info: info });
+      };
+      if (fileType === FileType.binary) {
+        reader.readAsArrayBuffer(file);
+      } else if (fileType === FileType.text) {
+        reader.readAsText(file);
       }
-    };
-    reader.readAsText(file);
+    }
   };
 
-  const onDragHandler = (e) => {
+  const onDragHandler = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -110,28 +106,31 @@ export const UploadPanel = ({
     }
   };
 
-  const onDropHandler = (e) => {
+  const onDropHandler = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      parseFile(e.dataTransfer.files[0]);
+      readFile(e.dataTransfer.files);
     }
   };
 
-  const onUploadChangeHandler = function (e) {
+  const onUploadChangeHandler = function (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
-      parseFile(e.target.files[0]);
+      readFile(e.target.files);
     }
   };
 
   return (
-    <UploadPanelItem title={"Upload Bookmarks"} onCancel={onCancel}>
+    <UploadPanelItem title={title} onCancel={onCancel}>
       <UploadInput
         ref={inputRef}
         id={UPLOAD_INPUT_ID}
         type="file"
+        multiple={multipleFiles || undefined}
         onChange={onUploadChangeHandler}
       />
       <FileInteractionContainer

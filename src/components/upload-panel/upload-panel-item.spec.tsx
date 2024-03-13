@@ -43,11 +43,7 @@ describe("UploadPanelItem - Cancel and Confirm buttons", () => {
 describe("UploadPanelItem - Cancel only button", () => {
   const callRender = (renderFunc, props = {}) => {
     return renderFunc(
-      <UploadPanelItem
-        title="Test item"
-        onCancel={onCancel}
-        {...props}
-      >
+      <UploadPanelItem title="Test item" onCancel={onCancel} {...props}>
         Test text
       </UploadPanelItem>
     );

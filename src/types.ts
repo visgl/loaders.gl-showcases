@@ -384,3 +384,35 @@ export enum FetchingStatus {
   pending = "pending",
   ready = "ready",
 }
+
+export enum IconListSetName {
+  uvDebugTexture = "uvDebugTexture",
+  baseMap = "baseMap",
+}
+
+export interface IIconItem {
+  /** Unique id of the item */
+  id: string;
+  /** Icon image that can be a URL or a blob converted to a object URL*/
+  icon: string;
+  /** Name of a group like "Maplibre", "ArcGIS".
+   * The icon-list-panel can use it to group icon items into separate panels
+   */
+  group?: string;
+  /** Name (title) of the icon */
+  name?: string;
+  /** Predefined or custom (loaded by a user) icon. */
+  custom?: boolean;
+  /** Additional data linked with the icon like a texture, basemap */
+  extData?: Record<string, string | number | ArrayBuffer>;
+}
+
+export enum FileType {
+  binary = "binary",
+  text = "text",
+}
+
+export type FileUploaded = {
+  fileContent: string | ArrayBuffer;
+  info: Record<string, unknown>;
+};

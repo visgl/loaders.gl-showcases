@@ -12,14 +12,11 @@ import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
 import { PageId } from "../../types";
 import { setupStore } from "../../redux/store";
-import {
-  selectSelectedBaseMapId,
-} from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
 }));
-
 jest.mock("@loaders.gl/i3s", () => ({
   ArcGisWebSceneLoader: jest.fn(),
 }));
@@ -277,7 +274,7 @@ describe("Layers Panel", () => {
     });
 
     const state = store.getState();
-    const baseMapId =   selectSelectedBaseMapId(state);
+    const baseMapId = selectSelectedBaseMapId(state);
     expect(baseMapId).toEqual("https://test-base-map.url");
   });
 

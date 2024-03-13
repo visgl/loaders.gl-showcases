@@ -8,25 +8,18 @@ import reducer, {
   setSelectedBaseMaps,
   deleteBaseMaps,
 } from "./base-maps-slice";
+import { BASE_MAPS } from "../../constants/map-styles";
+
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 
 describe("slice: base-maps", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: undefined })).toEqual({
-      baseMap: [
-        {
-          id: "Dark",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-          name: "Dark",
-        },
-        {
-          id: "Light",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-          name: "Light",
-        },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
-      ],
+      baseMap: BASE_MAPS,
       selectedBaseMap: "Dark",
     });
   });
@@ -162,21 +155,7 @@ describe("slice: base-maps", () => {
     };
 
     expect(reducer(previousState, setInitialBaseMaps())).toEqual({
-      baseMap: [
-        {
-          id: "Dark",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-          name: "Dark",
-        },
-        {
-          id: "Light",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-          name: "Light",
-        },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
-      ],
+      baseMap: BASE_MAPS,
       selectedBaseMap: "Dark",
     });
   });
@@ -185,21 +164,7 @@ describe("slice: base-maps", () => {
     const store = setupStore();
     const state = store.getState();
     expect(selectSelectedBaseMapId(state)).toEqual("Dark");
-    expect(selectBaseMaps(state)).toEqual([
-      {
-        id: "Dark",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-        name: "Dark",
-      },
-      {
-        id: "Light",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-        name: "Light",
-      },
-      { id: "Terrain", mapUrl: "", name: "Terrain" },
-    ]);
+    expect(selectBaseMaps(state)).toEqual(BASE_MAPS);
   });
 
   it("Selectors should return updated value", () => {
@@ -223,6 +188,11 @@ describe("slice: base-maps", () => {
         name: "Light",
       },
       { id: "Terrain", mapUrl: "", name: "Terrain" },
+      {
+        id: "ArcGis",
+        name: "ArcGis",
+        mapUrl: "",
+      },
       {
         id: "first",
         mapUrl: "https://first-url.com",

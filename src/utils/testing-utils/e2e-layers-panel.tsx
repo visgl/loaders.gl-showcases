@@ -74,11 +74,11 @@ export const checkLayersPanel = async (
   );
 
   if (appMode === PageId.comparison) {
-    expect(baseMapsNames.length).toBe(2);
-    expect(baseMapsNames).toEqual(["Dark", "Light"]);
-  } else {
     expect(baseMapsNames.length).toBe(3);
-    expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain"]);
+    expect(baseMapsNames).toEqual(["Dark", "Light", "ArcGis"]);
+  } else {
+    expect(baseMapsNames.length).toBe(4);
+    expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain", "ArcGis"]);
   }
 
   // Dark is selected

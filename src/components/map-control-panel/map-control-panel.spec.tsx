@@ -5,6 +5,12 @@ import { MapControlPanel } from "./map-control-panel";
 import { setupStore } from "../../redux/store";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+
 describe("MapControlPanel", () => {
   let componentElement;
   let buttons;

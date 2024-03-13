@@ -3,10 +3,11 @@ import { PageId } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksPanel } from "./bookmarks-panel";
-import { dragAndDropText } from "./upload-panel";
 import { act } from "react-dom/test-utils";
 
 jest.mock("../../utils/hooks/layout");
+
+const dragAndDropText = "Drag and drop your json file here";
 
 const TEST_BOOKMARKS = [
   {

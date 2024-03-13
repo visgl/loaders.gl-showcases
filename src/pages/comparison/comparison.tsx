@@ -6,7 +6,6 @@ import { color_brand_primary } from "../../constants/colors";
 import {
   ComparisonMode,
   LayerExample,
-  ViewStateSet,
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
@@ -32,13 +31,18 @@ import { ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
   deleteBaseMaps,
   setInitialBaseMaps,
+  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 import { CenteredContainer } from "../../components/common";
 
@@ -93,7 +97,8 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     new ComparisonLoadManager()
   );
 
-  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const globalViewState = useAppSelector(selectViewState);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
   const [activeLayersIdsLeftSide, setActiveLayersIdsLeftSide] = useState<
@@ -145,6 +150,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setBookmarks([]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
+    dispatch(setViewState(INITIAL_VIEW_STATE));
     dispatch(deleteBaseMaps("Terrain"));
     return () => {
       dispatch(setInitialBaseMaps());
@@ -177,7 +183,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         );
 
         const data: StatsData = {
-          viewState: viewState.main,
+          viewState: globalViewState.main,
           datasets: [
             {
               ...leftSideStats,
@@ -210,72 +216,71 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     return () => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
-  }, [selectedBookmarkId, bookmarks, viewState.main]);
+  }, [selectedBookmarkId, bookmarks, globalViewState]);
 
-  const onViewStateChange = (viewStateSet: ViewStateSet) => {
-    setViewState(viewStateSet);
+  useEffect(() => {
     if (hasBeenCompared) {
       loadManagerRef.current.leftLoadingTime = 0;
       loadManagerRef.current.rightLoadingTime = 0;
     }
-  };
+  }, [globalViewState]);
 
-  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
-    if (layerViewState) {
-      setViewState((viewStatePrev) => {
+  const pointToTileset = useCallback(
+    (layerViewState?: LayerViewState) => {
+      if (layerViewState) {
         const { zoom, longitude, latitude } = layerViewState;
-        return {
+        const newViewState = {
           main: {
-            ...viewStatePrev.main,
+            ...globalViewState.main,
             zoom: zoom + 2.5,
             longitude,
             latitude,
             transitionDuration: 1000,
           },
         };
-      });
-    }
-  }, []);
+        dispatch(setViewState(newViewState));
+      }
+    },
+    [globalViewState]
+  );
 
   const onZoomIn = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, maxZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === maxZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const { zoom, maxZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === maxZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onZoomOut = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, minZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === minZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const { zoom, minZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === minZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onCompassClick = useCallback(() => {
-    setViewState((viewStatePrev) => ({
-      main: {
-        ...viewStatePrev.main,
-        bearing: 0,
-        transitionDuration: 1000,
-      },
-    }));
-  }, []);
+    dispatch(
+      setViewState({
+        main: {
+          ...globalViewState.main,
+          bearing: 0,
+          transitionDuration: 1000,
+        },
+      })
+    );
+  }, [globalViewState]);
 
   const toggleCompareButtonMode = () => {
     setCompareButtonMode((prev) => {
@@ -372,7 +377,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           id: newBookmarkId,
           pageId: PageId.comparison,
           imageUrl,
-          viewState,
+          viewState: globalViewState,
           layersLeftSide,
           layersRightSide,
           activeLayersIdsLeftSide: [...activeLayersIdsLeftSide],
@@ -395,7 +400,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
-    setViewState(bookmark.viewState);
+    dispatch(setViewState(bookmark.viewState));
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
     setActiveLayersIdsLeftSide(bookmark.activeLayersIdsLeftSide);
@@ -416,7 +421,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
             ? {
                 ...bookmark,
                 imageUrl,
-                viewState,
+                viewState: globalViewState,
                 layersLeftSide,
                 layersRightSide,
                 activeLayersIdsLeftSide,
@@ -438,7 +443,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
         hasBeenCompared={hasBeenCompared}
@@ -450,7 +454,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showBookmarks={showBookmarksPanel}
         loadNumber={loadNumber}
         buildingExplorerOpened={buildingExplorerOpenedLeft}
-        onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>
           onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
@@ -502,7 +505,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.right}
-        viewState={viewState}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
@@ -527,7 +529,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           buildingExplorerOpenedRight ||
           (mode === ComparisonMode.withinLayer && buildingExplorerOpenedLeft)
         }
-        onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
         onChangeLayers={(layers, activeIds) =>
           onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
@@ -544,11 +545,12 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
       {compareButtonMode === CompareButtonMode.Start && (
         <MapControlPanel
-          bearing={viewState.main.bearing}
+          bearing={globalViewState.main.bearing}
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
+          isDragModeVisible={selectedBaseMapId !== "ArcGis"}
         />
       )}
       {wrongBookmarkPageId && (
