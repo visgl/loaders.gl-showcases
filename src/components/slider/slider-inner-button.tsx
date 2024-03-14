@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
-import { LayoutProps } from "../../types";
+import type { LayoutProps } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
