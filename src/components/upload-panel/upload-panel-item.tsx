@@ -50,7 +50,7 @@ export const UploadPanelItem = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Content>
         <Title>{title ? title : <WarningIcon />}</Title>
         {children}

@@ -14,9 +14,10 @@ import {
   LayerViewState,
   StatsData,
   PageId,
+  LayoutProps,
 } from "../../types";
 
-import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { CompareButton } from "../../components/comparison/compare-button/compare-button";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
@@ -36,7 +37,7 @@ import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
   deleteBaseMaps,
   setInitialBaseMaps,
-  selectSelectedBaseMapId
+  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import {
   selectViewState,
@@ -47,10 +48,6 @@ import { CenteredContainer } from "../../components/common";
 
 type ComparisonPageProps = {
   mode: ComparisonMode;
-};
-
-type LayoutProps = {
-  layout: string;
 };
 
 const INITIAL_VIEW_STATE = {
@@ -442,7 +439,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.left}
@@ -473,7 +470,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         onInsertBookmarks={updateBookmarks}
         onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
       />
-      <Devider layout={layout} />
+      <Devider $layout={layout} />
       <CompareButton
         compareButtonMode={compareButtonMode}
         downloadStats={
@@ -547,7 +544,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       />
 
       {compareButtonMode === CompareButtonMode.Start && (
-        <MapControllPanel
+        <MapControlPanel
           bearing={globalViewState.main.bearing}
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}

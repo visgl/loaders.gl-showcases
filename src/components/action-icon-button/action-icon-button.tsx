@@ -1,14 +1,10 @@
-import React from "react";
-import styled, {
-  StyledComponent,
-  DefaultTheme,
-  useTheme,
-} from "styled-components";
+import { FC, ReactNode } from "react";
+import styled, { useTheme } from "styled-components";
 import { ButtonSize } from "../../types";
 
 import { color_brand_tertiary } from "../../constants/colors";
 
-const Button = styled.div<{ grayed?: boolean }>`
+const Button = styled.div<{ $grayed?: boolean }>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -25,42 +21,43 @@ const Button = styled.div<{ grayed?: boolean }>`
     }
 
     > :nth-child(2) {
-      color: ${({ theme, grayed }) =>
-        grayed
+      color: ${({ theme, $grayed }) =>
+        $grayed
           ? theme.colors.actionIconButtonTextDisabledColorHover
           : color_brand_tertiary};
     }
   }
 `;
 
-const ButtonText = styled.div<{ grayed?: boolean }>`
+const ButtonText = styled.div<{ $grayed?: boolean }>`
   margin-left: 16px;
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
-  color: ${({ theme, grayed }) =>
-    grayed
+  color: ${({ theme, $grayed }) =>
+    $grayed
       ? theme.colors.actionIconButtonTextDisabledColor
       : color_brand_tertiary};
 `;
 
-const IconContainer = styled.div<{ buttonSize: number; grayed?: boolean }>`
+const IconContainer = styled.div<{ $buttonSize: number; $grayed?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  width: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
-  height: ${(props) => (props.buttonSize === ButtonSize.Big ? "40px" : "24px")};
+  width: ${(props) => (props.$buttonSize === ButtonSize.Big ? "40px" : "24px")};
+  height: ${(props) =>
+    props.$buttonSize === ButtonSize.Big ? "40px" : "24px"};
 
-  background: ${({ theme, grayed }) =>
-    grayed
+  background: ${({ theme, $grayed }) =>
+    $grayed
       ? theme.colors.actionIconButtonDisabledBG
       : `${color_brand_tertiary}66`};
 `;
 
 type ActionIconButtonProps = {
-  children?: React.ReactNode;
-  Icon: StyledComponent<any, DefaultTheme, object, string | number | symbol>;
+  children?: ReactNode;
+  Icon: FC<{ fill: string }>;
   size: ButtonSize;
   style?: "active" | "disabled";
   onClick?: () => void;
@@ -79,10 +76,10 @@ export const ActionIconButton = ({
   return (
     <Button
       onClick={onClick}
-      grayed={grayed}
+      $grayed={grayed}
       data-testid={"action-icon-button"}
     >
-      <IconContainer buttonSize={size} grayed={grayed}>
+      <IconContainer $buttonSize={size} $grayed={grayed}>
         <Icon
           fill={
             grayed
@@ -91,7 +88,7 @@ export const ActionIconButton = ({
           }
         />
       </IconContainer>
-      <ButtonText grayed={grayed}>{children}</ButtonText>
+      <ButtonText $grayed={grayed}>{children}</ButtonText>
     </Button>
   );
 };

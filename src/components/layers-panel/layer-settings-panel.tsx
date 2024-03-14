@@ -83,7 +83,7 @@ export const LayerSettingsPanel = ({
         Layer settings
         <CloseButton onClick={onCloseClick} />
       </Header>
-      <PanelHorizontalLine top={13} bottom={12} />
+      <PanelHorizontalLine $top={13} $bottom={12} />
       <BuildingExplorer
         sublayers={sublayers}
         onUpdateSublayerVisibility={onUpdateSublayerVisibility}

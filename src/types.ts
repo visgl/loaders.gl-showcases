@@ -311,7 +311,7 @@ export type StatsData = {
 };
 
 export type LayoutProps = {
-  layout: string;
+  $layout: string;
 };
 
 export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {

@@ -216,9 +216,10 @@ export const inserAndDeleteLayer = async (
     `${panelId} > :nth-child(4) > :first-child > :first-child > :nth-child(5) .settings`
   );
   await newLayerSettings.click();
-  await page.waitForSelector(".react-tiny-popover-container");
+  await sleep(200);
+  await page.waitForSelector("#react-tiny-popover-container");
   let removeButton = await page.$(
-    ".react-tiny-popover-container > :first-child > :last-child"
+    "#react-tiny-popover-container > :first-child > :last-child"
   );
   await removeButton.click();
   await page.waitForSelector(
@@ -241,9 +242,9 @@ export const inserAndDeleteLayer = async (
   expect(layers.length).toBe(5);
 
   await newLayerSettings.click();
-  await page.waitForSelector(".react-tiny-popover-container");
+  await page.waitForSelector("#react-tiny-popover-container");
   removeButton = await page.$(
-    ".react-tiny-popover-container > :first-child > :last-child"
+    "#react-tiny-popover-container > :first-child > :last-child"
   );
   await removeButton.click();
   const confirmButton = await page.$(

@@ -49,7 +49,7 @@ const BrosweFileText = styled(FileTextItem)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
 `;
 
-const BrosweFileLink = FileTextItem.withComponent("a");
+const BrosweFileLink = styled(FileTextItem).attrs({ as: "a" })``;
 
 const UploadInput = styled.input`
   display: none;

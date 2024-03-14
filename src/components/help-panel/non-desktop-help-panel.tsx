@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { HelpPanelSelectedTab, HelpShortcutItem } from "../../types";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import { NonDesktopShortcutsListPanel } from "./non-desktop-shortcuts-list-panel";
 import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";
@@ -16,7 +19,7 @@ type HelpPanelProps = {
 };
 
 type ContainerProps = {
-  layout: string;
+  $layout: string;
 };
 
 const Container = styled.div<ContainerProps>`
@@ -78,7 +81,7 @@ export const NonDesktopHelpPanel = ({
   const layout = useAppLayout();
   return (
     <>
-      <Container layout={layout}>
+      <Container $layout={layout}>
         <TitleContainer>
           <Title>Shortcuts</Title>
           <CloseButton onClick={onClose} />

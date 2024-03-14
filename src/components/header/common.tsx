@@ -11,8 +11,8 @@ export type MenuProps = {
 };
 
 export type CompareButtonProps = {
-  open: boolean;
-  active: boolean;
+  $open: boolean;
+  $active: boolean;
 };
 
 export type ActiveProps = {

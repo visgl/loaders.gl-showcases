@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {
   ActionButtonVariant,
   FetchingStatus,
+  LayoutProps,
   TilesetType,
 } from "../../../types";
 import {
@@ -28,10 +29,6 @@ type InsertLayerProps = {
   onInsert: (object: { name: string; url: string; token?: string }) => void;
   onCancel: () => void;
   children?: React.ReactNode;
-};
-
-type LayoutProps = {
-  layout: string;
 };
 
 type VisibilityProps = {
@@ -181,7 +178,7 @@ export const InsertPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Title>{title}</Title>
       <SpinnerContainer visible={isValidateInProgress}>
         <LoadingSpinner />

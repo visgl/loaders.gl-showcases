@@ -14,10 +14,13 @@ import MouseImageTablet from "../../../public/images/mouseTabTablet.svg";
 import TouchImageTablet from "../../../public/images/touchTabTablet.svg";
 
 import { useState } from "react";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 type ContainerProps = {
-  layout: string;
+  $layout: string;
 };
 
 type ShortcutTabsProps = {
@@ -204,7 +207,7 @@ export const NonDesktopShortcutTabs = ({
   );
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <ShortcutsBlock>
         {tabOrder.map((tabData) => renderTab(tabData, selectedTab))}
       </ShortcutsBlock>

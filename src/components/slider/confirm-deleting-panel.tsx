@@ -51,7 +51,7 @@ export const ConfirmDeletingPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Content>
         <Title>{title}</Title>
         <ButtonsContainer>

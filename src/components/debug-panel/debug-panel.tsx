@@ -127,19 +127,19 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   };
 
   return (
-    <PanelContainer layout={layout}>
-      <PanelHeader panel={Panels.Debug}>
-        <Title id="debug-panel-title" left={16}>
+    <PanelContainer $layout={layout}>
+      <PanelHeader $panel={Panels.Debug}>
+        <Title id="debug-panel-title" $left={16}>
           Debug Panel
         </Title>
       </PanelHeader>
       <CloseButtonWrapper>
         <CloseButton id="debug-panel-close-button" onClick={onClose} />
       </CloseButtonWrapper>
-      <PanelHorizontalLine top={10} />
+      <PanelHorizontalLine $top={10} />
       <ToggleOptionsContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-minimap-title"}>
+          <Title $left={16} id={"toggle-minimap-title"}>
             Minimap
           </Title>
           <ToggleSwitch
@@ -153,7 +153,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         </ItemContainer>
         {debugOptions.minimap && (
           <NestedItemContainer>
-            <Title left={16} id={"toggle-different-viewports-title"}>
+            <Title $left={16} id={"toggle-different-viewports-title"}>
               Use different Viewports
             </Title>
             <ToggleSwitch
@@ -170,7 +170,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           </NestedItemContainer>
         )}
         <ItemContainer>
-          <Title left={16} id={"toggle-loading-tiles-title"}>
+          <Title $left={16} id={"toggle-loading-tiles-title"}>
             Loading Tiles
           </Title>
           <ToggleSwitch
@@ -182,7 +182,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-picking-title"}>
+          <Title $left={16} id={"toggle-picking-title"}>
             Enable picking
           </Title>
           <ToggleSwitch
@@ -194,7 +194,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-wireframe-title"}>
+          <Title $left={16} id={"toggle-wireframe-title"}>
             Wireframe mode
           </Title>
           <ToggleSwitch
@@ -206,7 +206,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-texture-uv-title"}>
+          <Title $left={16} id={"toggle-texture-uv-title"}>
             Texture UVs
           </Title>
           <ToggleSwitch
@@ -252,7 +252,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           </UploadPanelContainer>
         )}
 
-        <Title top={8} left={16} bottom={16} id={"color-section-title"}>
+        <Title $left={16} $bottom={16} id={"color-section-title"}>
           Color
         </Title>
         <RadioButtonWrapper>
@@ -277,9 +277,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             );
           })}
         </RadioButtonWrapper>
-        <PanelHorizontalLine top={10} />
+        <PanelHorizontalLine $top={10} />
         <ItemContainer>
-          <Title left={16} id={"bounding-volumes-section-title"}>
+          <Title $left={16} id={"bounding-volumes-section-title"}>
             Bounding Volumes
           </Title>
           <ToggleSwitch
@@ -297,9 +297,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         {debugOptions.boundingVolume && (
           <>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-type-title"}
             >
               Type
@@ -329,9 +329,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
               })}
             </RadioButtonWrapper>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-color-title"}
             >
               Color

@@ -106,7 +106,7 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
   return (
     <>
       <TileInfoSectionWrapper>
-        <Title left={16}>Texture:</Title>
+        <Title $left={16}>Texture:</Title>
         <TextureContainer onClick={onClickHandler}>
           <TextureButton
             image={`url(${texture})`}

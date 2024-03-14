@@ -28,6 +28,6 @@ export const useAppLayout = (): Layout => {
 export const getCurrentLayoutProperty =
   (properties: LayoutProperties) =>
   (props?: LayoutProps): string | number => {
-    const layoutObject = props?.layout || Layout.Desktop;
+    const layoutObject = props?.$layout || Layout.Desktop;
     return properties[layoutObject];
   };

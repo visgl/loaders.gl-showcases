@@ -20,10 +20,6 @@ type CompareMenuProps = {
   pathname: string;
 };
 
-type HelpButtonProps = {
-  showHelp?: boolean;
-}
-
 const MenuContainer = styled.div`
   display: flex;
   align-items: center;
@@ -96,11 +92,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   height: 30px;
   border-bottom: 2px solid
     ${(props) =>
-      props.active ? color_brand_secondary : props.theme.colors.mainColor};
+      props.$active ? color_brand_secondary : props.theme.colors.mainColor};
   border-radius: 2px;
 
   color: ${(props) =>
-    props.active ? color_brand_secondary : props.theme.colors.fontColor};
+    props.$active ? color_brand_secondary : props.theme.colors.fontColor};
 
   &::before,
   &::after {
@@ -115,12 +111,12 @@ const CompareButton = styled.div<CompareButtonProps>`
 
   &::before {
     transform: ${(props) =>
-      props.open ? "rotate(-45deg)" : "rotate(-135deg)"};
+      props.$open ? "rotate(-45deg)" : "rotate(-135deg)"};
     left: calc(100% + 16px);
   }
 
   &::after {
-    transform: ${(props) => (props.open ? "rotate(45deg)" : "rotate(135deg)")};
+    transform: ${(props) => (props.$open ? "rotate(45deg)" : "rotate(135deg)")};
     right: -14px;
   }
 
@@ -133,8 +129,8 @@ const CompareButton = styled.div<CompareButtonProps>`
     }
   }
 
-  ${({ active }) =>
-    active &&
+  ${({ $active }) =>
+    $active &&
     css`
       &:after,
       &:before {
@@ -143,9 +139,16 @@ const CompareButton = styled.div<CompareButtonProps>`
     `}
 `;
 
+type HelpButtonProps = {
+  $showHelp?: boolean;
+};
+
 const HelpButton = styled.button<HelpButtonProps>`
-  color: ${({theme, showHelp}) => showHelp ? color_brand_secondary : theme.colors.fontColor};
-  border: 1px solid ${({showHelp}) => showHelp ? color_brand_secondary : color_brand_quaternary};
+  color: ${({ theme, $showHelp }) =>
+    $showHelp ? color_brand_secondary : theme.colors.fontColor};
+  border: 1px solid
+    ${({ $showHelp }) =>
+      $showHelp ? color_brand_secondary : color_brand_quaternary};
   border-radius: 12px;
   padding: 6px 18px;
   line-height: 18px;
@@ -227,7 +230,7 @@ export const DesktopHeaderContent = ({
   setTheme,
   githubIcon,
   showHelp,
-  onHelpClick
+  onHelpClick,
 }: MenuProps) => {
   const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
@@ -252,11 +255,11 @@ export const DesktopHeaderContent = ({
       <CompareItemWrapper ref={compareTabRef}>
         <CompareButton
           id="compare-default-button"
-          active={
+          $active={
             pathname === "/compare-across-layers" ||
             pathname === "/compare-within-layer"
           }
-          open={isCompareMenuOpen}
+          $open={isCompareMenuOpen}
           onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
         >
           Compare
@@ -267,7 +270,13 @@ export const DesktopHeaderContent = ({
         GitHub
         <GithubImage src={githubIcon} />
       </GitHubLink>
-      <HelpButton id="help-button-default" showHelp={showHelp} onClick={onHelpClick}>Help</HelpButton>
+      <HelpButton
+        id="help-button-default"
+        $showHelp={showHelp}
+        onClick={onHelpClick}
+      >
+        Help
+      </HelpButton>
       <ThemeToggler theme={theme} setTheme={setTheme} />
     </MenuContainer>
   );

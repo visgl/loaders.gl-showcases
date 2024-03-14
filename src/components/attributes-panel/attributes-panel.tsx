@@ -11,13 +11,16 @@ import { color_brand_tertiary } from "../../constants/colors";
 
 import StatisticsIcon from "../../../public/icons/statistics.svg";
 import ArrowLeft from "../../../public/icons/arrow-left.svg";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
 type RowProps = {
   selectable: boolean;
 };
 
-const Container = styled.div<{layout: string}>`
+const Container = styled.div<{ $layout: string }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -201,7 +204,7 @@ export const AttributesPanel = ({
   };
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <HeaderWrapper>
         {selectedAttributeStatsInfo && (
           <BackButton

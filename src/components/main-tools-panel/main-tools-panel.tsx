@@ -26,8 +26,8 @@ const Container = styled.div<ContainerProps>`
 `;
 
 type ButtonProps = {
-  active: boolean;
-  layout: Layout;
+  $active: boolean;
+  $layout: Layout;
 };
 const Button = styled.button<ButtonProps>`
   display: flex;
@@ -37,22 +37,22 @@ const Button = styled.button<ButtonProps>`
   width: 56px;
   height: 60px;
   cursor: pointer;
-  fill: ${({ theme, active }) =>
-    active
+  fill: ${({ theme, $active }) =>
+    $active
       ? color_canvas_primary_inverted
       : theme.colors.mainToolsPanelIconColor};
-  background-color: ${({ active }) =>
-    active ? color_brand_tertiary : "transparent"};
+  background-color: ${({ $active }) =>
+    $active ? color_brand_tertiary : "transparent"};
   outline: 0;
   border: none;
 
   &:hover {
-    fill: ${({ theme, active }) =>
-    active
-      ? color_canvas_primary_inverted
-      : theme.colors.mainToolsPanelDimIconColor};
-    background-color: ${({ active }) =>
-    active ? dim_brand_tertinary : "transparent"};
+    fill: ${({ theme, $active }) =>
+      $active
+        ? color_canvas_primary_inverted
+        : theme.colors.mainToolsPanelDimIconColor};
+    background-color: ${({ $active }) =>
+      $active ? dim_brand_tertinary : "transparent"};
   }
 `;
 
@@ -87,9 +87,9 @@ export const MainToolsPanel = ({
     <Container id={id}>
       {showLayerOptions && (
         <Button
-          id={'layers-options-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.options}
+          id={"layers-options-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.options}
           onClick={() => onChange(ActiveButton.options)}
         >
           <GearIcon />
@@ -97,27 +97,27 @@ export const MainToolsPanel = ({
       )}
       {showComparisonSettings && (
         <Button
-          id={'settings-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.settings}
+          id={"settings-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.settings}
           onClick={() => onChange(ActiveButton.settings)}
         >
           <SettingsIcon />
         </Button>
       )}
       <Button
-        id={'memory-usage-tab'}
-        layout={layout}
-        active={activeButton === ActiveButton.memory}
+        id={"memory-usage-tab"}
+        $layout={layout}
+        $active={activeButton === ActiveButton.memory}
         onClick={() => onChange(ActiveButton.memory)}
       >
         <MemoryIcon />
       </Button>
       {showValidator && (
         <Button
-          id={'validator-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.validator}
+          id={"validator-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.validator}
           onClick={() => onChange(ActiveButton.validator)}
         >
           <ValidatorIcon />
@@ -125,9 +125,9 @@ export const MainToolsPanel = ({
       )}
       {showDebug && (
         <Button
-          id={'debug-panel-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.debug}
+          id={"debug-panel-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.debug}
           onClick={() => onChange(ActiveButton.debug)}
         >
           <DebugIcon />
@@ -135,9 +135,9 @@ export const MainToolsPanel = ({
       )}
       {showBookmarks && (
         <Button
-          id={'bookmarks-tab'}
-          layout={layout}
-          active={bookmarksActive}
+          id={"bookmarks-tab"}
+          $layout={layout}
+          $active={bookmarksActive}
           onClick={onShowBookmarksChange}
         >
           <BookmarksIcon />

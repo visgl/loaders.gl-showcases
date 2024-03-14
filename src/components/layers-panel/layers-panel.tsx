@@ -56,7 +56,7 @@ enum Tabs {
 }
 
 type TabProps = {
-  active: boolean;
+  $active: boolean;
 };
 
 type CustomItem = {
@@ -82,8 +82,8 @@ const Tab = styled.div<TabProps>`
     }
   }
 
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     css`
       &::after {
         content: "";
@@ -368,20 +368,20 @@ export const LayersPanel = ({
   };
 
   return (
-    <PanelContainer id={id} layout={layout}>
+    <PanelContainer id={id} $layout={layout}>
       {!showLayerSettings && (
         <>
-          <PanelHeader panel={Panels.Layers}>
+          <PanelHeader $panel={Panels.Layers}>
             <Tab
               id="layers-tab"
-              active={tab === Tabs.Layers}
+              $active={tab === Tabs.Layers}
               onClick={() => setTab(Tabs.Layers)}
             >
               Layers
             </Tab>
             <Tab
               id="map-options-tab"
-              active={tab === Tabs.MapOptions}
+              $active={tab === Tabs.MapOptions}
               onClick={() => setTab(Tabs.MapOptions)}
             >
               Map Options
@@ -413,7 +413,7 @@ export const LayersPanel = ({
             )}
           </PanelContent>
 
-          <PanelHorizontalLine top={0} bottom={0} />
+          <PanelHorizontalLine $top={0} $bottom={0} />
 
           <PanelContent>
             <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />

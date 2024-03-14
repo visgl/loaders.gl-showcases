@@ -376,7 +376,7 @@ export const TileDetailsPanel = ({
   };
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <HeaderWrapper title={title}>
         {!isDetailsPanel && (
           <BackButton
@@ -390,7 +390,7 @@ export const TileDetailsPanel = ({
           />
         )}
         {title && (
-          <Title left={16} top={12} bottom={12}>
+          <Title $left={16} $top={12} $bottom={12}>
             {title}
           </Title>
         )}

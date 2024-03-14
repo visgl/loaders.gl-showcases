@@ -192,7 +192,7 @@ export const Slider = ({
   return (
     <>
       <ArrowIconLeft
-        layout={layout}
+        $layout={layout}
         isFloorSlider={isFloorsSlider}
         disabled={disableLeftArrow}
         onClick={handleLeftArrowClick}
@@ -203,7 +203,7 @@ export const Slider = ({
         id={`slider-${sliderType}`}
         ref={sliderItemsListRef}
         sliderType={sliderType}
-        layout={layout}
+        $layout={layout}
       >
         {data.map((item) => {
           const sliderItemSelected = item.id === selectedItemId;
@@ -228,7 +228,7 @@ export const Slider = ({
       <ArrowIconRight
         isFloorSlider={isFloorsSlider}
         disabled={disableRightArrow}
-        layout={layout}
+        $layout={layout}
         onClick={handleRightArrowClick}
       >
         <ChevronIcon />
