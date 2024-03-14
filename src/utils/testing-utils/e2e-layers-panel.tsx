@@ -1,7 +1,7 @@
 import { PageId } from "../../types";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export const checkLayersPanel = async (
@@ -127,7 +127,7 @@ export const inserAndDeleteLayer = async (
 
   // Header
   const insertPanelHeaderText = await insertPanel.$eval(
-    `:first-child > :first-child`,
+    ":first-child > :first-child",
     (node) => node.innerText
   );
   expect(insertPanelHeaderText).toBe("Insert Layer");
@@ -173,7 +173,7 @@ export const inserAndDeleteLayer = async (
   await page.waitForSelector(`${panelId} > :nth-child(7)`);
   const warningPanel = await page.$(`${panelId} > :nth-child(7)`);
   const warningText = await warningPanel.$eval(
-    `:first-child > :first-child`,
+    ":first-child > :first-child",
     (node) => node.innerText
   );
   expect(warningText).toBe("You are trying to add an existing area to the map");

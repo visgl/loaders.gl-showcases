@@ -158,7 +158,7 @@ describe("Layer option menu", () => {
           id: "test",
           name: "test",
           url: "https://test.url",
-          mapInfo: 'https://test.com'
+          mapInfo: "https://test.com",
         }}
         selected={false}
         hasSettings={false}

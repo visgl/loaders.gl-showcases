@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { CollapseDirection, ExpandState } from "../../types";
-import { SyntheticEvent } from "react";
+import { type SyntheticEvent } from "react";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 
 const IconButton = styled.div<{
@@ -58,7 +58,7 @@ const IconButtonContainer = styled.div<{
   height: ${({ height }) => `${height}px`}}
 `;
 
-type ExpandIconProps = {
+interface ExpandIconProps {
   /** expanded/collapsed */
   expandState: ExpandState;
   /** direction expander collapse to */
@@ -73,7 +73,7 @@ type ExpandIconProps = {
   height?: number;
   /** click event handler */
   onClick: (e: SyntheticEvent) => void;
-};
+}
 export const ExpandIcon = ({
   expandState,
   onClick,

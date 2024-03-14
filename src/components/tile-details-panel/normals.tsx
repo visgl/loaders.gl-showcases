@@ -3,7 +3,7 @@ import { ToggleSwitch } from "../toogle-switch/toggle-switch";
 import { color_accent_primary } from "../../constants/colors";
 import { Title, PanelHorizontalLine } from "../common";
 import { useState } from "react";
-import { Tile3D } from "@loaders.gl/tiles";
+import { type Tile3D } from "@loaders.gl/tiles";
 import { NormalsInputItem } from "./normals-input-item";
 
 const NoNormalsInfo = styled.div`
@@ -32,14 +32,14 @@ const NORMALS_ABSENCE_MESSAGE = "The tile has no normals";
 const NORMALS_PERCENTAGE_TITLE = "Percent of triangles with normals, %";
 const NORMALS_LENGTH_TITLE = "Normals length, m";
 
-type NormalsProps = {
+interface NormalsProps {
   tile: Tile3D;
   trianglesPercentage: number;
   normalsLength: number;
   onShowNormals: (tile: Tile3D) => void;
   onChangeTrianglesPercentage: (tile: Tile3D, percentage: number) => void;
   onChangeNormalsLength: (tile: Tile3D, length: number) => void;
-};
+}
 
 export const Normals = ({
   tile,

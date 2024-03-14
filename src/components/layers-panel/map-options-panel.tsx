@@ -4,9 +4,8 @@ import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
-import { SelectionState } from "../../types";
+import { SelectionState, ButtonSize } from "../../types";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
-import { ButtonSize } from "../../types";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   selectBaseMaps,
@@ -15,9 +14,9 @@ import {
   setSelectedBaseMaps,
 } from "../../redux/slices/base-maps-slice";
 
-type MapOptionPanelProps = {
+interface MapOptionPanelProps {
   insertBaseMap: () => void;
-};
+}
 
 const MapOptionTitle = styled.div`
   width: 100;
@@ -100,7 +99,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
               />
               {mapToDeleteId === baseMap.id && (
                 <DeleteConfirmation
-                  onKeepHandler={() => setMapToDeleteId("")}
+                  onKeepHandler={() => { setMapToDeleteId(""); }}
                   onDeleteHandler={() => {
                     dispatch(deleteBaseMaps(settingsMapId));
                     setMapToDeleteId("");

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Tile3D } from "@loaders.gl/tiles";
+import { type Tile3D } from "@loaders.gl/tiles";
 import { getChildrenInfo } from "../../utils/debug/tile-debug";
 import { formatFloatNumber, formatIntValue, formatStringValue } from "../../utils/format/format-utils";
 
@@ -27,7 +27,7 @@ export const TileTooltip = ({ tile }: { tile: Tile3D }) => {
     header: { children },
     _distanceToCamera,
     content: { vertexCount } = {},
-    depth
+    depth,
   } = tile;
   const childrenInfo = getChildrenInfo(children);
   const distanceToCameraFormatted = formatFloatNumber(_distanceToCamera);

@@ -22,10 +22,10 @@ const BoldTextItem = styled(TextItem)`
   font-weight: 700;
 `;
 
-type ExistedLayerWarningProps = {
+interface ExistedLayerWarningProps {
   onCancel: () => void;
   onConfirmWarning: () => void;
-};
+}
 
 export const UnsavedBookmarkWarning = ({
   onCancel,

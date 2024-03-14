@@ -11,6 +11,7 @@ const callRender = (renderFunc, props = {}) => {
     <DeleteConfirmation
       onKeepHandler={onKeepMock}
       onDeleteHandler={onDeleteHandlerMock}
+      // eslint-disable-next-line react/no-children-prop
       children={null}
       {...props}
     />

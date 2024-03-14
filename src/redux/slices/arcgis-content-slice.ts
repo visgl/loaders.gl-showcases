@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { IArcGisContent, ArcGisContentColumnName } from "../../types";
-import { RootState } from "../store";
+import { createSlice, type PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { type IArcGisContent, type ArcGisContentColumnName } from "../../types";
+import { type RootState } from "../store";
 import { getArcGisUserContent } from "../../utils/arcgis";
 
 // Define a type for the slice state

@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-import { IIconItem, IconListSetName } from "../../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type RootState } from "../store";
+import { type IIconItem, IconListSetName } from "../../types";
 
 import uv1 from "../../../public/images/uvTexture1.png";
 import uv1Icon from "../../../public/images/uvTexture1.thumb.png";
@@ -124,27 +124,27 @@ const iconListSlice = createSlice({
 
 export const selectIconList =
   (iconListSetName: string, group?: string) =>
-  (state: RootState): IIconItem[] => {
-    const panes = state.iconList.iconListSets[iconListSetName]?.iconList || [];
-    return group ? panes.filter((item) => item.group === group) : panes;
-  };
+    (state: RootState): IIconItem[] => {
+      const panes = state.iconList.iconListSets[iconListSetName]?.iconList || [];
+      return group ? panes.filter((item) => item.group === group) : panes;
+    };
 
 export const selectIconItemPicked =
   (iconListSetName: string) =>
-  (state: RootState): IIconItem | null => {
-    const iconListSet = state.iconList.iconListSets[iconListSetName];
-    const texture = iconListSet?.iconList.find(
-      (item) => item.id === iconListSet.iconItemIdPicked
-    );
-    return texture || null;
-  };
+    (state: RootState): IIconItem | null => {
+      const iconListSet = state.iconList.iconListSets[iconListSetName];
+      const texture = iconListSet?.iconList.find(
+        (item) => item.id === iconListSet.iconItemIdPicked
+      );
+      return texture ?? null;
+    };
 
 export const selectIconItemPickedId =
   (iconListSetName: string) =>
-  (state: RootState): string => {
-    const iconListSet = state.iconList.iconListSets[iconListSetName];
-    return iconListSet?.iconItemIdPicked || "";
-  };
+    (state: RootState): string => {
+      const iconListSet = state.iconList.iconListSets[iconListSetName];
+      return iconListSet?.iconItemIdPicked || "";
+    };
 
 export const { addIconItem, deleteIconItem, setIconItemPicked } =
   iconListSlice.actions;

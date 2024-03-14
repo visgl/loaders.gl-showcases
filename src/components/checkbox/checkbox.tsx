@@ -9,11 +9,11 @@ import { SelectionState } from "../../types";
 import CheckedIcon from "../../../public/icons/checked.svg";
 import IndeterminateIcon from "../../../public/icons/indeterminate.svg";
 
-type CheckboxProps = {
+interface CheckboxProps {
   id: string;
   checked: SelectionState;
   onChange: (event: React.ChangeEvent) => void;
-};
+}
 
 const CheckboxContainer = styled.div`
   display: inline-block;
@@ -59,5 +59,5 @@ export const Checkbox = ({ id, onChange, checked: checkedState, ...rest }: Check
         {checkedState === SelectionState.indeterminate && <IndeterminateIcon data-testid="indeterminate-icon" stroke={color_canvas_primary_inverted} />}
       </StyledCheckbox>
     </CheckboxContainer>
-  )
-}
+  );
+};

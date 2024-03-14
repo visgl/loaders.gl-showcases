@@ -5,7 +5,7 @@ import {
 } from "../../types";
 import { setupStore } from "../store";
 import reducer, {
-  DebugOptionsState,
+  type DebugOptionsState,
   selectDebugOptions,
   selectMiniMap,
   selectMiniMapViewPort,
@@ -29,7 +29,7 @@ jest.mock("@loaders.gl/i3s", () => {
 
 describe("slice: debug-options", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       minimap: false,
       minimapViewport: false,
       boundingVolume: false,

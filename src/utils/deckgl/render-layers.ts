@@ -1,34 +1,38 @@
 import { TerrainLayer, Tile3DLayer } from "@deck.gl/geo-layers";
-import {
+import type {
   BoundingVolumeColoredBy,
   BoundingVolumeType,
   ColorsByAttribute,
   FiltersByAttribute,
   LoadOptions,
   NormalsDebugData,
+  PositionsData,
   TileColoredBy,
-  TilesetType,
   ViewStateSet,
 } from "../../types";
+import { TilesetType } from "../../types";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
-import { COORDINATE_SYSTEM, WebMercatorViewport } from "@deck.gl/core/typed";
+import {
+  COORDINATE_SYSTEM,
+  type Position,
+  WebMercatorViewport,
+} from "@deck.gl/core/typed";
 import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import { colorizeTile } from "../colorize-tile";
 import { filterTile } from "../../utils/tiles-filtering/filter-tile";
-import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import ColorMap from "../debug/colors-map";
 import { getFrustumBounds } from "../debug/frustum-utils";
-import { LineLayer } from "@deck.gl/layers";
 import {
   getNormalSourcePosition,
   getNormalTargetPosition,
 } from "../debug/normals-utils";
 import { buildMinimapData } from "../debug/build-minimap-data";
-import { ScatterplotLayer } from "@deck.gl/layers/typed";
+import { ScatterplotLayer, LineLayer } from "@deck.gl/layers/typed";
 import { I3SLoader } from "@loaders.gl/i3s";
 
 // https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
-const MAPZEN_TERRAIN_IMAGES = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`;
+const MAPZEN_TERRAIN_IMAGES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 const TERRAIN_TEXTURE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
   rScaler: 256,
@@ -74,7 +78,7 @@ const getMeshColor = (
   tile,
   tileColorMode: TileColoredBy,
   selectedTile?: Tile3D | null,
-  coloredTilesMap?: { [key: string]: string }
+  coloredTilesMap?: Record<string, string>
 ) => {
   const result = colorMap.getTileColor(tile, {
     coloredBy: tileColorMode,
@@ -107,7 +111,7 @@ const renderI3SLayer = (
   onTraversalComplete,
   filtersByAttribute?: FiltersByAttribute | null,
   selectedTile?: Tile3D | null,
-  coloredTilesMap?: { [key: string]: string },
+  coloredTilesMap?: Record<string, string>,
   selectedTilesetBasePath?: string | null,
   selectedIndex?: number
 ) => {
@@ -126,7 +130,7 @@ const renderI3SLayer = (
     url = urlObject.href;
   }
   return new CustomTile3DLayer({
-    id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}` as string,
+    id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
     data: url,
     // @ts-expect-error loader
     loader: I3SLoader,
@@ -134,7 +138,7 @@ const renderI3SLayer = (
     customizeColors: colorizeTile,
     filtersByAttribute,
     filterTile,
-    onClick: onClick,
+    onClick,
     onTilesetLoad: onTilesetLoadHandler,
     onTileLoad: onTileLoadHandler,
     onTileUnload,
@@ -152,8 +156,8 @@ const renderI3SLayer = (
     highlightedObjectIndex: autoHighlight
       ? undefined
       : layer.url === selectedTilesetBasePath
-      ? selectedIndex
-      : -1,
+        ? selectedIndex
+        : -1,
   });
 };
 
@@ -214,7 +218,7 @@ export const renderBoundingVolumeLayer = (
   });
 };
 
-const NORMALS_COLOR = [255, 0, 0];
+const NORMALS_COLOR: Position = [255, 0, 0];
 export const renderNormals = (
   normalsTrianglesPercentage: number,
   normalsLength: number,
@@ -227,17 +231,27 @@ export const renderNormals = (
     id: "normals-debug",
     data: normalsDebugData,
     getSourcePosition: (_, { index, data }) =>
-      getNormalSourcePosition(index, data, normalsTrianglesPercentage),
+      getNormalSourcePosition(
+        index,
+        data as unknown as PositionsData,
+        normalsTrianglesPercentage
+      ),
     getTargetPosition: (_, { index, data }) =>
       getNormalTargetPosition(
         index,
-        data,
+        data as unknown as PositionsData,
         normalsTrianglesPercentage,
         normalsLength
       ),
     getColor: () => NORMALS_COLOR,
     modelMatrix: normalsDebugData?.cartographicModelMatrix,
-    coordinateOrigin: normalsDebugData?.cartographicOrigin,
+    coordinateOrigin: normalsDebugData.cartographicOrigin
+      ? [
+          normalsDebugData.cartographicOrigin.x,
+          normalsDebugData.cartographicOrigin.y,
+          normalsDebugData.cartographicOrigin.z,
+        ]
+      : undefined,
     coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
     getWidth: 1,
   });
@@ -276,12 +290,12 @@ export const renderMainOnMinimap = (
 };
 
 export const renderLayers = (params: {
-  layers3d: {
+  layers3d: Array<{
     id?: number;
     url?: string;
     token?: string | null;
     type: TilesetType;
-  }[];
+  }>;
   useDracoGeometry: boolean;
   useCompressedTextures: boolean;
   showTerrain: boolean;
@@ -308,7 +322,7 @@ export const renderLayers = (params: {
   onTerrainTileLoad: (tile) => void;
   filtersByAttribute?: FiltersByAttribute | null;
   selectedTile?: Tile3D | null;
-  coloredTilesMap?: { [key: string]: string };
+  coloredTilesMap?: Record<string, string>;
   selectedTilesetBasePath?: string | null;
   selectedIndex?: number;
   normalsDebugData?: NormalsDebugData | null;
@@ -391,7 +405,9 @@ export const renderLayers = (params: {
       elevationDecoder: MAPZEN_ELEVATION_DECODE_PARAMETERS,
       elevationData: MAPZEN_TERRAIN_IMAGES,
       texture: TERRAIN_TEXTURE,
-      onTileLoad: (tile) => onTerrainTileLoad(tile),
+      onTileLoad: (tile) => {
+        onTerrainTileLoad(tile);
+      },
       color: [255, 255, 255],
     });
     tile3dLayers.push(terrainLayer);

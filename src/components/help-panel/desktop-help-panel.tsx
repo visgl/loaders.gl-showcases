@@ -1,19 +1,19 @@
 import { DesktopShortcutTabs } from "./desktop-shortcuts-tabs";
 
 import styled from "styled-components";
-import { HelpPanelSelectedTab, HelpShortcutItem } from "../../types";
+import { type HelpPanelSelectedTab, type HelpShortcutItem } from "../../types";
 import { DesktopShortcutsListPanel } from "./desktop-shortcut-list-panel";
 import { CloseButton } from "../close-button/close-button";
 import { DesktopVideoPanel } from "./desktop-video-panel";
 
-type HelpPanelProps = {
+interface HelpPanelProps {
   shortcuts: HelpShortcutItem[];
   activeShortcutId: string;
   selectedTab: HelpPanelSelectedTab;
   onTabSelect: (tab: HelpPanelSelectedTab) => void;
   onClose: () => void;
   onShortcutHover: (id: string) => void;
-};
+}
 
 const Overlay = styled.div`
   position: absolute;
@@ -22,7 +22,7 @@ const Overlay = styled.div`
   height: calc(100% - 65px);
   width: 100%;
   z-index: 100;
-  background: ${({theme}) => theme.colors.mainColor};
+  background: ${({ theme }) => theme.colors.mainColor};
   opacity: 0.5;
 `;
 

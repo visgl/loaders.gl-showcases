@@ -3,4 +3,4 @@ export { Checkbox } from "./checkbox/checkbox";
 export { ToggleSwitch } from "./toogle-switch/toggle-switch";
 export { DebugPanel } from "./debug-panel/debug-panel";
 export { SemanticValidator } from "./semantic-validator/semantic-validator";
-export { HelpPanel } from './help-panel/help-panel';
+export { HelpPanel } from "./help-panel/help-panel";

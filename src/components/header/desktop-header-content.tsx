@@ -4,10 +4,10 @@ import styled, { css } from "styled-components";
 
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 import {
-  ActiveProps,
-  CompareButtonProps,
+  type ActiveProps,
+  type CompareButtonProps,
   GithubImage,
-  MenuProps,
+  type MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
 import {
@@ -16,9 +16,9 @@ import {
 } from "../../constants/colors";
 import { ThemeToggler } from "./theme-toggler";
 
-type CompareMenuProps = {
+interface CompareMenuProps {
   pathname: string;
-};
+}
 
 const MenuContainer = styled.div`
   display: flex;
@@ -139,9 +139,9 @@ const CompareButton = styled.div<CompareButtonProps>`
     `}
 `;
 
-type HelpButtonProps = {
+interface HelpButtonProps {
   $showHelp?: boolean;
-};
+}
 
 const HelpButton = styled.button<HelpButtonProps>`
   color: ${({ theme, $showHelp }) =>
@@ -206,22 +206,24 @@ const CompareMenuLink = styled(MenuLink)`
 `;
 
 const CompareTab = React.forwardRef<HTMLInputElement, CompareMenuProps>(
-  ({ pathname }, forwardedRef) => (
-    <CompareTabContainer ref={forwardedRef}>
-      <CompareMenuLink
-        to="compare-across-layers"
-        active={pathname === "/compare-across-layers" ? 1 : 0}
-      >
-        Across Layers
-      </CompareMenuLink>
-      <CompareMenuLink
-        to="compare-within-layer"
-        active={pathname === "/compare-within-layer" ? 1 : 0}
-      >
-        Within a Layer
-      </CompareMenuLink>
-    </CompareTabContainer>
-  )
+  function CompareTab({ pathname }, forwardedRef) {
+    return (
+      <CompareTabContainer ref={forwardedRef}>
+        <CompareMenuLink
+          to="compare-across-layers"
+          active={pathname === "/compare-across-layers" ? 1 : 0}
+        >
+          Across Layers
+        </CompareMenuLink>
+        <CompareMenuLink
+          to="compare-within-layer"
+          active={pathname === "/compare-within-layer" ? 1 : 0}
+        >
+          Within a Layer
+        </CompareMenuLink>
+      </CompareTabContainer>
+    );
+  }
 );
 
 export const DesktopHeaderContent = ({
@@ -235,7 +237,9 @@ export const DesktopHeaderContent = ({
   const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
-  useClickOutside([compareTabRef.current], () => setIsCompareMenuOpen(false));
+  useClickOutside([compareTabRef.current], () => {
+    setIsCompareMenuOpen(false);
+  });
 
   useEffect(() => {
     setIsCompareMenuOpen(false);
@@ -260,7 +264,9 @@ export const DesktopHeaderContent = ({
             pathname === "/compare-within-layer"
           }
           $open={isCompareMenuOpen}
-          onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
+          onClick={() => {
+            setIsCompareMenuOpen((prevValue) => !prevValue);
+          }}
         >
           Compare
         </CompareButton>

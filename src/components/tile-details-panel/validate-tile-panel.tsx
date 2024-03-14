@@ -1,11 +1,11 @@
-import { ValidatedTile, ValidatedDataType } from "../../types";
+import { type ValidatedTile, ValidatedDataType } from "../../types";
 import { PanelHorizontalLine } from "../common";
 import { ValidateTileSection } from "./validate-tile-section";
 
-type ValidatePanelProps = {
+interface ValidatePanelProps {
   validatedTileWarnings: ValidatedTile[];
   validatedTileOk: ValidatedTile[];
-};
+}
 
 export const ValidateTilePanel = ({
   validatedTileWarnings,

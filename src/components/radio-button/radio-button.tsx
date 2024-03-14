@@ -5,18 +5,18 @@ import {
   dim_brand_tertinary,
 } from "../../constants/colors";
 
-type RadioButtonProps = {
+interface RadioButtonProps {
   id: string;
   name?: string;
   checked: boolean;
   disabled?: boolean;
   onChange: (event: React.ChangeEvent) => void;
-};
+}
 
-type CheckmarkProps = {
+interface CheckmarkProps {
   id?: string;
   checked: boolean;
-};
+}
 
 const CheckboxContainer = styled.div<CheckmarkProps>`
   height: 24px;

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { PanelHorizontalLine, Title } from "../common";
-import { TileInfo } from "../../types";
+import { type TileInfo } from "../../types";
 
 const TileInfoContainer = styled.div`
   display: flex;

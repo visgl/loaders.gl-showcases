@@ -19,18 +19,18 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-type ContainerProps = {
+interface ContainerProps {
   $layout: string;
-};
+}
 
-type ShortcutTabsProps = {
+interface ShortcutTabsProps {
   selectedTab: HelpPanelSelectedTab;
   onTabSelect: (tab: HelpPanelSelectedTab) => void;
-};
+}
 
-type TabProps = {
+interface TabProps {
   active: boolean;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -172,7 +172,7 @@ export const NonDesktopShortcutTabs = ({
     <Tab
       key={`tab-${tab}`}
       active={selectedTab === tab}
-      onClick={() => handleSelectTab(tab)}
+      onClick={() => { handleSelectTab(tab); }}
     >
       {tab}
     </Tab>
@@ -183,7 +183,7 @@ export const NonDesktopShortcutTabs = ({
       {tabOrder.map((tabData) => (
         <MobileImageWrapper
           data-testid={`mobile-image-${tabData}`}
-          onClick={() => handleSelectTab(tabData)}
+          onClick={() => { handleSelectTab(tabData); }}
           key={`image-${tabData}`}
         >
           {shortcutImagesMobile[tabData]}
@@ -197,7 +197,7 @@ export const NonDesktopShortcutTabs = ({
       {tabOrder.map((tabData) => (
         <TabletImageWrapper
           data-testid={`tablet-image-${tabData}`}
-          onClick={() => handleSelectTab(tabData)}
+          onClick={() => { handleSelectTab(tabData); }}
           key={`image-${tabData}`}
         >
           {shortcutImagesTablet[tabData]}

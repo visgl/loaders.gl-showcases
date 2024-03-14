@@ -313,14 +313,14 @@ describe("Bookmarks utils", () => {
     ];
 
     const bookmarksString =
-      '[{"id":"1", "pageId":"Debug", "imageUrl":"data"},{"id":"2", "pageId":"Debug", "imageUrl":"data"}]';
+      "[{\"id\":\"1\", \"pageId\":\"Debug\", \"imageUrl\":\"data\"},{\"id\":\"2\", \"pageId\":\"Debug\", \"imageUrl\":\"data\"}]";
     const bookmarks = await parseBookmarks(bookmarksString);
     expect(bookmarks).toEqual(bookmarksExpected);
   });
 
   test("Should return null if bookmarks json is invalid", async () => {
     const bookmarksString =
-      '[{"id":"1", "pageId":"Debug"},{"id":"2", "pageId":"Debug"]';
+      "[{\"id\":\"1\", \"pageId\":\"Debug\"},{\"id\":\"2\", \"pageId\":\"Debug\"]";
     const bookmarks = await parseBookmarks(bookmarksString);
     expect(bookmarks).toEqual(null);
   });

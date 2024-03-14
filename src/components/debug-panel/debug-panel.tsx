@@ -1,23 +1,24 @@
-import { ReactEventHandler } from "react";
+import { type ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-import { useState } from "react";
 import { addIconItem } from "../../redux/slices/icon-list-slice";
-import { IIconItem, IconListSetName } from "../../types";
-import md5 from "md5";
-import { IconListPanel } from "../icon-list-panel/icon-list-panel";
-import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import PlusIcon from "../../../public/icons/plus.svg";
-import { ButtonSize } from "../../types";
-import { UploadPanel } from "../upload-panel/upload-panel";
-import { FileType, FileUploaded } from "../../types";
-
 import {
+  type IIconItem,
+  IconListSetName,
+  ButtonSize,
+  FileType,
+  type FileUploaded,
   BoundingVolumeColoredBy,
   BoundingVolumeType,
   ListItemType,
   SelectionState,
   TileColoredBy,
 } from "../../types";
+import md5 from "md5";
+import { IconListPanel } from "../icon-list-panel/icon-list-panel";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import { UploadPanel } from "../upload-panel/upload-panel";
+
 import { useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import {
@@ -85,9 +86,9 @@ const UploadPanelContainer = styled.div`
   left: calc(50% - 168px);
 `;
 
-type DebugPanelProps = {
+interface DebugPanelProps {
   onClose: ReactEventHandler;
-};
+}
 
 export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();

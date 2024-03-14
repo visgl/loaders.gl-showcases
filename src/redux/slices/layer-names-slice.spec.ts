@@ -10,7 +10,7 @@ jest.mock("@loaders.gl/core");
 
 describe("slice: layer-names", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       map: {},
     });
   });
@@ -43,7 +43,7 @@ describe("slice: layer-names", () => {
         },
       },
     });
-    //test selector
+    // test selector
     expect(selectLayerNames(state)).toEqual({
       "https://testUrl": {
         name: "testName",

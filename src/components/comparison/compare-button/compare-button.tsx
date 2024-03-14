@@ -1,6 +1,6 @@
-import { useState, RefObject, useRef } from "react";
+import { useState, type RefObject, useRef } from "react";
 import styled, { css } from "styled-components";
-import { CompareButtonMode, Layout, LayoutProps } from "../../../types";
+import { CompareButtonMode, Layout, type LayoutProps } from "../../../types";
 import { Title } from "../../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
@@ -43,7 +43,7 @@ const Container = styled.div<LayoutProps & { disableButton: boolean }>`
 `;
 
 const Button = styled.button<
-  LayoutProps & { disabled: boolean; isMobile?: boolean }
+LayoutProps & { disabled: boolean; isMobile?: boolean }
 >`
   display: flex;
   color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
@@ -126,20 +126,20 @@ const ButtonTitle = styled(Title)`
   color: inherit;
 `;
 
-type CompareButtonProps = {
+interface CompareButtonProps {
   compareButtonMode: CompareButtonMode;
   downloadStats: boolean;
   disableButton: boolean;
   disableDownloadButton: boolean;
   onCompareModeToggle: () => void;
   onDownloadClick: () => void;
-};
+}
 
-type TooltipProps = {
+interface TooltipProps {
   refElement: RefObject<HTMLElement>;
   isMobileLayout: boolean;
   children: React.ReactNode;
-};
+}
 
 const Tooltip = ({ refElement, isMobileLayout, children }: TooltipProps) => {
   let centerX = 0;

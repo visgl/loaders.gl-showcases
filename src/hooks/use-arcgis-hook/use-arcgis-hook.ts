@@ -1,5 +1,5 @@
 import { loadArcGISModules } from "@deck.gl/arcgis";
-import { useState, useEffect, MutableRefObject, useRef } from "react";
+import { useState, useEffect, type MutableRefObject, useRef } from "react";
 
 export function useArcgis(
   mapContainer: MutableRefObject<null | HTMLDivElement>,
@@ -18,7 +18,7 @@ export function useArcgis(
     // @ts-expect-error no ArcGIS types
     sceneView.goTo(
       {
-        zoom: zoom,
+        zoom,
         heading: bearing,
         tilt: pitch,
         center: [longitude, latitude],
@@ -59,7 +59,7 @@ export function useArcgis(
             heading: bearing,
             tilt: pitch,
           },
-          zoom: zoom,
+          zoom,
           ui: { components: ["attribution"] },
           viewingMode: "local",
         });

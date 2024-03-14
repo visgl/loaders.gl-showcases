@@ -4,20 +4,19 @@ import { Title } from "../common";
 import ArrowLeft from "../../../public/icons/arrow-left.svg";
 import { color_brand_tertiary } from "../../constants/colors";
 import ChevronIcon from "../../../public/icons/chevron.svg";
-import { Tile3D } from "@loaders.gl/tiles";
+import { type Tile3D } from "@loaders.gl/tiles";
 import { TileMetadata } from "./tile-metadata";
 import { Normals } from "./normals";
 import { useEffect, useState } from "react";
 import { ValidateTilePanel } from "./validate-tile-panel";
-import { isTileGeometryInsideBoundingVolume } from "../../utils/debug/tile-debug";
+import { isTileGeometryInsideBoundingVolume, getChildrenInfo } from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
-import { Layout, LayoutProps, ValidatedTile, TileInfo } from "../../types";
+import { Layout, type LayoutProps, type ValidatedTile, type TileInfo } from "../../types";
 import {
   useAppLayout,
   getCurrentLayoutProperty,
 } from "../../utils/hooks/layout";
-import { getChildrenInfo } from "../../utils/debug/tile-debug";
 import {
   formatFloatNumber,
   formatIntValue,
@@ -103,7 +102,7 @@ const ArrowContainer = styled.div`
   fill: ${color_brand_tertiary};
 `;
 
-type TileDetailsPanelProps = {
+interface TileDetailsPanelProps {
   tile: Tile3D;
   trianglesPercentage: number;
   normalsLength: number;
@@ -114,7 +113,7 @@ type TileDetailsPanelProps = {
   deactiveDebugPanel: () => void;
   activeDebugPanel: () => void;
   children?: React.ReactNode;
-};
+}
 
 const VALIDATE_TILE = "Validate Tile";
 
@@ -140,7 +139,7 @@ export const TileDetailsPanel = ({
   const [activeTileInfoPanel, setActiveTileInfoPanel] =
     useState<ActiveTileInfoPanel>(ActiveTileInfoPanel.TileDetailsPanel);
   const [validateTileWarnings, setValidateTileWarnings] = useState<
-    ValidatedTile[]
+  ValidatedTile[]
   >([]);
   const [validateTileOk, setValidateTileOk] = useState<ValidatedTile[]>([]);
 

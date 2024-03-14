@@ -7,10 +7,10 @@ import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 import BurgerIcon from "../../../public/icons/burger.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import {
-  ActiveProps,
-  CompareButtonProps,
+  type ActiveProps,
+  type CompareButtonProps,
   GithubImage,
-  MenuProps,
+  type MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
 import { color_brand_secondary } from "../../constants/colors";
@@ -155,7 +155,13 @@ const ToggleItem = styled(ListButton)`
   margin-top: 12px;
 `;
 
-const Header = ({ isOpen, setIsOpen }) => {
+const Header = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+}) => {
   const theme = useTheme();
   return (
     <>
@@ -163,7 +169,9 @@ const Header = ({ isOpen, setIsOpen }) => {
         <Button
           id="burger-menu"
           data-testid="burger-menu-non-desktop"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+          }}
         >
           <BurgerIcon fill={theme.colors.fontColor} />
         </Button>
@@ -172,7 +180,9 @@ const Header = ({ isOpen, setIsOpen }) => {
         <Button
           id="close-header-menu"
           data-testid="close-header-menu-non-desktop"
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            setIsOpen(false);
+          }}
         >
           <CloseIcon fill={theme.colors.fontColor} />
         </Button>
@@ -216,7 +226,9 @@ const Menu = ({
               pathname === "/compare-within-layer"
             }
             $open={isCompareMenuOpen}
-            onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
+            onClick={() => {
+              setIsCompareMenuOpen((prevValue) => !prevValue);
+            }}
           >
             Compare
           </CompareButton>

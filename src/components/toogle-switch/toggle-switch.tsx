@@ -93,14 +93,14 @@ const Slider = styled.span<{ disabled: boolean }>`
   }
 `;
 
-type ToggleSwitchProps = {
+interface ToggleSwitchProps {
   checked: boolean;
   onChange: () => void;
   name?: string;
   id?: string;
   title?: string;
   disabled?: boolean;
-};
+}
 
 export const ToggleSwitch = ({
   checked,

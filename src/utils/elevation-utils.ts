@@ -38,4 +38,4 @@ export const getLonLatWithElevationOffset = (
    * Convert resulting coordinates to catrographic
    */
   return viewport.unprojectPosition(projectedPostion);
-}
+};

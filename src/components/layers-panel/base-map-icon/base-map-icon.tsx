@@ -4,9 +4,9 @@ import LightMap from "../../../../public/icons/light-map.png";
 import TerrainMap from "../../../../public/icons/terrain-map.png";
 import CustomMap from "../../../../public/icons/custom-map.svg";
 
-type BaseMapIconProps = {
+interface BaseMapIconProps {
   baseMapId: string;
-};
+}
 
 const MapIcon = styled.div`
   background: #232430;

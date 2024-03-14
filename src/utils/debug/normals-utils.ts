@@ -2,18 +2,12 @@ import type { Tile3D } from "@loaders.gl/tiles";
 
 import { Vector3 } from "@math.gl/core";
 import { Ellipsoid } from "@math.gl/geospatial";
-import { NormalsDebugData } from "../../types";
+import type { NormalsDebugData, PositionsData } from "../../types";
+import type { Position } from "@deck.gl/core/typed";
 
 const VALUES_PER_VERTEX = 3;
 
 const scratchVector = new Vector3();
-
-type PositionsData = {
-  src: {
-    positions: Float32Array;
-    normals: Float32Array;
-  };
-};
 
 /**
  * Generates data for display normals by Line layer.
@@ -24,10 +18,8 @@ export function generateBinaryNormalsDebugData(
   tile: Tile3D
 ): NormalsDebugData | null {
   if (
-    !tile.content ||
-    !tile.content.attributes ||
-    !tile.content.attributes.normals ||
-    !tile.content.attributes.positions
+    !tile?.content?.attributes?.normals ||
+    !tile?.content?.attributes?.positions
   ) {
     return null;
   }
@@ -66,21 +58,20 @@ export function getNormalSourcePosition(
   index: number,
   data: PositionsData,
   trianglesPercentage: number
-): Vector3 | Record<string, unknown> {
+): Position {
   const positions = data.src.positions;
   const normalsGap = getNormalsGap(positions, trianglesPercentage);
-  let sourcePosition = {};
+  const sourcePosition = new Vector3();
 
   if (index % normalsGap === 0 || normalsGap === 0) {
-    const position = new Vector3([
+    sourcePosition.set(
       positions[index * 3],
       positions[index * 3 + 1],
-      positions[index * 3 + 2],
-    ]);
-    sourcePosition = position;
+      positions[index * 3 + 2]
+    );
   }
 
-  return sourcePosition;
+  return [sourcePosition.x, sourcePosition.y, sourcePosition.z];
 }
 
 /**
@@ -95,10 +86,10 @@ export function getNormalTargetPosition(
   data: PositionsData,
   trianglesPercentage: number,
   normalsLength: number
-): Vector3 | Record<string, unknown> {
+): Position {
   const positions = data.src.positions;
   const normalsGap = getNormalsGap(positions, trianglesPercentage);
-  let targetPosition = {};
+  let targetPosition: Vector3 = new Vector3();
 
   if (index % normalsGap === 0 || normalsGap === 0) {
     const normals = data.src.normals;
@@ -116,7 +107,7 @@ export function getNormalTargetPosition(
     targetPosition = position.add(normal);
   }
 
-  return targetPosition;
+  return [targetPosition.x, targetPosition.y, targetPosition.z];
 }
 
 /**

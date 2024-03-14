@@ -28,7 +28,9 @@ describe("Load manager", () => {
     expect(comparisonLoadManager.leftLoadingTime).toBe(0);
     expect(comparisonLoadManager.rightLoadingTime).toBe(0);
 
+    // @ts-expect-error test data doesn't to the expected type
     const resolvedLeft = comparisonLoadManager.resolveLeftSide(newStats);
+    // @ts-expect-error test data doesn't to the expected type
     const resolvedRight = comparisonLoadManager.resolveRightSide(newStats);
 
     expect(resolvedLeft).toBe(false);
@@ -46,7 +48,9 @@ describe("Load manager", () => {
 
     comparisonLoadManager.stopLoading();
 
+    // @ts-expect-error test data doesn't to the expected type
     const resolvedLeft = comparisonLoadManager.resolveLeftSide(newStats);
+    // @ts-expect-error test data doesn't to the expected type
     const resolvedRight = comparisonLoadManager.resolveRightSide(newStats);
 
     expect(resolvedLeft).toBe(false);
@@ -64,6 +68,7 @@ describe("Load manager", () => {
 
     comparisonLoadManager.startLoading();
 
+    // @ts-expect-error test data doesn't to the expected type
     comparisonLoadManager.resolveLeftSide(newStats);
     expect(comparisonLoadManager.leftStats).toBe(newStats);
   });
@@ -79,6 +84,7 @@ describe("Load manager", () => {
 
     comparisonLoadManager.startLoading();
 
+    // @ts-expect-error test data doesn't to the expected type
     comparisonLoadManager.resolveRightSide(newStats);
     expect(comparisonLoadManager.rightStats).toBe(newStats);
   });
@@ -96,7 +102,9 @@ describe("Load manager", () => {
 
     comparisonLoadManager.startLoading();
 
+    // @ts-expect-error test data doesn't to the expected type
     comparisonLoadManager.resolveLeftSide(newStats);
+    // @ts-expect-error test data doesn't to the expected type
     comparisonLoadManager.resolveRightSide(newStats);
     expect(dispatchEventSpy).toHaveBeenCalledWith(newEvent);
 

@@ -37,10 +37,10 @@ const StyledIcon = styled(LogoutIcon)`
   stroke: ${color_canvas_secondary_inverted};
 `;
 
-type ArcGisUserProps = {
+interface ArcGisUserProps {
   children?: React.ReactNode;
   onClick?: () => void;
-};
+}
 
 export const AcrGisUser = ({ children, onClick }: ArcGisUserProps) => {
   return (

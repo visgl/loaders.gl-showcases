@@ -1,7 +1,7 @@
 import { fetchFile } from "@loaders.gl/core";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-import { FetchingStatus, TilesetType } from "../../types";
+import { type RootState } from "../store";
+import { FetchingStatus, type TilesetType } from "../../types";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
 
 // Define a type for the slice state
@@ -10,11 +10,11 @@ interface LayerNamesState {
   map: Record<string, LayerNameInfo>;
 }
 
-type LayerNameInfo = {
+interface LayerNameInfo {
   /** Layer name and fetching status */
   status: FetchingStatus;
   name: string;
-};
+}
 
 const initialState: LayerNamesState = {
   map: {},
@@ -48,8 +48,8 @@ const layerNamesSlice = createSlice({
 });
 
 export const getLayerNameInfo = createAsyncThunk<
-  { name: string; layerUrl: string },
-  { layerUrl: string; type: TilesetType; token: string }
+{ name: string; layerUrl: string },
+{ layerUrl: string; type: TilesetType; token: string }
 >("getLayerNameInfo", async ({ layerUrl, type, token }) => {
   const params = parseTilesetUrlParams(layerUrl, { type, token });
   let url = params.tilesetUrl;

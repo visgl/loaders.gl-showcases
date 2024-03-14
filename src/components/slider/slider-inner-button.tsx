@@ -1,18 +1,18 @@
 import styled, { css } from "styled-components";
 import { color_brand_tertiary } from "../../constants/colors";
-import { LayoutProps } from "../../types";
+import { type LayoutProps } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
 
 export const InnerButton = styled.button<
-  {
-    blurButton?: boolean;
-    hide?: boolean;
-    width?: number;
-    height?: number;
-  } & LayoutProps
+{
+  blurButton?: boolean;
+  hide?: boolean;
+  width?: number;
+  height?: number;
+} & LayoutProps
 >`
   opacity: ${({ blurButton }) => (blurButton ? 0.4 : 1)};
   display: ${({ hide }) => (hide ? "none" : "flex")};
@@ -56,7 +56,7 @@ export const InnerButton = styled.button<
     `}
 `;
 
-type BookmarkInnerButtonProps = {
+interface BookmarkInnerButtonProps {
   children: React.ReactNode;
   blurButton?: boolean;
   hide?: boolean;
@@ -64,7 +64,7 @@ type BookmarkInnerButtonProps = {
   height?: number;
   disabled?: boolean;
   onInnerClick: () => void;
-};
+}
 
 export const SliderInnerButton = ({
   children,

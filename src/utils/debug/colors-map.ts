@@ -1,4 +1,4 @@
-import { Color } from "@deck.gl/core";
+import type { Color } from "@deck.gl/core";
 import { BoundingVolumeColoredBy, TileColoredBy } from "../../types";
 
 export const DEPTH_COLOR_MAP = {
@@ -21,8 +21,8 @@ const DEFAULT_COLOR = [255, 255, 255];
 const DEFAULT_HIGLIGHT_COLOR = [0, 100, 255];
 
 export default class ColorMap {
-  randomColorMap: { [id: string]: Color };
-  colorMap: { [id: string]: Color };
+  randomColorMap: Record<string, Color>;
+  colorMap: Record<string, Color>;
 
   constructor() {
     this.randomColorMap = {};
@@ -89,7 +89,7 @@ export default class ColorMap {
    */
   _getCustomColor(tileId, options) {
     let color = DEFAULT_COLOR;
-    if (options.coloredTilesMap && options.coloredTilesMap[tileId]) {
+    if (options.coloredTilesMap?.[tileId]) {
       color = options.coloredTilesMap[tileId];
     } else if (options.selectedTileId === tileId) {
       color = DEFAULT_HIGLIGHT_COLOR;

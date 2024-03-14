@@ -1,7 +1,7 @@
 import { colorizeTile } from "./colorize-tile";
 import { customizeColors } from "@loaders.gl/i3s";
 import { getTile3d } from "../test/tile-stub";
-import { COLOR } from "../types";
+import type { COLOR } from "../types";
 
 const CUSTOM_COLORS1 = {
   attributeName: "HEIGHTROOF",
@@ -72,9 +72,8 @@ describe("colorizeTile", () => {
     const result2 = await colorizeTile(mockTile, null);
     expect(result2.isColored).toEqual(false);
 
-    colorizeTile(mockTile, CUSTOM_COLORS2).then((result) => {
-      expect(result.isColored).toEqual(false);
-    });
+    const result = await colorizeTile(mockTile, CUSTOM_COLORS2);
+    expect(result.isColored).toEqual(true);
     mockTile.content.customColors = null;
   });
 });

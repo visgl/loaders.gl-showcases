@@ -10,7 +10,7 @@ import reducer, {
   setFlattenedSublayers,
   updateLayerVisibility,
 } from "./flattened-sublayers-slice";
-import { flattenedSublayersState } from "./flattened-sublayers-slice";
+import type { FlattenedSublayersState } from "./flattened-sublayers-slice";
 import { load } from "@loaders.gl/core";
 import { setupStore } from "../store";
 import {
@@ -31,7 +31,7 @@ jest.mock("@loaders.gl/i3s", () => {
   });
 });
 
-const previousState: flattenedSublayersState = {
+const previousState: FlattenedSublayersState = {
   single: {
     layers: [
       {
@@ -78,7 +78,7 @@ const previousState: flattenedSublayersState = {
 
 describe("slice: flattened-sublayers", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       single: { layers: [], layerCounter: 0, sublayers: [] },
       left: { layers: [], layerCounter: 0, sublayers: [] },
       right: { layers: [], layerCounter: 0, sublayers: [] },
@@ -134,7 +134,7 @@ describe("slice: flattened-sublayers", () => {
       reducer(
         previousState,
         updateLayerVisibility({
-          index: index,
+          index,
           visibility: false,
         })
       )
@@ -147,7 +147,7 @@ describe("slice: flattened-sublayers", () => {
       reducer(
         previousState,
         updateLayerVisibility({
-          index: index,
+          index,
           visibility: false,
         })
       )
@@ -165,7 +165,7 @@ describe("slice: flattened-sublayers", () => {
       reducer(
         previousState,
         updateLayerVisibility({
-          index: index,
+          index,
           visibility: false,
           side: ComparisonSideMode.left,
         })
@@ -184,7 +184,7 @@ describe("slice: flattened-sublayers", () => {
       reducer(
         previousState,
         updateLayerVisibility({
-          index: index,
+          index,
           visibility: false,
           side: ComparisonSideMode.right,
         })
@@ -233,7 +233,7 @@ describe("slice: flattened-sublayers", () => {
     expect(selectSublayers(newSingleState)).toEqual([]);
     expect(newSingleState.flattenedSublayers.single.layerCounter).toEqual(1);
 
-    tilesetsData[0]["id"] = "test_id_left";
+    tilesetsData[0].id = "test_id_left";
     await store.dispatch(
       getFlattenedSublayers({
         tilesetsData,
@@ -254,7 +254,7 @@ describe("slice: flattened-sublayers", () => {
     expect(selectLeftSublayers(newLeftState)).toEqual([]);
     expect(newLeftState.flattenedSublayers.left.layerCounter).toEqual(1);
 
-    tilesetsData[0]["id"] = "test_id_right";
+    tilesetsData[0].id = "test_id_right";
     await store.dispatch(
       getFlattenedSublayers({
         tilesetsData,

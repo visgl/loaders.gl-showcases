@@ -2,13 +2,14 @@ import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { Header } from "./header";
 import { screen } from "@testing-library/react";
 import { useAppLayout } from "../../utils/hooks/layout";
+import type { ReactChildren } from "react";
 
 jest.mock("../../utils/hooks/layout");
 jest.mock("react-router-dom", () => ({
   useLocation: jest.fn().mockImplementation(() => ({
     pathname: "hellp-world",
   })),
-  Link: ({ children }) => {
+  Link: ({ children }: { children: ReactChildren }) => {
     const LinkMock = "desktop-link-mock";
 
     return (

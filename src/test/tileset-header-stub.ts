@@ -1,4 +1,4 @@
-import { SceneLayer3D } from "@loaders.gl/i3s";
+import { type SceneLayer3D } from "@loaders.gl/i3s";
 import { getTileHeader } from "./tile-header-stub";
 
 export const getTilesetJson = (): SceneLayer3D => {

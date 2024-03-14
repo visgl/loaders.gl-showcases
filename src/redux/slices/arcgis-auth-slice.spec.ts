@@ -49,7 +49,7 @@ describe("slice: arcgis-auth", () => {
   });
 
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       user: EMAIL_EXPECTED,
     });
   });

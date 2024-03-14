@@ -16,9 +16,9 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-type RowProps = {
+interface RowProps {
   selectable: boolean;
-};
+}
 
 const Container = styled.div<{ $layout: string }>`
   display: flex;
@@ -124,14 +124,14 @@ const BackButton = styled(ArrowLeft)`
 const NO_DATA = "No Data";
 const STATISTICS_TITLE = "Statistics";
 
-type AttributesPanelProps = {
+interface AttributesPanelProps {
   title: string;
   tilesetName: string;
   attributes: FeatureAttributes | null;
   tilesetBasePath: string;
   statisticsInfo: StatisticsInfo[] | null;
   onClose: () => void;
-};
+}
 
 export const AttributesPanel = ({
   title,
@@ -165,7 +165,7 @@ export const AttributesPanel = ({
     for (const attributeName in attributes) {
       const attributeValue = formatValue(attributes[attributeName]);
       const attributeStatisticInfo =
-        statisticsInfo?.find((stat) => stat.name === attributeName) || null;
+        statisticsInfo?.find((stat) => stat.name === attributeName) ?? null;
       const row = renderItemRow(
         attributeName,
         attributeValue,
@@ -186,7 +186,9 @@ export const AttributesPanel = ({
       <Row
         key={key}
         selectable={Boolean(attributeStatisticInfo)}
-        onClick={() => handleRowClick(key, attributeStatisticInfo)}
+        onClick={() => {
+          handleRowClick(key, attributeStatisticInfo);
+        }}
       >
         <RowItem>{key}</RowItem>
         <RowItem>{value}</RowItem>
@@ -210,11 +212,13 @@ export const AttributesPanel = ({
           <BackButton
             data-testid="attributes-panel-back-button"
             fill={theme.colors.fontColor}
-            onClick={() => setSelectedAttributeStatsInfo(null)}
+            onClick={() => {
+              setSelectedAttributeStatsInfo(null);
+            }}
           />
         )}
         <Title>
-          {(selectedAttributeStatsInfo && STATISTICS_TITLE) || title}
+          {(selectedAttributeStatsInfo && STATISTICS_TITLE) ?? title}
         </Title>
         <CloseButton id="attributes-panel-close-button" onClick={onClose} />
       </HeaderWrapper>

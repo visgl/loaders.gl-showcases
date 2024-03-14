@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { color_accent_primary } from "../../../constants/colors";
 import DeleteIcon from "../../../../public/icons/delete.svg";
 
-type BaseMapOptionsMenuProps = {
+interface BaseMapOptionsMenuProps {
   onDeleteBasemap: () => void;
-};
+}
 
 const MapSettingsItem = styled.div<{
   customColor?: string;
@@ -17,7 +17,7 @@ const MapSettingsItem = styled.div<{
   line-height: 19px;
   padding: 10px 0px;
   color: ${({ theme, customColor }) =>
-    customColor ? customColor : theme.colors.fontColor};
+    customColor ?? theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
   display: flex;
   gap: 10px;

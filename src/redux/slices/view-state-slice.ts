@@ -1,6 +1,6 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ViewState } from "@deck.gl/core";
-import { RootState } from "../store";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type ViewState } from "@deck.gl/core";
+import { type RootState } from "../store";
 
 /** ViewState redux state for maps wrappers and components */
 export interface ViewStateState {

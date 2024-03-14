@@ -119,28 +119,28 @@ describe("Import panel", () => {
     title && userEvent.click(title);
     state = store.getState();
     cont = selectArcGisContent(state);
-    expect(cont[0]["id"]).toBe("123");
+    expect(cont[0].id).toBe("123");
 
     title && userEvent.click(title);
     state = store.getState();
     cont = selectArcGisContent(state);
-    expect(cont[0]["id"]).toBe("789");
+    expect(cont[0].id).toBe("789");
 
     const date = screen.getByText("Date");
 
     date && userEvent.click(date);
     state = store.getState();
     cont = selectArcGisContent(state);
-    expect(cont[0]["id"]).toBe("789");
+    expect(cont[0].id).toBe("789");
 
     date && userEvent.click(date);
     state = store.getState();
     cont = selectArcGisContent(state);
-    expect(cont[0]["id"]).toBe("123");
+    expect(cont[0].id).toBe("123");
 
     date && userEvent.click(date);
     state = store.getState();
     cont = selectArcGisContent(state);
-    expect(cont[0]["id"]).toBe("789");
+    expect(cont[0].id).toBe("789");
   });
 });

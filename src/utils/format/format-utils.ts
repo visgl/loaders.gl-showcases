@@ -56,10 +56,10 @@ export const formatBoolean = (value: boolean): string => {
  * @returns date formatted.
  */
 export const formatTimestamp = (timestamp: number): string => {
- const formatter = new Intl.DateTimeFormat("en-US", {
+  const formatter = new Intl.DateTimeFormat("en-US", {
     month: "long",
     day: "2-digit",
     year: "numeric",
   });
   return formatter.format(timestamp);
-}
+};

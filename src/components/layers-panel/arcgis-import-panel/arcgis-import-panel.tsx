@@ -15,8 +15,8 @@ import {
   resetArcGisContentSelected,
 } from "../../../redux/slices/arcgis-content-slice";
 import {
-  IArcGisContent,
-  ArcGisContentColumnName,
+  type IArcGisContent,
+  type ArcGisContentColumnName,
   ExpandState,
   CollapseDirection,
 } from "../../../types";
@@ -152,14 +152,14 @@ const IconContainer = styled.div<{ enabled: boolean }>`
   visibility: ${({ enabled }) => (enabled ? "visible" : "hidden")};
 `;
 
-type Column = {
+interface Column {
   id: string;
   width: number;
   fontWeight?: number;
   dataColumnName?: ArcGisContentColumnName;
   sortDataColumnName?: ArcGisContentColumnName;
   columnName?: string;
-};
+}
 
 const columns: Column[] = [
   {
@@ -182,10 +182,10 @@ const columns: Column[] = [
   },
 ];
 
-type InsertLayerProps = {
+interface InsertLayerProps {
   onImport: (object: { name: string; url: string; token?: string }) => void;
   onCancel: () => void;
-};
+}
 
 export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
   const dispatch = useAppDispatch();
@@ -220,15 +220,15 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
 
   const renderHeaderCell = (column: Column): JSX.Element => {
     const sortDataColumnName =
-      column.sortDataColumnName || column.dataColumnName;
+      column.sortDataColumnName ?? column.dataColumnName;
     return (
       <TableHeaderCell
         width={column.width}
         key={column.id}
       >
         {typeof sortDataColumnName !== "undefined" && (
-          <TitleCellContainer onClick={() => onSort(sortDataColumnName)}>
-            {column.columnName || ""}
+          <TitleCellContainer onClick={() => { onSort(sortDataColumnName); }}>
+            {column.columnName ?? ""}
             <IconContainer enabled={sortColumn === sortDataColumnName}>
               <ExpandIcon
                 expandState={ExpandState.expanded}
@@ -237,7 +237,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                     ? CollapseDirection.top
                     : CollapseDirection.bottom
                 }
-                onClick={() => onSort(sortDataColumnName)}
+                onClick={() => { onSort(sortDataColumnName); }}
                 fillExpanded={theme.colors.buttonDimIconColor}
                 width={6}
               />
@@ -261,9 +261,11 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
         key={`${column.id}-${contentItem.id}`}
       >
         <CellDiv>
-          {dataColumnName ? (
-            contentItem[dataColumnName]
-          ) : (
+          {dataColumnName
+            ? (
+                contentItem[dataColumnName]
+              )
+            : (
             <Radio>
               <RadioButton
                 id={contentItem.id}
@@ -273,7 +275,7 @@ export const ArcGisImportPanel = ({ onImport, onCancel }: InsertLayerProps) => {
                 }}
               />
             </Radio>
-          )}
+              )}
         </CellDiv>
       </TableRowCell>
     );

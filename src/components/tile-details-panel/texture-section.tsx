@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Title, TileInfoSectionWrapper } from "../common";
 import { useEffect, useState } from "react";
-import { Tile3D } from "@loaders.gl/tiles";
+import { type Tile3D } from "@loaders.gl/tiles";
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 
 import {
@@ -9,10 +9,10 @@ import {
   drawBitmapTexture,
 } from "../../utils/debug/texture-render-utils";
 
-type Size = {
+interface Size {
   width: number;
   height: number;
-};
+}
 
 const TextureContainer = styled.div`
   display: flex;
@@ -41,9 +41,9 @@ const TextureButton = styled.button<{
 const SIZE = 149;
 const PREVIEW_SIZE = 592;
 
-type TextureSectionProps = {
+interface TextureSectionProps {
   tile: Tile3D;
-};
+}
 
 export const TextureSection = ({ tile }: TextureSectionProps) => {
   const [texture, setTexture] = useState<string>("");
@@ -68,15 +68,15 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
   useEffect(() => {
     if (image) {
       if (image.compressed) {
-        drawCompressedTexture(image, SIZE).then((result) => {
+        void drawCompressedTexture(image, SIZE).then((result) => {
           const { url, width, height } = result;
           setSize({ width, height });
           setTexture(url);
         });
       } else {
-        drawBitmapTexture(image, SIZE).then((result) => {
+        void drawBitmapTexture(image, SIZE).then((result) => {
           const { url, width, height } = result;
-          setSize({ width: width, height: height });
+          setSize({ width, height });
           setTexture(url);
         });
       }
@@ -86,15 +86,15 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
   const onClickHandler = () => {
     if (image) {
       if (image.compressed) {
-        drawCompressedTexture(image, PREVIEW_SIZE).then((result) => {
+        void drawCompressedTexture(image, PREVIEW_SIZE).then((result) => {
           const { url, width, height } = result;
-          setPreviewSize({ width: width, height: height });
+          setPreviewSize({ width, height });
           setPreviewTexture(url);
         });
       } else {
-        drawBitmapTexture(image, PREVIEW_SIZE).then((result) => {
+        void drawBitmapTexture(image, PREVIEW_SIZE).then((result) => {
           const { url, width, height } = result;
-          setPreviewSize({ width: width, height: height });
+          setPreviewSize({ width, height });
           setPreviewTexture(url);
         });
       }

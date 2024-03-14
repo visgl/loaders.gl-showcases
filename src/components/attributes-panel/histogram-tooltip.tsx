@@ -31,7 +31,7 @@ export const HistogramTooltip = ({
   label,
   attributeName,
 }: any) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <Container>
         <TooltipItem>{`Count: ${payload[0].value}`}</TooltipItem>

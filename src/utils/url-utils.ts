@@ -1,8 +1,8 @@
-import { TilesetType, ViewStateSet } from "../types";
+import { TilesetType, type ViewStateSet } from "../types";
 
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
-  return parsedUrl.searchParams.get("tileset") || "";
+  return parsedUrl.searchParams.get("tileset") ?? "";
 };
 
 export const parseTilesetUrlParams = (url, options) => {
@@ -11,6 +11,7 @@ export const parseTilesetUrlParams = (url, options) => {
   }
 
   const parsedUrl = new URL(url);
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
   let token = options && options.token;
   const tilesetUrl =
     !options?.type || options.type === TilesetType.I3S

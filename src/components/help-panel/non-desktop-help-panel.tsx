@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { HelpPanelSelectedTab, HelpShortcutItem } from "../../types";
+import { type HelpPanelSelectedTab, type HelpShortcutItem } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
@@ -9,18 +9,18 @@ import { NonDesktopShortcutsListPanel } from "./non-desktop-shortcuts-list-panel
 import { NonDesktopShortcutTabs } from "./non-desktop-shortcuts-tabs";
 import { NonDesktopVideoPanel } from "./non-desktop-video-panel";
 
-type HelpPanelProps = {
+interface HelpPanelProps {
   activeShortcutId: string;
   shortcuts: HelpShortcutItem[];
   selectedTab: HelpPanelSelectedTab;
   onTabSelect: (tab: HelpPanelSelectedTab) => void;
   onClose: () => void;
   onShortcutClick: (id: string) => void;
-};
+}
 
-type ContainerProps = {
+interface ContainerProps {
   $layout: string;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   position: absolute;
@@ -99,11 +99,11 @@ export const NonDesktopHelpPanel = ({
         <>
           <NonDesktopVideoPanel
             shortcut={activeShortcut}
-            onCloseVideoPanel={() => onShortcutClick("")}
+            onCloseVideoPanel={() => { onShortcutClick(""); }}
           />
           <Overlay
             data-testid={"non-desktop-overlay"}
-            onClick={() => onShortcutClick("")}
+            onClick={() => { onShortcutClick(""); }}
           />
         </>
       )}

@@ -1,15 +1,14 @@
-import { ReactEventHandler, useEffect } from "react";
+import { type ReactEventHandler, useEffect } from "react";
 import styled, { useTheme } from "styled-components";
 
 import ArrowLeftIcon from "../../../public/icons/arrow-left.svg";
 import { CloseButton } from "../close-button/close-button";
 import { BuildingExplorer } from "./building-explorer";
 import { PanelHorizontalLine } from "../common";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppDispatch } from "../../redux/hooks";
-import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
-import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
-import { ComparisonSideMode } from "../../types";
+import { setColorsByAttrubute, setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
+import { type ComparisonSideMode } from "../../types";
 
 const Container = styled.div`
   display: flex;

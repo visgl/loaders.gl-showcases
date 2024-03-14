@@ -5,16 +5,16 @@ import { v4 as uuidv4 } from "uuid";
 import { color_brand_primary } from "../../constants/colors";
 import {
   ComparisonMode,
-  LayerExample,
+  type LayerExample,
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
-  StatsMap,
-  Bookmark,
-  LayerViewState,
-  StatsData,
+  type StatsMap,
+  type Bookmark,
+  type LayerViewState,
+  type StatsData,
   PageId,
-  LayoutProps,
+  type LayoutProps,
 } from "../../types";
 
 import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
@@ -27,7 +27,7 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
@@ -46,9 +46,9 @@ import {
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 import { CenteredContainer } from "../../components/common";
 
-type ComparisonPageProps = {
+interface ComparisonPageProps {
   mode: ComparisonMode;
-};
+}
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -102,10 +102,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
   const [activeLayersIdsLeftSide, setActiveLayersIdsLeftSide] = useState<
-    string[]
+  string[]
   >([]);
   const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
-    string[]
+  string[]
   >([]);
   const [comparisonStats, setComparisonStats] = useState<StatsData[]>([]);
 
@@ -118,7 +118,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   );
   compareButtonModeRef.current = compareButtonMode;
 
-  const [disableButton, setDisableButton] = useState<Array<boolean>>([
+  const [disableButton, setDisableButton] = useState<boolean[]>([
     true,
     true,
   ]);
@@ -128,7 +128,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
   const [sublayersLeftSide, setSublayersLeftSide] = useState<
-    null | ActiveSublayer[]
+  null | ActiveSublayer[]
   >(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
@@ -370,29 +370,33 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) => [
-        ...prev,
-        {
-          id: newBookmarkId,
-          pageId: PageId.comparison,
-          imageUrl,
-          viewState: globalViewState,
-          layersLeftSide,
-          layersRightSide,
-          activeLayersIdsLeftSide: [...activeLayersIdsLeftSide],
-          activeLayersIdsRightSide: [...activeLayersIdsRightSide],
-        },
-      ]);
-      setSelectedBookmarkId(newBookmarkId);
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) => [
+          ...prev,
+          {
+            id: newBookmarkId,
+            pageId: PageId.comparison,
+            imageUrl,
+            viewState: globalViewState,
+            layersLeftSide,
+            layersRightSide,
+            activeLayersIdsLeftSide: [...activeLayersIdsLeftSide],
+            activeLayersIdsRightSide: [...activeLayersIdsRightSide],
+          },
+        ]);
+        setSelectedBookmarkId(newBookmarkId);
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onSelectBookmarkHandler = (
     bookmarkId: string,
     newBookmarks?: Bookmark[]
   ) => {
-    const bookmark = (newBookmarks || bookmarks).find(
+    const bookmark = (newBookmarks ?? bookmarks).find(
       ({ id }) => id === bookmarkId
     );
     if (!bookmark) {
@@ -414,23 +418,27 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, []);
 
   const onEditBookmarkHandler = (bookmarkId: string) => {
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) =>
-        prev.map((bookmark) =>
-          bookmark.id === bookmarkId
-            ? {
-                ...bookmark,
-                imageUrl,
-                viewState: globalViewState,
-                layersLeftSide,
-                layersRightSide,
-                activeLayersIdsLeftSide,
-                activeLayersIdsRightSide,
-              }
-            : bookmark
-        )
-      );
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) =>
+          prev.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? {
+                  ...bookmark,
+                  imageUrl,
+                  viewState: globalViewState,
+                  layersLeftSide,
+                  layersRightSide,
+                  activeLayersIdsLeftSide,
+                  activeLayersIdsRightSide,
+                }
+              : bookmark
+          )
+        );
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const updateBookmarks = (bookmarks: Bookmark[]) => {
@@ -455,20 +463,18 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         loadNumber={loadNumber}
         buildingExplorerOpened={buildingExplorerOpenedLeft}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers, activeIds) =>
-          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
+        onChangeLayers={(layers, activeIds) => { onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left); }
         }
         onLoadingStateChange={disableButtonHandlerLeft}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
         }}
-        onBuildingExplorerOpened={(opened) =>
-          setBuildingExplorerOpenedLeft(opened)
+        onBuildingExplorerOpened={(opened) => { setBuildingExplorerOpenedLeft(opened); }
         }
         onShowBookmarksChange={onBookmarkClick}
         onInsertBookmarks={updateBookmarks}
-        onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
+        onUpdateSublayers={(sublayers) => { setSublayersLeftSide(sublayers); }}
       />
       <Devider $layout={layout} />
       <CompareButton
@@ -495,7 +501,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
-          onClearBookmarks={() => setBookmarks([])}
+          onClearBookmarks={() => { setBookmarks([]); }}
           onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
@@ -509,7 +515,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
         hasBeenCompared={hasBeenCompared}
-        showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
+        showLayerOptions={mode === ComparisonMode.acrossLayers}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
@@ -530,15 +536,13 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           (mode === ComparisonMode.withinLayer && buildingExplorerOpenedLeft)
         }
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers, activeIds) =>
-          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
+        onChangeLayers={(layers, activeIds) => { onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right); }
         }
         onLoadingStateChange={disableButtonHandlerRight}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
-        onBuildingExplorerOpened={(opened) =>
-          setBuildingExplorerOpenedRight(opened)
+        onBuildingExplorerOpened={(opened) => { setBuildingExplorerOpenedRight(opened); }
         }
         onShowBookmarksChange={onBookmarkClick}
       />
@@ -557,7 +561,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         <CenteredContainer>
           <WarningPanel
             title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
-            onConfirm={() => setWrongBookmarkPageId(null)}
+            onConfirm={() => { setWrongBookmarkPageId(null); }}
           />
         </CenteredContainer>
       )}

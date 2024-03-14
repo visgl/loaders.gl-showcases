@@ -1,10 +1,11 @@
-import { Fragment, ReactEventHandler, useState } from "react";
+import { Fragment, type ReactEventHandler, useState } from "react";
 import styled from "styled-components";
 import {
   SelectionState,
-  LayerExample,
-  LayerViewState,
+  type LayerExample,
+  type LayerViewState,
   ListItemType,
+  ButtonSize,
 } from "../../types";
 import { ListItem } from "./list-item/list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
@@ -12,9 +13,8 @@ import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { LayerOptionsMenu } from "./layer-options-menu/layer-options-menu";
 import { handleSelectAllLeafsInGroup } from "../../utils/layer-utils";
-import { ButtonSize } from "../../types";
 
-type LayersControlPanelProps = {
+interface LayersControlPanelProps {
   layers: LayerExample[];
   selectedLayerIds: string[];
   type: ListItemType;
@@ -25,7 +25,7 @@ type LayersControlPanelProps = {
   onLayerSettingsClick: ReactEventHandler;
   onPointToLayer: (viewState?: LayerViewState) => void;
   deleteLayer: (id: string) => void;
-};
+}
 
 const LayersContainer = styled.div`
   display: flex;
@@ -76,7 +76,7 @@ export const LayersControlPanel = ({
     layer: LayerExample,
     parentLayer?: LayerExample
   ): SelectionState => {
-    const childLayers = layer.layers || [];
+    const childLayers = layer.layers ?? [];
     const groupLeafs = handleSelectAllLeafsInGroup(layer);
     let selectedState = SelectionState.unselected;
 
@@ -118,10 +118,10 @@ export const LayersControlPanel = ({
     rootLayer?: LayerExample
   ) => {
     return layers.map((layer: LayerExample) => {
-      const childLayers = layer.layers || [];
+      const childLayers = layer?.layers ?? [];
       const isSelected = isListItemSelected(layer, parentLayer);
 
-      rootLayer = rootLayer || parentLayer;
+      rootLayer = rootLayer ?? parentLayer;
 
       return (
         <Fragment key={layer.id}>
@@ -131,7 +131,7 @@ export const LayersControlPanel = ({
             subtitle={layer.type}
             type={parentLayer ? ListItemType.Checkbox : type}
             selected={isSelected}
-            onChange={() => onLayerSelect(layer, rootLayer)}
+            onChange={() => { onLayerSelect(layer, rootLayer); }}
             onOptionsClick={() => {
               setShowLayerSettings(true);
               setSettingsLayerId(layer.id);
@@ -160,14 +160,16 @@ export const LayersControlPanel = ({
               />
             }
           />
-          {childLayers.length ? (
+          {childLayers.length
+            ? (
             <ChildrenContainer>
               {renderLayers(childLayers, layer, rootLayer)}
             </ChildrenContainer>
-          ) : null}
+              )
+            : null}
           {layerToDeleteId === layer.id && (
             <DeleteConfirmation
-              onKeepHandler={() => setLayerToDeleteId("")}
+              onKeepHandler={() => { setLayerToDeleteId(""); }}
               onDeleteHandler={() => {
                 deleteLayer(settingsLayerId);
                 setLayerToDeleteId("");

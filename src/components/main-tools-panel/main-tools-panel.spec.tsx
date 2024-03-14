@@ -24,7 +24,7 @@ describe("Main Tools Panel", () => {
     expect(container).toBeInTheDocument();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const layersButton = document.querySelector('#layers-options-tab')!;
+    const layersButton = document.querySelector("#layers-options-tab")!;
 
     expect(layersButton).toBeInTheDocument();
     userEvent.click(layersButton);
@@ -44,17 +44,17 @@ describe("Main Tools Panel", () => {
     expect(container).toBeInTheDocument();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const layersButton = document.querySelector('#layers-options-tab')!;
+    const layersButton = document.querySelector("#layers-options-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const settingsButton = document.querySelector('#settings-tab')!;
+    const settingsButton = document.querySelector("#settings-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const memoryButton = document.querySelector('#memory-usage-tab')!;
+    const memoryButton = document.querySelector("#memory-usage-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const validatorButton = document.querySelector('#validator-tab')!;
+    const validatorButton = document.querySelector("#validator-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const debugButton = document.querySelector('#debug-panel-tab')!;
+    const debugButton = document.querySelector("#debug-panel-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const bookmarksButton = document.querySelector('#bookmarks-tab')!;
+    const bookmarksButton = document.querySelector("#bookmarks-tab")!;
 
     expect(layersButton).toBeInTheDocument();
 
@@ -76,5 +76,4 @@ describe("Main Tools Panel", () => {
     userEvent.click(bookmarksButton);
     expect(onShowBookmarksChangeMock).toHaveBeenCalled();
   });
-
 });
