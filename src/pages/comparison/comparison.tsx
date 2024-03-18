@@ -14,6 +14,7 @@ import {
   LayerViewState,
   StatsData,
   PageId,
+  BaseMapGroup,
 } from "../../types";
 
 import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
@@ -36,7 +37,7 @@ import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
   deleteBaseMaps,
   setInitialBaseMaps,
-  selectSelectedBaseMapId
+  selectSelectedBaseMap,
 } from "../../redux/slices/base-maps-slice";
 import {
   selectViewState,
@@ -100,7 +101,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     new ComparisonLoadManager()
   );
 
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const globalViewState = useAppSelector(selectViewState);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
@@ -553,7 +554,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
-          isDragModeVisible={selectedBaseMapId !== "ArcGis"}
+          isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
         />
       )}
       {wrongBookmarkPageId && (

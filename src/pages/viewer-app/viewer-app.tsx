@@ -32,6 +32,7 @@ import {
   DragMode,
   PageId,
   TilesetMetadata,
+  BaseMapGroup,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -70,7 +71,7 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import {
   selectFiltersByAttribute,
@@ -116,7 +117,7 @@ export const ViewerApp = () => {
   const [isAttributesLoading, setAttributesLoading] = useState(false);
   const flattenedSublayers = useAppSelector(selectLayers);
   const bslSublayers = useAppSelector(selectSublayers);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const [tilesetsStats, setTilesetsStats] = useState(initStats());
   const [memoryStats, setMemoryStats] = useState<Stats | null>(null);
   const [updateStatsNumber, setUpdateStatsNumber] = useState<number>(0);
@@ -140,7 +141,9 @@ export const ViewerApp = () => {
   const [, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const MapWrapper =
-    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+    selectedBaseMap?.group === BaseMapGroup.ArcGIS
+      ? ArcgisWrapper
+      : DeckGlWrapper;
   const filtersByAttribute = useSelector((state: RootState) =>
     selectFiltersByAttribute(state)
   );
@@ -704,7 +707,7 @@ export const ViewerApp = () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
+        isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
       />
       {wrongBookmarkPageId && (
         <CenteredContainer>

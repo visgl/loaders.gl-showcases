@@ -16,6 +16,7 @@ import {
   TileSelectedColor,
   PageId,
   TilesetMetadata,
+  BaseMapGroup,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -95,7 +96,7 @@ import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
@@ -108,7 +109,7 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
   const debugOptions = useAppSelector(selectDebugOptions);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -140,7 +141,7 @@ export const DebugApp = () => {
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
   const MapWrapper =
-    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+    selectedBaseMap?.group === BaseMapGroup.ArcGIS ? ArcgisWrapper : DeckGlWrapper;
 
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
@@ -245,7 +246,7 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     dispatch(resetDebugOptions());
-    dispatch(setDebugOptions({ minimap: !(selectedBaseMapId === "ArcGis") }));
+    dispatch(setDebugOptions({ minimap: !(selectedBaseMap?.group === BaseMapGroup.ArcGIS) }));
     dispatch(clearBSLStatisitcsSummary());
     dispatch(setFiltersByAttrubute({ filter: null }));
   }, [activeLayers, buildingExplorerOpened]);
@@ -855,7 +856,7 @@ export const DebugApp = () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
+        isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
       />
       {wrongBookmarkPageId && (
         <CenteredContainer>

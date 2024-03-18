@@ -3,9 +3,8 @@ import styled from "styled-components";
 import { color_accent_primary } from "../../../constants/colors";
 import DeleteIcon from "../../../../public/icons/delete.svg";
 
-type BaseMapOptionsMenuProps = {
-  onDeleteBasemap: () => void;
-};
+//import { DeleteConfirmation } from "../delete-confirmation";
+import { useState } from "react";
 
 const MapSettingsItem = styled.div<{
   customColor?: string;
@@ -41,19 +40,41 @@ const SettingsMenuContainer = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
+type BaseMapOptionsMenuProps = {
+  onDeleteBasemap: () => void;
+  onCancel: () => void;
+};
+
 export const BaseMapOptionsMenu = ({
   onDeleteBasemap,
-}: BaseMapOptionsMenuProps) => (
-  <SettingsMenuContainer>
-    <MapSettingsItem
-      customColor={color_accent_primary}
-      opacity={0.8}
-      onClick={onDeleteBasemap}
-    >
-      <MapSettingsIcon>
-        <DeleteIcon fill={color_accent_primary} />
-      </MapSettingsIcon>
-      Delete map
-    </MapSettingsItem>
-  </SettingsMenuContainer>
-);
+  onCancel,
+}: BaseMapOptionsMenuProps) => {
+
+  return (
+        <SettingsMenuContainer>
+          <MapSettingsItem
+            customColor={color_accent_primary}
+            opacity={0.8}
+            onClick={onDeleteBasemap}
+            // onClickOutside={() => {
+            // }}
+          >
+            <MapSettingsIcon>
+              <DeleteIcon fill={color_accent_primary} />
+            </MapSettingsIcon>
+            Delete map
+          </MapSettingsItem>
+        </SettingsMenuContainer>
+  );
+};
+
+/*
+      {showConfirmation && (
+        <DeleteConfirmation
+          onKeepHandler={onCancel}
+          onDeleteHandler={onDeleteConfirmationHandler}
+        >
+          Delete map?
+        </DeleteConfirmation>
+      )}
+*/

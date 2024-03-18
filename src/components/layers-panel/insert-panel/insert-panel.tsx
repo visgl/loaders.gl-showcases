@@ -5,6 +5,7 @@ import {
   ActionButtonVariant,
   FetchingStatus,
   TilesetType,
+  BaseMapGroup,
 } from "../../../types";
 import {
   getCurrentLayoutProperty,
@@ -12,6 +13,8 @@ import {
 } from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
 import { InputText } from "./input-text/input-text";
+import { InputDropdown } from "./input-dropdown/input-dropdown";
+
 import { getTilesetType } from "../../../utils/url-utils";
 import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -25,7 +28,13 @@ const INVALID_URL_ERROR = "Invalid URL";
 
 type InsertLayerProps = {
   title: string;
-  onInsert: (object: { name: string; url: string; token?: string }) => void;
+  groups?: string[];
+  onInsert: (object: {
+    name: string;
+    url: string;
+    token?: string;
+    group?: BaseMapGroup;
+  }) => void;
   onCancel: () => void;
   children?: React.ReactNode;
 };
@@ -92,10 +101,12 @@ const SpinnerContainer = styled.div<VisibilityProps>`
 
 export const InsertPanel = ({
   title,
+  groups,
   onInsert,
   onCancel,
   children = null,
 }: InsertLayerProps) => {
+  const [group, setGroup] = useState<BaseMapGroup>(BaseMapGroup.Maplibre);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [token, setToken] = useState("");
@@ -126,7 +137,12 @@ export const InsertPanel = ({
     }
 
     if (isFormValid) {
-      onInsert({ name: name || layerNames[url]?.name, url, token });
+      onInsert({
+        name: name || layerNames[url]?.name,
+        url,
+        token,
+        group: groups ? group : undefined,
+      });
     }
   };
 
@@ -160,6 +176,10 @@ export const InsertPanel = ({
     const { name, value } = event.target;
 
     switch (name) {
+      case "BasemapProvider":
+        setGroup(value);
+        setNameError("");
+        break;
       case "Name":
         setName(value);
         setNameError("");
@@ -188,6 +208,14 @@ export const InsertPanel = ({
       </SpinnerContainer>
       <form className="insert-form" onSubmit={handleInsert}>
         <InputsWrapper>
+          {groups && (
+            <InputDropdown
+              name="BasemapProvider"
+              label="Basemap Provider"
+              value={groups}
+              onChange={handleInputChange}
+            ></InputDropdown>
+          )}
           <InputText
             name="Name"
             label="Name"

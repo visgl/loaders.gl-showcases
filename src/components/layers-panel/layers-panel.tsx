@@ -15,6 +15,7 @@ import {
   Bookmark,
   PageId,
   ComparisonSideMode,
+  BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
 import { InsertPanel } from "./insert-panel/insert-panel";
@@ -38,6 +39,7 @@ import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
+import CustomMap from "../../../public/icons/basemaps/custom-map.png";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -63,6 +65,7 @@ type CustomItem = {
   name: string;
   url: string;
   token?: string;
+  group?: BaseMapGroup;
 };
 
 const Tab = styled.div<TabProps>`
@@ -355,15 +358,18 @@ export const LayersPanel = ({
 
   const handleInsertMap = (map: CustomItem) => {
     const id = map.url.replace(/" "/g, "-");
-    const newMap: BaseMap = {
-      id,
-      mapUrl: map.url,
-      name: map.name,
-      token: map.token,
-      custom: true,
-    };
-
-    dispatch(addBaseMap(newMap));
+    if (map.group !== undefined) {
+      const newMap: BaseMap = {
+        id,
+        mapUrl: map.url,
+        name: map.name,
+        token: map.token,
+        icon: CustomMap,
+        custom: true,
+        group: map.group,
+      };
+      dispatch(addBaseMap(newMap));
+    }
     setShowInsertMapPanel(false);
   };
 
@@ -390,7 +396,7 @@ export const LayersPanel = ({
           <CloseButtonWrapper>
             <CloseButton id="layers-panel-close-button" onClick={onClose} />
           </CloseButtonWrapper>
-          <PanelHorizontalLine />
+          <PanelHorizontalLine bottom={16} />
           <PanelContent>
             {tab === Tabs.Layers && (
               <LayersControlPanel
@@ -506,6 +512,7 @@ export const LayersPanel = ({
         <PanelWrapper>
           <InsertPanel
             title={"Insert Base Map"}
+            groups={[BaseMapGroup.Maplibre]}
             onInsert={(map) => handleInsertMap(map)}
             onCancel={() => setShowInsertMapPanel(false)}
           />

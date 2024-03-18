@@ -189,12 +189,20 @@ export interface Sublayer extends BuildingSceneSublayer {
   sublayers: Sublayer[];
 }
 
+export enum BaseMapGroup {
+  Maplibre = "Maplibre",
+  ArcGIS = "ArcGIS",
+  Terrain = "Terrain",
+}
+
 export type BaseMap = {
   id: string;
   name: string;
   mapUrl: string;
   token?: string;
   custom?: boolean;
+  group: BaseMapGroup;
+  icon?: string;
 };
 
 export type NormalsDebugData = {

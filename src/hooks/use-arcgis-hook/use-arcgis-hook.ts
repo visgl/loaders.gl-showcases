@@ -1,5 +1,8 @@
 import { loadArcGISModules } from "@deck.gl/arcgis";
 import { useState, useEffect, MutableRefObject, useRef } from "react";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
+import { useAppSelector } from "../../redux/hooks";
+import { BaseMapGroup } from "../../types";
 
 export function useArcgis(
   mapContainer: MutableRefObject<null | HTMLDivElement>,
@@ -10,6 +13,15 @@ export function useArcgis(
   const [sceneView, setSceneView] = useState<unknown | null>(null);
   const { longitude, latitude, pitch, bearing, zoom } = viewState.main;
   const isLoadingRef = useRef<boolean>(false);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
+  const selectedBaseMapId = selectedBaseMap?.id;
+
+  useEffect(() => {
+    if (sceneView && selectedBaseMap?.group === BaseMapGroup.ArcGIS) {
+      // update Basemap Style
+      (sceneView as any).map.basemap = selectedBaseMapId;
+    }
+  }, [selectedBaseMapId]); // sceneView, 
 
   useEffect(() => {
     if (!sceneView) {
@@ -25,7 +37,16 @@ export function useArcgis(
       },
       { animate: true }
     );
-  }, [longitude, latitude, zoom, bearing, pitch, sceneView]);
+  }, [
+    longitude,
+    latitude,
+    zoom,
+    bearing,
+    pitch,
+    sceneView,
+    (sceneView as any)?.map.basemap,
+    selectedBaseMapId
+  ]);
 
   useEffect(() => {
     if (mapContainer.current == null) {
@@ -47,7 +68,7 @@ export function useArcgis(
         const sceneView = new SceneView({
           container: mapContainer.current,
           map: new ArcGISMap({
-            basemap: "dark-gray-vector",
+            basemap: selectedBaseMapId, // ""
           }),
           environment: {
             atmosphereEnabled: false,
