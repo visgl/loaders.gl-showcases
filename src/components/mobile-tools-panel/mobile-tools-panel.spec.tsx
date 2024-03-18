@@ -38,7 +38,7 @@ describe("Mobile Tools Panel", () => {
   it("Should render for debug", () => {
     const { container } = callRender(renderWithTheme, {
       showDebug: true,
-      showValidator: true
+      showValidator: true,
     });
     expect(container).toBeInTheDocument();
 

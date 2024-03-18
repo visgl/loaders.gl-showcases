@@ -1,16 +1,17 @@
-import { Sublayer } from "../types";
+import type { Sublayer } from "../types";
 
 export class ActiveSublayer implements Sublayer {
   id: number;
   name: string;
   alias?: string | undefined;
   discipline?:
-    | "Mechanical"
-    | "Architectural"
-    | "Piping"
-    | "Electrical"
-    | "Structural"
-    | undefined;
+  | "Mechanical"
+  | "Architectural"
+  | "Piping"
+  | "Electrical"
+  | "Structural"
+  | undefined;
+
   modelName?: string | undefined;
   layerType: "group" | "3DObject" | "Point";
   visibility?: boolean | undefined;
@@ -51,9 +52,9 @@ export class ActiveSublayer implements Sublayer {
   setVisibility = (visibility: boolean): ActiveSublayer[] => {
     this.visibility = visibility;
     if (!this.isLeaf()) {
-      return this.sublayers.reduce(
+      return this.sublayers.reduce<ActiveSublayer[]>(
         (res, sublayer) => res.concat(sublayer.setVisibility(visibility)),
-        [] as ActiveSublayer[]
+        []
       );
     } else {
       return [this];

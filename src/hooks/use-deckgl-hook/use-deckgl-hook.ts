@@ -13,7 +13,7 @@ import {
   fetchUVDebugTexture,
   selectUVDebugTexture,
 } from "../../redux/slices/uv-debug-texture-slice";
-import { IconListSetName } from "../../types";
+import { IconListSetName, type MinimapPosition } from "../../types";
 import {
   selectMiniMap,
   selectMiniMapViewPort,
@@ -31,7 +31,6 @@ import {
 } from "../../redux/slices/base-maps-slice";
 import { selectViewState } from "../../redux/slices/view-state-slice";
 import type { Tileset3D } from "@loaders.gl/tiles";
-import { MinimapPosition } from "../../types";
 
 const colorMap = new ColorMap();
 
@@ -113,7 +112,7 @@ export function useDeckGl(
   /** Load debug texture if necessary */
   useEffect(() => {
     if (loadDebugTextureImage && imageUrl) {
-      dispatch(fetchUVDebugTexture(imageUrl));
+      void dispatch(fetchUVDebugTexture(imageUrl));
     }
   }, [imageUrl]);
 
@@ -136,7 +135,7 @@ export function useDeckGl(
         viewportTraversersMap,
         loadTiles,
       });
-      tileset.selectTiles();
+      void tileset.selectTiles();
     });
   }, [createIndependentMinimapViewport]);
 
@@ -146,23 +145,33 @@ export function useDeckGl(
       tileset.setProps({
         loadTiles,
       });
-      tileset.selectTiles();
+      void tileset.selectTiles();
     });
   }, [loadTiles]);
 
+  const selectTexture = async (
+    tileset: Tileset3D,
+    uvDebugTexture: ImageBitmap | null
+  ): Promise<void> => {
+    if (showDebugTexture) {
+      await selectDebugTextureForTileset(tileset, uvDebugTexture);
+    } else {
+      selectOriginalTextureForTileset();
+    }
+  };
+
   useEffect(() => {
-    let c = 0;
-    loadedTilesets.forEach(async (tileset) => {
-      if (showDebugTexture) {
-        await selectDebugTextureForTileset(tileset, uvDebugTexture);
-      } else {
-        selectOriginalTextureForTileset();
-      }
-      c++;
-      if (c === loadedTilesets.length) {
+    const promises: Array<Promise<void>> = [];
+    for (const tileset of loadedTilesets) {
+      promises.push(selectTexture(tileset, uvDebugTexture));
+    }
+    Promise.allSettled(promises)
+      .then(() => {
         setForceRefresh(!forceRefresh);
-      }
-    });
+      })
+      .catch(() => {
+        console.error("Texture selection operation has failed");
+      });
   }, [showDebugTexture, uvDebugTexture]);
 
   const viewState = useMemo(() => {

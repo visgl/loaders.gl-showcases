@@ -1,4 +1,4 @@
-import { ActiveButton, Layout } from "../../types";
+import { ActiveButton, type Layout } from "../../types";
 
 import styled, { useTheme } from "styled-components";
 import {
@@ -13,9 +13,9 @@ import ValidatorIcon from "../../../public/icons/validator.svg";
 import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-type ContainerProps = {
+interface ContainerProps {
   id: string;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   width: 100%;
@@ -36,10 +36,10 @@ const ContentWrapper = styled.div`
   z-index: 1;
 `;
 
-type ButtonProps = {
+interface ButtonProps {
   active: boolean;
   layout: Layout;
-};
+}
 
 const Button = styled.button<ButtonProps>`
   display: flex;
@@ -73,7 +73,7 @@ const Text = styled.p`
   color: ${({ theme }) => theme.colors.fontColor}
 `;
 
-type MainToolsPanelProps = {
+interface MainToolsPanelProps {
   id: string;
   activeButton: ActiveButton;
   showDebug?: boolean;
@@ -82,7 +82,7 @@ type MainToolsPanelProps = {
   showValidator?: boolean;
   onChange?: (active: ActiveButton) => void;
   onShowBookmarksChange?: () => void;
-};
+}
 
 const IconWrapper = styled.div`
   display: flex;
@@ -98,7 +98,7 @@ export const MobileToolsPanel = ({
   showBookmarks = false,
   bookmarksActive = false,
   onChange = () => ({}),
-  onShowBookmarksChange
+  onShowBookmarksChange,
 }: MainToolsPanelProps) => {
   const layout = useAppLayout();
   const theme = useTheme();
@@ -107,10 +107,10 @@ export const MobileToolsPanel = ({
     <Container id={id}>
       <ContentWrapper>
         <Button
-          id={'layers-options-tab'}
+          id={"layers-options-tab"}
           layout={layout}
           active={activeButton === ActiveButton.options}
-          onClick={() => onChange(ActiveButton.options)}
+          onClick={() => { onChange(ActiveButton.options); }}
         >
           <IconWrapper>
             <MapIcon fill={theme.colors.fontColor} />
@@ -118,10 +118,10 @@ export const MobileToolsPanel = ({
           <Text>Map</Text>
         </Button>
         <Button
-          id={'mobile-memory-usage-tab'}
+          id={"mobile-memory-usage-tab"}
           layout={layout}
           active={activeButton === ActiveButton.memory}
-          onClick={() => onChange(ActiveButton.memory)}
+          onClick={() => { onChange(ActiveButton.memory); }}
         >
           <IconWrapper>
             <MemoryIcon fill={theme.colors.fontColor} />
@@ -130,10 +130,10 @@ export const MobileToolsPanel = ({
         </Button>
         {showValidator && (
           <Button
-            id={'mobile-validator-tab'}
+            id={"mobile-validator-tab"}
             layout={layout}
             active={activeButton === ActiveButton.validator}
-            onClick={() => onChange(ActiveButton.validator)}
+            onClick={() => { onChange(ActiveButton.validator); }}
           >
             <IconWrapper>
               <ValidatorIcon fill={theme.colors.fontColor} />
@@ -143,10 +143,10 @@ export const MobileToolsPanel = ({
         )}
         {showDebug && (
           <Button
-            id={'mobile-debug-panel-tab'}
+            id={"mobile-debug-panel-tab"}
             layout={layout}
             active={activeButton === ActiveButton.debug}
-            onClick={() => onChange(ActiveButton.debug)}
+            onClick={() => { onChange(ActiveButton.debug); }}
           >
             <IconWrapper>
               <DebugIcon fill={theme.colors.fontColor} />
@@ -156,7 +156,7 @@ export const MobileToolsPanel = ({
         )}
         {showBookmarks && (
           <Button
-            id={'mobile-bookmarks-tab'}
+            id={"mobile-bookmarks-tab"}
             layout={layout}
             active={bookmarksActive}
             onClick={onShowBookmarksChange}

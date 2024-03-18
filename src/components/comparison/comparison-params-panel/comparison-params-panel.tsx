@@ -18,14 +18,14 @@ const ItemContainer = styled.div`
   margin-bottom: 8px;
 `;
 
-type ComparisonParamsProps = {
+interface ComparisonParamsProps {
   id: string;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
   onGeometryChange: () => void;
   onTexturesChange: () => void;
   onClose: () => void;
-};
+}
 
 export const ComparisonParamsPanel = ({
   id,

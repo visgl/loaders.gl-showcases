@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useMemo } from "react";
+import React, { type MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import {
   color_brand_tertiary,
@@ -7,17 +7,17 @@ import {
 } from "../../constants/colors";
 import { ActionButtonVariant } from "../../types";
 
-type ActionButtonProps = {
+interface ActionButtonProps {
   variant?: ActionButtonVariant;
   onClick?: (event: MouseEventHandler<HTMLButtonElement>) => void;
   children?: React.ReactNode;
   type?: string;
-};
+}
 
-type ButtonProps = {
+interface ButtonProps {
   variant: ActionButtonVariant;
   onClick: (event: MouseEventHandler<HTMLButtonElement>) => void;
-};
+}
 
 const Button = styled.button<ButtonProps>`
   padding: 13px 30px;

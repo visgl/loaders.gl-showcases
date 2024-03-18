@@ -95,7 +95,7 @@ describe("getNormalSourcePosition", () => {
     const trianglesPercentage = 100;
 
     const result = getNormalSourcePosition(index, data, trianglesPercentage);
-    expect(result).toStrictEqual({});
+    expect(result).toStrictEqual([0, 0, 0]);
   });
 
   test("Should return normal source position", () => {
@@ -110,8 +110,7 @@ describe("getNormalSourcePosition", () => {
     const trianglesPercentage = 100;
 
     const result = getNormalSourcePosition(index, data, trianglesPercentage);
-    expect(result.set).toBeDefined();
-    expect(result.transform).toBeDefined();
+    expect(result).toStrictEqual([1, 2, 3]);
   });
 });
 
@@ -134,7 +133,7 @@ describe("getNormalTargetPosition", () => {
       trianglesPercentage,
       normalsLength
     );
-    expect(result).toStrictEqual({});
+    expect(result).toStrictEqual([0, 0, 0]);
   });
 
   test("Should return normal target position", () => {

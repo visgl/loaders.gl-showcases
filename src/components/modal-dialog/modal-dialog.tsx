@@ -71,9 +71,9 @@ const Title = styled.div`
   line-height: 45px;
 `;
 
-type ButtonsContainerProps = {
+interface ButtonsContainerProps {
   justify: string;
-};
+}
 
 const ButtonsContainer = styled.div<ButtonsContainerProps>`
   display: flex;
@@ -92,14 +92,14 @@ const AfterButtonsPlaceholder = styled.div`
   margin: 0 32px 32px 32px;
 `;
 
-type LogoutPanelProps = {
+interface LogoutPanelProps {
   title: string;
   children: JSX.Element | JSX.Element[];
   okButtonText?: string;
   cancelButtonText?: string;
   onCancel: () => void;
   onConfirm: () => void;
-};
+}
 
 const CloseCrossButton = styled(CloseIcon)`
   &:hover {
@@ -129,7 +129,7 @@ export const ModalDialog = ({
             <Title>{title}</Title>
             {children}
           </ContentContainer>
-          {(cancelButtonText || okButtonText) && (
+          {(cancelButtonText ?? okButtonText) && (
             <ButtonsContainer justify={!cancelButtonText ? "end" : "center"}>
               {cancelButtonText && (
                 <ActionButton

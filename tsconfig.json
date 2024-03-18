@@ -1,19 +1,4 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "outDir": "./build/",
-    "module": "esnext",
-    "target": "es6",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
-    // Docs - https://www.typescriptlang.org/tsconfig#noImplicitAny
-    "noImplicitAny": false
-  },
-  "exclude": ["src/**/*.spec.ts"],
-  "include": ["./jest-setup.ts", "src", "index.d.ts", "styled.d.ts"]
+  "extends": "./tsconfig.eslint.json",
+  "exclude": ["src/**/*.spec.ts"]
 }

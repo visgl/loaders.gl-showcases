@@ -8,6 +8,26 @@ import {
   renderLayers,
 } from "./render-layers";
 
+import { COORDINATE_SYSTEM, WebMercatorViewport } from "@deck.gl/core/typed";
+import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
+import { I3SLoader } from "@loaders.gl/i3s";
+import { Tile3DLayer } from "@deck.gl/geo-layers";
+import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
+import { getFrustumBounds } from "../debug/frustum-utils";
+import ColorMap from "../../utils/debug/colors-map";
+import { buildMinimapData } from "../debug/build-minimap-data";
+import {
+  getNormalSourcePosition,
+  getNormalTargetPosition,
+} from "../debug/normals-utils";
+import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
+import {
+  BoundingVolumeColoredBy,
+  BoundingVolumeType,
+  TileColoredBy,
+  TilesetType,
+} from "../../types";
+
 jest.mock("@deck.gl/layers", () => {
   return {
     LineLayer: jest.fn(),
@@ -29,26 +49,6 @@ jest.mock("../debug/build-minimap-data");
 jest.mock("../debug/normals-utils");
 jest.mock("../../layers");
 
-import { COORDINATE_SYSTEM, WebMercatorViewport } from "@deck.gl/core/typed";
-import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
-import { I3SLoader } from "@loaders.gl/i3s";
-import { Tile3DLayer } from "@deck.gl/geo-layers";
-import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
-import { getFrustumBounds } from "../debug/frustum-utils";
-import ColorMap from "../../utils/debug/colors-map";
-import { buildMinimapData } from "../debug/build-minimap-data";
-import {
-  getNormalSourcePosition,
-  getNormalTargetPosition,
-} from "../debug/normals-utils";
-import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
-import {
-  BoundingVolumeColoredBy,
-  BoundingVolumeType,
-  TileColoredBy,
-  TilesetType,
-} from "../../types";
-
 const tilesetUrl =
   "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0";
 const cesiumUrl = "https://assets.cesium.com/687891/tileset.json";
@@ -58,6 +58,7 @@ const getBoundingVolumeColorMock = jest
   .mockImplementation(() => [100, 150, 200]);
 
 const callRenderLayers = (props = {}) => {
+  // @ts-expect-error some arguments are set in props
   const result = renderLayers({
     useDracoGeometry: true,
     useCompressedTextures: true,
@@ -69,7 +70,7 @@ const callRenderLayers = (props = {}) => {
     wireframe: true,
     tileColorMode: TileColoredBy.original,
     showMinimap: false,
-    viewState: "main",
+    viewState: { main: {} },
     boundingVolume: false,
     boundingVolumeType: BoundingVolumeType.mbs,
     normalsTrianglesPercentage: 5,
@@ -83,19 +84,11 @@ const callRenderLayers = (props = {}) => {
 
 describe("Render minimap", () => {
   it("Should render minimap", () => {
-    const result1 = renderFrustum(
-      false,
-      { main: {}, minimap: {} },
-      { main: {}, minimap: {} }
-    );
+    const result1 = renderFrustum(false, { main: {}, minimap: {} });
     expect(result1).toEqual(false);
     expect(getFrustumBounds).not.toHaveBeenCalled();
     expect(WebMercatorViewport).not.toHaveBeenCalled();
-    const result2 = renderFrustum(
-      true,
-      { main: {}, minimap: {} },
-      { main: {}, minimap: {} }
-    );
+    const result2 = renderFrustum(true, { main: {}, minimap: {} });
     expect(getFrustumBounds).toHaveBeenCalledTimes(1);
     expect(WebMercatorViewport).toHaveBeenCalledTimes(1);
     expect(result2).not.toEqual(false);
@@ -106,11 +99,7 @@ describe("Render minimap", () => {
   });
 
   it("Should call frustum callbacks", () => {
-    const result = renderFrustum(
-      true,
-      { main: {}, minimap: {} },
-      { main: {}, minimap: {} }
-    );
+    const result = renderFrustum(true, { main: {}, minimap: {} });
     expect(getFrustumBounds).toHaveBeenCalledTimes(1);
     expect(WebMercatorViewport).toHaveBeenCalledTimes(1);
     expect(result).not.toEqual(false);
@@ -194,6 +183,7 @@ describe("Render normals", () => {
       },
       length: 4,
     };
+    // @ts-expect-error test object is not a full match to the type expected
     renderNormals(5, 25, normalsDebugData);
     expect(LineLayer).toBeCalled();
     const {
@@ -220,6 +210,7 @@ describe("Render normals", () => {
       },
       length: 4,
     };
+    // @ts-expect-error test object is not a full match to the type expected
     renderNormals(5, 25, normalsDebugData);
     expect(LineLayer).toBeCalled();
 
@@ -294,7 +285,7 @@ describe("Render Tile3DLayer", () => {
       loadOptions,
       autoHighlight,
       highlightedObjectIndex,
-    } = CustomTile3DLayer.mock.lastCall[0];
+    } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--0"
     );
@@ -358,7 +349,7 @@ describe("Render Tile3DLayer", () => {
       ],
       loadNumber: 1,
     });
-    const { id } = CustomTile3DLayer.mock.lastCall[0];
+    const { id } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--1"
     );
@@ -373,7 +364,8 @@ describe("Render Tile3DLayer", () => {
         },
       ],
     });
-    const { pickable, autoHighlight } = CustomTile3DLayer.mock.lastCall[0];
+    const { pickable, autoHighlight } = (CustomTile3DLayer as any).mock
+      .lastCall[0];
     expect(pickable).toBe(true);
     expect(autoHighlight).toBe(true);
   });
@@ -389,7 +381,8 @@ describe("Render Tile3DLayer", () => {
       autoHighlight: false,
       selectedTilesetBasePath: "http://another.tileset.local",
     });
-    const { highlightedObjectIndex } = CustomTile3DLayer.mock.lastCall[0];
+    const { highlightedObjectIndex } = (CustomTile3DLayer as any).mock
+      .lastCall[0];
     expect(highlightedObjectIndex).toBe(-1);
   });
 
@@ -408,7 +401,7 @@ describe("Render Tile3DLayer", () => {
       _subLayerProps: {
         mesh: { wireframe },
       },
-    } = CustomTile3DLayer.mock.lastCall[0];
+    } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(wireframe).toBe(false);
 
     callRenderLayers({
@@ -425,7 +418,7 @@ describe("Render Tile3DLayer", () => {
       _subLayerProps: {
         mesh: { wireframe: wireframe2 },
       },
-    } = CustomTile3DLayer.mock.lastCall[0];
+    } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(wireframe2).toBe(true);
   });
 
@@ -438,7 +431,7 @@ describe("Render Tile3DLayer", () => {
         },
       ],
     });
-    const { loadOptions } = CustomTile3DLayer.mock.lastCall[0];
+    const { loadOptions } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(loadOptions).toEqual({
       i3s: {
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
@@ -460,7 +453,7 @@ describe("Render Tile3DLayer", () => {
       pickable: false,
     });
     expect(CustomTile3DLayer).toHaveBeenCalled();
-    const { pickable } = CustomTile3DLayer.mock.lastCall[0];
+    const { pickable } = (CustomTile3DLayer as any).mock.lastCall[0];
     expect(pickable).toBe(false);
   });
 
@@ -482,7 +475,8 @@ describe("Render Tile3DLayer", () => {
       },
     });
     expect(CustomTile3DLayer).toHaveBeenCalled();
-    const { id, colorsByAttribute } = CustomTile3DLayer.mock.lastCall[0];
+    const { id, colorsByAttribute } = (CustomTile3DLayer as any).mock
+      .lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--0"
     );

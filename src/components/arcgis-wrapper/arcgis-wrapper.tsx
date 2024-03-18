@@ -1,17 +1,17 @@
 import { useArcgis } from "../../hooks/use-arcgis-hook/use-arcgis-hook";
-import { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import { SceneLayer3D } from "@loaders.gl/i3s";
+import { type Tile3D, type Tileset3D } from "@loaders.gl/tiles";
+import { type SceneLayer3D } from "@loaders.gl/i3s";
 import {
   FlyToInterpolator,
-  PickingInfo,
-  WebMercatorViewport,
+  type PickingInfo,
+  type WebMercatorViewport,
 } from "@deck.gl/core";
 import { useRef } from "react";
 import {
-  NormalsDebugData,
-  TilesetType,
-  MinimapPosition,
-  FiltersByAttribute,
+  type NormalsDebugData,
+  type TilesetType,
+  type MinimapPosition,
+  type FiltersByAttribute,
 } from "../../types";
 import {
   selectDebugTextureForTile,
@@ -38,20 +38,20 @@ export const StyledMapContainer = styled.div`
 
 const TRANSITION_DURAITON = 4000;
 
-type ArcGisMapProps = {
+interface ArcGisMapProps {
   /** DeckGL component id */
   id?: string;
   /** User selected tiles colors */
-  coloredTilesMap?: { [key: string]: string };
+  coloredTilesMap?: Record<string, string>;
   /** Allows layers picking to handle mouse events */
   pickable?: boolean;
   /** Layers loading data  */
-  layers3d: {
+  layers3d: Array<{
     id?: number;
     url?: string;
     token?: string | null;
     type: TilesetType;
-  }[];
+  }>;
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -107,7 +107,7 @@ type ArcGisMapProps = {
   onTileUnload?: (tile: Tile3D) => void;
   /** Tile3DLayer callback. Triggers post traversal completion */
   onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
-};
+}
 
 export const ArcgisWrapper = ({
   coloredTilesMap,
@@ -181,7 +181,7 @@ export const ArcgisWrapper = ({
     } = viewState;
 
     const viewportCenterTerrainElevation =
-      getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
+      getElevationByCentralTile(longitude, latitude, terrainTiles) ?? 0;
     let cameraTerrainElevation: number | null = null;
 
     if (currentViewport) {
@@ -193,7 +193,7 @@ export const ArcgisWrapper = ({
           cameraPosition[0],
           cameraPosition[1],
           terrainTiles
-        ) || 0;
+        ) ?? 0;
     }
     let elevation =
       cameraTerrainElevation === null ||
@@ -238,13 +238,13 @@ export const ArcgisWrapper = ({
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
     if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
+      const [longitude, latitude] = cartographicCenter ?? [];
       const viewport = new VIEWS[0].ViewportType(globalViewState.main);
       const {
         main: { pitch, bearing },
       } = globalViewState;
 
-      const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
+      const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent ?? {};
       const [pLongitude, pLatitude] = getLonLatWithElevationOffset(
         zmin,
         pitch,
@@ -276,7 +276,7 @@ export const ArcgisWrapper = ({
     }
 
     tileset.setProps({
-      //todo: viewportTraversersMap,
+      // todo: viewportTraversersMap,
       loadTiles,
     });
     onTilesetLoad(tileset);
@@ -288,7 +288,7 @@ export const ArcgisWrapper = ({
       delete tile.content.featureIds;
     }
     if (showDebugTextureRef.current) {
-      selectDebugTextureForTile(tile, uvDebugTextureRef.current);
+      void selectDebugTextureForTile(tile, uvDebugTextureRef.current);
     } else {
       selectOriginalTextureForTile(tile);
     }

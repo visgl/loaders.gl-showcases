@@ -1,4 +1,4 @@
-import { BaseMap } from "../types";
+import { type BaseMap } from "../types";
 
 export const BASE_MAPS: BaseMap[] = [
   {

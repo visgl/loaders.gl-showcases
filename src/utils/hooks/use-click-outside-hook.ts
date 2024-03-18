@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 const MOUSE_DOWN_EVENT = "mousedown";
 const TOUCH_START_EVENT = "touchstart";
@@ -9,7 +9,7 @@ const TOUCH_START_EVENT = "touchstart";
  * @param handler
  */
 export const useClickOutside = (
-  nodeElements: (Element | null | undefined)[],
+  nodeElements: Array<Element | null | undefined>,
   handler: (event: React.ChangeEvent) => void
 ): void => {
   useEffect(() => {

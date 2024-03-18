@@ -1,6 +1,6 @@
-import { Tileset3D } from "@loaders.gl/tiles";
+import { type Tileset3D } from "@loaders.gl/tiles";
 import { EXAMPLES, INITIAL_EXAMPLE } from "../constants/i3s-examples";
-import { LayerExample } from "../types";
+import { type LayerExample } from "../types";
 import { parseTilesetFromUrl } from "./url-utils";
 
 export const handleSelectAllLeafsInGroup = (
@@ -52,7 +52,7 @@ export const initActiveLayer = (): LayerExample => {
 
   const namedExample = EXAMPLES.find(({ id }) => tilesetParam === id);
 
-  return namedExample || INITIAL_EXAMPLE;
+  return namedExample ?? INITIAL_EXAMPLE;
 };
 
 export const selectNestedLayers = (
@@ -97,7 +97,7 @@ export const findExampleAndUpdateWithViewState = (
     // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
     if (tileset.url.includes(example.url) && !example.viewState) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
+      const [longitude, latitude] = cartographicCenter ?? [];
       example.viewState = { zoom, latitude, longitude };
       break;
     }

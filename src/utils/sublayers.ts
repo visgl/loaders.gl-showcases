@@ -1,4 +1,4 @@
-import { Sublayer } from "../types";
+import type { Sublayer } from "../types";
 
 /**
  * - deep copy the tree for React

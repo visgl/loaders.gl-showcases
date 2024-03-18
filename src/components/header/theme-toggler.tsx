@@ -1,4 +1,4 @@
-import styled, { DefaultTheme } from "styled-components";
+import styled, { type DefaultTheme } from "styled-components";
 import { color_brand_quaternary } from "../../constants/colors";
 
 import DarkModeIcon from "../../../public/icons/dark-mode.svg";
@@ -38,7 +38,7 @@ const Button = styled.div<{ theme: DefaultTheme; $active: boolean }>`
   cursor: pointer;
 `;
 
-type ActiveProps = { $active: boolean };
+interface ActiveProps { $active: boolean }
 const IconWrapper = styled.div.attrs<ActiveProps>((props) => ({
   className: !props.$active ? "inactive" : "",
 }))<ActiveProps>`
@@ -60,16 +60,16 @@ export const ThemeToggler = ({
 }) => {
   const toggleTheme = () => {
     if (theme === Theme.Dark) {
-      return setTheme(Theme.Light);
+      setTheme(Theme.Light); return;
     }
-    return setTheme(Theme.Dark);
+    setTheme(Theme.Dark);
   };
 
   return (
     <ThemeToggleWrapper
       id="toggle-button-default"
       data-testid="toggle-theme-button"
-      onClick={() => toggleTheme()}
+      onClick={() => { toggleTheme(); }}
     >
       <Button $active={theme === Theme.Dark} id="toggle-dark-default">
         <IconWrapper $active={theme === Theme.Dark}>

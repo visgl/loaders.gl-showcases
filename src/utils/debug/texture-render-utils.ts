@@ -246,7 +246,7 @@ void main() {
 }
 `;
 
-export const drawBitmap =  (
+export const drawBitmap = (
   bitmap: ImageBitmap,
   size: number
 ): { url: string; width: number; height: number } => {
@@ -274,8 +274,7 @@ export const drawBitmap =  (
     width: areaWidth,
     height: areaHeight,
   };
-}
-
+};
 
 /**
  * Draws and rescales the image provided

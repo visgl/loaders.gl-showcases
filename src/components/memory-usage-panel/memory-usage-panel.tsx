@@ -1,4 +1,4 @@
-import { Stats, Stat } from "@probe.gl/stats";
+import { type Stats, type Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
 import {
   PanelContainer,
@@ -13,8 +13,8 @@ import { ExpandIcon } from "../expand-icon/expand-icon";
 import {
   ExpandState,
   CollapseDirection,
-  ContentFormats,
-  LayerExample,
+  type ContentFormats,
+  type LayerExample,
 } from "../../types";
 import LinkIcon from "../../../public/icons/link.svg";
 import { useExpand } from "../../utils/hooks/use-expand";
@@ -62,7 +62,7 @@ const StatTimeContainer = styled.div`
   margin-top: 14px;
 `;
 
-type MemoryUsageProps = {
+interface MemoryUsageProps {
   id: string;
   memoryStats: Stats | null;
   activeLayers: LayerExample[];
@@ -71,7 +71,7 @@ type MemoryUsageProps = {
   loadingTime?: number;
   updateNumber: number;
   onClose: () => void;
-};
+}
 
 export const MemoryUsagePanel = ({
   id,
@@ -144,7 +144,7 @@ export const MemoryUsagePanel = ({
                   const activeLayer = activeLayers.find(
                     (layer) => layer.url === tilesetUrl
                   );
-                  const activeLayerName = activeLayer?.name || tilesetUrl;
+                  const activeLayerName = activeLayer?.name ?? tilesetUrl;
 
                   return (
                     activeLayerName && (
@@ -154,7 +154,7 @@ export const MemoryUsagePanel = ({
                           fill={theme.colors.fontColor}
                           style={{ cursor: "pointer" }}
                           onClick={() => {
-                            navigator.clipboard.writeText(tilesetUrl);
+                            void navigator.clipboard.writeText(tilesetUrl);
                           }}
                         />
                       </StatContainer>

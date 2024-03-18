@@ -1,6 +1,6 @@
 import { setupStore } from "../store";
 import reducer, {
-  BaseMapsState,
+  type BaseMapsState,
   selectBaseMaps,
   selectSelectedBaseMapId,
   setInitialBaseMaps,
@@ -18,7 +18,7 @@ jest.mock("@loaders.gl/i3s", () => {
 
 describe("slice: base-maps", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       baseMap: BASE_MAPS,
       selectedBaseMap: "Dark",
     });

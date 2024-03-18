@@ -1,30 +1,31 @@
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import {
-  LayerExample,
-  NormalsDebugData,
-  TileWarning,
-  Sublayer,
+  type LayerExample,
+  type NormalsDebugData,
+  type TileWarning,
+  type Sublayer,
   TilesetType,
   ActiveButton,
-  LayerViewState,
+  type LayerViewState,
   ListItemType,
   TileColoredBy,
   Layout,
-  Bookmark,
+  type Bookmark,
   DragMode,
-  MinimapPosition,
-  TileSelectedColor,
+  type MinimapPosition,
+  type TileSelectedColor,
   PageId,
-  TilesetMetadata,
+  type TilesetMetadata,
 } from "../../types";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// eslint-disable-next-line react/no-deprecated
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import { PickingInfo, InteractionStateChange, ViewState } from "@deck.gl/core";
+import { type PickingInfo, type InteractionStateChange, type ViewState } from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
-import { Stats } from "@probe.gl/stats";
+import { type Stats } from "@probe.gl/stats";
 
 import { EXAMPLES } from "../../constants/i3s-examples";
 import { SemanticValidator, DebugPanel } from "../../components";
@@ -69,7 +70,7 @@ import { downloadJsonFile } from "../../utils/files-utils";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
-import { ColorResult } from "react-color";
+import { type ColorResult } from "react-color";
 import { TileColorSection } from "../../components/tile-details-panel/tile-color-section";
 import { generateBinaryNormalsDebugData } from "../../utils/debug/normals-utils";
 import {
@@ -81,21 +82,19 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
+import { setColorsByAttrubute, setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
   resetDebugOptions,
   setDebugOptions,
   selectDebugOptions,
   selectPickable,
 } from "../../redux/slices/debug-options-slice";
-import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
-import { setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
+import { setInitialBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
 import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 
@@ -180,7 +179,7 @@ export const DebugApp = () => {
         id: sublayer.id,
         url: sublayer.url,
         token: sublayer.token,
-        type: sublayer.type || TilesetType.I3S,
+        type: sublayer.type ?? TilesetType.I3S,
       }));
   }, [flattenedSublayers]);
 
@@ -232,7 +231,7 @@ export const DebugApp = () => {
       });
     }
 
-    dispatch(
+    void dispatch(
       getFlattenedSublayers({
         tilesetsData,
         buildingExplorerOpened,
@@ -362,11 +361,12 @@ export const DebugApp = () => {
 
   const handleResetColor = (tileId: string) => {
     const updatedColoredMap = { ...coloredTilesMap };
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete updatedColoredMap[tileId];
     setColoredTilesMap(updatedColoredMap);
   };
 
-  const handleClearWarnings = () => setWarnings([]);
+  const handleClearWarnings = () => { setWarnings([]); };
 
   const onShowNormals = (tile) => {
     if (normalsDebugData === null) {
@@ -425,8 +425,8 @@ export const DebugApp = () => {
         onChangeTrianglesPercentage={onChangeTrianglesPercentage}
         onChangeNormalsLength={onChangeNormalsLength}
         handleClosePanel={handleCloseTilePanel}
-        deactiveDebugPanel={() => setActiveButton(ActiveButton.none)}
-        activeDebugPanel={() => setActiveButton(ActiveButton.debug)}
+        deactiveDebugPanel={() => { setActiveButton(ActiveButton.none); }}
+        activeDebugPanel={() => { setActiveButton(ActiveButton.debug); }}
       >
         {isShowColorPicker && (
           <TileColorSection
@@ -534,7 +534,7 @@ export const DebugApp = () => {
       if (index >= 0 && flattenedSublayers[index]) {
         dispatch(
           updateLayerVisibility({
-            index: index,
+            index,
             visibility: sublayer.visibility,
           })
         );
@@ -568,30 +568,34 @@ export const DebugApp = () => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) => [
-        ...prev,
-        {
-          id: newBookmarkId,
-          pageId: PageId.debug,
-          imageUrl,
-          viewState: globalViewState,
-          debugOptions,
-          layersLeftSide: activeLayers,
-          layersRightSide: [],
-          activeLayersIdsLeftSide: [...selectedLayerIds],
-          activeLayersIdsRightSide: [],
-        },
-      ]);
-      setSelectedBookmarkId(newBookmarkId);
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) => [
+          ...prev,
+          {
+            id: newBookmarkId,
+            pageId: PageId.debug,
+            imageUrl,
+            viewState: globalViewState,
+            debugOptions,
+            layersLeftSide: activeLayers,
+            layersRightSide: [],
+            activeLayersIdsLeftSide: [...selectedLayerIds],
+            activeLayersIdsRightSide: [],
+          },
+        ]);
+        setSelectedBookmarkId(newBookmarkId);
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onSelectBookmarkHandler = (
     bookmarkId: string,
     newBookmarks?: Bookmark[]
   ) => {
-    const bookmark = (newBookmarks || bookmarks).find(
+    const bookmark = (newBookmarks ?? bookmarks).find(
       ({ id }) => id === bookmarkId
     );
     if (!bookmark) {
@@ -622,24 +626,28 @@ export const DebugApp = () => {
   }, []);
 
   const onEditBookmarkHandler = (bookmarkId: string) => {
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) =>
-        prev.map((bookmark) =>
-          bookmark.id === bookmarkId
-            ? {
-                ...bookmark,
-                imageUrl,
-                viewState: globalViewState,
-                debugOptions,
-                layersLeftSide: activeLayers,
-                layersRightSide: [],
-                activeLayersIdsLeftSide: selectedLayerIds,
-                activeLayersIdsRightSide: [],
-              }
-            : bookmark
-        )
-      );
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) =>
+          prev.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? {
+                  ...bookmark,
+                  imageUrl,
+                  viewState: globalViewState,
+                  debugOptions,
+                  layersLeftSide: activeLayers,
+                  layersRightSide: [],
+                  activeLayersIdsLeftSide: selectedLayerIds,
+                  activeLayersIdsRightSide: [],
+                }
+              : bookmark
+          )
+        );
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onCloseBookmarkPanel = useCallback(() => {
@@ -790,14 +798,13 @@ export const DebugApp = () => {
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
-            onLayerDelete={(id) => onLayerDeleteHandler(id)}
-            onPointToLayer={(viewState) => pointToTileset(viewState)}
+            onLayerDelete={(id) => { onLayerDeleteHandler(id); }}
+            onPointToLayer={(viewState) => { pointToTileset(viewState); }}
             type={ListItemType.Radio}
             sublayers={sublayers}
             onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
-            onBuildingExplorerOpened={(opened) =>
-              setBuildingExplorerOpened(opened)
+            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.options); }}
+            onBuildingExplorerOpened={(opened) => { setBuildingExplorerOpened(opened); }
             }
           />
         </RightSidePanelWrapper>
@@ -805,7 +812,7 @@ export const DebugApp = () => {
       {activeButton === ActiveButton.debug && (
         <RightSidePanelWrapper $layout={layout}>
           <DebugPanel
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.debug)}
+            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.debug); }}
           />
         </RightSidePanelWrapper>
       )}
@@ -814,8 +821,7 @@ export const DebugApp = () => {
           <SemanticValidator
             warnings={warnings}
             clearWarnings={handleClearWarnings}
-            onClose={() =>
-              onChangeMainToolsPanelHandler(ActiveButton.validator)
+            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.validator); }
             }
           />
         </RightSidePanelWrapper>
@@ -829,7 +835,7 @@ export const DebugApp = () => {
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
+            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.memory); }}
           />
         </RightSidePanelWrapper>
       )}
@@ -844,7 +850,7 @@ export const DebugApp = () => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
-          onClearBookmarks={() => setBookmarks([])}
+          onClearBookmarks={() => { setBookmarks([]); }}
           onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
@@ -861,7 +867,7 @@ export const DebugApp = () => {
         <CenteredContainer>
           <WarningPanel
             title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
-            onConfirm={() => setWrongBookmarkPageId(null)}
+            onConfirm={() => { setWrongBookmarkPageId(null); }}
           />
         </CenteredContainer>
       )}

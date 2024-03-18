@@ -14,14 +14,14 @@ import {
 import { Layout } from "../../utils/enums";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-type BookmarkOptionsMenuProps = {
+interface BookmarkOptionsMenuProps {
   showDeleteBookmarksOption: boolean;
   onEditBookmarks: () => void;
   onClearBookmarks: () => void;
   onDownloadBookmarks: () => void;
   onUploadBookmarks: () => void;
   onCollapsed: () => void;
-};
+}
 
 export const BookmarkOptionsMenu = ({
   showDeleteBookmarksOption,

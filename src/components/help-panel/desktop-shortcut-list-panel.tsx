@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { HelpShortcutItem } from "../../types";
+import { type HelpShortcutItem } from "../../types";
 import { DesktopShortcutItem } from "./desktop-shortcut-item";
 
-type DesktopShortcutsListPanelProps = {
+interface DesktopShortcutsListPanelProps {
   activeShortcutId: string;
   shortcuts: HelpShortcutItem[];
   onHover: (id: string) => void;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -30,7 +30,7 @@ export const DesktopShortcutsListPanel = ({
         <DesktopShortcutItem
           key={shortcut.id}
           shortcut={shortcut}
-          active={shortcut.id == activeShortcutId}
+          active={shortcut.id === activeShortcutId}
           onHover={onHover}
         />
       ))}

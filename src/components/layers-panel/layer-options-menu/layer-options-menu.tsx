@@ -2,26 +2,26 @@ import { useTheme } from "styled-components";
 import LocationIcon from "../../../../public/icons/location.svg";
 import DeleteIcon from "../../../../public/icons/delete.svg";
 import SettingsIcon from "../../../../public/icons/settings.svg";
-import InfoIcon from '../../../../public/icons/info.svg'
+import InfoIcon from "../../../../public/icons/info.svg";
 import { color_accent_primary } from "../../../constants/colors";
-import { ReactEventHandler } from "react";
-import { LayerExample, LayerViewState } from "../../../types";
+import { type ReactEventHandler } from "react";
+import { type LayerExample, type LayerViewState } from "../../../types";
 import {
   MenuContainer,
   MenuItem,
   MenuSettingsIcon,
   MenuDevider,
-  MenuLink
+  MenuLink,
 } from "../../common";
 
-type LayerOptionsMenuProps = {
+interface LayerOptionsMenuProps {
   layer: LayerExample;
   selected: boolean;
   hasSettings: boolean;
   onPointToLayerClick: (viewState?: LayerViewState) => void;
   onLayerSettingsClick: ReactEventHandler;
   onDeleteLayerClick: (id: string) => void;
-};
+}
 
 export const LayerOptionsMenu = ({
   layer,
@@ -44,7 +44,7 @@ export const LayerOptionsMenu = ({
     let viewState: LayerViewState | undefined;
 
     // Try to find across nearest children;
-    for (const childLayer of layer?.layers || []) {
+    for (const childLayer of layer?.layers ?? []) {
       if (childLayer.viewState) {
         viewState = childLayer.viewState;
         break;
@@ -52,7 +52,7 @@ export const LayerOptionsMenu = ({
     }
     // If didn't find across children we should check deeply.
     if (!viewState) {
-      for (const childLayer of layer?.layers || []) {
+      for (const childLayer of layer?.layers ?? []) {
         viewState = getChildLayerViewState(childLayer);
       }
     }
@@ -65,7 +65,7 @@ export const LayerOptionsMenu = ({
       event.stopPropagation();
     }
 
-    const viewState = layer.viewState || getChildLayerViewState(layer);
+    const viewState = layer.viewState ?? getChildLayerViewState(layer);
 
     onPointToLayerClick(viewState);
   };

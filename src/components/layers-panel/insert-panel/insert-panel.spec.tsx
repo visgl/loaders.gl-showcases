@@ -7,8 +7,8 @@ import { setupStore } from "../../../redux/store";
 const onInsertMock = jest.fn();
 const onCancelMock = jest.fn();
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const callRender = (renderFunc, props = {}, store = setupStore()) => {

@@ -1,28 +1,28 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import {
-  BuildingSceneSublayerExtended,
-  Sublayer,
-  TilesetType,
-  TilesetMetadata,
-  ComparisonSideMode,
+  type BuildingSceneSublayerExtended,
+  type Sublayer,
+  type TilesetType,
+  type TilesetMetadata,
+  type ComparisonSideMode,
 } from "../../types";
 import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
 import { buildSublayersTree } from "../../utils/sublayers";
 import { load } from "@loaders.gl/core";
-import { RootState } from "../store";
-import { BuildingSceneLayerTileset } from "@loaders.gl/i3s/src/types";
+import { type RootState } from "../store";
+import { type BuildingSceneLayerTileset } from "@loaders.gl/i3s/src/types";
 
 // Define a type for the slice states
-type SublayersState = {
+interface SublayersState {
   /** Array of layers for the currently selected scene */
   layers: BuildingSceneSublayerExtended[];
   /** Counter of the currently selected layer  */
   layerCounter: number;
   /** Array of BSL sublayer categories */
   sublayers: Sublayer[];
-};
+}
 
-export interface flattenedSublayersState {
+export interface FlattenedSublayersState {
   /** Single layer state for viewer and debug components */
   single: SublayersState;
   /** Left side layer state for comparison mode */
@@ -31,7 +31,7 @@ export interface flattenedSublayersState {
   right: SublayersState;
 }
 
-const initialState: flattenedSublayersState = {
+const initialState: FlattenedSublayersState = {
   single: { layers: [], layerCounter: 0, sublayers: [] },
   left: { layers: [], layerCounter: 0, sublayers: [] },
   right: { layers: [], layerCounter: 0, sublayers: [] },
@@ -42,24 +42,24 @@ const flattenedSublayersSlice = createSlice({
   initialState,
   reducers: {
     setFlattenedSublayers: (
-      state: flattenedSublayersState,
+      state: FlattenedSublayersState,
       action: PayloadAction<{
         layers: BuildingSceneSublayerExtended[];
         side?: ComparisonSideMode;
       }>
     ) => {
-      state[action.payload.side || "single"].layers = action.payload.layers;
-      state[action.payload.side || "single"].layerCounter++;
+      state[action.payload.side ?? "single"].layers = action.payload.layers;
+      state[action.payload.side ?? "single"].layerCounter++;
     },
     updateLayerVisibility: (
-      state: flattenedSublayersState,
+      state: FlattenedSublayersState,
       action: PayloadAction<{
         index: number;
         visibility: boolean | undefined;
         side?: ComparisonSideMode;
       }>
     ) => {
-      const side = action.payload.side || "single";
+      const side = action.payload.side ?? "single";
       const layers = state[side].layers;
       if (action.payload.index in layers) {
         layers[action.payload.index].visibility = action.payload.visibility;
@@ -70,19 +70,19 @@ const flattenedSublayersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFlattenedSublayers.pending, (state, action) => {
-        const side = action.meta.arg.side || "single";
+        const side = action.meta.arg.side ?? "single";
         state[side].layerCounter++;
       })
       .addCase(
         getFlattenedSublayers.fulfilled,
         (
-          state: flattenedSublayersState,
+          state: FlattenedSublayersState,
           action: PayloadAction<{
             sublayers: SublayersState;
             side?: ComparisonSideMode;
           }>
         ) => {
-          const side = action.payload.side || "single";
+          const side = action.payload.side ?? "single";
           if (
             action.payload.sublayers.layerCounter === state[side].layerCounter
           ) {
@@ -94,22 +94,22 @@ const flattenedSublayersSlice = createSlice({
 });
 
 export const getFlattenedSublayers = createAsyncThunk<
-  {
-    sublayers: SublayersState;
-    side?: ComparisonSideMode;
-  },
-  {
-    tilesetsData: TilesetMetadata[];
-    buildingExplorerOpened: boolean;
-    side?: ComparisonSideMode;
-  }
+{
+  sublayers: SublayersState;
+  side?: ComparisonSideMode;
+},
+{
+  tilesetsData: TilesetMetadata[];
+  buildingExplorerOpened: boolean;
+  side?: ComparisonSideMode;
+}
 >(
   "getFlattenedSublayers",
   async ({ tilesetsData, buildingExplorerOpened, side }, { getState }) => {
-    const promises: Promise<any>[] = [];
+    const promises: Array<Promise<any>> = [];
     const state = getState() as RootState;
     const currentLayer =
-      state.flattenedSublayers[side || "single"].layerCounter;
+      state.flattenedSublayers[side ?? "single"].layerCounter;
 
     for (const data of tilesetsData) {
       if (!data.hasChildren) {
@@ -141,14 +141,14 @@ const getLayersAndSublayers = async (
   buildingExplorerOpened: boolean
 ): Promise<{
   layers:
-    | BuildingSceneSublayerExtended[]
-    | {
-        id: string;
-        url: string;
-        visibility: boolean;
-        token?: string;
-        type: TilesetType | undefined;
-      }[];
+  | BuildingSceneSublayerExtended[]
+  | Array<{
+    id: string;
+    url: string;
+    visibility: boolean;
+    token?: string;
+    type: TilesetType | undefined;
+  }>;
   sublayers: Sublayer[];
 }> => {
   try {
@@ -157,7 +157,7 @@ const getLayersAndSublayers = async (
       I3SBuildingSceneLayerLoader
     )) as BuildingSceneLayerTileset;
     const sublayersTree = buildSublayersTree(tileset.header.sublayers);
-    const childSublayers = sublayersTree?.sublayers || [];
+    const childSublayers = sublayersTree?.sublayers ?? [];
     const overviewLayer = tileset?.sublayers.find(
       (sublayer) => sublayer.name === "Overview"
     );
@@ -173,8 +173,8 @@ const getLayersAndSublayers = async (
       layers: buildingExplorerOpened
         ? sublayers
         : overviewLayer
-        ? [overviewLayer]
-        : [],
+          ? [overviewLayer]
+          : [],
       sublayers: childSublayers,
     };
   } catch (e) {

@@ -1,13 +1,13 @@
 import { setupStore } from "../store";
 import reducer, {
-  ViewStateState,
+  type ViewStateState,
   selectViewState,
   setViewState,
 } from "./view-state-slice";
 
 describe("slice: view-state", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       main: {
         longitude: -120,
         latitude: 34,

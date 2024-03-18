@@ -15,13 +15,11 @@ Object.defineProperty(window, "createImageBitmap", {
 
 Object.defineProperty(window, "ImageBitmap", {
   writable: true,
-  value: jest
-    .fn()
-    .mockImplementation((name, width, height) => ({
-      name: name,
-      width: width,
-      height: height,
-    })),
+  value: jest.fn().mockImplementation((name, width, height) => ({
+    name,
+    width,
+    height,
+  })),
 });
 
 class MyImageBitmap extends ImageBitmap {
@@ -76,13 +74,10 @@ describe("Crop texture", () => {
 
 describe("Texture Selector Utils - selectDebugTextureForTileset", () => {
   test("Should return undefined if no uvDebugTexture", async () => {
-    const tileset = {};
+    const tileset: Tileset3D = {} as unknown as Tileset3D;
     const uvDebugTexture = null;
-    const result = await selectDebugTextureForTileset(
-      tileset as unknown as Tileset3D,
-      uvDebugTexture
-    );
-    expect(result).toBeUndefined();
+    await selectDebugTextureForTileset(tileset, uvDebugTexture);
+    expect(tileset).toEqual({});
   });
 
   test("Should return undefined if no uvDebugTexture", async () => {
@@ -91,6 +86,7 @@ describe("Texture Selector Utils - selectDebugTextureForTileset", () => {
       tileset as unknown as Tileset3D,
       uvDebugTexture
     );
+    expect(tileset).toEqual({ tiles: [{ userData: {} }] });
   });
 });
 
@@ -104,20 +100,18 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
   test("Should return undefined if no uvDebugTexture", async () => {
     const tile = { userData: {} };
     const uvDebugTexture = null;
-    const result = await selectDebugTextureForTile(
-      tile as unknown as Tile3D,
-      uvDebugTexture
-    );
-    expect(result).toBeUndefined();
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
+    expect(tile).toEqual({ userData: {} });
   });
 
   test("Should return undefined if originalTexture exists", async () => {
     const tile = { userData: { originalTexture: "Test texture" } };
-    const result = await selectDebugTextureForTile(
-      tile as unknown as Tile3D,
-      uvDebugTexture
-    );
-    expect(result).toBeUndefined();
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
+    expect(tile).toEqual({
+      userData: {
+        originalTexture: "Test texture",
+      },
+    });
   });
 
   test("Should return undefined if material exists but baseColorTexture is not", async () => {
@@ -131,11 +125,17 @@ describe("Texture Selector Utils - selectDebugTextureForTile", () => {
         },
       },
     };
-    const result = await selectDebugTextureForTile(
-      tile as unknown as Tile3D,
-      uvDebugTexture
-    );
-    expect(result).toBeUndefined();
+    await selectDebugTextureForTile(tile as unknown as Tile3D, uvDebugTexture);
+    expect(tile).toEqual({
+      content: {
+        material: {
+          pbrMetallicRoughness: {
+            baseColorTexture: null,
+          },
+        },
+      },
+      userData: {},
+    });
   });
 
   test("Should add original texture to userData and apply debug texture", async () => {
@@ -237,8 +237,16 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         texture: "Test texture",
       },
     };
-    const result = selectOriginalTextureForTile(tile as unknown as Tile3D);
-    expect(result).toBeUndefined();
+    selectOriginalTextureForTile(tile as unknown as Tile3D);
+    expect(tile).toEqual({
+      content: {
+        material: null,
+        texture: "Test texture",
+      },
+      userData: {
+        originalTexture: null,
+      },
+    });
   });
 
   test("Should return undefined if tile has material but it doesn't have baseColorTexture", () => {
@@ -256,8 +264,21 @@ describe("Texture Selector Utils - selectOriginalTextureForTile", () => {
         texture: "Test texture",
       },
     };
-    const result = selectOriginalTextureForTile(tile as unknown as Tile3D);
-    expect(result).toBeUndefined();
+    selectOriginalTextureForTile(tile as unknown as Tile3D);
+    expect(tile).toEqual({
+      content: {
+        material: {
+          pbrMetallicRoughness: {
+            baseColorTexture: null,
+          },
+          texture: "Content material texture",
+        },
+        texture: "Test texture",
+      },
+      userData: {
+        originalTexture: "Original Texture",
+      },
+    });
   });
 
   test("Should add original texture to baseColorTexture and replace content material with material object", () => {

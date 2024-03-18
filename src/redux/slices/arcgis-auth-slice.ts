@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import { type RootState } from "../store";
 import {
   getAuthenticatedUser,
   arcGisRequestLogin,

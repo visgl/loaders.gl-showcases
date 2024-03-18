@@ -46,8 +46,8 @@ const stats = {
   ],
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 jest.mock("../../toogle-switch/toggle-switch", () => ({
@@ -65,8 +65,8 @@ jest.mock("../../loading-spinner/loading-spinner", () => ({
 describe("Attribute Stats Error test", () => {
   it("Should no render Attribute Stats if loading statistics error", async () => {
     fetchMock.mockImplementationOnce(
-      () =>
-        new Promise((resolve, reject) =>
+      async () =>
+        await new Promise((resolve, reject) =>
           setTimeout(() => {
             reject(new Error("Test Error"));
           }, 50)
@@ -110,8 +110,8 @@ describe("Attribute Stats Error test", () => {
 describe("AttributeStats", () => {
   beforeEach(() => {
     fetchMock.mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
+      async () =>
+        await new Promise((resolve) =>
           setTimeout(() => {
             resolve({
               text: async () =>

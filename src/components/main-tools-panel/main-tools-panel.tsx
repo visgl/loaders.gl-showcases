@@ -10,12 +10,12 @@ import MemoryIcon from "../../../public/icons/memory.svg";
 import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import DebugIcon from "../../../public/icons/debug.svg";
 import ValidatorIcon from "../../../public/icons/validator.svg";
-import { ActiveButton, Layout } from "../../types";
+import { ActiveButton, type Layout } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-type ContainerProps = {
+interface ContainerProps {
   id: string;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -25,10 +25,10 @@ const Container = styled.div<ContainerProps>`
   padding: 2px;
 `;
 
-type ButtonProps = {
+interface ButtonProps {
   $active: boolean;
   $layout: Layout;
-};
+}
 const Button = styled.button<ButtonProps>`
   display: flex;
   justify-content: center;
@@ -56,7 +56,7 @@ const Button = styled.button<ButtonProps>`
   }
 `;
 
-type MainToolsPanelProps = {
+interface MainToolsPanelProps {
   id: string;
   activeButton: ActiveButton;
   showLayerOptions?: boolean;
@@ -67,7 +67,7 @@ type MainToolsPanelProps = {
   bookmarksActive?: boolean;
   onChange?: (active: ActiveButton) => void;
   onShowBookmarksChange?: () => void;
-};
+}
 
 export const MainToolsPanel = ({
   id,
@@ -90,7 +90,7 @@ export const MainToolsPanel = ({
           id={"layers-options-tab"}
           $layout={layout}
           $active={activeButton === ActiveButton.options}
-          onClick={() => onChange(ActiveButton.options)}
+          onClick={() => { onChange(ActiveButton.options); }}
         >
           <GearIcon />
         </Button>
@@ -100,7 +100,7 @@ export const MainToolsPanel = ({
           id={"settings-tab"}
           $layout={layout}
           $active={activeButton === ActiveButton.settings}
-          onClick={() => onChange(ActiveButton.settings)}
+          onClick={() => { onChange(ActiveButton.settings); }}
         >
           <SettingsIcon />
         </Button>
@@ -109,7 +109,7 @@ export const MainToolsPanel = ({
         id={"memory-usage-tab"}
         $layout={layout}
         $active={activeButton === ActiveButton.memory}
-        onClick={() => onChange(ActiveButton.memory)}
+        onClick={() => { onChange(ActiveButton.memory); }}
       >
         <MemoryIcon />
       </Button>
@@ -118,7 +118,7 @@ export const MainToolsPanel = ({
           id={"validator-tab"}
           $layout={layout}
           $active={activeButton === ActiveButton.validator}
-          onClick={() => onChange(ActiveButton.validator)}
+          onClick={() => { onChange(ActiveButton.validator); }}
         >
           <ValidatorIcon />
         </Button>
@@ -128,7 +128,7 @@ export const MainToolsPanel = ({
           id={"debug-panel-tab"}
           $layout={layout}
           $active={activeButton === ActiveButton.debug}
-          onClick={() => onChange(ActiveButton.debug)}
+          onClick={() => { onChange(ActiveButton.debug); }}
         >
           <DebugIcon />
         </Button>

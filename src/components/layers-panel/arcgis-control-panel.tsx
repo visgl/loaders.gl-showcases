@@ -15,13 +15,13 @@ import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { ButtonSize } from "../../types";
 import { ArcGisImportPanel } from "./arcgis-import-panel/arcgis-import-panel";
 
-type ArcGisControlPanelProps = {
+interface ArcGisControlPanelProps {
   onArcGisImportClick: (layer: {
     name: string;
     url: string;
     token?: string;
   }) => void;
-};
+}
 
 const ActionButtonsContainer = styled.div`
   display: flex;
@@ -70,10 +70,10 @@ export const ArcGisControlPanel = ({
 
   const onArcGisActionClick = () => {
     if (isLoggedIn) {
-      dispatch(getArcGisContent());
+      void dispatch(getArcGisContent());
       setShowArcGisImportPanel(true);
     } else {
-      dispatch(arcGisLogin());
+      void dispatch(arcGisLogin());
     }
   };
   const onArcGisLogoutClick = () => {
@@ -101,13 +101,15 @@ export const ArcGisControlPanel = ({
       </ActionButtonsContainer>
 
       {showArcGisImportPanel && (
-          <ArcGisImportPanel
-            onImport={(item) => {
-              onArcGisImportClick(item);
-              setShowArcGisImportPanel(false);
-            }}
-            onCancel={() => setShowArcGisImportPanel(false)}
-          />
+        <ArcGisImportPanel
+          onImport={(item) => {
+            onArcGisImportClick(item);
+            setShowArcGisImportPanel(false);
+          }}
+          onCancel={() => {
+            setShowArcGisImportPanel(false);
+          }}
+        />
       )}
 
       {showLogoutWarning && (
@@ -116,7 +118,7 @@ export const ArcGisControlPanel = ({
           okButtonText={"Log out"}
           cancelButtonText={"Cancel"}
           onConfirm={() => {
-            dispatch(arcGisLogout());
+            void dispatch(arcGisLogout());
             setShowLogoutWarning(false);
           }}
           onCancel={() => {

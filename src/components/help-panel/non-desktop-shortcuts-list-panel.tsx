@@ -1,19 +1,19 @@
 import styled from "styled-components";
-import { HelpShortcutItem } from "../../types";
+import { type HelpShortcutItem } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
 import { NonDesktopShortcutItem } from "./non-desktop-shortcut-item";
 
-type NonDesktopShortcutsListPanelProps = {
+interface NonDesktopShortcutsListPanelProps {
   shortcuts: HelpShortcutItem[];
   onShortcutClick: (id: string) => void;
-};
+}
 
-type ContainerProps = {
+interface ContainerProps {
   $layout: string;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;

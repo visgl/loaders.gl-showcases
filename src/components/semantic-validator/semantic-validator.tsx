@@ -127,11 +127,13 @@ export const SemanticValidator = ({
       </PanelHeader>
       <PanelHorizontalLine $top={10} />
       <PanelContent>
-        {warnings && Boolean(warnings.length) ? (
-          renderWarnings(warnings)
-        ) : (
+        {warnings && Boolean(warnings.length)
+          ? (
+              renderWarnings(warnings)
+            )
+          : (
           <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
-        )}
+            )}
       </PanelContent>
     </PanelContainer>
   );

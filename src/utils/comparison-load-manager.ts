@@ -1,4 +1,4 @@
-import { StatsMap } from "../types";
+import type { StatsMap } from "../types";
 
 export class ComparisonLoadManager extends EventTarget {
   private leftResolved = true;
@@ -9,10 +9,6 @@ export class ComparisonLoadManager extends EventTarget {
   private rightStartTime = 0;
   public leftLoadingTime = 0;
   public rightLoadingTime = 0;
-
-  constructor() {
-    super();
-  }
 
   get leftStats(): StatsMap | null {
     return this._leftStats;

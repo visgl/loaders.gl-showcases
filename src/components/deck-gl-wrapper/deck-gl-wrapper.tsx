@@ -2,18 +2,18 @@ import { Map as MaplibreMap } from "react-map-gl/maplibre";
 import DeckGL from "@deck.gl/react";
 import {
   MapController,
-  InteractionState,
-  WebMercatorViewport,
+  type InteractionState,
+  type WebMercatorViewport,
+  FlyToInterpolator, type PickingInfo, View,
 } from "@deck.gl/core";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
-import { SceneLayer3D } from "@loaders.gl/i3s";
-import { FlyToInterpolator, PickingInfo, View } from "@deck.gl/core";
+import { type SceneLayer3D } from "@loaders.gl/i3s";
 import { CONTRAST_MAP_STYLES } from "../../constants/map-styles";
 import {
-  NormalsDebugData,
-  TilesetType,
-  MinimapPosition,
-  FiltersByAttribute,
+  type NormalsDebugData,
+  type TilesetType,
+  type MinimapPosition,
+  type FiltersByAttribute,
 } from "../../types";
 import {
   selectDebugTextureForTile,
@@ -51,20 +51,20 @@ const AttributionContainer = styled.div`
 
 const TRANSITION_DURAITON = 4000;
 
-type DeckGlI3sProps = {
+interface DeckGlI3sProps {
   /** DeckGL component id */
   id?: string;
   /** User selected tiles colors */
-  coloredTilesMap?: { [key: string]: string };
+  coloredTilesMap?: Record<string, string>;
   /** Allows layers picking to handle mouse events */
   pickable?: boolean;
   /** Layers loading data  */
-  layers3d: {
+  layers3d: Array<{
     id?: number;
     url?: string;
     token?: string | null;
     type: TilesetType;
-  }[];
+  }>;
   /** Last selected layer id. Prop to reset some settings when new layer selected */
   lastLayerSelectedId: string;
   /** Load debug texture image */
@@ -122,7 +122,7 @@ type DeckGlI3sProps = {
   onTileUnload?: (tile: Tile3D) => void;
   /** Tile3DLayer callback. Triggers post traversal completion */
   onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
-};
+}
 
 export const DeckGlWrapper = ({
   id,
@@ -204,7 +204,7 @@ export const DeckGlWrapper = ({
     } = viewState;
 
     const viewportCenterTerrainElevation =
-      getElevationByCentralTile(longitude, latitude, terrainTiles) || 0;
+      getElevationByCentralTile(longitude, latitude, terrainTiles) ?? 0;
     let cameraTerrainElevation: number | null = null;
 
     if (currentViewport) {
@@ -216,7 +216,7 @@ export const DeckGlWrapper = ({
           cameraPosition[0],
           cameraPosition[1],
           terrainTiles
-        ) || 0;
+        ) ?? 0;
     }
     let elevation =
       cameraTerrainElevation === null ||
@@ -261,13 +261,13 @@ export const DeckGlWrapper = ({
   const onTilesetLoadHandler = (tileset: Tileset3D) => {
     if (needTransitionToTileset && !preventTransitions) {
       const { zoom, cartographicCenter } = tileset;
-      const [longitude, latitude] = cartographicCenter || [];
+      const [longitude, latitude] = cartographicCenter ?? [];
       const viewport = new VIEWS[0].ViewportType(globalViewState.main);
       const {
         main: { pitch, bearing },
       } = globalViewState;
 
-      const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent || {};
+      const { zmin = 0 } = metadata?.layers?.[0]?.fullExtent ?? {};
       const [pLongitude, pLatitude] = getLonLatWithElevationOffset(
         zmin,
         pitch,
@@ -416,7 +416,7 @@ export const DeckGlWrapper = ({
           <AttributionContainer>
             <div>
               &copy;
-              <a href="http://www.openstreetmap.org/copyright/" target="_blank">
+              <a href="http://www.openstreetmap.org/copyright/" target="_blank" rel="noreferrer">
                 OpenStreetMap
               </a>{" "}
               contributors

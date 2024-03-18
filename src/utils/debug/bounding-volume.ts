@@ -1,4 +1,4 @@
-import type { ObbData } from '../../types';
+import type { ObbData } from "../../types";
 import type { Tile3D } from "@loaders.gl/tiles";
 
 import { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
@@ -36,7 +36,7 @@ export const getBoundingType = (tile: Tile3D): string => {
   if (tile.header.mbs || tile.boundingVolume instanceof BoundingSphere) {
     return MBS;
   }
-  return '';
+  return "";
 };
 
 /**

@@ -1,11 +1,11 @@
-import { SyntheticEvent } from "react";
+import { type SyntheticEvent } from "react";
 import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
-import { SelectionState, ExpandState } from "../../../types";
+import { SelectionState, type ExpandState } from "../../../types";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { OptionsIcon, Panels } from "../../common";
 
-type BaseMapsItemProps = {
+interface BaseMapsItemProps {
   children: React.ReactNode;
   id: string;
   optionsContent?: JSX.Element;
@@ -16,11 +16,11 @@ type BaseMapsItemProps = {
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
   onClickOutside?: () => void;
-};
+}
 
-type ContainerProps = {
+interface ContainerProps {
   $checked: boolean;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;

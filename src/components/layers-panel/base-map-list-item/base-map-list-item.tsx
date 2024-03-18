@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { SelectionState } from "../../../types";
+import { type SelectionState } from "../../../types";
 import { BaseMapIcon } from "../base-map-icon/base-map-icon";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 
-type BaseMapsItemProps = {
+interface BaseMapsItemProps {
   id: string;
   title: string;
   optionsContent?: JSX.Element;
@@ -12,7 +12,7 @@ type BaseMapsItemProps = {
   onMapsSelect: (id) => void;
   onOptionsClick: (id: string) => void;
   onClickOutside?: () => void;
-};
+}
 
 const Title = styled.div`
   margin-left: 16px;

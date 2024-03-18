@@ -38,11 +38,11 @@ const ValueItemArrow = styled.div<{ arrowDirection: string }>`
     arrowDirection === ArrowDirection.left ? "none" : "rotate(-180deg)"};
 `;
 
-type ColorValueItemProps = {
+interface ColorValueItemProps {
   arrowDirection?: ArrowDirection;
   colorValue?: number;
   arrowVisibility: boolean;
-};
+}
 
 export const ColorValueItem = ({
   arrowDirection,

@@ -1,6 +1,6 @@
 import { customizeColors } from "@loaders.gl/i3s";
-import { Tile3D } from "@loaders.gl/tiles";
-import { ColorsByAttribute } from "../types";
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { ColorsByAttribute } from "../types";
 
 /**
  * Update tile colors with the custom colors assigned to the I3S Loader
@@ -41,7 +41,7 @@ export const colorizeTile = async (
         tile.content.attributes.colors = newColors;
         result.isColored = true;
       }
-    } else if (tile.content && tile.content.originalColorsAttributes) {
+    } else if (tile.content?.originalColorsAttributes) {
       tile.content.attributes.colors.value =
         tile.content.originalColorsAttributes.value;
       tile.content.customColors = null;

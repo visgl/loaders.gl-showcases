@@ -3,7 +3,7 @@ import {
   color_brand_quaternary,
   color_brand_tertiary,
 } from "../constants/colors";
-import { LayoutProps } from "../types";
+import { type LayoutProps } from "../types";
 import { Theme } from "../utils/enums";
 import { getCurrentLayoutProperty } from "../utils/hooks/layout";
 
@@ -266,8 +266,7 @@ export const MenuItem = styled.div<{
   font-size: 16px;
   line-height: 19px;
   padding: 10px 0px;
-  color: ${({ theme, customColor }) =>
-    customColor ? customColor : theme.colors.fontColor};
+  color: ${({ theme, customColor }) => customColor ?? theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
   display: flex;
   gap: 10px;

@@ -1,4 +1,4 @@
-import { calculateAverageValue } from './calculate-average-value';
+import { calculateAverageValue } from "./calculate-average-value";
 
 describe("Calculate average value", () => {
   it("Should calculate average value", () => {

@@ -3,7 +3,7 @@ import {
   CollapseDirection,
   ExpandState,
   DragMode,
-  LayoutProps,
+  type LayoutProps,
 } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
@@ -39,16 +39,16 @@ const Container = styled.div<LayoutProps & { bottom?: number; right?: number }>`
 
   right: ${({ right }) =>
     getCurrentLayoutProperty({
-      desktop: `${right || 24}px`,
-      tablet: `${right || 24}px`,
-      mobile: `${right || 8}px`,
+      desktop: `${right ?? 24}px`,
+      tablet: `${right ?? 24}px`,
+      mobile: `${right ?? 8}px`,
     })};
 
   bottom: ${({ bottom }) =>
     getCurrentLayoutProperty({
-      desktop: `${bottom || 24}px`,
-      tablet: `${bottom || 80}px`,
-      mobile: `${bottom || 80}px`,
+      desktop: `${bottom ?? 24}px`,
+      tablet: `${bottom ?? 80}px`,
+      mobile: `${bottom ?? 80}px`,
     })};
 `;
 
@@ -78,7 +78,7 @@ const Button = styled.button<{ $active?: boolean }>`
   }
 `;
 
-type MapControlPanelProps = {
+interface MapControlPanelProps {
   bearing: number;
   bottom?: number;
   right?: number;
@@ -86,11 +86,11 @@ type MapControlPanelProps = {
   onZoomOut: () => void;
   onCompassClick: () => void;
   isDragModeVisible?: boolean;
-};
+}
 
-type CompassProps = {
+interface CompassProps {
   $degrees: number;
-};
+}
 
 const CompassWrapper = styled.div.attrs<CompassProps>(({ $degrees }) => ({
   style: {
@@ -148,7 +148,7 @@ export const MapControlPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          {isDragModeVisible === true && (
+          {isDragModeVisible && (
             <>
               <Button
                 $active={dragMode === DragMode.pan}

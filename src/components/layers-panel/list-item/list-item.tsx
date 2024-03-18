@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { SelectionState, ExpandState, ListItemType } from "../../../types";
+import { SelectionState, type ExpandState, ListItemType } from "../../../types";
 import { Checkbox } from "../../checkbox/checkbox";
 import { ListItemWrapper } from "../list-item-wrapper/list-item-wrapper";
 import { RadioButton } from "../../radio-button/radio-button";
@@ -29,7 +29,7 @@ const ItemContent = styled.div`
   margin-left: 16px;
 `;
 
-type ListItemProps = {
+interface ListItemProps {
   id: string;
   title: string;
   subtitle?: string;
@@ -42,7 +42,7 @@ type ListItemProps = {
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
   onClickOutside?: () => void;
-};
+}
 
 export const ListItem = ({
   id,
@@ -75,13 +75,13 @@ export const ListItem = ({
       onClickOutside={onClickOutside}
     >
       {type === ListItemType.Checkbox && (
-        <Checkbox id={id} checked={selected} onChange={() => onChange(id)} />
+        <Checkbox id={id} checked={selected} onChange={() => { onChange(id); }} />
       )}
       {type === ListItemType.Radio && (
         <RadioButton
           id={id}
           checked={selected === SelectionState.selected}
-          onChange={() => onChange(id)}
+          onChange={() => { onChange(id); }}
         />
       )}
       <ItemContent data-testid="list-item-content">

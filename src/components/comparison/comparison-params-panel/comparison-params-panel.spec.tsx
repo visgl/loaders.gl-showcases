@@ -11,7 +11,7 @@ describe("Comparison Params Panel", () => {
       onGeometryChange: jest.fn(),
       onTexturesChange: jest.fn(),
       onClose: jest.fn(),
-    }
+    };
 
     const { container } = renderWithTheme(
       <ComparisonParamsPanel {...props}/>

@@ -1,8 +1,8 @@
-import { Tile3DLayer, Tile3DLayerProps } from "@deck.gl/geo-layers/typed";
-import { UpdateParameters, Viewport, DefaultProps } from "@deck.gl/core/typed";
-import { TILE_TYPE, Tile3D, Tileset3D } from "@loaders.gl/tiles";
+import { Tile3DLayer, type Tile3DLayerProps } from "@deck.gl/geo-layers/typed";
+import { type UpdateParameters, type Viewport, type DefaultProps } from "@deck.gl/core/typed";
+import { TILE_TYPE, type Tile3D, Tileset3D } from "@loaders.gl/tiles";
 import { load } from "@loaders.gl/core";
-import { FiltersByAttribute } from "../../types";
+import { type FiltersByAttribute } from "../../types";
 
 const defaultProps: DefaultProps<CustomTile3DLayerProps> = {
   colorsByAttribute: null,
@@ -10,9 +10,9 @@ const defaultProps: DefaultProps<CustomTile3DLayerProps> = {
 };
 
 type CustomTile3DLayerProps<DataT = any> = _CustomTile3DLayerProps &
-  Tile3DLayerProps<DataT>;
+Tile3DLayerProps<DataT>;
 
-type _CustomTile3DLayerProps = {
+interface _CustomTile3DLayerProps {
   onTraversalComplete?: (selectedTiles: Tile3D[]) => Tile3D[];
   colorsByAttribute?: ColorsByAttribute | null;
   customizeColors?: (
@@ -24,9 +24,9 @@ type _CustomTile3DLayerProps = {
     tile: Tile3D,
     filtersByAttribute: FiltersByAttribute | null
   ) => Promise<{ isFiltered: boolean; id: string }>;
-};
+}
 
-type ColorsByAttribute = {
+interface ColorsByAttribute {
   /** Feature attribute name */
   attributeName: string;
   /** Minimum attribute value */
@@ -39,9 +39,9 @@ type ColorsByAttribute = {
   maxColor: [number, number, number, number];
   /** Colorization mode. `replace` - replace vertex colors with a new colors, `multiply` - multiply vertex colors with new colors */
   mode: string;
-};
+}
 
-//@ts-expect-error call of private method of the base class
+// @ts-expect-error call of private method of the base class
 export default class CustomTile3DLayer<
   DataT = any,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -53,8 +53,8 @@ export default class CustomTile3DLayer<
   state!: {
     activeViewports: any;
     frameNumber?: number;
-    lastUpdatedViewports: { [viewportId: string]: Viewport } | null;
-    layerMap: { [layerId: string]: any };
+    lastUpdatedViewports: Record<string, Viewport> | null;
+    layerMap: Record<string, any>;
     tileset3d: Tileset3D | null;
 
     colorsByAttribute: ColorsByAttribute | null;
@@ -76,7 +76,7 @@ export default class CustomTile3DLayer<
     const { props, oldProps, changeFlags } = params;
 
     if (props.data && props.data !== oldProps.data) {
-      this._loadTileset(props.data);
+      void this._loadTileset(props.data);
     } else if (props.colorsByAttribute !== oldProps.colorsByAttribute) {
       this.setState({
         colorsByAttribute: props.colorsByAttribute,
@@ -92,7 +92,7 @@ export default class CustomTile3DLayer<
       const viewportsNumber = Object.keys(activeViewports).length;
       if (viewportsNumber) {
         if (!this.state.loadingCounter) {
-          //@ts-expect-error call of private method of the base class
+          // @ts-expect-error call of private method of the base class
           super._updateTileset(activeViewports);
         }
         this.state.lastUpdatedViewports = activeViewports;
@@ -124,12 +124,12 @@ export default class CustomTile3DLayer<
       }
       Object.assign(options, preloadOptions);
     }
-    //@ts-expect-error loader
+    // @ts-expect-error loader
     const tilesetJson = await load(tilesetUrl, loader, options.loadOptions);
 
     const tileset3d = new Tileset3D(tilesetJson, {
       onTileLoad: this._onTileLoad.bind(this),
-      //@ts-expect-error call of private method of the base class
+      // @ts-expect-error call of private method of the base class
       onTileUnload: super._onTileUnload.bind(this),
       onTileError: this.props.onTileError,
       // New code ------------------
@@ -143,7 +143,7 @@ export default class CustomTile3DLayer<
       layerMap: {},
     });
 
-    //@ts-expect-error call of private method of the base class
+    // @ts-expect-error call of private method of the base class
     super._updateTileset(this.state.activeViewports);
     this.props.onTilesetLoad(tileset3d);
   }
@@ -158,7 +158,7 @@ export default class CustomTile3DLayer<
     // New code ------------------ condition is added
     if (!this.state.colorsByAttribute && !this.state.filtersByAttribute) {
       // ---------------------------
-      //@ts-expect-error call of private method of the base class
+      // @ts-expect-error call of private method of the base class
       super._updateTileset(lastUpdatedViewports);
       this.setNeedsUpdate();
       // New code ------------------
@@ -177,7 +177,7 @@ export default class CustomTile3DLayer<
   private _colorizeTiles(tiles: Tile3D[]): void {
     if (this.props.customizeColors && tiles[0]?.type === TILE_TYPE.MESH) {
       const { layerMap, colorsByAttribute } = this.state;
-      const promises: Promise<{ isColored: boolean; id: string }>[] = [];
+      const promises: Array<Promise<{ isColored: boolean; id: string }>> = [];
       for (const tile of tiles) {
         promises.push(this.props.customizeColors(tile, colorsByAttribute));
       }
@@ -192,14 +192,17 @@ export default class CustomTile3DLayer<
         for (const item of result) {
           if (item.status === "fulfilled" && item.value.isColored) {
             isTileChanged = true;
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete layerMap[item.value.id];
           }
         }
         if (isTileChanged && !this.state.loadingCounter) {
-          //@ts-expect-error call of private method of the base class
+          // @ts-expect-error call of private method of the base class
           super._updateTileset(this.state.activeViewports);
           this.setNeedsUpdate();
         }
+      }).catch(() => {
+        console.error("Colorize tiles operation has failed");
       });
     }
   }
@@ -215,30 +218,35 @@ export default class CustomTile3DLayer<
   private _filterTiles(tiles: Tile3D[]): void {
     if (this.props.filterTile && tiles[0]?.type === TILE_TYPE.MESH) {
       const { layerMap, filtersByAttribute } = this.state;
-      const promises: Promise<{ isFiltered: boolean; id: string }>[] = [];
+      const promises: Array<Promise<{ isFiltered: boolean; id: string }>> = [];
       for (const tile of tiles) {
         promises.push(this.props.filterTile(tile, filtersByAttribute));
       }
       this.setState({
         loadingCounter: this.state.loadingCounter + 1,
       });
-      Promise.allSettled(promises).then((result) => {
-        this.setState({
-          loadingCounter: this.state.loadingCounter - 1,
-        });
-        let isTileChanged = false;
-        for (const item of result) {
-          if (item.status === "fulfilled" && item.value.isFiltered) {
-            isTileChanged = true;
-            delete layerMap[item.value.id];
+      Promise.allSettled(promises)
+        .then((result) => {
+          this.setState({
+            loadingCounter: this.state.loadingCounter - 1,
+          });
+          let isTileChanged = false;
+          for (const item of result) {
+            if (item.status === "fulfilled" && item.value.isFiltered) {
+              isTileChanged = true;
+              // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+              delete layerMap[item.value.id];
+            }
           }
-        }
-        if (isTileChanged && !this.state.loadingCounter) {
-          //@ts-expect-error call of private method of the base class
-          super._updateTileset(this.state.activeViewports);
-          this.setNeedsUpdate();
-        }
-      });
+          if (isTileChanged && !this.state.loadingCounter) {
+            // @ts-expect-error call of private method of the base class
+            super._updateTileset(this.state.activeViewports);
+            this.setNeedsUpdate();
+          }
+        })
+        .catch(() => {
+          console.error("Filter tiles operation has failed");
+        });
     }
   }
 

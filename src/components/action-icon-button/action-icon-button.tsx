@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { type FC, type ReactNode } from "react";
 import styled, { useTheme } from "styled-components";
 import { ButtonSize } from "../../types";
 
@@ -55,13 +55,13 @@ const IconContainer = styled.div<{ $buttonSize: number; $grayed?: boolean }>`
       : `${color_brand_tertiary}66`};
 `;
 
-type ActionIconButtonProps = {
+interface ActionIconButtonProps {
   children?: ReactNode;
   Icon: FC<{ fill: string }>;
   size: ButtonSize;
   style?: "active" | "disabled";
   onClick?: () => void;
-};
+}
 
 export const ActionIconButton = ({
   Icon,

@@ -1,5 +1,5 @@
 import type { Tile3D } from "@loaders.gl/tiles";
-import type { GeometryVSTextureMetrics } from '../../../../types';
+import type { GeometryVSTextureMetrics } from "../../../../types";
 
 import { getTriangleVertices, getTriangleArea } from "./triangles-calculation";
 
@@ -7,8 +7,10 @@ import { getTriangleVertices, getTriangleArea } from "./triangles-calculation";
  * Generates geometry vs texture metrics
  * @param tile
  */
-export const getGeometryVsTextureMetrics = (tile: Tile3D): GeometryVSTextureMetrics | null => {
-  if (!(tile && tile.content && tile.content.attributes)) {
+export const getGeometryVsTextureMetrics = (
+  tile: Tile3D
+): GeometryVSTextureMetrics | null => {
+  if (!tile?.content?.attributes) {
     return null;
   }
   const attributes = tile.content.attributes;
@@ -70,11 +72,8 @@ export const getGeometryVsTextureMetrics = (tile: Tile3D): GeometryVSTextureMetr
  */
 const getTextureSize = (tile: Tile3D): number => {
   const texture =
-    (tile.content.material &&
-      tile.content.material.pbrMetallicRoughness &&
-      tile.content.material.pbrMetallicRoughness.baseColorTexture &&
-      tile.content.material.pbrMetallicRoughness.baseColorTexture.texture.source
-        .image) ||
+    tile?.content?.material?.pbrMetallicRoughness?.baseColorTexture?.texture
+      .source.image ||
     tile.content.texture ||
     null;
 

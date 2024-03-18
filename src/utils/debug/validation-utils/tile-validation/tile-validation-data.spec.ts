@@ -1,9 +1,12 @@
-import { getTileDataForValidation } from './tile-validation-data';
-import { createBoundingVolumeFromTile, getBoundingType } from "../../bounding-volume";
+import { getTileDataForValidation } from "./tile-validation-data";
+import {
+  createBoundingVolumeFromTile,
+  getBoundingType,
+} from "../../bounding-volume";
 
-jest.mock('../../bounding-volume', () => ({
-  getBoundingType: jest.fn().mockReturnValue('OBB'),
-  createBoundingVolumeFromTile: jest.fn().mockReturnValue('OBB')
+jest.mock("../../bounding-volume", () => ({
+  getBoundingType: jest.fn().mockReturnValue("OBB"),
+  createBoundingVolumeFromTile: jest.fn().mockReturnValue("OBB"),
 }));
 
 describe("Tile Validation data", () => {
@@ -12,16 +15,19 @@ describe("Tile Validation data", () => {
       content: {
         attributes: {
           positions: {
-            value: null
-          }
-        }
-      }
+            value: null,
+          },
+        },
+      },
     };
 
     try {
+      // @ts-expect-error test data doesn't fit to the type expected
       getTileDataForValidation(tile);
     } catch (error) {
-      expect(error.message).toStrictEqual("Validator - There are no positions in tile");
+      expect((error as Error).message).toStrictEqual(
+        "Validator - There are no positions in tile"
+      );
     }
   });
 
@@ -30,21 +36,21 @@ describe("Tile Validation data", () => {
       content: {
         attributes: {
           positions: {
-            value: new Float32Array([1, 2, 3])
-          }
-        }
-      }
+            value: new Float32Array([1, 2, 3]),
+          },
+        },
+      },
     };
 
+    // @ts-expect-error test data doesn't fit to the type expected
     const result = getTileDataForValidation(tile);
 
     expect(getBoundingType).toHaveBeenCalledWith(tile);
     expect(createBoundingVolumeFromTile).toHaveBeenCalledWith(tile);
     expect(result).toStrictEqual({
       positions: new Float32Array([1, 2, 3]),
-      boundingType: 'OBB',
-      boundingVolume: 'OBB'
+      boundingType: "OBB",
+      boundingVolume: "OBB",
     });
   });
-
 });

@@ -1,23 +1,23 @@
 import styled from "styled-components";
-import { Theme } from "../../utils/enums";
+import { type Theme } from "../../utils/enums";
 
-export type MenuProps = {
+export interface MenuProps {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   pathname: string;
   githubIcon: string;
   showHelp?: boolean;
   onHelpClick: () => void;
-};
+}
 
-export type CompareButtonProps = {
+export interface CompareButtonProps {
   $open: boolean;
   $active: boolean;
-};
+}
 
-export type ActiveProps = {
+export interface ActiveProps {
   active: number;
-};
+}
 
 export const GithubImage = styled.img`
   width: 16px;

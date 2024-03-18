@@ -1,5 +1,4 @@
-import { createEvent, fireEvent, waitFor } from "@testing-library/react";
-import { screen } from "@testing-library/react";
+import { createEvent, fireEvent, waitFor, screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { UploadPanel } from "../upload-panel/upload-panel";
 import { FileType } from "../../types";
@@ -7,8 +6,8 @@ import { FileType } from "../../types";
 jest.mock("@hyperjump/json-schema", () => ({
   add: jest.fn(),
   get: jest.fn(),
-  validate: jest.fn().mockImplementation(() =>
-    Promise.resolve(
+  validate: jest.fn().mockImplementation(async () =>
+    await Promise.resolve(
       jest.fn().mockImplementation(() => ({
         valid: true,
       }))
@@ -38,10 +37,10 @@ describe("UploadPanel", () => {
   // @ts-expect-error - rewrite FileReader Class
   global.FileReader = class {
     constructor() {
-      setTimeout(async () => {
-        await this.onload({
+      setTimeout(() => {
+        this.onload({
           target: {
-            result: '{"test":true}',
+            result: "{\"test\":true}",
           },
         }); // simulate success
       }, 0);

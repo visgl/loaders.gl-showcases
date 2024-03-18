@@ -8,6 +8,6 @@ describe("Loading Spinner", () => {
     const spinner = screen.getByTestId("loading-spinner");
     expect(container).toBeInTheDocument();
     expect(spinner).toBeInTheDocument();
-    expect(spinner).toHaveStyle(`animation: rotation 2s infinite linear`);
+    expect(spinner).toHaveStyle("animation: rotation 2s infinite linear");
   });
 });

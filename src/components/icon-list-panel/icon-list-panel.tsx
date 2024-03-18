@@ -7,7 +7,7 @@ import {
   selectIconItemPickedId,
 } from "../../redux/slices/icon-list-slice";
 
-import { IconListSetName } from "../../types";
+import { type IconListSetName } from "../../types";
 
 const TexturePanel = styled.div`
   display: flex;
@@ -46,11 +46,11 @@ const TextureIcon = styled.div<{
     `}
 `;
 
-type IconListPanelProps = {
+interface IconListPanelProps {
   iconListSetName: IconListSetName;
   group?: string;
   iconSize: number;
-};
+}
 
 export const IconListPanel = ({
   iconListSetName,
@@ -75,7 +75,7 @@ export const IconListPanel = ({
           onClick={() => {
             dispatch(
               setIconItemPicked({
-                iconListSetName: iconListSetName,
+                iconListSetName,
                 id: item.id,
               })
             );

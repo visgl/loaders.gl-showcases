@@ -14,7 +14,7 @@ const tiles: Record<string, Tile3D> = {};
 export async function selectDebugTextureForTileset(
   tileset: Tileset3D,
   uvDebugTexture: ImageBitmap | null
-) {
+): Promise<void> {
   if (!uvDebugTexture) {
     return;
   }
@@ -82,12 +82,7 @@ export async function selectDebugTextureForTile(
   }
   const { texture, material } = tile.content || {};
   if (material) {
-    if (
-      !(
-        material.pbrMetallicRoughness &&
-        material.pbrMetallicRoughness.baseColorTexture
-      )
-    ) {
+    if (!material.pbrMetallicRoughness?.baseColorTexture) {
       return;
     }
     if (!tile.userData.originalTexture) {
@@ -135,12 +130,7 @@ export function selectOriginalTextureForTile(tile: Tile3D) {
     return;
   }
   if (material) {
-    if (
-      !(
-        material.pbrMetallicRoughness &&
-        material.pbrMetallicRoughness.baseColorTexture
-      )
-    ) {
+    if (!material.pbrMetallicRoughness?.baseColorTexture) {
       return;
     }
     material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
