@@ -512,10 +512,11 @@ describe("Compare - Compare button", () => {
       text: "Start comparing",
       timeout: 2000,
     });
+    await page.waitForSelector("#compare-button > :first-child > :last-child");
     const compareButtonText2 = await page.$eval(
       "#compare-button > :first-child > :last-child",
       (node) => node.innerText
     );
     expect(compareButtonText2).toBe("Start comparing");
-  }, 60000);
+  });
 });
