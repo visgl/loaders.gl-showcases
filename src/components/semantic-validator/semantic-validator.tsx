@@ -1,7 +1,14 @@
 import styled from "styled-components";
 import { color_canvas_primary_inverted } from "../../constants/colors";
 import { useAppLayout } from "../../utils/hooks/layout";
-import { PanelContainer, PanelContent, PanelHeader, PanelHorizontalLine, Panels, Title } from "../common";
+import {
+  PanelContainer,
+  PanelContent,
+  PanelHeader,
+  PanelHorizontalLine,
+  Panels,
+  Title,
+} from "../common";
 import { CloseButton } from "../close-button/close-button";
 
 const Table = styled.table`
@@ -65,12 +72,16 @@ export interface Warning {
 }
 
 export interface SemanticValidatorProps {
-  warnings?: Warning[], 
-  clearWarnings?: React.MouseEventHandler<HTMLButtonElement>, 
-  onClose: React.ReactEventHandler<Element>
+  warnings?: Warning[];
+  clearWarnings?: React.MouseEventHandler<HTMLButtonElement>;
+  onClose: React.ReactEventHandler<Element>;
 }
 
-export const SemanticValidator = ({ warnings = [], clearWarnings, onClose }: SemanticValidatorProps) => {
+export const SemanticValidator = ({
+  warnings = [],
+  clearWarnings,
+  onClose,
+}: SemanticValidatorProps) => {
   const layout = useAppLayout();
 
   const renderColumns = (warnings: Warning[]) =>
@@ -109,18 +120,20 @@ export const SemanticValidator = ({ warnings = [], clearWarnings, onClose }: Sem
   };
 
   return (
-    <PanelContainer id="semantic-validator" layout={layout}>
-      <PanelHeader panel={Panels.MemoryUsage}>
-        <Title left={16}>Validator</Title>
+    <PanelContainer id="semantic-validator" $layout={layout}>
+      <PanelHeader $panel={Panels.MemoryUsage}>
+        <Title $left={16}>Validator</Title>
         <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
-      <PanelHorizontalLine top={10} />
+      <PanelHorizontalLine $top={10} />
       <PanelContent>
-        {warnings && Boolean(warnings.length) ? (
-          renderWarnings(warnings)
-        ) : (
+        {warnings && Boolean(warnings.length)
+          ? (
+              renderWarnings(warnings)
+            )
+          : (
           <NoIssuesItem>{NO_ISSUES}</NoIssuesItem>
-        )}
+            )}
       </PanelContent>
     </PanelContainer>
   );

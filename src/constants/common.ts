@@ -1,5 +1,5 @@
+import { color_brand_primary, color_canvas_primary_inverted } from "./colors";
 export const GITHUB_LINK = "https://github.com/visgl/loaders.gl-showcases";
-import { color_brand_primary, color_canvas_primary_inverted, } from "./colors";
 
 export const Color = `
   background: ${color_brand_primary};

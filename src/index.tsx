@@ -1,14 +1,17 @@
 /* global document */
-import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { App } from "./app";
 import { Provider } from "react-redux";
 import { setupStore } from "./redux/store";
 
 import "normalize.css";
 
-ReactDOM.render(
+const el = document.getElementById("root");
+if (el) {
+  const root = ReactDOM.createRoot(el);
+  root.render(
     <Provider store={setupStore()}>
-        <App />
+      <App />
     </Provider>
-, document.getElementById("root"));
+  );
+}

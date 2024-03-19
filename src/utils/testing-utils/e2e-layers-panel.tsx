@@ -1,7 +1,7 @@
 import { PageId } from "../../types";
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export const checkLayersPanel = async (
@@ -127,7 +127,7 @@ export const inserAndDeleteLayer = async (
 
   // Header
   const insertPanelHeaderText = await insertPanel.$eval(
-    `:first-child > :first-child`,
+    ":first-child > :first-child",
     (node) => node.innerText
   );
   expect(insertPanelHeaderText).toBe("Insert Layer");
@@ -173,7 +173,7 @@ export const inserAndDeleteLayer = async (
   await page.waitForSelector(`${panelId} > :nth-child(7)`);
   const warningPanel = await page.$(`${panelId} > :nth-child(7)`);
   const warningText = await warningPanel.$eval(
-    `:first-child > :first-child`,
+    ":first-child > :first-child",
     (node) => node.innerText
   );
   expect(warningText).toBe("You are trying to add an existing area to the map");
@@ -216,9 +216,10 @@ export const inserAndDeleteLayer = async (
     `${panelId} > :nth-child(4) > :first-child > :first-child > :nth-child(5) .settings`
   );
   await newLayerSettings.click();
-  await page.waitForSelector(".react-tiny-popover-container");
+  await sleep(200);
+  await page.waitForSelector("#react-tiny-popover-container");
   let removeButton = await page.$(
-    ".react-tiny-popover-container > :first-child > :last-child"
+    "#react-tiny-popover-container > :first-child > :last-child"
   );
   await removeButton.click();
   await page.waitForSelector(
@@ -241,9 +242,9 @@ export const inserAndDeleteLayer = async (
   expect(layers.length).toBe(5);
 
   await newLayerSettings.click();
-  await page.waitForSelector(".react-tiny-popover-container");
+  await page.waitForSelector("#react-tiny-popover-container");
   removeButton = await page.$(
-    ".react-tiny-popover-container > :first-child > :last-child"
+    "#react-tiny-popover-container > :first-child > :last-child"
   );
   await removeButton.click();
   const confirmButton = await page.$(

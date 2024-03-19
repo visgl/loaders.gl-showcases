@@ -37,7 +37,7 @@ const callRender = (renderFunc, props = {}) => {
     <ListItem
       id="test"
       title="Test Title"
-      type={0} //RadioButton,
+      type={0} // RadioButton,
       selected={SelectionState.unselected}
       isOptionsPanelOpen={false}
       onChange={onChangeMock}
@@ -92,7 +92,7 @@ describe("List Item", () => {
     expect(contentContainer.children.length).toBe(2);
 
     const subtitle = contentContainer.children[1];
-    expect(subtitle.innerHTML).toBe('I3S')
+    expect(subtitle.innerHTML).toBe("I3S");
   });
 
   it("Should render Radio List Item", () => {

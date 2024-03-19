@@ -1,20 +1,20 @@
 import styled, { css } from "styled-components";
 import { CollapseDirection, ExpandState } from "../../types";
-import { SyntheticEvent } from "react";
+import { type SyntheticEvent } from "react";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 
 const IconButton = styled.div<{
-  expandState: ExpandState;
-  collapseDirection: CollapseDirection;
-  fillExpanded?: string;
-  fillCollapsed?: string;
+  $expandState: ExpandState;
+  $collapseDirection: CollapseDirection;
+  $fillExpanded?: string;
+  $fillCollapsed?: string;
 }>`
   transform: rotate(
-    ${({ expandState, collapseDirection }) => {
-      if (collapseDirection === CollapseDirection.bottom) {
-        return `${expandState === ExpandState.expanded ? "-" : ""}90deg`;
+    ${({ $expandState, $collapseDirection }) => {
+      if ($collapseDirection === CollapseDirection.bottom) {
+        return `${$expandState === ExpandState.expanded ? "-" : ""}90deg`;
       }
-      return `${expandState === ExpandState.expanded ? "" : "-"}90deg`;
+      return `${$expandState === ExpandState.expanded ? "" : "-"}90deg`;
     }}
   );
   width: 24px;
@@ -23,17 +23,17 @@ const IconButton = styled.div<{
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  ${({ theme, expandState, fillExpanded, fillCollapsed }) => {
-    if (expandState === ExpandState.expanded) {
-      if (fillExpanded) {
+  ${({ theme, $expandState, $fillExpanded, $fillCollapsed }) => {
+    if ($expandState === ExpandState.expanded) {
+      if ($fillExpanded) {
         return css`
-          fill: ${fillExpanded};
+          fill: ${$fillExpanded};
         `;
       }
     } else {
-      if (fillCollapsed) {
+      if ($fillCollapsed) {
         return css`
-          fill: ${fillCollapsed};
+          fill: ${$fillCollapsed};
         `;
       }
     }
@@ -58,7 +58,7 @@ const IconButtonContainer = styled.div<{
   height: ${({ height }) => `${height}px`}}
 `;
 
-type ExpandIconProps = {
+interface ExpandIconProps {
   /** expanded/collapsed */
   expandState: ExpandState;
   /** direction expander collapse to */
@@ -73,7 +73,7 @@ type ExpandIconProps = {
   height?: number;
   /** click event handler */
   onClick: (e: SyntheticEvent) => void;
-};
+}
 export const ExpandIcon = ({
   expandState,
   onClick,
@@ -85,10 +85,10 @@ export const ExpandIcon = ({
 }: ExpandIconProps) => {
   return (
     <IconButton
-      expandState={expandState}
-      collapseDirection={collapseDirection}
-      fillExpanded={fillExpanded}
-      fillCollapsed={fillCollapsed}
+      $expandState={expandState}
+      $collapseDirection={collapseDirection}
+      $fillExpanded={fillExpanded}
+      $fillCollapsed={fillCollapsed}
       onClick={onClick}
     >
       <IconButtonContainer width={width} height={height}>

@@ -191,7 +191,7 @@ export const BasemapListPanel = ({
                     onOptionsClick(item.id);
                   }}
                 >
-                  <OptionsIcon panel={Panels.Bookmarks} />
+                  <OptionsIcon $panel={Panels.Bookmarks} />
                 </OptionsButton>
               </Popover>
             )}

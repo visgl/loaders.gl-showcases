@@ -2,15 +2,15 @@ import type { HelpShortcutItem } from "../../types";
 
 import styled from "styled-components";
 
-type ContainerProps = {
+interface ContainerProps {
   active: boolean;
-};
+}
 
-type DesktopShortcutItemProps = {
+interface DesktopShortcutItemProps {
   shortcut: HelpShortcutItem;
   active: boolean;
   onHover: (id: string) => void;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -46,7 +46,7 @@ export const DesktopShortcutItem = ({
     <Container
       data-testid={shortcut.id}
       active={active}
-      onMouseOver={() => onHover(shortcut.id)}
+      onMouseOver={() => { onHover(shortcut.id); }}
     >
       <ImageBlock>{shortcut.icon}</ImageBlock>
       <TextBlock>{shortcut.text}</TextBlock>

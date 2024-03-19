@@ -3,8 +3,8 @@ import styled from "styled-components";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
-import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 import { ButtonSize } from "../../types";
+import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   selectBaseMaps,
@@ -13,9 +13,9 @@ import {
 } from "../../redux/slices/base-maps-slice";
 import { BasemapListPanel } from "../basemap-list-panel/basemap-list-panel";
 
-type MapOptionPanelProps = {
+interface MapOptionPanelProps {
   insertBaseMap: () => void;
-};
+}
 
 const MapOptionsContainer = styled.div`
   display: flex;

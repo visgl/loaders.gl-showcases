@@ -23,7 +23,7 @@ import {
   color_accent_tertiary,
 } from "./constants/colors";
 import * as Pages from "./pages";
-import { AppThemes, ComparisonMode, Theme } from "./types";
+import { type AppThemes, ComparisonMode, Theme } from "./types";
 
 const ContentWrapper = styled.div`
   top: 0;
@@ -181,7 +181,7 @@ export const App = () => {
               />
             </Routes>
           </ContentWrapper>
-          {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
+          {showHelp && <HelpPanel onClose={() => { setShowHelp(false); }} />}
         </BrowserRouter>
       </ThemeProvider>
     </>

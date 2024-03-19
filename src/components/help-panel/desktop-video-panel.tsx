@@ -4,13 +4,13 @@ import { LoadingSpinner } from "../loading-spinner/loading-spinner";
 
 const PLACEHOLDER_TEXT = "Hover over gesture to see animation";
 
-type DesktopVideoPanelProps = {
+interface DesktopVideoPanelProps {
   video?: string;
-};
+}
 
-type VisibilityProps = {
+interface VisibilityProps {
   visible: boolean;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -66,7 +66,7 @@ export const DesktopVideoPanel = ({ video }: DesktopVideoPanelProps) => {
           autoPlay
           loop
           src={video}
-          onLoadedData={() => setIsLoading(false)}
+          onLoadedData={() => { setIsLoading(false); }}
         />
       )}
       {!video && <Placeholder>{PLACEHOLDER_TEXT}</Placeholder>}

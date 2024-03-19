@@ -1,8 +1,8 @@
-import { Tile3D } from "@loaders.gl/tiles";
-import { FiltersByAttribute } from "../../types";
-import { AttributeStorageInfo, I3SAttributeLoader } from "@loaders.gl/i3s";
+import type { Tile3D } from "@loaders.gl/tiles";
+import type { FiltersByAttribute } from "../../types";
+import { type AttributeStorageInfo, I3SAttributeLoader } from "@loaders.gl/i3s";
 import { load } from "@loaders.gl/core";
-import { TypedArray } from "@loaders.gl/schema";
+import type { TypedArray } from "@loaders.gl/schema";
 
 type I3STileAttributes = Record<string, string[] | TypedArray | null>;
 
@@ -22,7 +22,7 @@ export const filterTile = async (
     if (tile.content && filtersByAttribute) {
       if (tile.content.userData?.originalIndices === undefined) {
         tile.content.userData = {};
-        //save original indices for filtring cancellation
+        // save original indices for filtring cancellation
         tile.content.userData.originalIndices = tile.content.indices;
       }
       tile.content.indices = tile.content.userData?.originalIndices;
@@ -107,7 +107,7 @@ async function filterTileIndices(
   const attributeValuesMap = {};
   objectIdAttributeData[objectIdField.name]?.forEach((elem, index) => {
     attributeValuesMap[elem] =
-      //@ts-expect-error possible null
+      // @ts-expect-error possible null
       tileFilterAttributeData[filterAttributeField.name][index];
   });
 

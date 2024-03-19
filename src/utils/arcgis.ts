@@ -1,6 +1,6 @@
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
-import { getUserContent, IItem } from "@esri/arcgis-rest-portal";
-import { IArcGisContent } from "../types";
+import { getUserContent, type IItem } from "@esri/arcgis-rest-portal";
+import type { IArcGisContent } from "../types";
 import { formatTimestamp } from "../utils/format/format-utils";
 
 const ARCGIS_REST_USER_SESSION = "__ARCGIS_REST_USER_SESSION__";
@@ -13,7 +13,7 @@ const updateSessionInfo = async (
   if (session) {
     localStorage.setItem(ARCGIS_REST_USER_SESSION, session.serialize());
     const user = await session.getUser();
-    email = user.email || "";
+    email = user.email ?? "";
     localStorage.setItem(ARCGIS_REST_USER_INFO, email);
   } else {
     localStorage.removeItem(ARCGIS_REST_USER_SESSION);
@@ -39,7 +39,7 @@ const getAuthOptions = () => {
   const port = window.location.port ? `:${window.location.port}` : "";
   const options = {
     redirectUri: `${window.location.protocol}//${window.location.hostname}${port}/auth`,
-    clientId: process.env.REACT_APP_ARCGIS_REST_CLIENT_ID || "",
+    clientId: process.env.REACT_APP_ARCGIS_REST_CLIENT_ID ?? "",
     popup: true,
     pkce: true,
   };
@@ -55,7 +55,7 @@ const getAuthOptions = () => {
  * @returns the user's email or an empty string if the user is not logged in.
  */
 export const getAuthenticatedUser = (): string => {
-  return localStorage.getItem(ARCGIS_REST_USER_INFO) || "";
+  return localStorage.getItem(ARCGIS_REST_USER_INFO) ?? "";
 };
 
 /**
@@ -85,7 +85,7 @@ export const arcGisRequestLogin = async () => {
 export const arcGisCompleteLogin = async () => {
   const options = getAuthOptions();
   if (options.clientId) {
-    ArcGISIdentityManager.completeOAuth2(options);
+    await ArcGISIdentityManager.completeOAuth2(options);
   }
 };
 
@@ -114,7 +114,7 @@ class ArcGisContent implements IArcGisContent {
 
   constructor(item: IItem, token: string) {
     this.id = item.id;
-    this.url = item.url || "";
+    this.url = item.url ?? "";
     this.name = item.name || item.title;
     this.title = item.title;
     this.token = token;

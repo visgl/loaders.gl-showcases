@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ActionButton } from "../action-button/action-button";
-import { ActionButtonVariant, LayoutProps } from "../../types";
+import { ActionButtonVariant, type LayoutProps } from "../../types";
 import WarningIcon from "../../../public/icons/warning.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
@@ -34,12 +34,12 @@ const ButtonsContainer = styled.div<{ justify: string }>`
   justify-content: ${(props) => props.justify};
 `;
 
-type UploadPanelItemProps = {
+interface UploadPanelItemProps {
   title?: string;
   children: React.ReactNode;
   onCancel: () => void;
   onConfirm?: () => void;
-};
+}
 
 export const UploadPanelItem = ({
   title,
@@ -50,9 +50,9 @@ export const UploadPanelItem = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Content>
-        <Title>{title ? title : <WarningIcon />}</Title>
+        <Title>{title ?? <WarningIcon />}</Title>
         {children}
         <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
           <ActionButton

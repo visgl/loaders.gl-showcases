@@ -1,11 +1,11 @@
-import { ValidatedTile, ValidatedDataType } from "../../types";
+import { type ValidatedTile, ValidatedDataType } from "../../types";
 import { PanelHorizontalLine } from "../common";
 import { ValidateTileSection } from "./validate-tile-section";
 
-type ValidatePanelProps = {
+interface ValidatePanelProps {
   validatedTileWarnings: ValidatedTile[];
   validatedTileOk: ValidatedTile[];
-};
+}
 
 export const ValidateTilePanel = ({
   validatedTileWarnings,
@@ -20,7 +20,7 @@ export const ValidateTilePanel = ({
         />
       )}
       {validatedTileWarnings.length > 0 && validatedTileOk.length > 0 && (
-        <PanelHorizontalLine top={0} bottom={0} />
+        <PanelHorizontalLine $top={0} $bottom={0} />
       )}
       {validatedTileWarnings.length > 0 && (
         <ValidateTileSection

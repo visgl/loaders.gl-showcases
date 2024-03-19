@@ -1,5 +1,5 @@
-import { ReactEventHandler, ReactNode } from "react";
-import styled, { DefaultTheme, useTheme } from "styled-components";
+import { type ReactEventHandler, type ReactNode } from "react";
+import styled, { type DefaultTheme, useTheme } from "styled-components";
 import { color_accent_primary } from "../../constants/colors";
 
 const Container = styled.div<{ theme: DefaultTheme }>`
@@ -21,7 +21,7 @@ const ConfirmationButtons = styled.div`
 `;
 
 const ConfirmationButton = styled.div<{ color?: string; theme?: DefaultTheme }>`
-  color: ${({ color, theme }) => color || theme.colors.accentColor};
+  color: ${({ color, theme }) => color ?? theme.colors.accentColor};
   cursor: pointer;
 `;
 

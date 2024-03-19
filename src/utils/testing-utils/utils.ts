@@ -1,4 +1,4 @@
-import { Page } from "puppeteer";
+import type { Page } from "puppeteer";
 
 const URL_CHECKING_INTERVAL = 500;
 const URL_CHECKING_TIMEOUT = 10000;
@@ -27,7 +27,7 @@ export const clickAndNavigate = async (
     for (let i = 0; i < URL_CHECKING_TIMEOUT / URL_CHECKING_INTERVAL; i++) {
       await page.waitForTimeout(URL_CHECKING_INTERVAL);
       currentUrl = page.url();
-      if (currentUrl.indexOf(waitFor) !== -1) {
+      if (currentUrl.includes(waitFor)) {
         break;
       }
     }

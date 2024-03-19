@@ -80,19 +80,20 @@ const INIT_VALUE_EXPECTED = {
   status: "idle",
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe("slice: arcgis-content", () => {
   beforeAll(() => {
     getArcGisUserContentMock.mockImplementation(async () => {
-      sleep(10);
+      void sleep(10);
       return CONTENT_EXPECTED;
     });
   });
 
   it("Reducer should return the initial state", () => {
+    // @ts-expect-error test data doesn't match type expected
     expect(reducer(undefined, { type: undefined })).toEqual(
       INIT_VALUE_EXPECTED
     );
@@ -106,7 +107,7 @@ describe("slice: arcgis-content", () => {
 
   it("Selector should return 'loading' status", () => {
     const store = setupStore();
-    /* No await! */ store.dispatch(getArcGisContent());
+    /* No await! */ void store.dispatch(getArcGisContent());
     const state = store.getState();
     expect(selectStatus(state)).toEqual("loading");
   });

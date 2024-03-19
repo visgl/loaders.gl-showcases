@@ -3,6 +3,7 @@ import { PageId } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksPanel } from "./bookmarks-panel";
+import { act } from "react-dom/test-utils";
 
 jest.mock("../../utils/hooks/layout");
 
@@ -93,10 +94,10 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
     const editOption = getByText("Edit Bookmark");
-    userEvent.click(editOption);
+    act(() => { userEvent.click(editOption); });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 0.4");
   });
 
@@ -105,10 +106,10 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     expect(getAllByRole("button").length).toBe(4);
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    act(() => { userEvent.click(clearOption); });
     expect(getAllByRole("button").length).toBe(5);
   });
 
@@ -117,12 +118,12 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    act(() => { userEvent.click(clearOption); });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 0.4");
     const cancelClear = getAllByRole("button")[4];
-    userEvent.click(cancelClear);
+    act(() => { userEvent.click(cancelClear); });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
   });
 
@@ -131,11 +132,11 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    act(() => { userEvent.click(clearOption); });
     const confirmButton = getAllByRole("button")[3];
-    userEvent.click(confirmButton);
+    act(() => { userEvent.click(confirmButton); });
     expect(onClearBookmarks).toHaveBeenCalled();
   });
 
@@ -144,9 +145,9 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    act(() => { userEvent.click(clearOption); });
     const body = document.getElementsByTagName("body")[0];
     expect(body.childNodes[1]).toContainHTML(
       "Are you sure you  want to clear all  bookmarks?"
@@ -158,9 +159,9 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    act(() => { userEvent.click(uploadOption); });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     expect(popover).toContainHTML(
@@ -173,13 +174,13 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    act(() => { userEvent.click(uploadOption); });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const uploadButton = getByText("Next");
-    userEvent.click(uploadButton);
+    act(() => { userEvent.click(uploadButton); });
     expect(popover).toContainHTML(dragAndDropText);
   });
 
@@ -188,13 +189,13 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    act(() => { userEvent.click(uploadOption); });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const cancelButton = getByText("Cancel");
-    userEvent.click(cancelButton);
+    act(() => { userEvent.click(cancelButton); });
     expect(popover).not.toContainHTML("Cancel");
   });
 
@@ -203,15 +204,15 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    act(() => { userEvent.click(uploadOption); });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const uploadButton = getByText("Next");
-    userEvent.click(uploadButton);
+    act(() => { userEvent.click(uploadButton); });
     const cancelButton = getByText("Cancel");
-    userEvent.click(cancelButton);
+    act(() => { userEvent.click(cancelButton); });
     expect(popover).not.toContainHTML(dragAndDropText);
   });
 
@@ -220,15 +221,15 @@ describe("BookmarksPanel", () => {
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    act(() => { userEvent.click(optionButton); });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    act(() => { userEvent.click(clearOption); });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const warning = "Are you sure you  want to clear all  bookmarks?";
     expect(popover).toContainHTML(warning);
     const cancelButton = getByText("No, Keep");
-    userEvent.click(cancelButton);
+    act(() => { userEvent.click(cancelButton); });
     expect(popover).not.toContainHTML(warning);
   });
 });

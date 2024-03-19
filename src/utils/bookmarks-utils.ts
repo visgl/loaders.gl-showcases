@@ -2,7 +2,7 @@ import type { ArcGISWebScene } from "@loaders.gl/i3s/src/types";
 import { Proj4Projection } from "@math.gl/proj4";
 import { WebMercatorViewport } from "@deck.gl/core";
 
-import { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
+import type { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
 import { getLonLatWithElevationOffset } from "./elevation-utils";
 import { flattenLayerIds } from "./layer-utils";
 
@@ -11,11 +11,8 @@ import {
   bookmarksSchemaJson,
 } from "../constants/json-schemas/bookmarks";
 
-import JsonSchema, {
-  Result,
-  SchemaDocument,
-  Validator,
-} from "@hyperjump/json-schema";
+import JsonSchema from "@hyperjump/json-schema";
+import type { Result, SchemaDocument, Validator } from "@hyperjump/json-schema";
 
 const PSEUDO_MERCATOR_CRS_WKIDS = [102100, 3857];
 
@@ -143,13 +140,15 @@ const convertArcGisCameraPositionToBookmarkViewState = (
     const [, , zValue] = viewport.unproject([0, 0, -1]);
     const zoom = Math.log2(zValue / altitude);
 
-    return {
+    const resultViewState = {
       longitude: pLongitude,
       latitude: pLatitude,
       zoom,
       bearing: heading < 180 ? heading : heading - 360,
       pitch: tilt,
-    } as LayerViewState;
+    };
+
+    return resultViewState as LayerViewState;
   }
 
   return null;

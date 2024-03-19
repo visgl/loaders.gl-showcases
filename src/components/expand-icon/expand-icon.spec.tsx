@@ -32,14 +32,14 @@ describe("ExpandIcon", () => {
   it("Should show collapsed state", () => {
     const svgElement = componentElement.firstChild;
     let transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( 90deg )");
+    expect(transform).toBe("rotate(\n    90deg\n  )");
 
     renderWithTheme(
       <ExpandIcon expandState={ExpandState.collapsed} onClick={onClick} />,
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( -90deg )");
+    expect(transform).toBe("rotate(\n    -90deg\n  )");
   });
 
   it("Should collapse to the bottom", () => {
@@ -53,7 +53,7 @@ describe("ExpandIcon", () => {
     );
     const svgElement = componentElement.firstChild;
     let transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( -90deg )");
+    expect(transform).toBe("rotate(\n    -90deg\n  )");
 
     renderWithTheme(
       <ExpandIcon
@@ -64,7 +64,7 @@ describe("ExpandIcon", () => {
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( 90deg )");
+    expect(transform).toBe("rotate(\n    90deg\n  )");
   });
 
   it("Should fill svg with custom colors", () => {

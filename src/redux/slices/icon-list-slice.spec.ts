@@ -7,7 +7,7 @@ import {
   selectIconItemPicked,
   selectIconItemPickedId,
 } from "./icon-list-slice";
-import { IIconItem, IconListSetName } from "../../types";
+import { type IIconItem, IconListSetName } from "../../types";
 
 describe("slice: icon-list", () => {
   it("Selector should return the initial state", () => {
@@ -32,7 +32,7 @@ describe("slice: icon-list", () => {
   it("Should add an icon item and set it as a current one", () => {
     const store = setupStore();
     const texture: IIconItem = {
-      id: `myTexture`,
+      id: "myTexture",
       icon: "",
       extData: { imageUrl: "path" },
       custom: true,

@@ -16,9 +16,9 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
-import { LayoutProps, SliderType } from "../../types";
+import { type LayoutProps, SliderType } from "../../types";
 
-type ListItemProps = {
+interface ListItemProps {
   url: string;
   sliderType: SliderType;
   editingMode?: boolean;
@@ -27,7 +27,7 @@ type ListItemProps = {
   selected: boolean;
   isMobile: boolean;
   editing?: boolean;
-};
+}
 
 const ListItem = styled.div<LayoutProps & ListItemProps>`
   display: flex;
@@ -160,7 +160,7 @@ const SliderItemText = styled.div<{ selected: boolean }>`
     `}
 `;
 
-type SliderListItemProps = {
+interface SliderListItemProps {
   id: string;
   children?: React.ReactNode;
   selected: boolean;
@@ -171,127 +171,127 @@ type SliderListItemProps = {
   sliderItemText?: string;
   onSelect: () => void;
   onDelete: () => void;
-};
+}
 
 const confirmText = "Are you sure you  want to delete the bookmark?";
 
-export const SliderListItem = forwardRef(
-  (
-    props: SliderListItemProps,
-    ref: React.ForwardedRef<null | HTMLDivElement>
-  ) => {
-    const {
-      id,
-      selected,
-      url,
-      sliderType,
-      editingMode,
-      editingSelected,
-      sliderItemText,
-      onSelect,
-      onDelete,
-    } = props;
-    const [isHovering, setIsHovering] = useState<boolean>(false);
-    const [deleteBookmark, setDeleteBookmark] = useState<boolean>(false);
-    const [isDeletePanelOpen, setIsDeletePanelOpen] = useState<boolean>(false);
+export const SliderListItem = forwardRef(function SliderListItem(
+  props: SliderListItemProps,
+  ref: React.ForwardedRef<null | HTMLDivElement>
+) {
+  const {
+    id,
+    selected,
+    url,
+    sliderType,
+    editingMode,
+    editingSelected,
+    sliderItemText,
+    onSelect,
+    onDelete,
+  } = props;
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [deleteBookmark, setDeleteBookmark] = useState<boolean>(false);
+  const [isDeletePanelOpen, setIsDeletePanelOpen] = useState<boolean>(false);
 
-    const layout = useAppLayout();
+  const layout = useAppLayout();
 
-    const isMobileLayout = layout !== Layout.Desktop;
+  const isMobileLayout = layout !== Layout.Desktop;
 
-    const onMouseEnter = () => {
-      setIsHovering(true);
-    };
+  const onMouseEnter = () => {
+    setIsHovering(true);
+  };
 
-    const onMouseLeave = () => {
-      setIsHovering(false);
-    };
+  const onMouseLeave = () => {
+    setIsHovering(false);
+  };
 
-    const onDeleteBookmarkClickHandler = () => {
-      setDeleteBookmark(true);
-    };
+  const onDeleteBookmarkClickHandler = () => {
+    setDeleteBookmark(true);
+  };
 
-    const onUndoDeleting = () => {
-      setDeleteBookmark(false);
-    };
+  const onUndoDeleting = () => {
+    setDeleteBookmark(false);
+  };
 
-    const renderListItemContentDesktop = () => {
-      return (
-        <>
-          {deleteBookmark && (
-            <>
-              <SliderInnerButton width={32} height={32} onInnerClick={onDelete}>
-                <ConfirmIcon />
-              </SliderInnerButton>
-              <SliderInnerButton
-                width={32}
-                height={32}
-                onInnerClick={onUndoDeleting}
-              >
-                <CloseIcon />
-              </SliderInnerButton>
-            </>
-          )}
-          {!deleteBookmark && (
+  const renderListItemContentDesktop = () => {
+    return (
+      <>
+        {deleteBookmark && (
+          <>
+            <SliderInnerButton width={32} height={32} onInnerClick={onDelete}>
+              <ConfirmIcon />
+            </SliderInnerButton>
             <SliderInnerButton
               width={32}
               height={32}
-              onInnerClick={onDeleteBookmarkClickHandler}
+              onInnerClick={onUndoDeleting}
             >
-              <TrashIcon />
+              <CloseIcon />
             </SliderInnerButton>
-          )}
-        </>
-      );
-    };
-
-    const renderListItemContentMobile = () => {
-      return (
-        <TrashIconContainer
-          deleting={isDeletePanelOpen}
-          onClick={() => setIsDeletePanelOpen((prev) => !prev)}
-        >
-          <TrashIcon />
-        </TrashIconContainer>
-      );
-    };
-
-    return (
-      <>
-        <ListItem
-          id={id}
-          ref={ref}
-          layout={layout}
-          url={url}
-          sliderType={sliderType}
-          editingMode={editingMode}
-          isMobile={isMobileLayout}
-          selected={selected}
-          deleting={isDeletePanelOpen}
-          editing={editingSelected}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onClick={onSelect}
-        >
-          {isHovering &&
-            !isMobileLayout &&
-            editingMode &&
-            renderListItemContentDesktop()}
-          {isMobileLayout && editingMode && renderListItemContentMobile()}
-          {sliderItemText && (
-            <SliderItemText selected={selected}>
-              {sliderItemText}
-            </SliderItemText>
-          )}
-        </ListItem>
-        {isDeletePanelOpen && (
-          <ConfirmDeletingPanel
-            title={confirmText}
-            onCancel={() => setIsDeletePanelOpen(false)}
-            onConfirm={onDelete}
-          />
+          </>
+        )}
+        {!deleteBookmark && (
+          <SliderInnerButton
+            width={32}
+            height={32}
+            onInnerClick={onDeleteBookmarkClickHandler}
+          >
+            <TrashIcon />
+          </SliderInnerButton>
         )}
       </>
     );
-  }
-);
+  };
+
+  const renderListItemContentMobile = () => {
+    return (
+      <TrashIconContainer
+        deleting={isDeletePanelOpen}
+        onClick={() => {
+          setIsDeletePanelOpen((prev) => !prev);
+        }}
+      >
+        <TrashIcon />
+      </TrashIconContainer>
+    );
+  };
+
+  return (
+    <>
+      <ListItem
+        id={id}
+        ref={ref}
+        $layout={layout}
+        url={url}
+        sliderType={sliderType}
+        editingMode={editingMode}
+        isMobile={isMobileLayout}
+        selected={selected}
+        deleting={isDeletePanelOpen}
+        editing={editingSelected}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onSelect}
+      >
+        {isHovering &&
+          !isMobileLayout &&
+          editingMode &&
+          renderListItemContentDesktop()}
+        {isMobileLayout && editingMode && renderListItemContentMobile()}
+        {sliderItemText && (
+          <SliderItemText selected={selected}>{sliderItemText}</SliderItemText>
+        )}
+      </ListItem>
+      {isDeletePanelOpen && (
+        <ConfirmDeletingPanel
+          title={confirmText}
+          onCancel={() => {
+            setIsDeletePanelOpen(false);
+          }}
+          onConfirm={onDelete}
+        />
+      )}
+    </>
+  );
+});

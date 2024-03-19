@@ -3,15 +3,16 @@
  * https://medium.com/@stefanmorris/proper-naming-of-color-variables-683264fec0f4
  */
 
-import { COLOR } from "../types";
+import { type COLOR } from "../types";
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export const color_brand_primary = "#232430";
 export const color_brand_secondary = "#60C2A4";
 export const color_brand_secondary_dark = "#D7F4DB";
 export const color_brand_tertiary = "#605DEC";
 export const color_brand_quaternary = "#9EA2AE";
 export const color_brand_quinary = "#30B18A";
-export const color_brand_senary = '#29293B';
+export const color_brand_senary = "#29293B";
 
 export const dim_brand_tertinary = "#4744D3";
 
@@ -30,6 +31,7 @@ export const color_accent_tertiary = "#FDCECE";
 export const dim_canvas_primary = "#616678";
 export const dim_canvas_secondary = "#CDCFD6";
 export const dim_canvas_tertiary = "#808080";
+/* eslint-enable */
 
 export const COLORS_BY_ATTRIBUTE: {
   min: {

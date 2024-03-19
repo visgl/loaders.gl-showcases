@@ -1,4 +1,4 @@
-import { Draft202012Schema } from "@hyperjump/json-schema";
+import { type Draft202012Schema } from "@hyperjump/json-schema";
 
 export const bookmarksSchemaId = "i3s-explorer:bookmarks-schema";
 export const bookmarksSchemaJson: Draft202012Schema = {
@@ -34,14 +34,14 @@ export const bookmarksSchemaJson: Draft202012Schema = {
       activeLayersIdsLeftSide: {
         type: "array",
         items: {
-          type: "string"
-        }
+          type: "string",
+        },
       },
       activeLayersIdsRightSide: {
         type: "array",
         items: {
-          type: "string"
-        }
+          type: "string",
+        },
       },
     },
     required: ["id", "imageUrl"],
@@ -69,7 +69,7 @@ export const bookmarksSchemaJson: Draft202012Schema = {
             type: "boolean",
           },
           viewState: {
-            $ref: "#/$defs/LayerViewState"
+            $ref: "#/$defs/LayerViewState",
           },
           layers: {
             $ref: "#/$defs/LayerExample",
@@ -146,6 +146,6 @@ export const bookmarksSchemaJson: Draft202012Schema = {
         },
       },
       required: ["latitude", "longitude", "zoom"],
-    }
+    },
   },
 };

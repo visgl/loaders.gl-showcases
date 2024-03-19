@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BaseMap } from "../../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type BaseMap } from "../../types";
 import { BASE_MAPS } from "../../constants/map-styles";
-import { RootState } from "../store";
+import { type RootState } from "../store";
 
 // Define a type for the slice state
 export interface BaseMapsState {

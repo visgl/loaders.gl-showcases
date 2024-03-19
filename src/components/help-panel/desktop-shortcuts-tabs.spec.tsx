@@ -27,7 +27,7 @@ describe("Desktop Shortcut Tabs", () => {
     const trackpadTab = screen.getByTestId("tab-trackpad");
     const mouseTab = screen.getByTestId("tab-mouse");
 
-    expect(mouseTab).toHaveStyle(`color: #60C2A4`);
+    expect(mouseTab).toHaveStyle("color: #60C2A4");
 
     userEvent.click(mouseTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);

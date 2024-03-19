@@ -183,10 +183,13 @@ describe("Url Utils - urlParamsToViewState", () => {
 
 describe("Url Utils - convertUrlToRestFormat", () => {
   test("Should convert to the format required", () => {
-    const urlExpected = "https://www.arcgis.com/sharing/rest/content/items/ae34b234d390148/data";
+    const urlExpected =
+      "https://www.arcgis.com/sharing/rest/content/items/ae34b234d390148/data";
 
-    const urlItem = "https://some.maps.arcgis.com/home/item.html?id=ae34b234d390148";
-    const urlViewer = "https://some.maps.arcgis.com/home/webscene/viewer.html?webscene=ae34b234d390148";
+    const urlItem =
+      "https://some.maps.arcgis.com/home/item.html?id=ae34b234d390148";
+    const urlViewer =
+      "https://some.maps.arcgis.com/home/webscene/viewer.html?webscene=ae34b234d390148";
     expect(convertUrlToRestFormat(urlItem)).toEqual(urlExpected);
     expect(convertUrlToRestFormat(urlViewer)).toEqual(urlExpected);
 

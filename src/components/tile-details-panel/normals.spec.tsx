@@ -25,7 +25,7 @@ const callRender = (renderFunc, props = {}) => {
   return renderFunc(
     <Normals
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       tile={TILE}
       trianglesPercentage={30}
       normalsLength={20}

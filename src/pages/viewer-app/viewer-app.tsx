@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// eslint-disable-next-line react/no-deprecated
 import { render } from "react-dom";
-import { InteractionStateChange, ViewState } from "@deck.gl/core";
+import { type InteractionStateChange, type ViewState } from "@deck.gl/core";
 import { lumaStats } from "@luma.gl/core";
-import { loadFeatureAttributes, StatisticsInfo } from "@loaders.gl/i3s";
+import { loadFeatureAttributes, type StatisticsInfo } from "@loaders.gl/i3s";
 import { v4 as uuidv4 } from "uuid";
-import { Stats } from "@probe.gl/stats";
+import { type Stats } from "@probe.gl/stats";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { EXAMPLES } from "../../constants/i3s-examples";
-import { Tileset3D } from "@loaders.gl/tiles";
+import { type Tileset3D } from "@loaders.gl/tiles";
 
 import { DeckGlWrapper } from "../../components/deck-gl-wrapper/deck-gl-wrapper";
 import { AttributesPanel } from "../../components/attributes-panel/attributes-panel";
@@ -20,19 +21,19 @@ import {
   viewStateToUrlParams,
 } from "../../utils/url-utils";
 import {
-  FeatureAttributes,
-  Sublayer,
-  LayerExample,
+  type FeatureAttributes,
+  type Sublayer,
+  type LayerExample,
   TilesetType,
   ActiveButton,
-  LayerViewState,
+  type LayerViewState,
   ListItemType,
   Layout,
-  Bookmark,
+  type Bookmark,
   DragMode,
   PageId,
-  TilesetMetadata,
   BaseMapGroup,
+  type TilesetMetadata,
 } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import {
@@ -58,7 +59,7 @@ import { MemoryUsagePanel } from "../../components/memory-usage-panel/memory-usa
 import { IS_LOADED_DELAY } from "../../constants/common";
 import { MobileToolsPanel } from "../../components/mobile-tools-panel/mobile-tools-panel";
 import { BookmarksPanel } from "../../components/bookmarks-panel/bookmarks-panel";
-import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { createViewerBookmarkThumbnail } from "../../utils/deck-thumbnail-utils";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
@@ -71,15 +72,17 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
+import {
+  selectSelectedBaseMap,
+  setInitialBaseMaps,
+} from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import {
   selectFiltersByAttribute,
   setColorsByAttrubute,
 } from "../../redux/slices/symbolization-slice";
-import { setInitialBaseMaps } from "../../redux/slices/base-maps-slice";
 import { getBSLStatisticsSummary } from "../../redux/slices/i3s-stats-slice";
-import { RootState } from "../../redux/store";
+import { type RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
 import {
   selectViewState,
@@ -171,7 +174,7 @@ export const ViewerApp = () => {
         id: sublayer.id,
         url: sublayer.url,
         token: sublayer.token,
-        type: sublayer.type || TilesetType.I3S,
+        type: sublayer.type ?? TilesetType.I3S,
       }));
   }, [flattenedSublayers]);
 
@@ -225,7 +228,7 @@ export const ViewerApp = () => {
       });
     }
 
-    dispatch(
+    void dispatch(
       getFlattenedSublayers({
         tilesetsData,
         buildingExplorerOpened,
@@ -235,7 +238,7 @@ export const ViewerApp = () => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
     if (buildingExplorerOpened && tilesetsData[0]) {
-      dispatch(
+      void dispatch(
         getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url })
       );
     }
@@ -291,30 +294,30 @@ export const ViewerApp = () => {
     setSelectedFeatureIndex(-1);
   }, []);
 
-  const handleClick = async (info) => {
+  const handleClick = (info) => {
     if (!info.object || info.index < 0 || !info.layer) {
       handleClosePanel();
       return;
     }
     const options = info.object.tileset?.loadOptions || { i3s: {} };
     setAttributesLoading(true);
-    const selectedFeatureAttributes = await loadFeatureAttributes(
-      info.object,
-      info.index,
-      options
-    );
+    loadFeatureAttributes(info.object, info.index, options)
+      .then((selectedFeatureAttributes) => {
+        const selectedTilesetBasePath = info.object.tileset.basePath;
+        const statisticsInfo = info.object.tileset?.tileset?.statisticsInfo;
 
-    const selectedTilesetBasePath = info.object.tileset.basePath;
-    const statisticsInfo = info.object.tileset?.tileset?.statisticsInfo;
+        if (statisticsInfo) {
+          setTilesetStatisticsInfo(statisticsInfo);
+        }
 
-    if (statisticsInfo) {
-      setTilesetStatisticsInfo(statisticsInfo);
-    }
-
-    setAttributesLoading(false);
-    setSelectedFeatureAttributes(selectedFeatureAttributes);
-    setSelectedFeatureIndex(info.index);
-    setSelectedTilesetBasePath(selectedTilesetBasePath);
+        setAttributesLoading(false);
+        setSelectedFeatureAttributes(selectedFeatureAttributes);
+        setSelectedFeatureIndex(info.index);
+        setSelectedTilesetBasePath(selectedTilesetBasePath);
+      })
+      .catch(() => {
+        console.error("Loading feature attributes has failed");
+      });
   };
 
   const getTooltip = () => {
@@ -329,11 +332,11 @@ export const ViewerApp = () => {
   };
 
   const renderAttributesPanel = () => (
-    <AttributesSidePanelWrapper layout={layout}>
+    <AttributesSidePanelWrapper $layout={layout}>
       <AttributesPanel
         title={
-          selectedFeatureAttributes?.NAME ||
-          selectedFeatureAttributes?.OBJECTID ||
+          selectedFeatureAttributes?.NAME ??
+          selectedFeatureAttributes?.OBJECTID ??
           ""
         }
         onClose={handleClosePanel}
@@ -429,7 +432,7 @@ export const ViewerApp = () => {
       if (index >= 0 && flattenedSublayers[index]) {
         dispatch(
           updateLayerVisibility({
-            index: index,
+            index,
             visibility: sublayer.visibility,
           })
         );
@@ -463,29 +466,33 @@ export const ViewerApp = () => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) => [
-        ...prev,
-        {
-          id: newBookmarkId,
-          pageId: PageId.viewer,
-          imageUrl,
-          viewState: globalViewState,
-          layersLeftSide: activeLayers,
-          layersRightSide: [],
-          activeLayersIdsLeftSide: [...selectedLayerIds],
-          activeLayersIdsRightSide: [],
-        },
-      ]);
-      setSelectedBookmarkId(newBookmarkId);
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) => [
+          ...prev,
+          {
+            id: newBookmarkId,
+            pageId: PageId.viewer,
+            imageUrl,
+            viewState: globalViewState,
+            layersLeftSide: activeLayers,
+            layersRightSide: [],
+            activeLayersIdsLeftSide: [...selectedLayerIds],
+            activeLayersIdsRightSide: [],
+          },
+        ]);
+        setSelectedBookmarkId(newBookmarkId);
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onSelectBookmarkHandler = (
     bookmarkId: string,
     newBookmarks?: Bookmark[]
   ) => {
-    const bookmark = (newBookmarks || bookmarks).find(
+    const bookmark = (newBookmarks ?? bookmarks).find(
       ({ id }) => id === bookmarkId
     );
     if (!bookmark) {
@@ -510,23 +517,27 @@ export const ViewerApp = () => {
   }, []);
 
   const onEditBookmarkHandler = (bookmarkId: string) => {
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) =>
-        prev.map((bookmark) =>
-          bookmark.id === bookmarkId
-            ? {
-                ...bookmark,
-                imageUrl,
-                viewState: globalViewState,
-                layersLeftSide: activeLayers,
-                layersRightSide: [],
-                activeLayersIdsLeftSide: selectedLayerIds,
-                activeLayersIdsRightSide: [],
-              }
-            : bookmark
-        )
-      );
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) =>
+          prev.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? {
+                  ...bookmark,
+                  imageUrl,
+                  viewState: globalViewState,
+                  layersLeftSide: activeLayers,
+                  layersRightSide: [],
+                  activeLayersIdsLeftSide: selectedLayerIds,
+                  activeLayersIdsRightSide: [],
+                }
+              : bookmark
+          )
+        );
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onCloseBookmarkPanel = useCallback(() => {
@@ -626,7 +637,7 @@ export const ViewerApp = () => {
         onInteractionStateChange={onInteractionStateChange}
       />
       {layout !== Layout.Mobile && (
-        <OnlyToolsPanelWrapper layout={layout}>
+        <OnlyToolsPanelWrapper $layout={layout}>
           <MainToolsPanel
             id="viewer--tools-panel"
             activeButton={activeButton}
@@ -639,7 +650,7 @@ export const ViewerApp = () => {
         </OnlyToolsPanelWrapper>
       )}
       {layout === Layout.Mobile && (
-        <BottomToolsPanelWrapper layout={layout}>
+        <BottomToolsPanelWrapper $layout={layout}>
           <MobileToolsPanel
             id={"mobile-viewer-tools-panel"}
             activeButton={activeButton}
@@ -651,7 +662,7 @@ export const ViewerApp = () => {
         </BottomToolsPanelWrapper>
       )}
       {activeButton === ActiveButton.options && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <LayersPanel
             id="viewer--layers-panel"
             pageId={PageId.viewer}
@@ -659,20 +670,26 @@ export const ViewerApp = () => {
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
-            onLayerDelete={(id) => onLayerDeleteHandler(id)}
-            onPointToLayer={(viewState) => pointToTileset(viewState)}
+            onLayerDelete={(id) => {
+              onLayerDeleteHandler(id);
+            }}
+            onPointToLayer={(viewState) => {
+              pointToTileset(viewState);
+            }}
             type={ListItemType.Radio}
             sublayers={sublayers}
             onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.options)}
-            onBuildingExplorerOpened={(opened) =>
-              setBuildingExplorerOpened(opened)
-            }
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.options);
+            }}
+            onBuildingExplorerOpened={(opened) => {
+              setBuildingExplorerOpened(opened);
+            }}
           />
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.memory && (
-        <RightSidePanelWrapper layout={layout}>
+        <RightSidePanelWrapper $layout={layout}>
           <MemoryUsagePanel
             id={"viewer-memory-usage-panel"}
             memoryStats={memoryStats}
@@ -680,7 +697,9 @@ export const ViewerApp = () => {
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() => onChangeMainToolsPanelHandler(ActiveButton.memory)}
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.memory);
+            }}
           />
         </RightSidePanelWrapper>
       )}
@@ -696,13 +715,15 @@ export const ViewerApp = () => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
-          onClearBookmarks={() => setBookmarks([])}
+          onClearBookmarks={() => {
+            setBookmarks([]);
+          }}
           onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
         />
       )}
-      <MapControllPanel
+      <MapControlPanel
         bearing={globalViewState.main.bearing}
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
@@ -713,7 +734,9 @@ export const ViewerApp = () => {
         <CenteredContainer>
           <WarningPanel
             title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
-            onConfirm={() => setWrongBookmarkPageId(null)}
+            onConfirm={() => {
+              setWrongBookmarkPageId(null);
+            }}
           />
         </CenteredContainer>
       )}

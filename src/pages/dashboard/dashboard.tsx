@@ -26,9 +26,9 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
-import { LayoutProps } from "../../types";
+import { type LayoutProps } from "../../types";
 
-const TILESET_URL = `https://tiles.arcgis.com/tiles/fGAUuR7Wy4yySdod/arcgis/rest/services/SF_cut_3/SceneServer/layers/0`;
+const TILESET_URL = "https://tiles.arcgis.com/tiles/fGAUuR7Wy4yySdod/arcgis/rest/services/SF_cut_3/SceneServer/layers/0";
 const DEFAULT_MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 
@@ -309,9 +309,9 @@ export const Dashboard = () => {
   });
 
   return (
-    <DashboardContainer id="dashboard-container" layout={layout}>
-      <DeckWithTitleWrapper layout={layout}>
-        <Title id="dashboard-title" layout={layout}>
+    <DashboardContainer id="dashboard-container" $layout={layout}>
+      <DeckWithTitleWrapper $layout={layout}>
+        <Title id="dashboard-title" $layout={layout}>
           Explore and Debug I3S Data with one
           <GreenText id="green-text"> Simple and Easy-to-Use Tool</GreenText>
         </Title>
@@ -325,11 +325,11 @@ export const Dashboard = () => {
           <MaplibreMap mapStyle={DEFAULT_MAP_STYLE}></MaplibreMap>
         </DeckGL>
       </DeckWithTitleWrapper>
-      <Wrapper id="tools-wrapper" layout={layout}>
+      <Wrapper id="tools-wrapper" $layout={layout}>
         {layout !== Layout.Desktop && (
           <AppShowcaseMobile
             id="app-showcase"
-            layout={layout}
+            $layout={layout}
             src={AppShowcase}
           />
         )}
@@ -339,10 +339,10 @@ export const Dashboard = () => {
             <IphoneImage id="iphone-image" src={Iphone} />
           </>
         )}
-        <ToolsContainer id="tools-description-container" layout={layout}>
-          <ToolsItem id="tools-item-viewer" layout={layout}>
+        <ToolsContainer id="tools-description-container" $layout={layout}>
+          <ToolsItem id="tools-item-viewer" $layout={layout}>
             <ViewerImage />
-            <ToolItemDescription layout={layout}>
+            <ToolItemDescription $layout={layout}>
               Visualize multiple I3S datasets and 3d scenes at once. Gain
               insights into data correctness and performance.
             </ToolItemDescription>
@@ -350,9 +350,9 @@ export const Dashboard = () => {
               <Arrow fill={color_brand_tertiary} />
             </ArrowContainer>
           </ToolsItem>
-          <ToolsItem id="tools-item-debug" layout={layout}>
+          <ToolsItem id="tools-item-debug" $layout={layout}>
             <DebugImage />
-            <ToolItemDescription layout={layout}>
+            <ToolItemDescription $layout={layout}>
               Validate and explore each tile individually. Catch visualization
               errors and debug data easily, directly in your browser.
             </ToolItemDescription>
@@ -360,9 +360,9 @@ export const Dashboard = () => {
               <Arrow fill={color_brand_tertiary} />
             </ArrowContainer>
           </ToolsItem>
-          <ToolsItem id="tools-item-comparison" layout={layout}>
+          <ToolsItem id="tools-item-comparison" $layout={layout}>
             <ComparisonImage />
-            <ToolItemDescription layout={layout}>
+            <ToolItemDescription $layout={layout}>
               Compare different, or one dataset before and after data
               conversion. Look for conversion errors and memory anomalies.
             </ToolItemDescription>

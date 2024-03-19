@@ -3,7 +3,7 @@ import type { Tile3D } from "@loaders.gl/tiles";
 import { CubeGeometry } from "@luma.gl/engine";
 import { Ellipsoid } from "@math.gl/geospatial";
 import { Vector3 } from "@math.gl/core";
-import { BoundingSphere, OrientedBoundingBox } from "@math.gl/culling";
+import type { BoundingSphere, OrientedBoundingBox } from "@math.gl/culling";
 
 /**
  * Calculates  obb vertices of tile
@@ -42,7 +42,10 @@ export const getTileObbVertices = (tile: Tile3D): Float32Array => {
  * @param boundingVolume
  * @param positions
  */
-export const isAllVerticesInsideBoundingVolume = (boundingVolume: OrientedBoundingBox | BoundingSphere, positions: Float32Array): boolean => {
+export const isAllVerticesInsideBoundingVolume = (
+  boundingVolume: OrientedBoundingBox | BoundingSphere,
+  positions: Float32Array
+): boolean => {
   let isVerticesInsideObb = true;
 
   for (let index = 0; index < positions.length / 3; index += 3) {

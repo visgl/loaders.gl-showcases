@@ -74,7 +74,7 @@ describe("filterTile", () => {
         Promise.resolve({ OBJECTID_1: new Uint32Array([13, 100]) })
       );
 
-    //should not filter by the already applied filter, see result3
+    // should not filter by the already applied filter, see result3
     const result2 = await filterTile(mockTile, filtersByAttribute);
     expect(result2).toEqual({ isFiltered: true, id: "41513" });
     const result3 = await filterTile(mockTile, filtersByAttribute);

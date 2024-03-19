@@ -8,13 +8,13 @@ import styled, { css } from "styled-components";
 import { load } from "@loaders.gl/core";
 
 import {
-  LayerExample,
-  ListItemType,
-  BaseMap,
-  LayerViewState,
-  Bookmark,
-  PageId,
-  ComparisonSideMode,
+  type LayerExample,
+  type ListItemType,
+  type BaseMap,
+  type LayerViewState,
+  type Bookmark,
+  type PageId,
+  type ComparisonSideMode,
   BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
@@ -32,8 +32,8 @@ import {
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
-import { ArcGISWebSceneLoader, LayerError } from "@loaders.gl/i3s";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { ArcGISWebSceneLoader, type LayerError } from "@loaders.gl/i3s";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
@@ -57,16 +57,16 @@ enum Tabs {
   MapOptions,
 }
 
-type TabProps = {
-  active: boolean;
-};
+interface TabProps {
+  $active: boolean;
+}
 
-type CustomItem = {
+interface CustomItem {
   name: string;
   url: string;
   token?: string;
   group?: BaseMapGroup;
-};
+}
 
 const Tab = styled.div<TabProps>`
   position: relative;
@@ -85,8 +85,8 @@ const Tab = styled.div<TabProps>`
     }
   }
 
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     css`
       &::after {
         content: "";
@@ -152,7 +152,7 @@ const TitleWrapper = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-type LayersPanelProps = {
+interface LayersPanelProps {
   id: string;
   pageId: PageId;
   layers: LayerExample[];
@@ -170,7 +170,7 @@ type LayersPanelProps = {
   onClose: () => void;
   onPointToLayer: (viewState?: LayerViewState) => void;
   onBuildingExplorerOpened: (opened: boolean) => void;
-};
+}
 
 export const LayersPanel = ({
   id,
@@ -210,7 +210,9 @@ export const LayersPanel = ({
   const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
   const [unsupportedLayers, setUnsupportedLayers] = useState<string[]>([]);
 
-  useClickOutside([warningNode], () => setShowExistedError(false));
+  useClickOutside([warningNode], () => {
+    setShowExistedError(false);
+  });
 
   const handleInsertLayer = (layer: {
     name: string;
@@ -374,21 +376,25 @@ export const LayersPanel = ({
   };
 
   return (
-    <PanelContainer id={id} layout={layout}>
+    <PanelContainer id={id} $layout={layout}>
       {!showLayerSettings && (
         <>
-          <PanelHeader panel={Panels.Layers}>
+          <PanelHeader $panel={Panels.Layers}>
             <Tab
               id="layers-tab"
-              active={tab === Tabs.Layers}
-              onClick={() => setTab(Tabs.Layers)}
+              $active={tab === Tabs.Layers}
+              onClick={() => {
+                setTab(Tabs.Layers);
+              }}
             >
               Layers
             </Tab>
             <Tab
               id="map-options-tab"
-              active={tab === Tabs.MapOptions}
-              onClick={() => setTab(Tabs.MapOptions)}
+              $active={tab === Tabs.MapOptions}
+              onClick={() => {
+                setTab(Tabs.MapOptions);
+              }}
             >
               Map Options
             </Tab>
@@ -396,7 +402,7 @@ export const LayersPanel = ({
           <CloseButtonWrapper>
             <CloseButton id="layers-panel-close-button" onClick={onClose} />
           </CloseButtonWrapper>
-          <PanelHorizontalLine bottom={16} />
+          <PanelHorizontalLine $bottom={16} />
           <PanelContent>
             {tab === Tabs.Layers && (
               <LayersControlPanel
@@ -405,44 +411,64 @@ export const LayersPanel = ({
                 selectedLayerIds={selectedLayerIds}
                 hasSettings={Boolean(sublayers.length)}
                 onLayerSelect={onLayerSelect}
-                onLayerInsertClick={() => setShowLayerInsertPanel(true)}
-                onSceneInsertClick={() => setShowSceneInsertPanel(true)}
-                onLayerSettingsClick={() => setShowLayerSettings(true)}
+                onLayerInsertClick={() => {
+                  setShowLayerInsertPanel(true);
+                }}
+                onSceneInsertClick={() => {
+                  setShowSceneInsertPanel(true);
+                }}
+                onLayerSettingsClick={() => {
+                  setShowLayerSettings(true);
+                }}
                 onPointToLayer={onPointToLayer}
                 deleteLayer={onLayerDelete}
               />
             )}
             {tab === Tabs.MapOptions && (
               <MapOptionPanel
-                insertBaseMap={() => setShowInsertMapPanel(true)}
+                insertBaseMap={() => {
+                  setShowInsertMapPanel(true);
+                }}
               />
             )}
           </PanelContent>
 
-          <PanelHorizontalLine top={0} bottom={0} />
+          <PanelHorizontalLine $top={0} $bottom={0} />
 
           <PanelContent>
             <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />
           </PanelContent>
 
           {showExistedError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={EXISTING_AREA_ERROR}
-                onConfirm={() => setShowExistedError(false)}
+                onConfirm={() => {
+                  setShowExistedError(false);
+                }}
               />
             </PanelWrapper>
           )}
           {showNoSupportedLayersInSceneError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={LAYERS_ERROR_UNSUPPORTED}
-                onConfirm={() => setShowNoSupportedLayersInSceneError(false)}
+                onConfirm={() => {
+                  setShowNoSupportedLayersInSceneError(false);
+                }}
               >
                 <>
                   <LayersList>
                     {unsupportedLayers.map((layer) => {
-                      return <LayerItem>{layer}</LayerItem>;
+                      return <LayerItem key={layer}>{layer}</LayerItem>;
                     })}
                   </LayersList>
 
@@ -458,19 +484,31 @@ export const LayersPanel = ({
             </PanelWrapper>
           )}
           {showNoSupportedCRSInSceneError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={NOT_SUPPORTED_CRS_ERROR}
-                onConfirm={() => setShowNoSupportedCRSInSceneError(false)}
+                onConfirm={() => {
+                  setShowNoSupportedCRSInSceneError(false);
+                }}
               />
             </PanelWrapper>
           )}
 
           {showAddingSlidesWarning && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE}
-                onConfirm={() => setShowAddingSlidesWarning(false)}
+                onConfirm={() => {
+                  setShowAddingSlidesWarning(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -482,7 +520,9 @@ export const LayersPanel = ({
                   handleInsertLayer(layer);
                   setShowLayerInsertPanel(false);
                 }}
-                onCancel={() => setShowLayerInsertPanel(false)}
+                onCancel={() => {
+                  setShowLayerInsertPanel(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -490,8 +530,12 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Scene"}
-                onInsert={(scene) => handleInsertScene(scene)}
-                onCancel={() => setShowSceneInsertPanel(false)}
+                onInsert={(scene) => {
+                  void handleInsertScene(scene);
+                }}
+                onCancel={() => {
+                  setShowSceneInsertPanel(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -501,7 +545,9 @@ export const LayersPanel = ({
         <LayerSettingsPanel
           sublayers={sublayers}
           onUpdateSublayerVisibility={onUpdateSublayerVisibility}
-          onBackClick={() => setShowLayerSettings(false)}
+          onBackClick={() => {
+            setShowLayerSettings(false);
+          }}
           onBuildingExplorerOpened={onBuildingExplorerOpened}
           onCloseClick={onClose}
           side={side}

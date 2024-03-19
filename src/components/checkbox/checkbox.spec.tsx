@@ -26,7 +26,6 @@ describe("Checkbox", () => {
     userEvent.hover(checkbox);
     userEvent.click(checkbox);
     expect(handleCheckboxClickMock).toHaveBeenCalled();
-
   });
 
   it("Should show checked Checkbox", async () => {

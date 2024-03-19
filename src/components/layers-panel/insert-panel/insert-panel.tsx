@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {
   ActionButtonVariant,
   FetchingStatus,
+  type LayoutProps,
   TilesetType,
   BaseMapGroup,
 } from "../../../types";
@@ -26,7 +27,7 @@ import {
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
-type InsertLayerProps = {
+interface InsertLayerProps {
   title: string;
   groups?: string[];
   onInsert: (object: {
@@ -37,15 +38,11 @@ type InsertLayerProps = {
   }) => void;
   onCancel: () => void;
   children?: React.ReactNode;
-};
+}
 
-type LayoutProps = {
-  layout: string;
-};
-
-type VisibilityProps = {
+interface VisibilityProps {
   visible: boolean;
-};
+}
 
 const Container = styled.div<LayoutProps>`
   position: relative;
@@ -122,6 +119,7 @@ export const InsertPanel = ({
     const type = getTilesetType(url);
 
     try {
+      // eslint-disable-next-line no-new
       new URL(url);
     } catch (_) {
       setUrlError(INVALID_URL_ERROR);
@@ -157,12 +155,12 @@ export const InsertPanel = ({
         setValidateInProgress(false);
         validateFields();
       } else if (!layerNames[url]) {
-        dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
+        void dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
       }
     }
   }, [isValidateInProgress, layerNames]);
 
-  const handleInsert = async (event) => {
+  const handleInsert = (event) => {
     event.preventDefault();
 
     if (getTilesetType(url) !== TilesetType.I3S) {
@@ -201,7 +199,7 @@ export const InsertPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Title>{title}</Title>
       <SpinnerContainer visible={isValidateInProgress}>
         <LoadingSpinner />

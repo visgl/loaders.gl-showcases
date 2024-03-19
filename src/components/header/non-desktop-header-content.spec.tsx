@@ -2,12 +2,13 @@ import { screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopHeaderContent } from "./non-desktop-header-content";
 import userEvent from "@testing-library/user-event";
+import type { ReactChildren } from "react";
 
 jest.mock("../../constants/common", () => ({
   GITHUB_LINK: "https://git-hub-test",
 }));
 jest.mock("./theme-toggler", () => ({
-  ThemeToggler: ({ setTheme }) => {
+  ThemeToggler: ({ setTheme }: { setTheme: () => void }) => {
     const ToggleMock = "theme-toggle-non-desktop";
     return (
       // @ts-expect-error - mock component
@@ -17,7 +18,13 @@ jest.mock("./theme-toggler", () => ({
 }));
 
 jest.mock("react-router-dom", () => ({
-  Link: ({ children, active }) => {
+  Link: ({
+    children,
+    active,
+  }: {
+    children: ReactChildren;
+    active: boolean;
+  }) => {
     const LinkMock = "desktop-link-mock";
 
     return (
@@ -69,7 +76,9 @@ describe("Non Desktop header content", () => {
       screen.getByTestId("theme-toggler-non-desktop"),
     ];
 
-    menuItems.map((item) => expect(item).toBeInTheDocument());
+    menuItems.forEach((item) => {
+      expect(item).toBeInTheDocument();
+    });
 
     userEvent.click(screen.getByTestId("theme-toggler-non-desktop"));
     expect(setThemeMock).toBeCalled();
@@ -95,7 +104,7 @@ describe("Non Desktop header content", () => {
     });
     expect(container).toBeInTheDocument();
     userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
-    expect(screen.getByText("Viewer")).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(screen.getByText("Viewer")).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
   it("Should change active link to /debug", () => {
@@ -105,7 +114,7 @@ describe("Non Desktop header content", () => {
     });
     expect(container).toBeInTheDocument();
     userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
-    expect(screen.getByText("Debug")).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(screen.getByText("Debug")).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
   it("Should change active link to /compare-across-layers", () => {
@@ -115,11 +124,11 @@ describe("Non Desktop header content", () => {
     });
     expect(container).toBeInTheDocument();
     userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
-    expect(screen.getByText("Compare")).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(screen.getByText("Compare")).toHaveStyle("color: rgb(96, 194, 164)");
 
     userEvent.click(screen.getByText("Compare"));
     expect(screen.getByText("Across Layers")).toHaveStyle(
-      `color: rgb(96, 194, 164)`
+      "color: rgb(96, 194, 164)"
     );
   });
 
@@ -130,10 +139,10 @@ describe("Non Desktop header content", () => {
     });
     expect(container).toBeInTheDocument();
     userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
-    expect(screen.getByText("Compare")).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(screen.getByText("Compare")).toHaveStyle("color: rgb(96, 194, 164)");
     userEvent.click(screen.getByText("Compare"));
     expect(screen.getByText("Within a Layer")).toHaveStyle(
-      `color: rgb(96, 194, 164)`
+      "color: rgb(96, 194, 164)"
     );
   });
 });

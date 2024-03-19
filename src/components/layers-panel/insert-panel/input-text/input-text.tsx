@@ -1,23 +1,23 @@
-import { ChangeEvent, useMemo } from "react";
+import { type ChangeEvent, useMemo } from "react";
 import styled from "styled-components";
 import { color_accent_primary } from "../../../../constants/colors";
 
-type InputProps = {
+interface InputProps {
   id?: string;
   name?: string;
   label?: string;
   value: string;
   error?: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
-type LabelProps = {
+interface LabelProps {
   htmlFor: string;
-};
+}
 
-type InputErrorProps = {
+interface InputErrorProps {
   error?: string;
-};
+}
 
 const InputWrapper = styled.div`
   display: flex;
@@ -78,7 +78,7 @@ export const InputText = ({
   name,
   ...rest
 }: InputProps) => {
-  const inputId = useMemo(() => id || name || "input-text", [id, name]);
+  const inputId = useMemo(() => id ?? name ?? "input-text", [id, name]);
   return (
     <InputWrapper>
       {label && <Label htmlFor={inputId}>{label}</Label>}

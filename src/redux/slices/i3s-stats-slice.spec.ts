@@ -8,7 +8,7 @@ import reducer, {
   selectFieldValues,
   selectStatisitcsMap,
 } from "./i3s-stats-slice";
-import { StatsInfo } from "@loaders.gl/i3s";
+import { type StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
 
@@ -24,7 +24,7 @@ const mockData = {
 
 describe("slice: bsl-statistics-summary", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       statisitcsMap: {},
       bslStats: {
         single: { fields: {} },
@@ -245,7 +245,7 @@ describe("slice: bsl-statistics-summary", () => {
 
     await store.dispatch(getAttributeStatsInfo("testUrl"));
     const newState = store.getState();
-    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(null);
+    expect(selectStatisitcsMap(newState).testUrl).toEqual(null);
   });
 
   it("Should handle `getAttributeStatsInfo.fulfilled` action for non-empty stats", async () => {
@@ -266,7 +266,7 @@ describe("slice: bsl-statistics-summary", () => {
 
     await store.dispatch(getAttributeStatsInfo("testUrl"));
     const newState = store.getState();
-    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(stats);
+    expect(selectStatisitcsMap(newState).testUrl).toEqual(stats);
   });
 
   it("Should handle `getAttributeStatsInfo.fulfilled` action for empty stats", async () => {
@@ -284,7 +284,7 @@ describe("slice: bsl-statistics-summary", () => {
 
     await store.dispatch(getAttributeStatsInfo("testUrl"));
     const newState = store.getState();
-    expect(selectStatisitcsMap(newState)["testUrl"]).toEqual(null);
+    expect(selectStatisitcsMap(newState).testUrl).toEqual(null);
   });
 });
 

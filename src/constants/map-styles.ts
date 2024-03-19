@@ -1,5 +1,3 @@
-import { BaseMap, BaseMapGroup } from "../types";
-
 import MaplibreDarkMap from "../../public/icons/basemaps/maplibre-dark.png";
 import MaplibreLightMap from "../../public/icons/basemaps/maplibre-light.png";
 
@@ -9,6 +7,7 @@ import ArcGisDarkGrayMap from "../../public/icons/basemaps/arcgis-dark-gray.png"
 import ArcGisLightGrayMap from "../../public/icons/basemaps/arcgis-light-gray.png";
 import ArcGisStreetsDarkMap from "../../public/icons/basemaps/arcgis-streets-dark.png";
 import ArcGisStreetsMap from "../../public/icons/basemaps/arcgis-streets.png";
+import { type BaseMap, BaseMapGroup } from "../types";
 
 export const BASE_MAPS: BaseMap[] = [
   {

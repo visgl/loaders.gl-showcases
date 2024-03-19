@@ -4,10 +4,10 @@ import styled from "styled-components";
 
 import PlayIcon from "../../../public/icons/play.svg";
 
-type NonDesktopShortcutItemProps = {
+interface NonDesktopShortcutItemProps {
   shortcut: HelpShortcutItem;
   onShortcutClick: (id: string) => void;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -55,7 +55,7 @@ export const NonDesktopShortcutItem = ({
       </TextBlock>
       <PlayIcon
         data-testid={`play-icon-${shortcut.id}`}
-        onClick={() => onShortcutClick(shortcut.id)}
+        onClick={() => { onShortcutClick(shortcut.id); }}
       />
     </Container>
   );

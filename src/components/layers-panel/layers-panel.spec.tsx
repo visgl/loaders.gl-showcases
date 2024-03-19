@@ -35,7 +35,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../close-button/close-button", () => ({
-  CloseButton: ({ onClick }) => {
+  CloseButton: ({ onClick }: { onClick: () => void }) => {
     const CloseButtonMock = "close-button-mock";
 
     return (
@@ -329,17 +329,18 @@ describe("Layers Panel", () => {
   });
 
   it("Should be able to insert new Scene", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -379,21 +380,24 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).toHaveBeenCalled();
+    });
   });
 
   it("Should be able to cancel insert new Scene", () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -424,17 +428,18 @@ describe("Layers Panel", () => {
   });
 
   it("Should show duplication scene error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://test.url",
+            },
+          ],
+        })
     );
     const store = setupStore();
     callRender(
@@ -473,7 +478,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
@@ -489,8 +496,9 @@ describe("Layers Panel", () => {
   });
 
   it("Should show not supported layers error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
     );
 
     const store = setupStore();
@@ -523,7 +531,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
@@ -539,8 +549,8 @@ describe("Layers Panel", () => {
   });
 
   it("Should show not supported crs error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
+    loadMock.mockImplementation(
+      async () => await Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
     );
 
     const store = setupStore();
@@ -573,7 +583,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
@@ -589,21 +601,22 @@ describe("Layers Panel", () => {
   });
 
   it("Should show 'Webscene slides cannot be loaded in Across Layers mode' warning", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {
-          presentation: {
-            slides: [{ id: "slide-1" }, { id: "slide-2" }],
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {
+            presentation: {
+              slides: [{ id: "slide-1" }, { id: "slide-2" }],
+            },
           },
-        },
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -637,7 +650,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();

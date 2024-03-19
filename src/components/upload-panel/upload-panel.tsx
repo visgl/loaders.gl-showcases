@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { FileType, FileUploaded } from "../../types";
+import { FileType, type FileUploaded } from "../../types";
 import { UploadPanelItem } from "./upload-panel-item";
 
 import UploadIcon from "../../../public/icons/upload.svg";
@@ -49,20 +49,20 @@ const BrosweFileText = styled(FileTextItem)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
 `;
 
-const BrosweFileLink = FileTextItem.withComponent("a");
+const BrosweFileLink = styled(FileTextItem).attrs({ as: "a" })``;
 
 const UploadInput = styled.input`
   display: none;
 `;
 
-type UploadProps = {
+interface UploadProps {
   title: string;
   dragAndDropText: string;
   fileType: FileType;
   multipleFiles?: boolean;
   onCancel: () => void;
-  onFileUploaded: (fileUploaded: FileUploaded) => void;
-};
+  onFileUploaded: (fileUploaded: FileUploaded) => Promise<void>;
+}
 
 export const UploadPanel = ({
   title,
@@ -86,7 +86,7 @@ export const UploadPanel = ({
         const info: Record<string, unknown> = {
           url: file.name,
         };
-        onFileUploaded({ fileContent: event?.target?.result, info: info });
+        void onFileUploaded({ fileContent: event?.target?.result, info });
       };
       if (fileType === FileType.binary) {
         reader.readAsArrayBuffer(file);
@@ -110,8 +110,10 @@ export const UploadPanel = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      readFile(e.dataTransfer.files);
+    if (e.dataTransfer.files?.[0]) {
+      readFile(e.dataTransfer.files).catch(() => {
+        console.error("Read uploaded file operation error");
+      });
     }
   };
 
@@ -119,8 +121,10 @@ export const UploadPanel = ({
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      readFile(e.target.files);
+    if (e.target.files?.[0]) {
+      readFile(e.target.files).catch(() => {
+        console.error("Read uploaded file operation error");
+      });
     }
   };
 
@@ -130,7 +134,7 @@ export const UploadPanel = ({
         ref={inputRef}
         id={UPLOAD_INPUT_ID}
         type="file"
-        multiple={multipleFiles || undefined}
+        multiple={multipleFiles ?? undefined}
         onChange={onUploadChangeHandler}
       />
       <FileInteractionContainer

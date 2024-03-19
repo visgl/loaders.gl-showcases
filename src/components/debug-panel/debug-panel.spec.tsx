@@ -23,7 +23,7 @@ jest.mock("@loaders.gl/i3s", () => {
 });
 jest.mock("../../utils/hooks/layout");
 jest.mock("../close-button/close-button", () => ({
-  CloseButton: ({ onClick }) => {
+  CloseButton: ({ onClick }: { onClick: () => void }) => {
     const CloseButtonMock = "close-button-mock";
     return (
       // @ts-expect-error - mock component
@@ -85,7 +85,7 @@ const checkToggleTitleAndEvent = (
   const title = screen.getByText(titleText);
   expect(title).toBeInTheDocument();
 
-  const toggle = document.querySelector(`#${toggleId}`) || null;
+  const toggle = document.querySelector(`#${toggleId}`) ?? null;
   if (toggle) {
     userEvent.click(toggle);
   }

@@ -1,4 +1,4 @@
-import { HelpPanelSelectedTab, HelpShortcutsData, Layout } from "../../types";
+import { HelpPanelSelectedTab, type HelpShortcutsData, Layout } from "../../types";
 
 // Desktop gestures images
 import DesktopMouseOrbit from "../../../public/icons/gestures/mouse/desktop-orbit.svg";

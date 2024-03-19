@@ -155,35 +155,35 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   it("Should select layers", async () => {
     // Select San Francisco v1.7 on left side
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)"
     );
     await sfLayer.click();
     const selectedLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayer).not.toBeNull();
     let selectedLayerRight = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayerRight).toBeNull();
     const sfLayerInputChecked = await page.$eval(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2) input`,
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
 
     // Select Building on right side
     const buldingLayer = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)"
     );
     await buldingLayer.hover();
     await buldingLayer.click();
     selectedLayerRight = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayerRight).not.toBeNull();
     const buldingLayerInputChecked = await page.$eval(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4) input`,
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
@@ -236,15 +236,15 @@ describe("Compare - Layers Panel Within Layer mode", () => {
   it("Should select layer", async () => {
     // Select New York on left side
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3)"
     );
     await sfLayer.click();
     const selectedLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayer).not.toBeNull();
     const sfLayerInputChecked = await page.$eval(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3) input`,
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
@@ -252,15 +252,15 @@ describe("Compare - Layers Panel Within Layer mode", () => {
 });
 
 const chevronSvgHtml =
-  '<path d="M.58 6c0-.215.083-.43.247-.594l5.16-5.16a.84.84 0 1 1 1.188 1.189L2.609 6l4.566 4.566a.84.84 0 0 1-1.189 1.188l-5.16-5.16A.838.838 0 0 1 .581 6Z"></path>';
-const plusSvgHtml = '<path d="M14 8H8v6H6V8H0V6h6V0h2v6h6v2Z"></path>';
-const minusSvgHtml = '<path d="M14 2H0V0h14v2Z"></path>';
+  "<path d=\"M.58 6c0-.215.083-.43.247-.594l5.16-5.16a.84.84 0 1 1 1.188 1.189L2.609 6l4.566 4.566a.84.84 0 0 1-1.189 1.188l-5.16-5.16A.838.838 0 0 1 .581 6Z\"></path>";
+const plusSvgHtml = "<path d=\"M14 8H8v6H6V8H0V6h6V0h2v6h6v2Z\"></path>";
+const minusSvgHtml = "<path d=\"M14 2H0V0h14v2Z\"></path>";
 const panSvgHtml =
-  '<path d="M10 .5 6 5h8L10 .5ZM5 6 .5 10 5 14V6Zm10 0v8l4.5-4L15 6Zm-5 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-4 7 4 4.5 4-4.5H6Z"></path>';
+  "<path d=\"M10 .5 6 5h8L10 .5ZM5 6 .5 10 5 14V6Zm10 0v8l4.5-4L15 6Zm-5 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-4 7 4 4.5 4-4.5H6Z\"></path>";
 const orbitSvgHtml =
-  '<path d="M0 9a9 9 0 0 0 9 9c2.39 0 4.68-.94 6.4-2.6l-1.5-1.5A6.706 6.706 0 0 1 9 16C2.76 16-.36 8.46 4.05 4.05 8.46-.36 16 2.77 16 9h-3l4 4h.1L21 9h-3A9 9 0 0 0 0 9Z"></path>';
+  "<path d=\"M0 9a9 9 0 0 0 9 9c2.39 0 4.68-.94 6.4-2.6l-1.5-1.5A6.706 6.706 0 0 1 9 16C2.76 16-.36 8.46 4.05 4.05 8.46-.36 16 2.77 16 9h-3l4 4h.1L21 9h-3A9 9 0 0 0 0 9Z\"></path>";
 const compasSvgHtml =
-  '<path d="M0 12 6 0l6 12H0Z" fill="#F95050"></path><path d="M12 12 6 24 0 12h12Z"></path>';
+  "<path d=\"M0 12 6 0l6 12H0Z\" fill=\"#F95050\"></path><path d=\"M12 12 6 24 0 12h12Z\"></path>";
 
 describe("Compare - Map Control Panel", () => {
   let browser;
@@ -478,7 +478,7 @@ describe("Compare - Compare button", () => {
   it.skip("Compare button should change mode", async () => {
     await page.waitForSelector("#compare-button");
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)"
     );
     await sfLayer.click();
     await page.waitForSelector("#compare-button > button:not([disabled])");

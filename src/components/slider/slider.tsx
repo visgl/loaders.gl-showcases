@@ -2,16 +2,16 @@ import { useRef, useEffect } from "react";
 import styled, { css } from "styled-components";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 import { SliderListItem } from "./slider-list-item";
-import { Bookmark, LayoutProps, SliderType } from "../../types";
+import { type Bookmark, type LayoutProps, SliderType } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
 
 const SliderItemsList = styled.div<
-  LayoutProps & {
-    sliderType: SliderType;
-  }
+LayoutProps & {
+  sliderType: SliderType;
+}
 >`
   display: flex;
   ${({ sliderType }) => {
@@ -51,7 +51,7 @@ const SliderItemsList = styled.div<
 `;
 
 const ArrowIconLeft = styled.button<
-  LayoutProps & { disabled: boolean; isFloorSlider: boolean }
+LayoutProps & { disabled: boolean; isFloorSlider: boolean }
 >`
   cursor: pointer;
   fill: ${({ theme }) => theme.colors.fontColor};
@@ -79,20 +79,20 @@ const ArrowIconLeft = styled.button<
 `;
 
 const ArrowIconRight = styled(ArrowIconLeft)<
-  LayoutProps & { isFloorSlider: boolean }
+LayoutProps & { isFloorSlider: boolean }
 >`
   transform: ${({ isFloorSlider }) =>
     isFloorSlider ? "rotate(90deg)" : "rotate(-180deg)"};
 `;
 
-type SliderProps = {
+interface SliderProps {
   data: Bookmark[] | any;
   sliderType: SliderType;
   editingMode?: boolean;
   selectedItemId: string;
   onSelect: (id: string) => void;
   onDelete?: (id: string) => void;
-};
+}
 
 export const Slider = ({
   data,
@@ -192,7 +192,7 @@ export const Slider = ({
   return (
     <>
       <ArrowIconLeft
-        layout={layout}
+        $layout={layout}
         isFloorSlider={isFloorsSlider}
         disabled={disableLeftArrow}
         onClick={handleLeftArrowClick}
@@ -203,7 +203,7 @@ export const Slider = ({
         id={`slider-${sliderType}`}
         ref={sliderItemsListRef}
         sliderType={sliderType}
-        layout={layout}
+        $layout={layout}
       >
         {data.map((item) => {
           const sliderItemSelected = item.id === selectedItemId;
@@ -219,8 +219,12 @@ export const Slider = ({
               sliderType={sliderType}
               url={item.imageUrl}
               editingMode={editingMode}
-              onSelect={() => onSelectHandler(item.id)}
-              onDelete={() => onDelete && onDelete(item.id)}
+              onSelect={() => {
+                onSelectHandler(item.id);
+              }}
+              onDelete={() => {
+                onDelete && onDelete(item.id);
+              }}
             />
           );
         })}
@@ -228,7 +232,7 @@ export const Slider = ({
       <ArrowIconRight
         isFloorSlider={isFloorsSlider}
         disabled={disableRightArrow}
-        layout={layout}
+        $layout={layout}
         onClick={handleRightArrowClick}
       >
         <ChevronIcon />

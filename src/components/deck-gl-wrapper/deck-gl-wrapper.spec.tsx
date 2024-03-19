@@ -3,6 +3,28 @@ import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
 import { DragMode, TilesetType, TileColoredBy, BaseMapGroup } from "../../types";
 
+import { act } from "@testing-library/react";
+import { DeckGlWrapper } from "./deck-gl-wrapper";
+import DeckGL from "@deck.gl/react";
+import { MapController } from "@deck.gl/core";
+import { TerrainLayer } from "@deck.gl/geo-layers";
+import { load } from "@loaders.gl/core";
+import { ImageLoader } from "@loaders.gl/images";
+import { CustomTile3DLayer } from "../../layers";
+import ColorMap from "../../utils/debug/colors-map";
+import {
+  selectDebugTextureForTile,
+  selectDebugTextureForTileset,
+  selectOriginalTextureForTile,
+  selectOriginalTextureForTileset,
+} from "../../utils/debug/texture-selector-utils";
+import { getElevationByCentralTile } from "../../utils/terrain-elevation";
+import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
+import { setupStore } from "../../redux/store";
+import { setDragMode } from "../../redux/slices/drag-mode-slice";
+import { setDebugOptions } from "../../redux/slices/debug-options-slice";
+import { addBaseMap } from "../../redux/slices/base-maps-slice";
+
 // Mocks
 jest.mock("@loaders.gl/core");
 jest.mock("@loaders.gl/i3s", () => {
@@ -51,28 +73,6 @@ jest.mock("../../utils/terrain-elevation");
 jest.mock("../../utils/debug/colors-map");
 jest.mock("../../utils/debug/normals-utils");
 jest.mock("../../layers/bounding-volume-layer/bounding-volume-layer");
-
-import { act } from "@testing-library/react";
-import { DeckGlWrapper } from "./deck-gl-wrapper";
-import DeckGL from "@deck.gl/react";
-import { MapController } from "@deck.gl/core";
-import { TerrainLayer } from "@deck.gl/geo-layers";
-import { load } from "@loaders.gl/core";
-import { ImageLoader } from "@loaders.gl/images";
-import { CustomTile3DLayer } from "../../layers";
-import ColorMap from "../../utils/debug/colors-map";
-import {
-  selectDebugTextureForTile,
-  selectDebugTextureForTileset,
-  selectOriginalTextureForTile,
-  selectOriginalTextureForTileset,
-} from "../../utils/debug/texture-selector-utils";
-import { getElevationByCentralTile } from "../../utils/terrain-elevation";
-import { renderWithProvider } from "../../utils/testing-utils/render-with-provider";
-import { setupStore } from "../../redux/store";
-import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setDebugOptions } from "../../redux/slices/debug-options-slice";
-import { addBaseMap } from "../../redux/slices/base-maps-slice";
 
 const simpleCallbackMock = jest.fn().mockImplementation(() => {
   /* Do Nothing */
@@ -211,10 +211,10 @@ describe("Deck.gl I3S map component", () => {
   });
 
   describe("onViewStateChange", () => {
-    it("Should change view state", () => {
+    it("Should change view state", async () => {
       const { rerender } = callRender(renderWithProvider);
       const { onViewStateChange } = DeckGL.mock.lastCall[0];
-      act(() =>
+      await act(() =>
         onViewStateChange({
           interactionState: { isZooming: false },
           viewState: { latitude: 50, longitude: 50, position: [0, 0, 50] },
@@ -227,12 +227,12 @@ describe("Deck.gl I3S map component", () => {
       });
     });
 
-    it("Should change view state for minimap", () => {
+    it("Should change view state for minimap", async () => {
       const store = setupStore();
       store.dispatch(setDebugOptions({ minimap: true }));
       const { rerender } = callRender(renderWithProvider, undefined, store);
       const { onViewStateChange } = DeckGL.mock.lastCall[0];
-      act(() =>
+      await act(() =>
         onViewStateChange({
           interactionState: { isZooming: false },
           viewState: { latitude: 50, longitude: 50, position: [0, 0, 50] },
@@ -278,7 +278,7 @@ describe("Deck.gl I3S map component", () => {
       expect(() => onTilesetLoad(getTileset3d())).toThrow();
 
       expect(onTilesetLoad).toBeTruthy();
-      act(() => onTileUnload(tile3d));
+      await act(() => onTileUnload(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileLoad: undefined });
@@ -290,7 +290,9 @@ describe("Deck.gl I3S map component", () => {
       callRender(rerender, { onTileUnload: undefined });
       const { onTileUnload: onTileUnload2 } = (CustomTile3DLayer as any).mock
         .lastCall[0];
-      expect(() => act(() => onTileUnload2(tile3d))).not.toThrow();
+      expect(async () => {
+        await act(() => onTileUnload2(tile3d));
+      }).not.toThrow();
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
     });
 
@@ -353,7 +355,7 @@ describe("Deck.gl I3S map component", () => {
       expect(TerrainLayer).toHaveBeenCalled();
     });
 
-    it("Should call onTerrainTileLoad", () => {
+    it("Should call onTerrainTileLoad", async () => {
       const store = setupStore();
       store.dispatch(
         addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain", group: BaseMapGroup.Terrain })
@@ -363,11 +365,11 @@ describe("Deck.gl I3S map component", () => {
       const terrainTile = {
         bbox: { east: 10, north: 20, south: 30, west: 40 },
       };
-      act(() => onTileLoad(terrainTile));
+      await act(() => onTileLoad(terrainTile));
 
       callRender(rerender);
       const { onViewStateChange } = DeckGL.mock.lastCall[0];
-      act(() =>
+      await act(() =>
         onViewStateChange({
           interactionState: { isZooming: false },
           viewState: { latitude: 50, longitude: 50, position: [0, 0, 50] },

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Title } from "../common";
-import { ValidatedDataType, ValidatedTile } from "../../types";
+import { ValidatedDataType, type ValidatedTile } from "../../types";
 import WarningIcon from "../../../public/icons/validate-data-warning.svg";
 import OkIcon from "../../../public/icons/validate-data-ok.svg";
 
@@ -32,10 +32,10 @@ const IconContainer = styled.div`
   width: 22px;
 `;
 
-type ValidateTileSectionProps = {
+interface ValidateTileSectionProps {
   dataType: ValidatedDataType;
   validatedData: ValidatedTile[];
-};
+}
 
 export const ValidateTileSection = ({
   dataType,

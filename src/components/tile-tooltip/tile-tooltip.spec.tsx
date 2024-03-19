@@ -51,7 +51,7 @@ describe("Tooltip Panel", () => {
       "Children Ids",
       "Vertex count",
       "Distance to camera",
-      "Depth"
+      "Depth",
     ]);
     expect(cells).toEqual(cellsValues);
   });

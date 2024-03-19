@@ -1,4 +1,4 @@
-import { Sublayer } from "../types";
+import type { Sublayer } from "../types";
 import { ActiveSublayer } from "./active-sublayer";
 
 const sublayer1: Sublayer = {
@@ -41,9 +41,9 @@ describe("Active Sublayer", () => {
     const activeSublayer = new ActiveSublayer(parentSublayer, true);
 
     expect(activeSublayer.isLeaf()).toBe(false);
-    activeSublayer.sublayers.forEach((leaf) =>
-      expect(leaf.isLeaf()).toBe(true)
-    );
+    activeSublayer.sublayers.forEach((leaf) => {
+      expect(leaf.isLeaf()).toBe(true);
+    });
   });
 
   it("onChildVisibilityChange() should update visibility according to children visibility", () => {
@@ -60,9 +60,9 @@ describe("Active Sublayer", () => {
 
     const changedLeafs = activeSublayer.setVisibility(false);
 
-    activeSublayer.sublayers.forEach((leaf) =>
-      expect(leaf.visibility).toBe(false)
-    );
+    activeSublayer.sublayers.forEach((leaf) => {
+      expect(leaf.visibility).toBe(false);
+    });
     expect(changedLeafs.length).toBe(2);
     expect(
       changedLeafs.findIndex((sublayer) => sublayer.id === 0)

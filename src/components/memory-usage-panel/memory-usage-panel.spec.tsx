@@ -5,7 +5,9 @@ import { MemoryUsagePanel } from "./memory-usage-panel";
 
 Object.assign(window.navigator, {
   clipboard: {
-    writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+    writeText: jest.fn().mockImplementation(async () => {
+      await Promise.resolve();
+    }),
   },
 });
 
@@ -104,7 +106,7 @@ describe("MemoryUsagePanel", () => {
     expect(formatsTitle.innerHTML).toBe("Content Formats");
 
     const formatsContainer = componentElement.childNodes[2].firstChild;
-    const formats: { [key: string]: string } = {};
+    const formats: Record<string, string> = {};
     for (let i = 1; i <= 4; i++) {
       const element = formatsContainer.childNodes[i];
       formats[element.firstChild.innerHTML] = element.childNodes[1].innerHTML;
@@ -162,15 +164,17 @@ describe("MemoryUsagePanel", () => {
         loadingTime={1123}
         updateNumber={1}
         onClose={onClose}
-        activeLayers={[{
-          id: 'active-layer-id',
-          name: 'San Francisco',
-          url: 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0'
-        }]}
+        activeLayers={[
+          {
+            id: "active-layer-id",
+            name: "San Francisco",
+            url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+          },
+        ]}
       />,
       rerenderFunc
     );
-    const tilesetTitle = screen.getByText('San Francisco');
+    const tilesetTitle = screen.getByText("San Francisco");
     expect(tilesetTitle).toBeInTheDocument();
   });
 
@@ -182,15 +186,17 @@ describe("MemoryUsagePanel", () => {
         tilesetStats={tilesetStats}
         updateNumber={1}
         onClose={onClose}
-        activeLayers={[{
-          id: 'active-layer-id',
-          name: 'San Francisco',
-          url: 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0'
-        }]}
+        activeLayers={[
+          {
+            id: "active-layer-id",
+            name: "San Francisco",
+            url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+          },
+        ]}
       />,
       rerenderFunc
     );
-    const tilesetTitle = screen.queryByText('Loading time');
+    const tilesetTitle = screen.queryByText("Loading time");
     expect(tilesetTitle).not.toBeInTheDocument();
   });
 
@@ -198,6 +204,7 @@ describe("MemoryUsagePanel", () => {
     const LINK = tilesetStats.id;
     const copyIcon = expandContainer.childNodes[1].lastChild;
     userEvent.click(copyIcon);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith(LINK);
   });
 });

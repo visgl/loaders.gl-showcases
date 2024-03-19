@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { ComparisonSideMode, Sublayer } from "../../types";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { type ComparisonSideMode, type Sublayer } from "../../types";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { SublayerWidget } from "./sublayer-widget";
 import { FiltrationSection } from "./filtration-section/filtration-section";
 import { useEffect } from "react";

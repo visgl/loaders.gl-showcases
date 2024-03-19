@@ -10,12 +10,12 @@ import MemoryIcon from "../../../public/icons/memory.svg";
 import BookmarksIcon from "../../../public/icons/bookmarks.svg";
 import DebugIcon from "../../../public/icons/debug.svg";
 import ValidatorIcon from "../../../public/icons/validator.svg";
-import { ActiveButton, Layout } from "../../types";
+import { ActiveButton, type Layout } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-type ContainerProps = {
+interface ContainerProps {
   id: string;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -25,10 +25,10 @@ const Container = styled.div<ContainerProps>`
   padding: 2px;
 `;
 
-type ButtonProps = {
-  active: boolean;
-  layout: Layout;
-};
+interface ButtonProps {
+  $active: boolean;
+  $layout: Layout;
+}
 const Button = styled.button<ButtonProps>`
   display: flex;
   justify-content: center;
@@ -37,26 +37,26 @@ const Button = styled.button<ButtonProps>`
   width: 56px;
   height: 60px;
   cursor: pointer;
-  fill: ${({ theme, active }) =>
-    active
+  fill: ${({ theme, $active }) =>
+    $active
       ? color_canvas_primary_inverted
       : theme.colors.mainToolsPanelIconColor};
-  background-color: ${({ active }) =>
-    active ? color_brand_tertiary : "transparent"};
+  background-color: ${({ $active }) =>
+    $active ? color_brand_tertiary : "transparent"};
   outline: 0;
   border: none;
 
   &:hover {
-    fill: ${({ theme, active }) =>
-    active
-      ? color_canvas_primary_inverted
-      : theme.colors.mainToolsPanelDimIconColor};
-    background-color: ${({ active }) =>
-    active ? dim_brand_tertinary : "transparent"};
+    fill: ${({ theme, $active }) =>
+      $active
+        ? color_canvas_primary_inverted
+        : theme.colors.mainToolsPanelDimIconColor};
+    background-color: ${({ $active }) =>
+      $active ? dim_brand_tertinary : "transparent"};
   }
 `;
 
-type MainToolsPanelProps = {
+interface MainToolsPanelProps {
   id: string;
   activeButton: ActiveButton;
   showLayerOptions?: boolean;
@@ -67,7 +67,7 @@ type MainToolsPanelProps = {
   bookmarksActive?: boolean;
   onChange?: (active: ActiveButton) => void;
   onShowBookmarksChange?: () => void;
-};
+}
 
 export const MainToolsPanel = ({
   id,
@@ -87,57 +87,57 @@ export const MainToolsPanel = ({
     <Container id={id}>
       {showLayerOptions && (
         <Button
-          id={'layers-options-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.options}
-          onClick={() => onChange(ActiveButton.options)}
+          id={"layers-options-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.options}
+          onClick={() => { onChange(ActiveButton.options); }}
         >
           <GearIcon />
         </Button>
       )}
       {showComparisonSettings && (
         <Button
-          id={'settings-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.settings}
-          onClick={() => onChange(ActiveButton.settings)}
+          id={"settings-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.settings}
+          onClick={() => { onChange(ActiveButton.settings); }}
         >
           <SettingsIcon />
         </Button>
       )}
       <Button
-        id={'memory-usage-tab'}
-        layout={layout}
-        active={activeButton === ActiveButton.memory}
-        onClick={() => onChange(ActiveButton.memory)}
+        id={"memory-usage-tab"}
+        $layout={layout}
+        $active={activeButton === ActiveButton.memory}
+        onClick={() => { onChange(ActiveButton.memory); }}
       >
         <MemoryIcon />
       </Button>
       {showValidator && (
         <Button
-          id={'validator-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.validator}
-          onClick={() => onChange(ActiveButton.validator)}
+          id={"validator-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.validator}
+          onClick={() => { onChange(ActiveButton.validator); }}
         >
           <ValidatorIcon />
         </Button>
       )}
       {showDebug && (
         <Button
-          id={'debug-panel-tab'}
-          layout={layout}
-          active={activeButton === ActiveButton.debug}
-          onClick={() => onChange(ActiveButton.debug)}
+          id={"debug-panel-tab"}
+          $layout={layout}
+          $active={activeButton === ActiveButton.debug}
+          onClick={() => { onChange(ActiveButton.debug); }}
         >
           <DebugIcon />
         </Button>
       )}
       {showBookmarks && (
         <Button
-          id={'bookmarks-tab'}
-          layout={layout}
-          active={bookmarksActive}
+          id={"bookmarks-tab"}
+          $layout={layout}
+          $active={bookmarksActive}
           onClick={onShowBookmarksChange}
         >
           <BookmarksIcon />

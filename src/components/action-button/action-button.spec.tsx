@@ -37,7 +37,7 @@ describe("Action Button", () => {
     );
     expect(container).toBeInTheDocument();
 
-    const button = screen.getByText("Action Button")
+    const button = screen.getByText("Action Button");
     const bgColor = getComputedStyle(button as Element).getPropertyValue(
       "background-color"
     );
@@ -46,7 +46,6 @@ describe("Action Button", () => {
     userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
-
 
   it("Should render secondary button", () => {
     const { container } = renderWithTheme(
@@ -59,7 +58,7 @@ describe("Action Button", () => {
     );
     expect(container).toBeInTheDocument();
 
-    const button = screen.getByText("Action Button")
+    const button = screen.getByText("Action Button");
     const bgColor = getComputedStyle(button as Element).getPropertyValue(
       "background-color"
     );
@@ -86,7 +85,7 @@ describe("Action Button", () => {
     );
     expect(container).toBeInTheDocument();
 
-    const button = screen.getByText("Action Button")
+    const button = screen.getByText("Action Button");
     const bgColor = getComputedStyle(button as Element).getPropertyValue(
       "background-color"
     );
@@ -106,14 +105,14 @@ describe("Action Button", () => {
     renderWithTheme(
       <ActionButton
         // @ts-expect-error - Wrong types
-        variant={'test'}
+        variant={"test"}
         onClick={onClick}
       >
         Action Button
       </ActionButton>
     );
 
-    const button = screen.queryByText("Action Button")
+    const button = screen.queryByText("Action Button");
     expect(button).toBe(null);
   });
 });

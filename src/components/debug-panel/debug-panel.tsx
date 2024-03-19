@@ -1,23 +1,24 @@
-import { ReactEventHandler } from "react";
+import { type ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-import { useState } from "react";
 import { addIconItem } from "../../redux/slices/icon-list-slice";
-import { BaseMapGroup, IIconItem, IconListSetName } from "../../types";
-import md5 from "md5";
-import { IconListPanel } from "../icon-list-panel/icon-list-panel";
-import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import PlusIcon from "../../../public/icons/plus.svg";
-import { ButtonSize } from "../../types";
-import { UploadPanel } from "../upload-panel/upload-panel";
-import { FileType, FileUploaded } from "../../types";
-
 import {
+  type IIconItem,
+  IconListSetName,
+  BaseMapGroup,
+  ButtonSize,
+  FileType,
+  type FileUploaded,
   BoundingVolumeColoredBy,
   BoundingVolumeType,
   ListItemType,
   SelectionState,
   TileColoredBy,
 } from "../../types";
+import md5 from "md5";
+import { IconListPanel } from "../icon-list-panel/icon-list-panel";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import { UploadPanel } from "../upload-panel/upload-panel";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import {
@@ -85,9 +86,9 @@ const UploadPanelContainer = styled.div`
   left: calc(50% - 168px);
 `;
 
-type DebugPanelProps = {
+interface DebugPanelProps {
   onClose: ReactEventHandler;
-};
+}
 
 export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();
@@ -127,19 +128,19 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   };
 
   return (
-    <PanelContainer layout={layout}>
-      <PanelHeader panel={Panels.Debug}>
-        <Title id="debug-panel-title" left={16}>
+    <PanelContainer $layout={layout}>
+      <PanelHeader $panel={Panels.Debug}>
+        <Title id="debug-panel-title" $left={16}>
           Debug Panel
         </Title>
       </PanelHeader>
       <CloseButtonWrapper>
         <CloseButton id="debug-panel-close-button" onClick={onClose} />
       </CloseButtonWrapper>
-      <PanelHorizontalLine top={10} />
+      <PanelHorizontalLine $top={10} />
       <ToggleOptionsContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-minimap-title"}>
+          <Title $left={16} id={"toggle-minimap-title"}>
             Minimap
           </Title>
           <ToggleSwitch
@@ -153,7 +154,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         </ItemContainer>
         {debugOptions.minimap && (
           <NestedItemContainer>
-            <Title left={16} id={"toggle-different-viewports-title"}>
+            <Title $left={16} id={"toggle-different-viewports-title"}>
               Use different Viewports
             </Title>
             <ToggleSwitch
@@ -170,7 +171,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           </NestedItemContainer>
         )}
         <ItemContainer>
-          <Title left={16} id={"toggle-loading-tiles-title"}>
+          <Title $left={16} id={"toggle-loading-tiles-title"}>
             Loading Tiles
           </Title>
           <ToggleSwitch
@@ -182,7 +183,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-picking-title"}>
+          <Title $left={16} id={"toggle-picking-title"}>
             Enable picking
           </Title>
           <ToggleSwitch
@@ -194,7 +195,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-wireframe-title"}>
+          <Title $left={16} id={"toggle-wireframe-title"}>
             Wireframe mode
           </Title>
           <ToggleSwitch
@@ -206,7 +207,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-texture-uv-title"}>
+          <Title $left={16} id={"toggle-texture-uv-title"}>
             Texture UVs
           </Title>
           <ToggleSwitch
@@ -252,7 +253,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           </UploadPanelContainer>
         )}
 
-        <Title top={8} left={16} bottom={16} id={"color-section-title"}>
+        <Title $left={16} $bottom={16} id={"color-section-title"}>
           Color
         </Title>
         <RadioButtonWrapper>
@@ -277,9 +278,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             );
           })}
         </RadioButtonWrapper>
-        <PanelHorizontalLine top={10} />
+        <PanelHorizontalLine $top={10} />
         <ItemContainer>
-          <Title left={16} id={"bounding-volumes-section-title"}>
+          <Title $left={16} id={"bounding-volumes-section-title"}>
             Bounding Volumes
           </Title>
           <ToggleSwitch
@@ -297,9 +298,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         {debugOptions.boundingVolume && (
           <>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-type-title"}
             >
               Type
@@ -329,9 +330,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
               })}
             </RadioButtonWrapper>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-color-title"}
             >
               Color
