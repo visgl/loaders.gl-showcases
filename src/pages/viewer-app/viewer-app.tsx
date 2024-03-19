@@ -112,7 +112,7 @@ export const ViewerApp = () => {
   const [selectedFeatureAttributes, setSelectedFeatureAttributes] =
     useState<FeatureAttributes | null>(null);
   const [tilesetStatisticsInfo, setTilesetStatisticsInfo] = useState<
-    StatisticsInfo[] | null
+  StatisticsInfo[] | null
   >(null);
   const [selectedFeatureIndex, setSelectedFeatureIndex] = useState(-1);
   const [selectedTilesetBasePath, setSelectedTilesetBasePath] =

@@ -99,14 +99,13 @@ import {
 } from "../../redux/slices/debug-options-slice";
 import {
   setInitialBaseMaps,
-  selectSelectedBaseMapId,
+  selectSelectedBaseMap,
 } from "../../redux/slices/base-maps-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
 import {
   selectViewState,
   setViewState,
 } from "../../redux/slices/view-state-slice";
-import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../components/arcgis-wrapper/arcgis-wrapper";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 

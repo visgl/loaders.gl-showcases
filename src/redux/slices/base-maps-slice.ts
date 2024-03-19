@@ -44,7 +44,7 @@ const baseMapsSlice = createSlice({
 export const selectSelectedBaseMap = (state: RootState): BaseMap | null => {
   const selectedId = state.baseMaps.selectedBaseMap;
   const el = state.baseMaps.baseMap.find((item) => item.id === selectedId);
-  return el || null;
+  return el ?? null;
 };
 
 export const selectBaseMaps = (state: RootState): BaseMap[] =>
@@ -52,10 +52,10 @@ export const selectBaseMaps = (state: RootState): BaseMap[] =>
 
 export const selectBaseMapsByGroup =
   (group?: string) =>
-  (state: RootState): BaseMap[] => {
-    const maps = state.baseMaps.baseMap || [];
-    return group ? maps.filter((item) => item.group === group) : maps;
-  };
+    (state: RootState): BaseMap[] => {
+      const maps = state.baseMaps.baseMap || [];
+      return group ? maps.filter((item) => item.group === group) : maps;
+    };
 
 export const selectSelectedBaseMapId = (state: RootState): string =>
   state.baseMaps.selectedBaseMap;

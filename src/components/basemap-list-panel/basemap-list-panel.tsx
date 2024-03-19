@@ -1,20 +1,11 @@
 import styled, { css } from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
-// import {
-//   setIconItemPicked,
-//   selectIconList,
-//   selectIconItemPickedId,
-// } from "../../redux/slices/icon-list-slice";
-
-// import { IconListSetName } from "../../types";
 import { OptionsIcon, Panels } from "../common";
 import {
-  selectBaseMaps,
-  deleteBaseMaps,
   selectSelectedBaseMapId,
   setSelectedBaseMaps,
-  selectBaseMapsByGroup
+  selectBaseMapsByGroup,
 } from "../../redux/slices/base-maps-slice";
 import { Popover } from "react-tiny-popover";
 
@@ -60,7 +51,6 @@ const BasemapPanel = styled.div`
 const BasemapImageWrapper = styled.div<{
   active?: boolean;
   width: number;
-  //  height: number;
 }>`
   position: relative;
 
@@ -136,13 +126,13 @@ const OptionsButton = styled.div`
   }
 `;
 
-type BasemapListPanelProps = {
+interface BasemapListPanelProps {
   group: string;
   optionsMapId: string;
   optionsContent?: JSX.Element;
   onOptionsClick?: (id: string) => void;
   onOptionsClickOutside?: () => void;
-};
+}
 
 export const BasemapListPanel = ({
   group,
@@ -162,6 +152,7 @@ export const BasemapListPanel = ({
       <BasemapPanel>
         {imageArray.map((item) => (
           <BasemapImageWrapper
+            key={item.id}
             active={imagePickedKey === item.id}
             width={BASEMAP_ICON_WIDTH}
           >

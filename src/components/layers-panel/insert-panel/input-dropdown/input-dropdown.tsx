@@ -1,23 +1,18 @@
-import { ChangeEvent, useMemo } from "react";
+import { type ChangeEvent, useMemo } from "react";
 import styled from "styled-components";
-import { color_accent_primary } from "../../../../constants/colors";
 import ChevronIcon from "../../../../../public/icons/chevron.png";
 
-type InputProps = {
+interface InputProps {
   id?: string;
   name?: string;
   label?: string;
   value: string[];
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-};
+}
 
-type LabelProps = {
+interface LabelProps {
   htmlFor: string;
-};
-
-type InputErrorProps = {
-  error?: string;
-};
+}
 
 const InputWrapper = styled.div`
   display: flex;
@@ -54,9 +49,6 @@ const Input = styled.select<{ arrowUrl: string }>`
   }
   &:focus {
     color: ${({ theme }) => theme.colors.fontColor};
-
-    // border-color: gray;
-    // outline:none;
   }
   appearance: none !important;
   background: transparent !important;
@@ -99,7 +91,7 @@ export const InputDropdown = ({
   name,
   ...rest
 }: InputProps) => {
-  const inputId = useMemo(() => id || name || "select-option", [id, name]);
+  const inputId = useMemo(() => id ?? name ?? "select-option", [id, name]);
   return (
     <InputWrapper>
       {label && <Label htmlFor={inputId}>{label}</Label>}
@@ -113,7 +105,9 @@ export const InputDropdown = ({
           {...rest}
         >
           {value.map((item) => (
-            <SelectOption value={item}>{item}</SelectOption>
+            <SelectOption value={item} key={item}>
+              {item}
+            </SelectOption>
           ))}
         </Input>
       </SelectDiv>

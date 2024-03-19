@@ -319,13 +319,13 @@ export const LayersPanel = ({
       const bookmarks =
         isAddingBookmarksAllowed && pageId
           ? convertArcGisSlidesToBookmars(
-              webScene.header,
-              webSceneLayerExamples,
-              newLayersExamples,
-              pageId,
-              viewWidth,
-              viewHeight
-            )
+            webScene.header,
+            webSceneLayerExamples,
+            newLayersExamples,
+            pageId,
+            viewWidth,
+            viewHeight
+          )
           : [];
 
       if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
@@ -559,8 +559,8 @@ export const LayersPanel = ({
           <InsertPanel
             title={"Insert Base Map"}
             groups={[BaseMapGroup.Maplibre]}
-            onInsert={(map) => handleInsertMap(map)}
-            onCancel={() => setShowInsertMapPanel(false)}
+            onInsert={(map) => { handleInsertMap(map); }}
+            onCancel={() => { setShowInsertMapPanel(false); }}
           />
         </PanelWrapper>
       )}

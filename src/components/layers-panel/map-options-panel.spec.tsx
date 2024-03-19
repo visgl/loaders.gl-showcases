@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { MapOptionPanel } from "./map-options-panel";
 
-//import { BaseMapListItem } from "./--base-map-list-item/--base-map-list-item";
+// import { BaseMapListItem } from "./--base-map-list-item/--base-map-list-item";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
@@ -11,7 +11,7 @@ import { setupStore } from "../../redux/store";
 import {
   addBaseMap,
   selectBaseMaps,
-  selectSelectedBaseMapId,
+//  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import { BaseMapGroup } from "../../types";
 
@@ -80,7 +80,7 @@ describe("Map Options Panel", () => {
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
-        group: BaseMapGroup.Maplibre
+        group: BaseMapGroup.Maplibre,
       })
     );
     store.dispatch(
@@ -88,7 +88,7 @@ describe("Map Options Panel", () => {
         id: "second",
         name: "second name",
         mapUrl: "https://second-url.com",
-        group: BaseMapGroup.Maplibre
+        group: BaseMapGroup.Maplibre,
       })
     );
     const { container } = callRender(
@@ -109,7 +109,7 @@ describe("Map Options Panel", () => {
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
-        group: BaseMapGroup.Maplibre
+        group: BaseMapGroup.Maplibre,
       })
     );
     const { container } = callRender(
@@ -120,7 +120,7 @@ describe("Map Options Panel", () => {
     expect(container).toBeInTheDocument();
 
     expect(screen.getByText("BaseMap ListItem-first")).toBeInTheDocument();
-/*
+    /*
     const { onOptionsClick, onMapsSelect, onClickOutside } =
       BaseMapListItemMock.mock.lastCall[0];
 
@@ -149,7 +149,7 @@ describe("Map Options Panel", () => {
         id: "first",
         name: "first name",
         mapUrl: "https://first-url.com",
-        group: BaseMapGroup.Maplibre
+        group: BaseMapGroup.Maplibre,
       })
     );
     store.dispatch(
@@ -158,7 +158,7 @@ describe("Map Options Panel", () => {
         id: "",
         name: "second name",
         mapUrl: "https://second-url.com",
-        group: BaseMapGroup.Maplibre
+        group: BaseMapGroup.Maplibre,
       })
     );
     callRender(renderWithThemeProviders, undefined, store);

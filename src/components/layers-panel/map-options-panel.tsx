@@ -52,7 +52,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
                 setOptionsMapId(id);
                 setMapToDeleteGroup(mapGroup);
               }}
-              onOptionsClickOutside={() => setOptionsMapId("")}
+              onOptionsClickOutside={() => { setOptionsMapId(""); }}
               optionsContent={
                 <BaseMapOptionsMenu
                   onDeleteBasemap={() => {
@@ -67,7 +67,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
             />
             {mapToDeleteId && mapToDeleteGroup === mapGroup && (
               <DeleteConfirmation
-                onKeepHandler={() => setMapToDeleteId("")}
+                onKeepHandler={() => { setMapToDeleteId(""); }}
                 onDeleteHandler={() => {
                   dispatch(deleteBaseMaps(mapToDeleteId));
                   // Pick the first item of the list
