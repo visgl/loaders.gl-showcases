@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { type RenderResult, screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { UploadPanelItem } from "./upload-panel-item";
 import userEvent from "@testing-library/user-event";
@@ -7,7 +7,7 @@ const onCancel = jest.fn();
 const onConfirm = jest.fn();
 
 describe("UploadPanelItem - Cancel and Confirm buttons", () => {
-  const callRender = (renderFunc, props = {}) => {
+  const callRender = (renderFunc, props = {}): RenderResult => {
     return renderFunc(
       <UploadPanelItem
         title="Test item"
@@ -29,13 +29,13 @@ describe("UploadPanelItem - Cancel and Confirm buttons", () => {
     expect(screen.queryByText("Next")).toBeInTheDocument();
   });
 
-  it("Should cancel or confirm upload", () => {
+  it("Should cancel or confirm upload", async () => {
     const { getByText } = callRender(renderWithTheme);
     const cancelButton = getByText("Cancel");
     const uploadButton = getByText("Next");
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(onCancel).toHaveBeenCalled();
-    userEvent.click(uploadButton);
+    await userEvent.click(uploadButton);
     expect(onConfirm).toHaveBeenCalled();
   });
 });
@@ -58,10 +58,10 @@ describe("UploadPanelItem - Cancel only button", () => {
     expect(screen.queryByText("Next")).not.toBeInTheDocument();
   });
 
-  it("Should cancel or confirm upload", () => {
+  it("Should cancel or confirm upload", async () => {
     const { getByText } = callRender(renderWithTheme);
     const cancelButton = getByText("Cancel");
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(onCancel).toHaveBeenCalled();
   });
 });

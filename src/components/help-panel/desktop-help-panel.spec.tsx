@@ -48,18 +48,19 @@ beforeAll(() => {
 describe("Desktop Help Panel", () => {
   it("Should render DesktopHelpPanel", () => {
     const onClose = jest.fn();
-    const { container } = renderWithTheme(
-      <DesktopHelpPanel
-        onClose={onClose}
-        shortcuts={[
-          { id: "test", icon: <div></div>, title: "", text: "", video: "" },
-        ]}
-        activeShortcutId={"test"}
-        selectedTab={HelpPanelSelectedTab.Touch}
-        onTabSelect={jest.fn()}
-        onShortcutHover={jest.fn()}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <DesktopHelpPanel
+          onClose={onClose}
+          shortcuts={[
+            { id: "test", icon: <div></div>, title: "", text: "", video: "" },
+          ]}
+          activeShortcutId={"test"}
+          selectedTab={HelpPanelSelectedTab.Touch}
+          onTabSelect={jest.fn()}
+          onShortcutHover={jest.fn()}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Desktop Shortcut Tabs Mock")).toBeInTheDocument();

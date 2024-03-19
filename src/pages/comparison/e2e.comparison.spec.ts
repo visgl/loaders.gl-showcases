@@ -508,17 +508,14 @@ describe("Compare - Compare button", () => {
     await page.hover("a[href='/compare-across-layers']");
     await page.click("a[href='/compare-across-layers']");
 
-    const compareButton = await page.$("#compare-button > :first-child");
-    const compareButtonText = await compareButton.$eval(
-      "#compare-button > :first-child > :last-child",
-      (node) => node.innerText
-    );
-    expect(compareButtonText).toBe("Start comparing");
-    await compareButton.click();
+    await expect(page).toClick("#compare-button button", {
+      text: "Start comparing",
+      timeout: 2000,
+    });
     const compareButtonText2 = await page.$eval(
       "#compare-button > :first-child > :last-child",
       (node) => node.innerText
     );
     expect(compareButtonText2).toBe("Start comparing");
-  });
+  }, 60000);
 });

@@ -58,7 +58,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
   const [mapToDeleteId, setMapToDeleteId] = useState<string>("");
 
   return (
-    <MapOptionsContainer>
+    <MapOptionsContainer id="map-options-container">
       <MapOptionTitle>Base Map</MapOptionTitle>
       <MapList>
         {baseMaps.map((baseMap) => {

@@ -276,7 +276,7 @@ export const LayersPanel = ({
     name: string;
     url: string;
     token?: string;
-  }) => {
+  }): Promise<void> => {
     scene.url = convertUrlToRestFormat(scene.url);
 
     const existedScene = layers.some(
@@ -336,12 +336,10 @@ export const LayersPanel = ({
           case "NO_AVAILABLE_SUPPORTED_LAYERS_ERROR": {
             const layers = (error as LayerError).details;
             saveLayerTypes(layers);
-            setShowSceneInsertPanel(false);
             setShowNoSupportedLayersInSceneError(true);
             break;
           }
           case "NOT_SUPPORTED_CRS_ERROR": {
-            setShowSceneInsertPanel(false);
             setShowNoSupportedCRSInSceneError(true);
             break;
           }
@@ -355,7 +353,7 @@ export const LayersPanel = ({
     }
   };
 
-  const handleInsertMap = (map: CustomItem) => {
+  const handleInsertMap = (map: CustomItem): void => {
     const id = map.url.replace(/" "/g, "-");
     const newMap: BaseMap = {
       id,
@@ -524,8 +522,8 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Scene"}
-                onInsert={(scene) => {
-                  void handleInsertScene(scene);
+                onInsert={async (scene) => {
+                  await handleInsertScene(scene);
                 }}
                 onCancel={() => {
                   setShowSceneInsertPanel(false);

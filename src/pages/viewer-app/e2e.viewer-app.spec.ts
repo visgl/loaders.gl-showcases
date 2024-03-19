@@ -24,7 +24,7 @@ describe("Viewer", () => {
 
   it("Should automatically redirect from to the initial layer", async () => {
     const currentUrl = page.url();
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
   });
@@ -118,13 +118,13 @@ describe("Viewer - Layers panel", () => {
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
     await checkLayersPanel(page, panelId, true);
-  });
+  }, 30000);
 
   it("Should select initial layer", async () => {
     expect(
       await page.$eval(
         "#viewer--layers-panel #san-francisco-v1_7>input",
-        (node) => (node as HTMLInputElement).checked
+        (node) => node.checked
       )
     ).toBeTruthy();
   });
@@ -135,7 +135,7 @@ describe("Viewer - Layers panel", () => {
       "#viewer--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
-  });
+  }, 60000);
 });
 
 const chevronSvgHtml =

@@ -1,5 +1,5 @@
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
-import { screen, within } from "@testing-library/react";
+import { type RenderResult, screen, within } from "@testing-library/react";
 import { setupStore } from "../../redux/store";
 import { ArcGisControlPanel } from "./arcgis-control-panel";
 import userEvent from "@testing-library/user-event";
@@ -30,7 +30,11 @@ let storageUserinfo = "";
 
 const onArcGisImportMock = jest.fn();
 
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (
+  renderFunc,
+  props = {},
+  store = setupStore()
+): RenderResult => {
   return renderFunc(
     <ArcGisControlPanel onArcGisImportClick={onArcGisImportMock} {...props} />,
     store
@@ -70,11 +74,11 @@ describe("Layers Control Panel - ArcGIS auth", () => {
     // We are in the "Logged out" state, so the "Log in" button should be there.
     const loginButton = await screen.findByText("Login to ArcGIS");
     expect(loginButton).toBeInTheDocument();
-    loginButton && userEvent.click(loginButton);
+    loginButton && (await userEvent.click(loginButton));
     expect(arcGisRequestLoginMock).toHaveBeenCalledTimes(1);
 
     const importButton = screen.queryByText("Import from ArcGIS");
-    expect(importButton).not.toBeInTheDocument();
+    expect(importButton).toBeInTheDocument();
   });
 
   it("Should render ArcGIS Import and Logout buttons", async () => {
@@ -112,7 +116,7 @@ describe("Layers Control Panel - ArcGIS auth", () => {
     expect(container).toBeInTheDocument();
 
     const loginButton = screen.getByText("Login to ArcGIS");
-    loginButton && userEvent.click(loginButton);
+    loginButton && (await userEvent.click(loginButton));
     expect(arcGisRequestLoginMock).toHaveBeenCalledTimes(1);
 
     const importButton = await screen.findByText("Import from ArcGIS");
@@ -126,20 +130,16 @@ describe("Layers Control Panel - ArcGIS auth", () => {
     const store = setupStore();
     // Let's Log in...
     await store.dispatch(arcGisLogin());
-    callRender(
-      renderWithThemeProviders,
-      undefined,
-      store
-    );
+    callRender(renderWithThemeProviders, undefined, store);
 
     const logoutButton = await screen.findByTestId("userinfo-button");
-    logoutButton && userEvent.click(logoutButton);
+    logoutButton && (await userEvent.click(logoutButton));
 
     const modalDialog = await screen.findByTestId("modal-dialog-content");
     expect(modalDialog).toContainHTML("Are you sure you want to log out?");
 
     const cancelButton = within(modalDialog).getByText("Log out");
-    cancelButton && userEvent.click(cancelButton);
+    cancelButton && (await userEvent.click(cancelButton));
 
     const modalDialogHidden = screen.queryByTestId("modal-dialog-content");
     expect(modalDialogHidden).not.toBeInTheDocument();

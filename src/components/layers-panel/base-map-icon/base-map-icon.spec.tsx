@@ -2,7 +2,11 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { BaseMapIcon } from "./base-map-icon";
 
 const validatePresetBaseMap = (id: string) => {
-  const { container } = renderWithTheme(<BaseMapIcon baseMapId={id} />);
+  const { container } = renderWithTheme(<BaseMapIcon baseMapId={id} />) ?? {};
+  expect(container).toBeDefined();
+  if (!container) {
+    return;
+  }
   const component = container.firstChild;
   expect(component?.nodeName).toBe("DIV");
   if (component) {
@@ -23,9 +27,12 @@ describe("BaseMapIcon", () => {
   });
 
   it("Should render SVG component", () => {
-    const { container } = renderWithTheme(
-      <BaseMapIcon baseMapId="CustomMap" />
-    );
+    const { container } =
+      renderWithTheme(<BaseMapIcon baseMapId="CustomMap" />) ?? {};
+    expect(container).toBeDefined();
+    if (!container) {
+      return;
+    }
     const component = container.firstChild;
     expect(component?.nodeName).toBe("DIV");
     if (component) {

@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { type RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { DeleteConfirmation } from "./delete-confirmation";
@@ -6,7 +6,7 @@ import { DeleteConfirmation } from "./delete-confirmation";
 const onDeleteHandlerMock = jest.fn();
 const onKeepMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <DeleteConfirmation
       onKeepHandler={onKeepMock}
@@ -19,18 +19,18 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Delete Conformation", () => {
-  it("Should render Conformation Panel", () => {
+  it("Should render Conformation Panel", async () => {
     const { container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
 
     const keepButton = screen.getByText("No, keep");
     expect(keepButton).toBeInTheDocument();
-    userEvent.click(keepButton);
+    await userEvent.click(keepButton);
     expect(onKeepMock).toHaveBeenCalled();
 
     const deleteButton = screen.getByText("Yes, delete");
     expect(deleteButton).toBeInTheDocument();
-    userEvent.click(deleteButton);
+    await userEvent.click(deleteButton);
     expect(onDeleteHandlerMock).toHaveBeenCalled();
   });
 

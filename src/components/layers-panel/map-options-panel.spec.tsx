@@ -54,7 +54,7 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 };
 
 describe("Map Options Panel", () => {
-  it("Should render without basemaps", () => {
+  it("Should render without basemaps", async () => {
     const store = setupStore();
     const { container } = callRender(
       renderWithThemeProviders,
@@ -68,7 +68,7 @@ describe("Map Options Panel", () => {
     const insertBaseMapButton = screen.getByText("Insert Base Map");
     expect(insertBaseMapButton).toBeInTheDocument();
     // Should be able to click on insert button
-    userEvent.click(insertBaseMapButton);
+    await userEvent.click(insertBaseMapButton);
     expect(onInsertBaseMapMock).toHaveBeenCalled();
   });
 

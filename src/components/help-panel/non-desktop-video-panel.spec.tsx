@@ -16,18 +16,19 @@ beforeAll(() => {
 describe("NonDesktop Video Panel", () => {
   it("Should video panel", () => {
     const onCloseVideoPanel = jest.fn();
-    const { container } = renderWithTheme(
-      <NonDesktopVideoPanel
-        shortcut={{
-          id: "tst-id",
-          icon: null,
-          title: "Test video",
-          text: "",
-          video: "",
-        }}
-        onCloseVideoPanel={onCloseVideoPanel}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <NonDesktopVideoPanel
+          shortcut={{
+            id: "tst-id",
+            icon: null,
+            title: "Test video",
+            text: "",
+            video: "",
+          }}
+          onCloseVideoPanel={onCloseVideoPanel}
+        />
+      ) ?? {};
 
     const title = screen.getByText("Test video");
     const closeButton = screen.getByText("Close Button Mock");

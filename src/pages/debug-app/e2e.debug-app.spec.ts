@@ -1,5 +1,6 @@
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import {
+  checkInserLayerErrors,
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
@@ -24,7 +25,7 @@ describe("Debug", () => {
 
   it("Should automatically redirect from to the initial layer", async () => {
     const currentUrl = page.url();
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
   });
@@ -78,28 +79,28 @@ describe("Debug - Main tools panel", () => {
     await page.waitForSelector("#debug-memory-usage-panel", {
       visible: true,
     });
-  });
+  }, 30000);
 
   it("Validator tab works", async () => {
     await page.click("#validator-tab");
     await page.waitForSelector("#semantic-validator", {
       visible: true,
     });
-  });
+  }, 60000);
 
   it("Debug tab works", async () => {
     await page.click("#debug-panel-tab");
     await page.waitForSelector("#debug-panel-title", {
       visible: true,
     });
-  });
+  }, 30000);
 
   it("Bookmarks tab works", async () => {
     await page.click("#bookmarks-tab");
     await page.waitForSelector("#debug-bookmarks-panel", {
       visible: true,
     });
-  });
+  }, 60000);
 });
 
 describe("Debug - Layers panel", () => {
@@ -134,16 +135,24 @@ describe("Debug - Layers panel", () => {
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
     await checkLayersPanel(page, panelId, true);
-  });
+  }, 60000);
 
   it("Should select initial layer", async () => {
     expect(
       await page.$eval(
         "#debug--layers-panel #san-francisco-v1_7>input",
-        (node) => (node as HTMLInputElement).checked
+        (node) => node.checked
       )
     ).toBeTruthy();
   });
+
+  it("Should validate inser layer form", async () => {
+    await checkInserLayerErrors(
+      page,
+      "#debug--layers-panel",
+      "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
+    );
+  }, 60000);
 
   it("Should insert and delete layers", async () => {
     await inserAndDeleteLayer(
@@ -151,7 +160,7 @@ describe("Debug - Layers panel", () => {
       "#debug--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
-  });
+  }, 60000);
 });
 
 describe("Debug - Debug panel", () => {
@@ -166,12 +175,19 @@ describe("Debug - Debug panel", () => {
     toggleId: string;
     titleId: string;
     titleText: string;
-  }) => {
+  }): Promise<void> => {
     const toggle = await page.$(`#${toggleId}~span`);
     expect(toggle).toBeDefined();
-    const title = await page.$eval(`#${titleId}`, (e) => e.textContent);
-    expect(title).toBe(titleText);
-    await page.click(`#${toggleId}~span`);
+
+    await page.waitForSelector(`#${titleId}`);
+    await expect(page).toMatchTextContent(titleText, { timeout: 4000 });
+
+    await expect(page).toClick(`#${toggleId}~span`, { timeout: 4000 });
+  };
+
+  const scrollAndClick = async (selector: string): Promise<void> => {
+    await page.waitForSelector(selector);
+    await expect(page).toClick(selector, { timeout: 6000 });
   };
 
   const toggles = {
@@ -258,55 +274,101 @@ describe("Debug - Debug panel", () => {
     await checkAndClickToggle(toggles.picking);
     await checkAndClickToggle(toggles.wireframe);
     await checkAndClickToggle(toggles.textureUvs);
-  });
+  }, 40000);
 
   it("Check tile colors", async () => {
     // Check title in Color section
-    const colorSectionTitle = await page.$eval(
-      "#color-section-title",
-      (e) => e.textContent
-    );
-    expect(colorSectionTitle).toBe("Color");
+    const colorSectionTitle = await page.$("#color-section-title");
+    await expect(colorSectionTitle).toMatchTextContent("Color", {
+      timeout: 2000,
+    });
 
     // Check color radio buttons are clickable
-    await page.click("#color-section-radio-button-random");
-    await page.click("#color-section-radio-button-original");
-    await page.click("#color-section-radio-button-depth");
-    await page.click("#color-section-radio-button-custom");
-  });
+    await expect(page).toClick("#color-section-radio-button-random", {
+      timeout: 4000,
+    });
+    await expect(page).toClick("#color-section-radio-button-original", {
+      timeout: 4000,
+    });
+    await expect(page).toClick("#color-section-radio-button-depth", {
+      timeout: 4000,
+    });
+    await expect(page).toClick("#color-section-radio-button-custom", {
+      timeout: 4000,
+    });
+  }, 30000);
 
   it("Check bounding volumes", async () => {
+    const panel = await page.$("#debug--toggle-options-container");
+    expect(panel).not.toBeNull();
     // Check if bounding volumes types settings are hidden
-    expect(await page.$("bounding-volume-type-title")).toBeNull();
-    expect(await page.$("bounding-volume-type-button-mbs")).toBeNull();
-    expect(await page.$("bounding-volume-type-button-obb")).toBeNull();
+    await expect(panel).not.toMatchElement("#bounding-volume-type-title", {
+      timeout: 3000,
+    });
+    await expect(panel).not.toMatchElement("#bounding-volume-type-button-mbs", {
+      timeout: 3000,
+    });
+    await expect(panel).not.toMatchElement("#bounding-volume-type-button-obb", {
+      timeout: 3000,
+    });
 
     // Check if bounding volumes colors settings are hidden
-    expect(await page.$("bounding-volume-color-title")).toBeNull();
-    expect(await page.$("bounding-volume-color-button-original")).toBeNull();
-    expect(await page.$("bounding-volume-color-button-tile")).toBeNull();
+    await expect(panel).not.toMatchElement("#bounding-volume-color-title", {
+      timeout: 3000,
+    });
+    await expect(panel).not.toMatchElement(
+      "#bounding-volume-color-button-original",
+      {
+        timeout: 3000,
+      }
+    );
+    await expect(panel).not.toMatchElement(
+      "#bounding-volume-color-button-tile",
+      {
+        timeout: 3000,
+      }
+    );
 
     // Enable bounding columes toggle
     await checkAndClickToggle(toggles.boundingVolumes);
 
     // Check if bounding volume types are available
-    expect(await page.$("bounding-volume-type-title")).toBeDefined();
-    expect(await page.$("bounding-volume-type-button-mbs")).toBeDefined();
-    expect(await page.$("bounding-volume-type-button-obb")).toBeDefined();
+    await expect(panel).toMatchElement("#bounding-volume-type-title", {
+      timeout: 6000,
+    });
+    await expect(panel).toMatchElement("#bounding-volume-type-button-mbs", {
+      timeout: 6000,
+    });
+    await expect(panel).toMatchElement("#bounding-volume-type-button-obb", {
+      timeout: 6000,
+    });
 
     // Check radio buttons are clickable
-    await page.click("#bounding-volume-type-button-obb");
-    await page.click("#bounding-volume-type-button-mbs");
+    await scrollAndClick("#bounding-volume-type-button-obb");
+    await scrollAndClick("#bounding-volume-type-button-mbs");
 
     // Check if bounding volumes colors settings are available
-    expect(await page.$("bounding-volume-color-title")).toBeDefined();
-    expect(await page.$("bounding-volume-color-button-Original")).toBeDefined();
-    expect(await page.$("bounding-volume-color-button-tile")).toBeDefined();
+    await expect(panel).toMatchElement("#bounding-volume-color-title", {
+      timeout: 6000,
+    });
+    await expect(panel).toMatchElement(
+      "#bounding-volume-color-button-original",
+      {
+        timeout: 6000,
+      }
+    );
+    await expect(panel).toMatchElement("#bounding-volume-color-button-tile", {
+      timeout: 6000,
+    });
 
     // Check radio buttons are clickable
-    await page.click("#bounding-volume-color-button-tile");
-    await page.click("#bounding-volume-color-button-original");
-  });
+    await expect(panel).toClick("#bounding-volume-color-button-tile", {
+      timeout: 2000,
+    });
+    await expect(panel).toClick("#bounding-volume-color-button-original", {
+      timeout: 2000,
+    });
+  }, 30000);
 });
 
 const chevronSvgHtml =

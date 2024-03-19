@@ -16,28 +16,29 @@ describe("Desktop Shortcut List Panel", () => {
   });
 
   it("Should render DesktopShortcutListPanel", () => {
-    const { container } = renderWithTheme(
-      <DesktopShortcutsListPanel
-        activeShortcutId={"test"}
-        shortcuts={[
-          {
-            id: "test",
-            icon: <div>Hello one</div>,
-            title: "First Item Title",
-            text: "First Item Text",
-            video: "/link-to-test-video-0",
-          },
-          {
-            id: "test1",
-            icon: <div>Hello two</div>,
-            title: "Second Item Title",
-            text: "Second Item Text",
-            video: "/link-to-test-video-1",
-          },
-        ]}
-        onHover={jest.fn()}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <DesktopShortcutsListPanel
+          activeShortcutId={"test"}
+          shortcuts={[
+            {
+              id: "test",
+              icon: <div>Hello one</div>,
+              title: "First Item Title",
+              text: "First Item Text",
+              video: "/link-to-test-video-0",
+            },
+            {
+              id: "test1",
+              icon: <div>Hello two</div>,
+              title: "Second Item Title",
+              text: "Second Item Text",
+              video: "/link-to-test-video-1",
+            },
+          ]}
+          onHover={jest.fn()}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("First Item Text")).toBeInTheDocument();

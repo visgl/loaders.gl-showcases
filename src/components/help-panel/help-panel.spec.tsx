@@ -37,7 +37,8 @@ beforeAll(() => {
 describe("Help Panel", () => {
   it("Should render Desktop Help Panel", () => {
     const onClose = jest.fn();
-    const { container } = renderWithTheme(<HelpPanel onClose={onClose} />);
+    const { container } =
+      renderWithTheme(<HelpPanel onClose={onClose} />) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(DesktopHelpPanelMock).toHaveBeenCalled();

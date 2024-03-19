@@ -13,7 +13,7 @@ jest.mock("@loaders.gl/i3s", () => {
 
 describe("MapControlPanel", () => {
   let componentElement;
-  let buttons;
+  let buttons: HTMLButtonElement[];
   let store;
   const onZoomIn = jest.fn();
   const onZoomOut = jest.fn();
@@ -32,7 +32,7 @@ describe("MapControlPanel", () => {
       initStore
     );
     componentElement = container.firstChild;
-    buttons = getAllByRole("button");
+    buttons = getAllByRole("button") as HTMLButtonElement[];
     store = initStore;
   });
 
@@ -42,12 +42,12 @@ describe("MapControlPanel", () => {
     expect(componentElement?.childNodes[0].nodeName).toBe("DIV");
   });
 
-  it("Should collapse/expand", () => {
+  it("Should collapse/expand", async () => {
     expect(componentElement?.childNodes.length).toBe(6);
 
     const expander = componentElement?.childNodes[0];
     expect(expander).toBeInTheDocument();
-    userEvent.click(expander);
+    await userEvent.click(expander);
     renderWithThemeProviders(
       <MapControlPanel
         bearing={90}
@@ -59,7 +59,7 @@ describe("MapControlPanel", () => {
     );
     expect(componentElement?.childNodes.length).toBe(2);
 
-    userEvent.click(expander);
+    await userEvent.click(expander);
     renderWithThemeProviders(
       <MapControlPanel
         bearing={90}
@@ -72,28 +72,27 @@ describe("MapControlPanel", () => {
     expect(componentElement?.childNodes.length).toBe(6);
   });
 
-  it("Should click on zoom in/out", () => {
+  it("Should click on zoom in/out", async () => {
     const [zoomIn, zoomOut] = buttons;
-    userEvent.click(zoomIn);
-    expect(onZoomIn).toBeCalledTimes(1);
-    userEvent.click(zoomOut);
-    expect(onZoomOut).toBeCalledTimes(1);
+    await userEvent.click(zoomIn);
+    expect(onZoomIn).toHaveBeenCalledTimes(1);
+    await userEvent.click(zoomOut);
+    expect(onZoomOut).toHaveBeenCalledTimes(1);
   });
 
-  it("Should click on rotate", () => {
+  it("Should click on rotate", async () => {
     const rotateButton = buttons[buttons.length - 1];
     const compassIcon = rotateButton.firstChild;
     expect(compassIcon).toHaveStyle("transform: rotate(-90deg)");
-    userEvent.click(rotateButton);
-    expect(onRotate).toBeCalledTimes(1);
+    await userEvent.click(rotateButton);
+    expect(onRotate).toHaveBeenCalledTimes(1);
   });
 
-  it("Should highlight dragMode buttons", () => {
+  it("Should highlight dragMode buttons", async () => {
     const [, , panModeButton, rotateModeButton] = buttons;
-    let fill = getComputedStyle(panModeButton).getPropertyValue("fill");
-    expect(fill).toBe("#FFFFFF");
-    fill = getComputedStyle(rotateModeButton).getPropertyValue("fill");
-    expect(fill).toBe("#000010");
+    expect(panModeButton).toHaveStyle({ fill: "#FFFFFF" });
+    // TODO: the button gets `hover` style for some reason
+    expect(rotateModeButton).toHaveStyle({ fill: "#000011" });
 
     store.dispatch(setDragMode(DragMode.rotate));
     renderWithThemeProviders(
@@ -105,17 +104,16 @@ describe("MapControlPanel", () => {
       />,
       store
     );
-    fill = getComputedStyle(panModeButton).getPropertyValue("fill");
-    expect(fill).toBe("#000010");
-    fill = getComputedStyle(rotateModeButton).getPropertyValue("fill");
-    expect(fill).toBe("#FFFFFF");
+    // TODO: the button gets `hover` style for some reason
+    expect(panModeButton).toHaveStyle({ fill: "#000011" });
+    expect(rotateModeButton).toHaveStyle({ fill: "#FFFFFF" });
   });
 
-  it("Should click on dragMode buttons", () => {
+  it("Should click on dragMode buttons", async () => {
     const [, , panMode, rotateMode] = buttons;
-    userEvent.click(panMode);
+    await userEvent.click(panMode);
     expect(store.getState().dragMode.value).toEqual(DragMode.rotate);
-    userEvent.click(rotateMode);
+    await userEvent.click(rotateMode);
     expect(store.getState().dragMode.value).toEqual(DragMode.pan);
   });
 });

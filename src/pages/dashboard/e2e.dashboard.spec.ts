@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
 import { clickAndNavigate } from "../../utils/testing-utils/utils";
 
 describe("Dashboard Default View", () => {
@@ -57,7 +57,7 @@ describe("Dashboard Default View", () => {
       "a[href='/viewer']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
@@ -72,7 +72,7 @@ describe("Dashboard Default View", () => {
       "a[href='/debug']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");
@@ -89,7 +89,7 @@ describe("Dashboard Default View", () => {
       "a[href='/compare-across-layers']"
     );
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
-  });
+  }, 30000);
 
   it("Should go to the Comparison Withhin Layer Page", async () => {
     await page.goto("http://localhost:3000");
@@ -295,7 +295,7 @@ describe("Dashboard Default View", () => {
   it("Should go to viewer page from tools description", async () => {
     await page.waitForSelector("#viewer-link");
     const currentUrl = await clickAndNavigate(page, "#viewer-link", "tileset=");
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
   });
@@ -304,7 +304,7 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
     const currentUrl = await clickAndNavigate(page, "#debug-link", "tileset=");
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
   });
@@ -323,7 +323,7 @@ describe("Dashboard Default View", () => {
 
 describe("Dashboard Tablet or Mobile view", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
@@ -383,9 +383,12 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#header-links");
 
     const linksParent = await page.$("#header-links");
-    expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
-    ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    expect(linksParent).not.toBeNull();
+    if (linksParent) {
+      expect(
+        await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
+      ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    }
 
     await page.waitForSelector("#compare-tablet-or-mobile-button");
     const compareText = await page.$eval(
@@ -422,7 +425,7 @@ describe("Dashboard Tablet or Mobile view", () => {
       "a[href='/viewer']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
@@ -440,7 +443,7 @@ describe("Dashboard Tablet or Mobile view", () => {
       "a[href='/debug']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");

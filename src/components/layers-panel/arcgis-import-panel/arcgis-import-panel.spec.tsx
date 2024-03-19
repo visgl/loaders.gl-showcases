@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { type RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../../utils/testing-utils/render-with-theme";
 import { ArcGisImportPanel } from "./arcgis-import-panel";
@@ -44,7 +44,11 @@ const CONTENT_EXPECTED = [
   },
 ];
 
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (
+  renderFunc,
+  props = {},
+  store = setupStore()
+): RenderResult => {
   return renderFunc(
     <ArcGisImportPanel
       onImport={onImportMock}
@@ -83,7 +87,7 @@ describe("Import panel", () => {
     callRender(renderWithThemeProviders, undefined, store);
 
     const cross = document.querySelector("svg");
-    cross && userEvent.click(cross);
+    cross && (await userEvent.click(cross));
     expect(onCancelMock).toHaveBeenCalledTimes(1);
   });
 
@@ -95,14 +99,14 @@ describe("Import panel", () => {
     const importSelected = screen.getByText("Import Selected");
 
     // No item is selected yet.
-    importSelected && userEvent.click(importSelected);
+    importSelected && (await userEvent.click(importSelected));
     expect(onImportMock).toHaveBeenCalledTimes(0);
 
     // Select an item to import
     const row = screen.getByText("City-123");
-    row && userEvent.click(row);
+    row && (await userEvent.click(row));
 
-    importSelected && userEvent.click(importSelected);
+    importSelected && (await userEvent.click(importSelected));
     expect(onImportMock).toHaveBeenCalledTimes(1);
   });
 
@@ -116,29 +120,29 @@ describe("Import panel", () => {
 
     const title = screen.getByText("Title");
 
-    title && userEvent.click(title);
+    title && (await userEvent.click(title));
     state = store.getState();
     cont = selectArcGisContent(state);
     expect(cont[0].id).toBe("123");
 
-    title && userEvent.click(title);
+    title && (await userEvent.click(title));
     state = store.getState();
     cont = selectArcGisContent(state);
     expect(cont[0].id).toBe("789");
 
     const date = screen.getByText("Date");
 
-    date && userEvent.click(date);
+    date && (await userEvent.click(date));
     state = store.getState();
     cont = selectArcGisContent(state);
     expect(cont[0].id).toBe("789");
 
-    date && userEvent.click(date);
+    date && (await userEvent.click(date));
     state = store.getState();
     cont = selectArcGisContent(state);
     expect(cont[0].id).toBe("123");
 
-    date && userEvent.click(date);
+    date && (await userEvent.click(date));
     state = store.getState();
     cont = selectArcGisContent(state);
     expect(cont[0].id).toBe("789");

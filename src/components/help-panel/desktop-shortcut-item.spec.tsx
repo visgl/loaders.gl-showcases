@@ -19,6 +19,10 @@ describe("Desktop Shortcut Item", () => {
         onHover={onHover}
       />
     );
+    expect(baseDom).toBeDefined();
+    if (!baseDom) {
+      return;
+    }
 
     expect(screen.getByText("Hello world")).toBeInTheDocument();
     expect(screen.getByText("First Item Text")).toBeInTheDocument();
@@ -44,6 +48,10 @@ describe("Desktop Shortcut Item", () => {
         onHover={onHover}
       />
     );
+    expect(baseDom).toBeDefined();
+    if (!baseDom) {
+      return;
+    }
 
     expect(screen.getByText("Hello world")).toBeInTheDocument();
     expect(screen.getByText("First Item Text")).toBeInTheDocument();

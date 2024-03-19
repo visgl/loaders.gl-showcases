@@ -55,13 +55,13 @@ describe("CompareButton", () => {
     expect(container.firstChild.childNodes.length).toBe(2);
   });
 
-  it("Should click download button", () => {
+  it("Should click download button", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { container } = callRender(renderWithTheme, {
       downloadStats: true,
     });
     const downloadButton = container.firstChild.lastChild;
-    userEvent.click(downloadButton);
+    await userEvent.click(downloadButton);
     expect(onDownloadClick).toHaveBeenCalled();
   });
 
@@ -82,8 +82,8 @@ describe("CompareButton", () => {
     expect(compareButton).toBeDisabled();
   });
 
-  it.skip("Should show desktop tooltip when button is disabled", () => {
-  /*
+  it.skip("Should show desktop tooltip when button is disabled", async () => {
+    /*
     The test is temporarily skipped because of the following issue.
     "@testing-library/user-event" of version 13.5.0 doesn't support pointer related events like PoinerEnter.
     According to the documentation version 14.5.2 does support these events,
@@ -99,9 +99,9 @@ describe("CompareButton", () => {
       disableButton: true,
     });
     const compareButton = container.firstChild;
-    userEvent.hover(compareButton);
+    await userEvent.hover(compareButton);
     getByText("You can start comparison when all tiles are fully loaded");
-    userEvent.unhover(compareButton);
+    await userEvent.unhover(compareButton);
   });
 
   it("Should show mobile tooltip when button is disabled", () => {

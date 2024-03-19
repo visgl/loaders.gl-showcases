@@ -5,13 +5,17 @@ import { ExpandIcon } from "./expand-icon";
 
 describe("ExpandIcon", () => {
   let componentElement;
-  let rerenderFunc;
+  let rerenderFunc: (ui: React.ReactNode) => void;
   const onClick = jest.fn();
   beforeEach(() => {
-    const { rerender, container } = renderWithTheme(
-      <ExpandIcon expandState={ExpandState.expanded} onClick={onClick} />
-    );
-    rerenderFunc = rerender;
+    const { rerender, container } =
+      renderWithTheme(
+        <ExpandIcon expandState={ExpandState.expanded} onClick={onClick} />
+      ) ?? {};
+    if (rerender) {
+      rerenderFunc = rerender;
+    }
+
     componentElement = container;
   });
 
@@ -24,8 +28,8 @@ describe("ExpandIcon", () => {
     expect(fill).toBe("#000001");
   });
 
-  it("Should handle click event", () => {
-    userEvent.click(componentElement.firstChild);
+  it("Should handle click event", async () => {
+    await userEvent.click(componentElement.firstChild);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
