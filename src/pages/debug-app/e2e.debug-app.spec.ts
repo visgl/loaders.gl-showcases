@@ -286,19 +286,19 @@ describe("Debug - Debug panel", () => {
     // Check color radio buttons are clickable
     await page.hover("#color-section-radio-button-random");
     await expect(page).toClick("#color-section-radio-button-random", {
-      timeout: 2000,
+      timeout: 4000,
     });
     await page.hover("#color-section-radio-button-original");
     await expect(page).toClick("#color-section-radio-button-original", {
-      timeout: 2000,
+      timeout: 4000,
     });
     await page.hover("#color-section-radio-button-depth");
     await expect(page).toClick("#color-section-radio-button-depth", {
-      timeout: 2000,
+      timeout: 4000,
     });
     await page.hover("#color-section-radio-button-custom");
     await expect(page).toClick("#color-section-radio-button-custom", {
-      timeout: 2000,
+      timeout: 4000,
     });
   }, 30000);
 

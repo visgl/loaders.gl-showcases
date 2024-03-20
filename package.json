@@ -10,10 +10,13 @@
     "start-local-luma": "webpack serve --config ./webpack.dev.config.js --env luma",
     "build": "webpack --config ./webpack.prod.config.js",
     "test:unit": "jest --testPathIgnorePatterns=e2e.*.spec.ts$ --env=jsdom",
+    "test:unit:ci": "jest --testPathIgnorePatterns=e2e.*.spec.ts$ --env=jsdom --ci",
     "test:unit:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --testPathIgnorePatterns=e2e.*.spec.ts --env=jsdom",
     "test:e2e": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
+    "test:e2e:ci": "jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false --runInBand --bail=1 --ci",
     "test:e2e:debug": "node --inspect-brk node_modules/.bin/jest --testPathPattern=e2e.*.spec.ts$ --collectCoverage=false",
     "test": "yarn test:unit && yarn test:e2e",
+    "test:ci": "yarn test:unit:ci && yarn test:e2e:ci",
     "lint": "eslint \"src/**\" && tsc --project tsconfig.eslint.json",
     "lint:fix": "eslint \"src/**\" --fix"
   },
