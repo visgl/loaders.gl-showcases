@@ -103,13 +103,13 @@ const ListItem = styled.div<LayoutProps & ListItemProps>`
             border: 2px solid ${color_canvas_secondary};
           `}
 
-          ${({ editing }) =>
+        ${({ editing }) =>
           editing &&
           css`
             border: 2px solid ${color_canvas_secondary};
           `}
 
-          ${({ isMobile }) =>
+        ${({ isMobile }) =>
           !isMobile &&
           css<ListItemProps>`
             &:hover {
@@ -124,7 +124,7 @@ const ListItem = styled.div<LayoutProps & ListItemProps>`
             }
           `}
 
-          ${({ deleting }) =>
+        ${({ deleting }) =>
           deleting &&
           css`
             border: 2px solid ${color_accent_primary};

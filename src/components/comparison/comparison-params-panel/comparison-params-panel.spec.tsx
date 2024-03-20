@@ -13,9 +13,8 @@ describe("Comparison Params Panel", () => {
       onClose: jest.fn(),
     };
 
-    const { container } = renderWithTheme(
-      <ComparisonParamsPanel {...props}/>
-    );
+    const { container } =
+      renderWithTheme(<ComparisonParamsPanel {...props} />) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Comparison parameters")).toBeInTheDocument();

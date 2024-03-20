@@ -138,7 +138,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         <CloseButton id="debug-panel-close-button" onClick={onClose} />
       </CloseButtonWrapper>
       <PanelHorizontalLine $top={10} />
-      <ToggleOptionsContainer>
+      <ToggleOptionsContainer id={"debug--toggle-options-container"}>
         <ItemContainer>
           <Title $left={16} id={"toggle-minimap-title"}>
             Minimap

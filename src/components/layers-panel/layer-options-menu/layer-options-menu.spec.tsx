@@ -8,7 +8,7 @@ const onLayerSettingsClick = jest.fn();
 const onDeleteLayerClick = jest.fn();
 
 describe("Layer option menu", () => {
-  it("Should render options only with point to layer", () => {
+  it("Should render options only with point to layer", async () => {
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -26,11 +26,11 @@ describe("Layer option menu", () => {
 
     const pointToLayerIcon = screen.getByText("Point to layer");
     expect(pointToLayerIcon).toBeInTheDocument();
-    userEvent.click(pointToLayerIcon);
+    await userEvent.click(pointToLayerIcon);
     expect(onPointToLayerClick).toHaveBeenCalled();
   });
 
-  it("Should render options with point to layer, layer settings and delete layer", () => {
+  it("Should render options with point to layer, layer settings and delete layer", async () => {
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -49,21 +49,21 @@ describe("Layer option menu", () => {
 
     const pointToLayer = screen.getByText("Point to layer");
     expect(pointToLayer).toBeInTheDocument();
-    userEvent.click(pointToLayer);
+    await userEvent.click(pointToLayer);
     expect(onPointToLayerClick).toHaveBeenCalled();
 
     const layerSettings = screen.getByText("Layer settings");
     expect(layerSettings).toBeInTheDocument();
-    userEvent.click(layerSettings);
+    await userEvent.click(layerSettings);
     expect(onLayerSettingsClick).toHaveBeenCalled();
 
     const deleteLayer = screen.getByText("Delete layer");
     expect(deleteLayer).toBeInTheDocument();
-    userEvent.click(deleteLayer);
+    await userEvent.click(deleteLayer);
     expect(onDeleteLayerClick).toHaveBeenCalled();
   });
 
-  it("Should point to child layer viewState if layer is group", () => {
+  it("Should point to child layer viewState if layer is group", async () => {
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -98,7 +98,7 @@ describe("Layer option menu", () => {
 
     const pointToLayerIcon = screen.getByText("Point to layer");
     expect(pointToLayerIcon).toBeInTheDocument();
-    userEvent.click(pointToLayerIcon);
+    await userEvent.click(pointToLayerIcon);
     expect(onPointToLayerClick).toHaveBeenCalledWith({
       latitude: 30,
       longitude: 120,
@@ -106,7 +106,7 @@ describe("Layer option menu", () => {
     });
   });
 
-  it("Should point to deep child layer viewState if layer is group", () => {
+  it("Should point to deep child layer viewState if layer is group", async () => {
     renderWithTheme(
       <LayerOptionsMenu
         layer={{
@@ -143,7 +143,7 @@ describe("Layer option menu", () => {
 
     const pointToLayerIcon = screen.getByText("Point to layer");
     expect(pointToLayerIcon).toBeInTheDocument();
-    userEvent.click(pointToLayerIcon);
+    await userEvent.click(pointToLayerIcon);
     expect(onPointToLayerClick).toHaveBeenCalledWith({
       latitude: 30,
       longitude: 120,

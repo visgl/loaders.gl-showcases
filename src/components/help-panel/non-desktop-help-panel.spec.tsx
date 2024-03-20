@@ -47,21 +47,22 @@ beforeAll(() => {
 });
 
 describe("Non Desktop Help Panel", () => {
-  it("Should render NonDesktopHelpPanel", () => {
+  it("Should render NonDesktopHelpPanel", async () => {
     const onClose = jest.fn();
     const onShortcutClick = jest.fn();
-    const { container } = renderWithTheme(
-      <NonDesktopHelpPanel
-        onClose={onClose}
-        shortcuts={[
-          { id: "test", icon: <div></div>, title: "", text: "", video: "" },
-        ]}
-        activeShortcutId={"test"}
-        selectedTab={HelpPanelSelectedTab.Touch}
-        onTabSelect={jest.fn()}
-        onShortcutClick={onShortcutClick}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <NonDesktopHelpPanel
+          onClose={onClose}
+          shortcuts={[
+            { id: "test", icon: <div></div>, title: "", text: "", video: "" },
+          ]}
+          activeShortcutId={"test"}
+          selectedTab={HelpPanelSelectedTab.Touch}
+          onTabSelect={jest.fn()}
+          onShortcutClick={onShortcutClick}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Shortcuts")).toBeInTheDocument();
@@ -75,29 +76,30 @@ describe("Non Desktop Help Panel", () => {
 
     expect(screen.getByText("Non Desktop VideoPanel Mock")).toBeInTheDocument();
 
-    userEvent.click(screen.getByText("Non Desktop VideoPanel Mock"));
+    await userEvent.click(screen.getByText("Non Desktop VideoPanel Mock"));
 
     expect(onShortcutClick).toHaveBeenCalled();
 
-    userEvent.click(screen.getByTestId("non-desktop-overlay"));
+    await userEvent.click(screen.getByTestId("non-desktop-overlay"));
 
     expect(onShortcutClick).toHaveBeenCalled();
   });
 
   it("Should render NonDesktopHelpPanel with no videoPanel if no active shortcut", () => {
     const onClose = jest.fn();
-    const { container } = renderWithTheme(
-      <NonDesktopHelpPanel
-        onClose={onClose}
-        shortcuts={[
-          { id: "test", icon: <div></div>, title: "", text: "", video: "" },
-        ]}
-        activeShortcutId={"test-1"}
-        selectedTab={HelpPanelSelectedTab.Touch}
-        onTabSelect={jest.fn()}
-        onShortcutClick={jest.fn()}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <NonDesktopHelpPanel
+          onClose={onClose}
+          shortcuts={[
+            { id: "test", icon: <div></div>, title: "", text: "", video: "" },
+          ]}
+          activeShortcutId={"test-1"}
+          selectedTab={HelpPanelSelectedTab.Touch}
+          onTabSelect={jest.fn()}
+          onShortcutClick={jest.fn()}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Shortcuts")).toBeInTheDocument();

@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { type RenderResult, screen } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { NonDesktopHeaderContent } from "./non-desktop-header-content";
 import userEvent from "@testing-library/user-event";
@@ -39,7 +39,7 @@ jest.mock("react-router-dom", () => ({
 const setThemeMock = jest.fn();
 const onHelpClickMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <NonDesktopHeaderContent
       onHelpClick={onHelpClickMock}
@@ -53,7 +53,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Non Desktop header content", () => {
-  it("Should render Header", () => {
+  it("Should render Header", async () => {
     const { container } = callRender(renderWithTheme);
 
     const burger = screen.getByTestId("burger-menu-non-desktop");
@@ -61,7 +61,7 @@ describe("Non Desktop header content", () => {
     expect(container).toBeInTheDocument();
     expect(burger).toBeInTheDocument();
 
-    userEvent.click(burger);
+    await userEvent.click(burger);
     const closeIcon = screen.getByTestId("close-header-menu-non-desktop");
     expect(closeIcon).toBeInTheDocument();
 
@@ -80,10 +80,10 @@ describe("Non Desktop header content", () => {
       expect(item).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByTestId("theme-toggler-non-desktop"));
+    await userEvent.click(screen.getByTestId("theme-toggler-non-desktop"));
     expect(setThemeMock).toBeCalled();
 
-    userEvent.click(screen.getByText("Compare"));
+    await userEvent.click(screen.getByText("Compare"));
 
     const across = screen.getByText("Across Layers");
     const within = screen.getByText("Within a Layer");
@@ -91,56 +91,56 @@ describe("Non Desktop header content", () => {
     expect(across).toBeInTheDocument();
     expect(within).toBeInTheDocument();
 
-    userEvent.click(screen.getByText("Help"));
+    await userEvent.click(screen.getByText("Help"));
     expect(onHelpClickMock).toBeCalled();
 
-    userEvent.click(closeIcon);
+    await userEvent.click(closeIcon);
   });
 
-  it("Should change active link to /viewer", () => {
+  it("Should change active link to /viewer", async () => {
     const { container } = callRender(renderWithTheme, {
       pathname: "/viewer",
       theme: 1,
     });
     expect(container).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
+    await userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
     expect(screen.getByText("Viewer")).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
-  it("Should change active link to /debug", () => {
+  it("Should change active link to /debug", async () => {
     const { container } = callRender(renderWithTheme, {
       pathname: "/debug",
       theme: 0,
     });
     expect(container).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
+    await userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
     expect(screen.getByText("Debug")).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
-  it("Should change active link to /compare-across-layers", () => {
+  it("Should change active link to /compare-across-layers", async () => {
     const { container } = callRender(renderWithTheme, {
       pathname: "/compare-across-layers",
       theme: 1,
     });
     expect(container).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
+    await userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
     expect(screen.getByText("Compare")).toHaveStyle("color: rgb(96, 194, 164)");
 
-    userEvent.click(screen.getByText("Compare"));
+    await userEvent.click(screen.getByText("Compare"));
     expect(screen.getByText("Across Layers")).toHaveStyle(
       "color: rgb(96, 194, 164)"
     );
   });
 
-  it("Should change active link to /compare-within-layer", () => {
+  it("Should change active link to /compare-within-layer", async () => {
     const { container } = callRender(renderWithTheme, {
       pathname: "/compare-within-layer",
       theme: 0,
     });
     expect(container).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
+    await userEvent.click(screen.getByTestId("burger-menu-non-desktop"));
     expect(screen.getByText("Compare")).toHaveStyle("color: rgb(96, 194, 164)");
-    userEvent.click(screen.getByText("Compare"));
+    await userEvent.click(screen.getByText("Compare"));
     expect(screen.getByText("Within a Layer")).toHaveStyle(
       "color: rgb(96, 194, 164)"
     );

@@ -68,7 +68,7 @@ export const ArcGisControlPanel = ({
   const [showLogoutWarning, setShowLogoutWarning] = useState(false);
   const [showArcGisImportPanel, setShowArcGisImportPanel] = useState(false);
 
-  const onArcGisActionClick = () => {
+  const onArcGisActionClick = (): void => {
     if (isLoggedIn) {
       void dispatch(getArcGisContent());
       setShowArcGisImportPanel(true);
@@ -76,7 +76,7 @@ export const ArcGisControlPanel = ({
       void dispatch(arcGisLogin());
     }
   };
-  const onArcGisLogoutClick = () => {
+  const onArcGisLogoutClick = (): void => {
     setShowLogoutWarning(true);
   };
 

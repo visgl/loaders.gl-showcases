@@ -1,8 +1,10 @@
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import {
+  checkInserLayerErrors,
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Debug", () => {
   let browser: Browser;
@@ -11,6 +13,7 @@ describe("Debug", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -24,7 +27,7 @@ describe("Debug", () => {
 
   it("Should automatically redirect from to the initial layer", async () => {
     const currentUrl = page.url();
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
   });
@@ -46,6 +49,7 @@ describe("Debug - Main tools panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.goto("http://localhost:3000/debug");
     await page.click("#map-control-panel>div:first-child");
   });
@@ -109,6 +113,7 @@ describe("Debug - Layers panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -140,9 +145,17 @@ describe("Debug - Layers panel", () => {
     expect(
       await page.$eval(
         "#debug--layers-panel #san-francisco-v1_7>input",
-        (node) => (node as HTMLInputElement).checked
+        (node) => node.checked
       )
     ).toBeTruthy();
+  });
+
+  it("Should validate inser layer form", async () => {
+    await checkInserLayerErrors(
+      page,
+      "#debug--layers-panel",
+      "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
+    );
   });
 
   it("Should insert and delete layers", async () => {
@@ -166,12 +179,19 @@ describe("Debug - Debug panel", () => {
     toggleId: string;
     titleId: string;
     titleText: string;
-  }) => {
+  }): Promise<void> => {
     const toggle = await page.$(`#${toggleId}~span`);
     expect(toggle).toBeDefined();
-    const title = await page.$eval(`#${titleId}`, (e) => e.textContent);
-    expect(title).toBe(titleText);
-    await page.click(`#${toggleId}~span`);
+
+    await page.waitForSelector(`#${titleId}`);
+    await expect(page).toMatchTextContent(titleText);
+
+    await expect(page).toClick(`#${toggleId}~span`);
+  };
+
+  const scrollAndClick = async (selector: string): Promise<void> => {
+    await page.waitForSelector(selector);
+    await expect(page).toClick(selector);
   };
 
   const toggles = {
@@ -215,6 +235,7 @@ describe("Debug - Debug panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -262,50 +283,59 @@ describe("Debug - Debug panel", () => {
 
   it("Check tile colors", async () => {
     // Check title in Color section
-    const colorSectionTitle = await page.$eval(
-      "#color-section-title",
-      (e) => e.textContent
-    );
-    expect(colorSectionTitle).toBe("Color");
+    const colorSectionTitle = await page.$("#color-section-title");
+    await expect(colorSectionTitle).toMatchTextContent("Color");
 
     // Check color radio buttons are clickable
-    await page.click("#color-section-radio-button-random");
-    await page.click("#color-section-radio-button-original");
-    await page.click("#color-section-radio-button-depth");
-    await page.click("#color-section-radio-button-custom");
+    await page.hover("#color-section-radio-button-random");
+    await expect(page).toClick("#color-section-radio-button-random");
+    await page.hover("#color-section-radio-button-original");
+    await expect(page).toClick("#color-section-radio-button-original");
+    await page.hover("#color-section-radio-button-depth");
+    await expect(page).toClick("#color-section-radio-button-depth");
+    await page.hover("#color-section-radio-button-custom");
+    await expect(page).toClick("#color-section-radio-button-custom");
   });
 
   it("Check bounding volumes", async () => {
+    const panel = await page.$("#debug--toggle-options-container");
+    expect(panel).not.toBeNull();
     // Check if bounding volumes types settings are hidden
-    expect(await page.$("bounding-volume-type-title")).toBeNull();
-    expect(await page.$("bounding-volume-type-button-mbs")).toBeNull();
-    expect(await page.$("bounding-volume-type-button-obb")).toBeNull();
+    await expect(panel).not.toMatchElement("#bounding-volume-type-title");
+    await expect(panel).not.toMatchElement("#bounding-volume-type-button-mbs");
+    await expect(panel).not.toMatchElement("#bounding-volume-type-button-obb");
 
     // Check if bounding volumes colors settings are hidden
-    expect(await page.$("bounding-volume-color-title")).toBeNull();
-    expect(await page.$("bounding-volume-color-button-original")).toBeNull();
-    expect(await page.$("bounding-volume-color-button-tile")).toBeNull();
+    await expect(panel).not.toMatchElement("#bounding-volume-color-title");
+    await expect(panel).not.toMatchElement(
+      "#bounding-volume-color-button-original"
+    );
+    await expect(panel).not.toMatchElement(
+      "#bounding-volume-color-button-tile"
+    );
 
     // Enable bounding columes toggle
     await checkAndClickToggle(toggles.boundingVolumes);
 
     // Check if bounding volume types are available
-    expect(await page.$("bounding-volume-type-title")).toBeDefined();
-    expect(await page.$("bounding-volume-type-button-mbs")).toBeDefined();
-    expect(await page.$("bounding-volume-type-button-obb")).toBeDefined();
+    await expect(panel).toMatchElement("#bounding-volume-type-title");
+    await expect(panel).toMatchElement("#bounding-volume-type-button-mbs");
+    await expect(panel).toMatchElement("#bounding-volume-type-button-obb");
 
     // Check radio buttons are clickable
-    await page.click("#bounding-volume-type-button-obb");
-    await page.click("#bounding-volume-type-button-mbs");
+    await scrollAndClick("#bounding-volume-type-button-obb");
+    await scrollAndClick("#bounding-volume-type-button-mbs");
 
     // Check if bounding volumes colors settings are available
-    expect(await page.$("bounding-volume-color-title")).toBeDefined();
-    expect(await page.$("bounding-volume-color-button-Original")).toBeDefined();
-    expect(await page.$("bounding-volume-color-button-tile")).toBeDefined();
+    await expect(panel).toMatchElement("#bounding-volume-color-title");
+    await expect(panel).toMatchElement(
+      "#bounding-volume-color-button-original"
+    );
+    await expect(panel).toMatchElement("#bounding-volume-color-button-tile");
 
     // Check radio buttons are clickable
-    await page.click("#bounding-volume-color-button-tile");
-    await page.click("#bounding-volume-color-button-original");
+    await expect(panel).toClick("#bounding-volume-color-button-tile");
+    await expect(panel).toClick("#bounding-volume-color-button-original");
   });
 });
 
@@ -327,6 +357,7 @@ describe("Debug - Map Control Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 

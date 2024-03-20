@@ -1,4 +1,9 @@
-import { act, screen, waitFor } from "@testing-library/react";
+import {
+  type RenderResult,
+  act,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersPanel } from "./layers-panel";
@@ -13,6 +18,7 @@ import { load } from "@loaders.gl/core";
 import { PageId } from "../../types";
 import { setupStore } from "../../redux/store";
 import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import "@testing-library/jest-dom";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
@@ -78,7 +84,11 @@ const onCloseMock = jest.fn();
 const onPointToLayerMock = jest.fn();
 const onBuildingExplorerOpened = jest.fn();
 
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (
+  renderFunc,
+  props = {},
+  store = setupStore()
+): RenderResult => {
   return renderFunc(
     <LayersPanel
       id={""}
@@ -101,7 +111,7 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 };
 
 describe("Layers Panel", () => {
-  it("Should render LayersPanel", () => {
+  it("Should render LayersPanel", async () => {
     const store = setupStore();
     const { container } = callRender(
       renderWithThemeProviders,
@@ -116,7 +126,7 @@ describe("Layers Panel", () => {
 
     // Check Mocked Close Button
     expect(screen.getByText("Close")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Close"));
+    await userEvent.click(screen.getByText("Close"));
     expect(onCloseMock).toHaveBeenCalled();
 
     // Check Layers Control Panel is open and Map Options Panel doesn't
@@ -124,12 +134,12 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Map Options Panel")).not.toBeInTheDocument();
 
     // Check Map Options Panel is open if click to Map Options Tab.
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
     expect(screen.getByText("Map Options Panel")).toBeInTheDocument();
     expect(screen.queryByText("Layers Control Panel")).not.toBeInTheDocument();
 
     // Check switching back to Layers Tab.
-    userEvent.click(screen.getByText("Layers"));
+    await userEvent.click(screen.getByText("Layers"));
     expect(screen.getByText("Layers Control Panel")).toBeInTheDocument();
     expect(screen.queryByText("Map Options Panel")).not.toBeInTheDocument();
   });
@@ -224,7 +234,7 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
-  it("Should close duplication warining on click outside", () => {
+  it("Should close duplication warining on click outside", async () => {
     const store = setupStore();
     callRender(
       renderWithThemeProviders,
@@ -245,16 +255,16 @@ describe("Layers Panel", () => {
     expect(screen.getByText("Warning Panel")).toBeInTheDocument();
 
     // Click outside
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
-  it("Should be able to insert baseMap", () => {
+  it("Should be able to insert baseMap", async () => {
     const store = setupStore();
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     // Call insert baseMap to show insert panel
     const { insertBaseMap } = MapOptionPanelMock.mock.lastCall[0];
@@ -278,11 +288,11 @@ describe("Layers Panel", () => {
     expect(baseMapId).toEqual("https://test-base-map.url");
   });
 
-  it("Should be able to cancel insert baseMap", () => {
+  it("Should be able to cancel insert baseMap", async () => {
     const store = setupStore();
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     // Call insert baseMap to show insert panel
     const { insertBaseMap } = MapOptionPanelMock.mock.lastCall[0];
@@ -521,8 +531,8 @@ describe("Layers Panel", () => {
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
 
     // Click insert scene
-    act(() => {
-      onInsert({
+    await act(async () => {
+      await onInsert({
         id: "https://test.url",
         name: "Scene",
         url: "https://test-another.url",
@@ -535,7 +545,7 @@ describe("Layers Panel", () => {
       expect(layerInsertMock).not.toHaveBeenCalled();
     });
 
-    // Should close Insert Lyaer Panel
+    // Should close Insert Layer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
     expect(screen.getByText("Warning Panel")).toBeInTheDocument();
 
@@ -573,8 +583,8 @@ describe("Layers Panel", () => {
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
 
     // Click insert scene
-    act(() => {
-      onInsert({
+    await act(async () => {
+      await onInsert({
         id: "https://test.url",
         name: "Scene",
         url: "https://test-another.url",

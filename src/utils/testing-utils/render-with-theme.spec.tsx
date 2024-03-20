@@ -10,6 +10,10 @@ describe("Render width theme", () => {
     const dom = renderWithTheme(
       <StyledDiv role="greeting">Hello world</StyledDiv>
     );
+    expect(dom).not.toBeUndefined();
+    if (!dom) {
+      return;
+    }
     const item = getByRole(dom.container, "greeting");
     const color = getComputedStyle(item).getPropertyValue("color");
 

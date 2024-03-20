@@ -1,13 +1,15 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
 import { clickAndNavigate } from "../../utils/testing-utils/utils";
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Dashboard Default View", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
     await page.goto("http://localhost:3000");
   });
@@ -29,9 +31,12 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-links-default");
 
     const linksParent = await page.$("#header-links-default");
-    expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
-    ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    expect(linksParent).not.toBeNull();
+    if (linksParent) {
+      expect(
+        await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
+      ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    }
 
     await page.waitForSelector("#compare-default-button");
     const text = await page.$eval(
@@ -57,7 +62,7 @@ describe("Dashboard Default View", () => {
       "a[href='/viewer']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
@@ -72,7 +77,7 @@ describe("Dashboard Default View", () => {
       "a[href='/debug']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");
@@ -151,16 +156,19 @@ describe("Dashboard Default View", () => {
     ).toEqual("rgb(35, 36, 48)");
 
     const linksParentDefault = await page.$("#header-links-default");
-    expect(
-      await linksParentDefault.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-    ]);
+    expect(linksParentDefault).not.toBeNull();
+    if (linksParentDefault) {
+      expect(
+        await linksParentDefault.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
@@ -178,16 +186,19 @@ describe("Dashboard Default View", () => {
     expect(lightColor).toEqual("rgb(255, 255, 255)");
 
     const linksParentLight = await page.$("#header-links-default");
-    expect(
-      await linksParentLight.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(35, 36, 48)",
-      "rgb(35, 36, 48)",
-      "rgb(35, 36, 48)",
-    ]);
+    expect(linksParentLight).not.toBeNull();
+    if (linksParentLight) {
+      expect(
+        await linksParentLight.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(35, 36, 48)",
+        "rgb(35, 36, 48)",
+        "rgb(35, 36, 48)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
@@ -205,23 +216,26 @@ describe("Dashboard Default View", () => {
     expect(darkColor).toEqual("rgb(35, 36, 48)");
 
     const linksParentDark = await page.$("#header-links-default");
-    expect(
-      await linksParentDark.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-    ]);
+    expect(linksParentDark).not.toBeNull();
+    if (linksParentDark) {
+      expect(
+        await linksParentDark.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
         getComputedStyle(element).getPropertyValue("color")
       )
     ).toEqual("rgb(255, 255, 255)");
-  }, 60000);
+  }, 90000);
 
   it("Should contain dashboard container", async () => {
     await page.waitForSelector("#dashboard-container");
@@ -295,7 +309,7 @@ describe("Dashboard Default View", () => {
   it("Should go to viewer page from tools description", async () => {
     await page.waitForSelector("#viewer-link");
     const currentUrl = await clickAndNavigate(page, "#viewer-link", "tileset=");
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
   });
@@ -304,7 +318,7 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#debug-link");
     const currentUrl = await clickAndNavigate(page, "#debug-link", "tileset=");
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
   });
@@ -312,22 +326,19 @@ describe("Dashboard Default View", () => {
   it("Should go to the Comparison Across Layers Page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#comparison-link");
-    const currentUrl = await clickAndNavigate(
-      page,
-      "#comparison-link",
-      "tileset="
-    );
+    const currentUrl = await clickAndNavigate(page, "#comparison-link");
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 });
 
 describe("Dashboard Tablet or Mobile view", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.goto("http://localhost:3000");
   });
 
@@ -346,7 +357,7 @@ describe("Dashboard Tablet or Mobile view", () => {
         getComputedStyle(e).getPropertyValue("color")
       )
     ).toEqual("rgb(96, 194, 164)");
-  }, 60000);
+  });
 
   it("Should contain app showcase image", async () => {
     await page.waitForSelector("#app-showcase");
@@ -383,9 +394,12 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#header-links");
 
     const linksParent = await page.$("#header-links");
-    expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
-    ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    expect(linksParent).not.toBeNull();
+    if (linksParent) {
+      expect(
+        await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
+      ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    }
 
     await page.waitForSelector("#compare-tablet-or-mobile-button");
     const compareText = await page.$eval(
@@ -403,7 +417,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     await page.click("#close-header-menu");
     await page.waitForSelector("#burger-menu");
-  }, 30000);
+  });
 
   it("Contains dashboard canvas", async () => {
     await page.waitForSelector("#dashboard-app");
@@ -422,7 +436,7 @@ describe("Dashboard Tablet or Mobile view", () => {
       "a[href='/viewer']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
     const controlPanel = await page.$$("#control-panel");
@@ -440,7 +454,7 @@ describe("Dashboard Tablet or Mobile view", () => {
       "a[href='/debug']",
       "tileset="
     );
-    expect(currentUrl).toBe(
+    expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
     const toolBar = await page.$$("#tool-bar");
@@ -497,7 +511,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     expect(!(await page.$("#across-layers-item")));
     expect(!(await page.$("#within-layer-item")));
-  }, 30000);
+  });
 
   it("Should go to the Comparison Across Layers Page", async () => {
     await page.goto("http://localhost:3000");

@@ -5,7 +5,7 @@ import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme"
 import { SelectionState } from "../../../types";
 
 describe("Base Map List Item", () => {
-  it("Should render base map list item", () => {
+  it("Should render base map list item", async () => {
     const onChange = jest.fn();
     const onOptionsClick = jest.fn();
 
@@ -21,7 +21,7 @@ describe("Base Map List Item", () => {
     );
     const component = screen.getByText("san-francisco");
     expect(component).toBeInTheDocument();
-    userEvent.click(component);
+    await userEvent.click(component);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 });

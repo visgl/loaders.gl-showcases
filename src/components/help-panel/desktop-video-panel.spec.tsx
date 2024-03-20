@@ -4,7 +4,7 @@ import { DesktopVideoPanel } from "./desktop-video-panel";
 
 describe("Desktop Video Panel", () => {
   it("Should render placeholder if no video", () => {
-    const { container } = renderWithTheme(<DesktopVideoPanel />);
+    const { container } = renderWithTheme(<DesktopVideoPanel />) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(
@@ -13,9 +13,8 @@ describe("Desktop Video Panel", () => {
   });
 
   it("Should render video", () => {
-    const { container } = renderWithTheme(
-      <DesktopVideoPanel video="/test/test.video.mp4" />
-    );
+    const { container } =
+      renderWithTheme(<DesktopVideoPanel video="/test/test.video.mp4" />) ?? {};
     const video = screen.getByTestId("shortcut-video-player");
 
     expect(container).toBeInTheDocument();

@@ -1,5 +1,11 @@
 import type { Page } from "puppeteer";
 
+const sleep = async (ms: number): Promise<void> => {
+  await new Promise((resolve: (value: void | PromiseLike<void>) => void) =>
+    setTimeout(resolve, ms)
+  );
+};
+
 const URL_CHECKING_INTERVAL = 500;
 const URL_CHECKING_TIMEOUT = 10000;
 /**
@@ -15,17 +21,17 @@ export const clickAndNavigate = async (
   page: Page,
   selector: string,
   waitFor?: string
-) => {
+): Promise<string> => {
   await Promise.all([
     page.waitForNavigation({
-      waitUntil: ["load", "domcontentloaded", "networkidle0"],
+      waitUntil: ["load", "domcontentloaded"],
     }),
     page.click(selector),
   ]);
   let currentUrl = page.url();
   if (waitFor) {
     for (let i = 0; i < URL_CHECKING_TIMEOUT / URL_CHECKING_INTERVAL; i++) {
-      await page.waitForTimeout(URL_CHECKING_INTERVAL);
+      await sleep(URL_CHECKING_INTERVAL);
       currentUrl = page.url();
       if (currentUrl.includes(waitFor)) {
         break;

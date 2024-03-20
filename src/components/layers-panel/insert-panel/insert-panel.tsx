@@ -26,7 +26,11 @@ const INVALID_URL_ERROR = "Invalid URL";
 
 interface InsertLayerProps {
   title: string;
-  onInsert: (object: { name: string; url: string; token?: string }) => void;
+  onInsert: (object: {
+    name: string;
+    url: string;
+    token?: string;
+  }) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
 }
@@ -103,7 +107,7 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const validateFields = () => {
+  const validateFields = (): void => {
     let isFormValid = true;
     const type = getTilesetType(url);
 
@@ -124,7 +128,7 @@ export const InsertPanel = ({
     }
 
     if (isFormValid) {
-      onInsert({ name: name || layerNames[url]?.name, url, token });
+      void onInsert({ name: name || layerNames[url]?.name, url, token });
     }
   };
 

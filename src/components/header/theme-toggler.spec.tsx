@@ -12,19 +12,19 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Theme Toggler", () => {
-  it("Should render Dark Mode Toggler", () => {
+  it("Should render Dark Mode Toggler", async () => {
     const { container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
 
-    userEvent.click(screen.getByTestId("toggle-theme-button"));
+    await userEvent.click(screen.getByTestId("toggle-theme-button"));
     expect(setThemeMock).toHaveBeenCalledWith(1);
   });
 
-  it("Should render Light Mode Toggler", () => {
+  it("Should render Light Mode Toggler", async () => {
     const { container } = callRender(renderWithTheme, { theme: 1 });
     expect(container).toBeInTheDocument();
 
-    userEvent.click(screen.getByTestId("toggle-theme-button"));
+    await userEvent.click(screen.getByTestId("toggle-theme-button"));
     expect(setThemeMock).toHaveBeenCalledWith(0);
   });
 });

@@ -10,7 +10,7 @@ const callRender = (renderFunc, props) => {
 };
 
 describe("AcrGisUser", () => {
-  it("Should render Logout button", () => {
+  it("Should render Logout button", async () => {
     const { container } = callRender(renderWithTheme, {
       children: "Test Button",
     });
@@ -20,7 +20,7 @@ describe("AcrGisUser", () => {
     const buttonHeight =
       getComputedStyle(buttonIcon).getPropertyValue("height");
     expect(buttonHeight).toEqual("17px");
-    userEvent.click(buttonIcon);
+    await userEvent.click(buttonIcon);
     expect(onClickMock).toHaveBeenCalled();
   });
 });
