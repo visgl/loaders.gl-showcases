@@ -18,8 +18,8 @@ const callRender = (renderFunc, props = {}) => {
   );
 };
 
-describe("Delete Conformation", () => {
-  it("Should render Conformation Panel", () => {
+describe("Delete Confirmation", () => {
+  it("Should render Confirmation Panel", () => {
     const { container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
 

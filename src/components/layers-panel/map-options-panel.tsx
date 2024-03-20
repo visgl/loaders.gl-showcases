@@ -17,6 +17,15 @@ interface MapOptionPanelProps {
   insertBaseMap: () => void;
 }
 
+const MapOptionTitle = styled.div`
+  width: 100;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: ${({ theme }) => theme.colors.fontColor};
+`;
+
 const MapOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -42,6 +51,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
 
   return (
     <MapOptionsContainer>
+      <MapOptionTitle>Base Map</MapOptionTitle>
       {["Maplibre", "ArcGIS", "Terrain"].map((mapGroup) => {
         return (
           <>
@@ -52,7 +62,9 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
                 setOptionsMapId(id);
                 setMapToDeleteGroup(mapGroup);
               }}
-              onOptionsClickOutside={() => { setOptionsMapId(""); }}
+              onOptionsClickOutside={() => {
+                setOptionsMapId("");
+              }}
               optionsContent={
                 <BaseMapOptionsMenu
                   onDeleteBasemap={() => {
@@ -67,7 +79,9 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
             />
             {mapToDeleteId && mapToDeleteGroup === mapGroup && (
               <DeleteConfirmation
-                onKeepHandler={() => { setMapToDeleteId(""); }}
+                onKeepHandler={() => {
+                  setMapToDeleteId("");
+                }}
                 onDeleteHandler={() => {
                   dispatch(deleteBaseMaps(mapToDeleteId));
                   // Pick the first item of the list

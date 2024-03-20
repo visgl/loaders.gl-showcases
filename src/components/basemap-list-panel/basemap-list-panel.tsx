@@ -19,7 +19,6 @@ const BasemapContainer = styled.div`
   align-items: start;
   border-width: 0;
   margin: 0 0 0 0;
-  //  margin-left: 0;
 `;
 
 const BasemapTitle = styled.div`
@@ -29,9 +28,9 @@ const BasemapTitle = styled.div`
   align-items: center;
 
   font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 19px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
   color: ${({ theme }) => theme.colors.fontColor};
 
   margin-bottom: 13px;
@@ -58,6 +57,7 @@ const BasemapImageWrapper = styled.div<{
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   border-width: 0;
   border-radius: 8px;
@@ -85,7 +85,6 @@ const BasemapIcon = styled.div<{
   background-image: ${({ icon }) => `url(${icon})`};
   background-size: cover;
   background-repeat: no-repeat;
-  cursor: pointer;
   border-width: 0;
   border-radius: 8px;
 `;
@@ -155,15 +154,15 @@ export const BasemapListPanel = ({
             key={item.id}
             active={imagePickedKey === item.id}
             width={BASEMAP_ICON_WIDTH}
-          >
+            onClick={() => {
+              dispatch(setSelectedBaseMaps(item.id));
+            }}
+        >
             <BasemapIcon
               key={`${item.id}`}
               icon={`${item.icon}`}
               width={BASEMAP_ICON_WIDTH}
               height={BASEMAP_ICON_HEIGHT}
-              onClick={() => {
-                dispatch(setSelectedBaseMaps(item.id));
-              }}
             />
             <BasemapImageName>{item.name || ""}</BasemapImageName>
             {item.custom && onOptionsClick && optionsContent && (

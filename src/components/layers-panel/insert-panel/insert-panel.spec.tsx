@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../../utils/testing-utils/render-with-theme";
 import { InsertPanel } from "./insert-panel";
 import { setupStore } from "../../../redux/store";
+import { BaseMapGroup } from "../../../types";
 
 const onInsertMock = jest.fn();
 const onCancelMock = jest.fn();
@@ -29,6 +30,22 @@ describe("Insert panel", () => {
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.queryByText("Basemap Provider")).not.toBeInTheDocument();
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("URL")).toBeInTheDocument();
+    expect(screen.getByText("Token")).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.getByText("Insert")).toBeInTheDocument();
+  });
+
+  it("Should render insert panel for BaseMaps", () => {
+    const { container } = callRender(renderWithThemeProviders, {
+      groups: [BaseMapGroup.Maplibre],
+    });
+
+    expect(container).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Basemap Provider")).toBeInTheDocument();
     expect(screen.getByText("Name")).toBeInTheDocument();
     expect(screen.getByText("URL")).toBeInTheDocument();
     expect(screen.getByText("Token")).toBeInTheDocument();

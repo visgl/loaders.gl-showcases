@@ -3,15 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { MapOptionPanel } from "./map-options-panel";
 
-// import { BaseMapListItem } from "./--base-map-list-item/--base-map-list-item";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
 import { setupStore } from "../../redux/store";
 import {
   addBaseMap,
-  selectBaseMaps,
-//  selectSelectedBaseMapId,
+  selectSelectedBaseMapId,
 } from "../../redux/slices/base-maps-slice";
 import { BaseMapGroup } from "../../types";
 
@@ -20,12 +18,11 @@ jest.mock("@loaders.gl/i3s", () => {
     return null;
   });
 });
-jest.mock("./base-map-list-item/base-map-list-item");
+
 jest.mock("../action-icon-button/action-icon-button");
 jest.mock("./delete-confirmation");
 jest.mock("./basemap-options-menu/basemap-options-menu");
 
-// const BaseMapListItemMock = BaseMapListItem as unknown as jest.Mocked<any>;
 const PlusButtonMock = ActionIconButton as unknown as jest.Mocked<any>;
 const DeleteConfirmationMock =
   DeleteConfirmation as unknown as jest.Mocked<any>;
@@ -33,14 +30,11 @@ const BaseMapOptionsMenuMock =
   BaseMapOptionsMenu as unknown as jest.Mocked<any>;
 
 beforeAll(() => {
-  // BaseMapListItemMock.mockImplementation((props) => (
-  //   <div {...props}>{`BaseMap ListItem-${props.id}`}</div>
-  // ));
   PlusButtonMock.mockImplementation(({ children, onClick }) => (
     <div onClick={onClick}>{children}</div>
   ));
   DeleteConfirmationMock.mockImplementation(() => (
-    <div>Delete Conformation</div>
+    <div>Delete Confirmation</div>
   ));
   BaseMapOptionsMenuMock.mockImplementation(() => <div>BaseMap Options</div>);
 });
@@ -98,11 +92,11 @@ describe("Map Options Panel", () => {
     );
     expect(container).toBeInTheDocument();
 
-    expect(screen.getByText("BaseMap ListItem-first")).toBeInTheDocument();
-    expect(screen.getByText("BaseMap ListItem-second")).toBeInTheDocument();
+    expect(screen.getByText("first name")).toBeInTheDocument();
+    expect(screen.getByText("second name")).toBeInTheDocument();
   });
 
-  it("Should be able to call functions", () => {
+  it("Should select a map", () => {
     const store = setupStore();
     store.dispatch(
       addBaseMap({
@@ -112,37 +106,37 @@ describe("Map Options Panel", () => {
         group: BaseMapGroup.Maplibre,
       })
     );
+    // Element "first" is added and made selected
+    store.dispatch(
+      addBaseMap({
+        id: "second",
+        name: "second name",
+        mapUrl: "https://second-url.com",
+        group: BaseMapGroup.Maplibre,
+      })
+    );
+    // Element "second" is added and made selected
     const { container } = callRender(
       renderWithThemeProviders,
       undefined,
       store
     );
     expect(container).toBeInTheDocument();
+    const el = screen.getByText("first name");
+    expect(el).toBeInTheDocument();
 
-    expect(screen.getByText("BaseMap ListItem-first")).toBeInTheDocument();
-    /*
-    const { onOptionsClick, onMapsSelect, onClickOutside } =
-      BaseMapListItemMock.mock.lastCall[0];
-
+    const iconWrapperElement = el.parentElement;
+    // Select "first" element
     act(() => {
-      onOptionsClick();
-    });
-
-    act(() => {
-      onMapsSelect();
+      iconWrapperElement && userEvent.click(iconWrapperElement);
     });
 
     const state = store.getState();
     const baseMapId = selectSelectedBaseMapId(state);
     expect(baseMapId).toEqual("first");
-
-    act(() => {
-      onClickOutside();
-    });
-    */
   });
 
-  it("Should render conformation panel", () => {
+  it("Should render options menu", () => {
     const store = setupStore();
     store.dispatch(
       addBaseMap({
@@ -155,44 +149,30 @@ describe("Map Options Panel", () => {
     store.dispatch(
       // Candidate to delete
       addBaseMap({
-        id: "",
-        name: "second name",
-        mapUrl: "https://second-url.com",
+        id: "custom",
+        name: "custom name",
+        mapUrl: "https://first-url.com",
         group: BaseMapGroup.Maplibre,
+        custom: true,
       })
     );
-    callRender(renderWithThemeProviders, undefined, store);
-    expect(screen.getByText("Delete Conformation")).toBeInTheDocument();
+    const { container } = callRender(
+      renderWithThemeProviders,
+      undefined,
+      store
+    );
+    expect(container).toBeInTheDocument();
+    const el = screen.getByText("custom name");
+    expect(el).toBeInTheDocument();
 
-    const { onDeleteHandler, onKeepHandler } =
-      DeleteConfirmationMock.mock.lastCall[0];
-
+    const iconWrapperElement = el.parentElement;
+    const optionsElement = iconWrapperElement?.lastElementChild;
+    // Click on options menu
     act(() => {
-      onDeleteHandler();
+      optionsElement && userEvent.click(optionsElement);
     });
 
-    const state = store.getState();
-    const baseMap = selectBaseMaps(state);
-    expect(baseMap).toEqual([
-      {
-        id: "Dark",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-        name: "Dark",
-      },
-      {
-        id: "Light",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-        name: "Light",
-      },
-      { id: "Terrain", mapUrl: "", name: "Terrain" },
-      { id: "ArcGis", name: "ArcGis", mapUrl: "" },
-      { id: "first", mapUrl: "https://first-url.com", name: "first name" },
-    ]);
-
-    act(() => {
-      onKeepHandler();
-    });
+    const optionsMenu = screen.getByText("BaseMap Options");
+    expect(optionsMenu).toBeInTheDocument();
   });
 });

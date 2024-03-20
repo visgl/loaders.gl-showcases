@@ -225,39 +225,21 @@ describe("slice: base-maps", () => {
   it("Selectors should return updated value", () => {
     const store = setupStore();
     store.dispatch(deleteBaseMaps("Dark"));
-    store.dispatch(
-      addBaseMap({
-        id: "first",
-        mapUrl: "https://first-url.com",
-        name: "first name",
-        group: BaseMapGroup.Maplibre,
-      })
-    );
+    const newItem = {
+      id: "first",
+      mapUrl: "https://first-url.com",
+      name: "first name",
+      group: BaseMapGroup.Maplibre,
+    };
+    store.dispatch(addBaseMap(newItem));
     store.dispatch(setSelectedBaseMaps("Terrain"));
     const state = store.getState();
     expect(selectSelectedBaseMapId(state)).toEqual("Terrain");
-    expect(selectBaseMaps(state)).toEqual([
-      {
-        id: "Light",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-        name: "Light",
-        group: BaseMapGroup.Maplibre,
-      },
-      { id: "Terrain", mapUrl: "", name: "Terrain" },
-      {
-        id: "ArcGis",
-        name: "ArcGis",
-        mapUrl: "",
-        group: BaseMapGroup.Terrain,
-      },
-      {
-        id: "first",
-        mapUrl: "https://first-url.com",
-        name: "first name",
-        group: BaseMapGroup.Maplibre,
-      },
-    ]);
+
+    const expectedArray = BASE_MAPS.filter((item) => item.id !== "Dark");
+    expectedArray.push(newItem);
+
+    expect(selectBaseMaps(state)).toEqual(expectedArray);
     // set wrong id of basemap
     store.dispatch(setSelectedBaseMaps("Dark"));
     const newState = store.getState();
