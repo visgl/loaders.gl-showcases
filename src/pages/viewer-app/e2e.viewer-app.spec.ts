@@ -11,6 +11,7 @@ describe("Viewer", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -93,6 +94,7 @@ describe("Viewer - Layers panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    page.setDefaultTimeout(10000);
   });
 
   afterAll(async () => {
@@ -156,6 +158,7 @@ describe("Viewer - Map Control Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    page.setDefaultTimeout(10000);
   });
 
   beforeEach(async () => {

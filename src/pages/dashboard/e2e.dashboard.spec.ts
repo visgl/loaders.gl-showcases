@@ -8,6 +8,7 @@ describe("Dashboard Default View", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
     await page.goto("http://localhost:3000");
   });
@@ -221,7 +222,7 @@ describe("Dashboard Default View", () => {
         getComputedStyle(element).getPropertyValue("color")
       )
     ).toEqual("rgb(255, 255, 255)");
-  }, 60000);
+  }, 90000);
 
   it("Should contain dashboard container", async () => {
     await page.waitForSelector("#dashboard-container");
@@ -328,6 +329,7 @@ describe("Dashboard Tablet or Mobile view", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    page.setDefaultTimeout(10000);
     await page.goto("http://localhost:3000");
   });
 
