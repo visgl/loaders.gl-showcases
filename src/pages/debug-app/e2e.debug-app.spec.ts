@@ -82,28 +82,28 @@ describe("Debug - Main tools panel", () => {
     await page.waitForSelector("#debug-memory-usage-panel", {
       visible: true,
     });
-  }, 30000);
+  });
 
   it("Validator tab works", async () => {
     await page.click("#validator-tab");
     await page.waitForSelector("#semantic-validator", {
       visible: true,
     });
-  }, 60000);
+  });
 
   it("Debug tab works", async () => {
     await page.click("#debug-panel-tab");
     await page.waitForSelector("#debug-panel-title", {
       visible: true,
     });
-  }, 30000);
+  });
 
   it("Bookmarks tab works", async () => {
     await page.click("#bookmarks-tab");
     await page.waitForSelector("#debug-bookmarks-panel", {
       visible: true,
     });
-  }, 60000);
+  });
 });
 
 describe("Debug - Layers panel", () => {
@@ -138,7 +138,7 @@ describe("Debug - Layers panel", () => {
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
     await checkLayersPanel(page, panelId, true);
-  }, 60000);
+  });
 
   it("Should select initial layer", async () => {
     expect(
@@ -155,7 +155,7 @@ describe("Debug - Layers panel", () => {
       "#debug--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
-  }, 60000);
+  });
 
   it("Should insert and delete layers", async () => {
     await inserAndDeleteLayer(
@@ -163,7 +163,7 @@ describe("Debug - Layers panel", () => {
       "#debug--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
-  }, 60000);
+  });
 });
 
 describe("Debug - Debug panel", () => {
@@ -277,7 +277,7 @@ describe("Debug - Debug panel", () => {
     await checkAndClickToggle(toggles.picking);
     await checkAndClickToggle(toggles.wireframe);
     await checkAndClickToggle(toggles.textureUvs);
-  }, 40000);
+  });
 
   it("Check tile colors", async () => {
     // Check title in Color section
@@ -293,7 +293,7 @@ describe("Debug - Debug panel", () => {
     await expect(page).toClick("#color-section-radio-button-depth");
     await page.hover("#color-section-radio-button-custom");
     await expect(page).toClick("#color-section-radio-button-custom");
-  }, 30000);
+  });
 
   it("Check bounding volumes", async () => {
     const panel = await page.$("#debug--toggle-options-container");

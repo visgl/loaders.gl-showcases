@@ -92,7 +92,7 @@ describe("Dashboard Default View", () => {
       "a[href='/compare-across-layers']"
     );
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
-  }, 30000);
+  });
 
   it("Should go to the Comparison Withhin Layer Page", async () => {
     await page.goto("http://localhost:3000");
@@ -349,7 +349,7 @@ describe("Dashboard Tablet or Mobile view", () => {
         getComputedStyle(e).getPropertyValue("color")
       )
     ).toEqual("rgb(96, 194, 164)");
-  }, 60000);
+  });
 
   it("Should contain app showcase image", async () => {
     await page.waitForSelector("#app-showcase");
@@ -409,7 +409,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     await page.click("#close-header-menu");
     await page.waitForSelector("#burger-menu");
-  }, 30000);
+  });
 
   it("Contains dashboard canvas", async () => {
     await page.waitForSelector("#dashboard-app");
@@ -503,7 +503,7 @@ describe("Dashboard Tablet or Mobile view", () => {
 
     expect(!(await page.$("#across-layers-item")));
     expect(!(await page.$("#within-layer-item")));
-  }, 30000);
+  });
 
   it("Should go to the Comparison Across Layers Page", async () => {
     await page.goto("http://localhost:3000");

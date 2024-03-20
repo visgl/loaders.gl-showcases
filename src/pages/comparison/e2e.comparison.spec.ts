@@ -510,12 +510,12 @@ describe("Compare - Compare button", () => {
     await page.click("#compare-default-button");
     await page.hover("a[href='/compare-across-layers']");
     await page.click("a[href='/compare-across-layers']");
+    await page.waitForSelector("#right-layers-panel");
+
 
     await expect(page).toClick("#compare-button button", {
       text: "Start comparing",
-      timeout: 2000,
     });
-    await page.waitForSelector("#compare-button > :first-child > :last-child");
     const compareButtonText2 = await page.$eval(
       "#compare-button > :first-child > :last-child",
       (node) => node.innerText

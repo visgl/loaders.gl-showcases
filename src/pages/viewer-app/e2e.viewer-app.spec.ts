@@ -121,7 +121,7 @@ describe("Viewer - Layers panel", () => {
     await page.waitForSelector(panelId);
     expect(await page.$$(panelId)).toBeDefined();
     await checkLayersPanel(page, panelId, true);
-  }, 30000);
+  });
 
   it("Should select initial layer", async () => {
     expect(
@@ -138,7 +138,7 @@ describe("Viewer - Layers panel", () => {
       "#viewer--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
-  }, 60000);
+  });
 });
 
 const chevronSvgHtml =
