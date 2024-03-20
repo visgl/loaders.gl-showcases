@@ -31,9 +31,12 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#header-links-default");
 
     const linksParent = await page.$("#header-links-default");
-    expect(
-      await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
-    ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    expect(linksParent).not.toBeNull();
+    if (linksParent) {
+      expect(
+        await linksParent.$$eval("a", (nodes) => nodes.map((n) => n.innerText))
+      ).toEqual(["Home", "Viewer", "Debug", "GitHub"]);
+    }
 
     await page.waitForSelector("#compare-default-button");
     const text = await page.$eval(
@@ -153,16 +156,19 @@ describe("Dashboard Default View", () => {
     ).toEqual("rgb(35, 36, 48)");
 
     const linksParentDefault = await page.$("#header-links-default");
-    expect(
-      await linksParentDefault.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-    ]);
+    expect(linksParentDefault).not.toBeNull();
+    if (linksParentDefault) {
+      expect(
+        await linksParentDefault.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
@@ -180,16 +186,19 @@ describe("Dashboard Default View", () => {
     expect(lightColor).toEqual("rgb(255, 255, 255)");
 
     const linksParentLight = await page.$("#header-links-default");
-    expect(
-      await linksParentLight.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(35, 36, 48)",
-      "rgb(35, 36, 48)",
-      "rgb(35, 36, 48)",
-    ]);
+    expect(linksParentLight).not.toBeNull();
+    if (linksParentLight) {
+      expect(
+        await linksParentLight.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(35, 36, 48)",
+        "rgb(35, 36, 48)",
+        "rgb(35, 36, 48)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
@@ -207,16 +216,19 @@ describe("Dashboard Default View", () => {
     expect(darkColor).toEqual("rgb(35, 36, 48)");
 
     const linksParentDark = await page.$("#header-links-default");
-    expect(
-      await linksParentDark.$$eval("a", (nodes) =>
-        nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
-      )
-    ).toEqual([
-      "rgb(96, 194, 164)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-      "rgb(255, 255, 255)",
-    ]);
+    expect(linksParentDark).not.toBeNull();
+    if (linksParentDark) {
+      expect(
+        await linksParentDark.$$eval("a", (nodes) =>
+          nodes.map((n) => getComputedStyle(n).getPropertyValue("color"))
+        )
+      ).toEqual([
+        "rgb(96, 194, 164)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+      ]);
+    }
 
     expect(
       await page.$eval("#header-logo", (element) =>
@@ -314,10 +326,7 @@ describe("Dashboard Default View", () => {
   it("Should go to the Comparison Across Layers Page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#comparison-link");
-    const currentUrl = await clickAndNavigate(
-      page,
-      "#comparison-link"
-    );
+    const currentUrl = await clickAndNavigate(page, "#comparison-link");
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 });
