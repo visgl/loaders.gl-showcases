@@ -1,16 +1,15 @@
 import puppeteer, { type Page } from "puppeteer";
 import { clickAndNavigate } from "../../utils/testing-utils/utils";
-import { setDefaultOptions } from "expect-puppeteer";
-
-setDefaultOptions({ timeout: 10000 });
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Dashboard Default View", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
     await page.goto("http://localhost:3000");
   });
@@ -317,8 +316,7 @@ describe("Dashboard Default View", () => {
     await page.waitForSelector("#comparison-link");
     const currentUrl = await clickAndNavigate(
       page,
-      "#comparison-link",
-      "tileset="
+      "#comparison-link"
     );
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
@@ -331,6 +329,7 @@ describe("Dashboard Tablet or Mobile view", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.goto("http://localhost:3000");
   });
 

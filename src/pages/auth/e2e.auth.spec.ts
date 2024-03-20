@@ -1,12 +1,14 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Auth page Default View", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
     await page.goto("http://localhost:3000");
   });

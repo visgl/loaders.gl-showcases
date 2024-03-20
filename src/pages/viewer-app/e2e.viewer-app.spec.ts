@@ -3,9 +3,7 @@ import {
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
-import { setDefaultOptions } from "expect-puppeteer";
-
-setDefaultOptions({ timeout: 10000 });
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Viewer", () => {
   let browser: Browser;
@@ -14,6 +12,7 @@ describe("Viewer", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -49,6 +48,7 @@ describe("Viewer - Main tools panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.goto("http://localhost:3000/viewer");
     await page.click("#map-control-panel>div:first-child");
   });
@@ -96,6 +96,7 @@ describe("Viewer - Layers panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   afterAll(async () => {
@@ -159,6 +160,7 @@ describe("Viewer - Map Control Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {

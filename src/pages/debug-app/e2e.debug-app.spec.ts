@@ -4,9 +4,7 @@ import {
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
-import { setDefaultOptions } from "expect-puppeteer";
-
-setDefaultOptions({ timeout: 10000 });
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Debug", () => {
   let browser: Browser;
@@ -15,6 +13,7 @@ describe("Debug", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -50,6 +49,7 @@ describe("Debug - Main tools panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.goto("http://localhost:3000/debug");
     await page.click("#map-control-panel>div:first-child");
   });
@@ -113,6 +113,7 @@ describe("Debug - Layers panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -234,6 +235,7 @@ describe("Debug - Debug panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -355,6 +357,7 @@ describe("Debug - Map Control Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 

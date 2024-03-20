@@ -43,8 +43,8 @@ export const checkLayersPanel = async (
   const panel = await page.$(panelId);
 
   // Insert buttons
-  await expect(panel).toMatchTextContent("Insert layer", { timeout: 16000 });
-  await expect(panel).toMatchTextContent("Insert scene", { timeout: 16000 });
+  await expect(panel).toMatchTextContent("Insert layer");
+  await expect(panel).toMatchTextContent("Insert scene");
 
   // Open map options
   const mapOptionsTab = await tabsContainer.$(":last-child");
@@ -53,7 +53,7 @@ export const checkLayersPanel = async (
   expect(await tabsContainer.$(":last-child::after")).toBeDefined();
 
   // Header
-  await expect(panel).toMatchTextContent("Base Map", { timeout: 2000 });
+  await expect(panel).toMatchTextContent("Base Map");
 
   // Base maps list
   const baseMapsNames = await page.$$eval(
@@ -79,9 +79,7 @@ export const checkLayersPanel = async (
   // Insert Base Map button
   await page.waitForSelector("#map-options-container");
   const optionsContainer = await panel.$("#map-options-container");
-  await expect(optionsContainer).toMatchTextContent("Insert Base Map", {
-    timeout: 3000,
-  });
+  await expect(optionsContainer).toMatchTextContent("Insert Base Map");
 };
 
 export const checkInserLayerErrors = async (
@@ -102,13 +100,9 @@ export const checkInserLayerErrors = async (
   await expect(insertPanel).toMatchTextContent("Insert Layer");
 
   // Submit on enter
-  await expect(insertPanel).toFillForm(
-    "form.insert-form",
-    {
-      Name: "",
-    },
-    { timeout: 2000 }
-  );
+  await expect(insertPanel).toFillForm("form.insert-form", {
+    Name: "",
+  });
 
   await page.keyboard.press("Enter");
   if (insertPanel) {
@@ -121,15 +115,11 @@ export const checkInserLayerErrors = async (
   }
 
   // Fill wrong url
-  await expect(insertPanel).toFillForm(
-    "form.insert-form",
-    {
-      Name: "asdf",
-      URL: "asdf",
-      Token: "asdf",
-    },
-    { timeout: 8000 }
-  );
+  await expect(insertPanel).toFillForm("form.insert-form", {
+    Name: "asdf",
+    URL: "asdf",
+    Token: "asdf",
+  });
 
   let submitInsert = await page.$(
     `${panelId} form.insert-form button[type='submit']`
@@ -148,15 +138,11 @@ export const checkInserLayerErrors = async (
   }
 
   // Fill duplicated URL
-  await expect(insertPanel).toFillForm(
-    "form.insert-form",
-    {
-      Name: "asdf",
-      URL: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
-      Token: "",
-    },
-    { timeout: 3000 }
-  );
+  await expect(insertPanel).toFillForm("form.insert-form", {
+    Name: "asdf",
+    URL: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+    Token: "",
+  });
 
   submitInsert = await page.$(
     `${panelId} form.insert-form button[type='submit']`
@@ -193,7 +179,6 @@ export const inserAndDeleteLayer = async (
     `${panelId} div[data-testid='action-icon-button']`,
     {
       text: "Insert layer",
-      timeout: 2000,
     }
   );
 
@@ -201,19 +186,14 @@ export const inserAndDeleteLayer = async (
   expect(insertPanel).not.toBeNull();
 
   // Add layer
-  await expect(insertPanel).toFillForm(
-    "form.insert-form",
-    {
-      Name: "asdf",
-      URL: url,
-      Token: "",
-    },
-    { timeout: 8000 }
-  );
+  await expect(insertPanel).toFillForm("form.insert-form", {
+    Name: "asdf",
+    URL: url,
+    Token: "",
+  });
 
   await expect(insertPanel).toClick("button", {
     text: "Insert",
-    timeout: 2000,
   });
   const anyExtraPanel = await page.$(`${panelId} > :nth-child(7)`);
   expect(anyExtraPanel).toBeNull();

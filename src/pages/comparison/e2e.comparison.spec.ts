@@ -1,21 +1,20 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
 
 import {
   checkLayersPanel,
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 import { PageId } from "../../types";
-import { setDefaultOptions } from "expect-puppeteer";
-
-setDefaultOptions({ timeout: 10000 });
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Compare", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -53,11 +52,12 @@ describe("Compare", () => {
 
 describe("Compare - Main tools panel Across Layers mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -90,11 +90,12 @@ describe("Compare - Main tools panel Across Layers mode", () => {
 
 describe("Compare - Main tools panel Within Layer mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -127,11 +128,12 @@ describe("Compare - Main tools panel Within Layer mode", () => {
 
 describe("Compare - Layers Panel Across Layers mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -210,11 +212,12 @@ describe("Compare - Layers Panel Across Layers mode", () => {
 
 describe("Compare - Layers Panel Within Layer mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -267,11 +270,12 @@ const compasSvgHtml =
 
 describe("Compare - Map Control Panel", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -308,11 +312,12 @@ describe("Compare - Map Control Panel", () => {
 
 describe("Compare - Comparison Params Panel", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -388,11 +393,12 @@ describe("Compare - Comparison Params Panel", () => {
 
 describe("Compare - Statistics", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -444,11 +450,12 @@ describe("Compare - Statistics", () => {
 
 describe("Compare - Compare button", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -511,7 +518,6 @@ describe("Compare - Compare button", () => {
     await page.hover("a[href='/compare-across-layers']");
     await page.click("a[href='/compare-across-layers']");
     await page.waitForSelector("#right-layers-panel");
-
 
     await expect(page).toClick("#compare-button button", {
       text: "Start comparing",
