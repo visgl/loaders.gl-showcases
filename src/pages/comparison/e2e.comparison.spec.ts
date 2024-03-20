@@ -5,6 +5,9 @@ import {
   inserAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 import { PageId } from "../../types";
+import { setDefaultOptions } from "expect-puppeteer";
+
+setDefaultOptions({ timeout: 10000 });
 
 describe("Compare", () => {
   let browser;
@@ -13,7 +16,6 @@ describe("Compare", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
   });
 
   beforeEach(async () => {
@@ -56,7 +58,6 @@ describe("Compare - Main tools panel Across Layers mode", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
   });
 
   beforeEach(async () => {
@@ -94,7 +95,6 @@ describe("Compare - Main tools panel Within Layer mode", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
   });
 
   beforeEach(async () => {
@@ -132,7 +132,6 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -216,7 +215,6 @@ describe("Compare - Layers Panel Within Layer mode", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -274,7 +272,6 @@ describe("Compare - Map Control Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -316,7 +313,6 @@ describe("Compare - Comparison Params Panel", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -397,7 +393,6 @@ describe("Compare - Statistics", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -454,7 +449,6 @@ describe("Compare - Compare button", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
   });
 

@@ -1,5 +1,8 @@
 import puppeteer, { type Page } from "puppeteer";
 import { clickAndNavigate } from "../../utils/testing-utils/utils";
+import { setDefaultOptions } from "expect-puppeteer";
+
+setDefaultOptions({ timeout: 10000 });
 
 describe("Dashboard Default View", () => {
   let browser;
@@ -8,7 +11,6 @@ describe("Dashboard Default View", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.setViewport({ width: 1366, height: 768 });
     await page.goto("http://localhost:3000");
   });
@@ -329,7 +331,6 @@ describe("Dashboard Tablet or Mobile view", () => {
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.setDefaultTimeout(10000);
     await page.goto("http://localhost:3000");
   });
 
