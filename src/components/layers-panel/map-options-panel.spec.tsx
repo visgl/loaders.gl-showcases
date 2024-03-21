@@ -96,7 +96,7 @@ describe("Map Options Panel", () => {
     expect(screen.getByText("second name")).toBeInTheDocument();
   });
 
-  it("Should select a map", () => {
+  it("Should select a map", async () => {
     const store = setupStore();
     store.dispatch(
       addBaseMap({
@@ -127,8 +127,8 @@ describe("Map Options Panel", () => {
 
     const iconWrapperElement = el.parentElement;
     // Select "first" element
-    act(() => {
-      iconWrapperElement && userEvent.click(iconWrapperElement);
+    await act(async () => {
+      iconWrapperElement && await userEvent.click(iconWrapperElement);
     });
 
     const state = store.getState();
@@ -136,7 +136,7 @@ describe("Map Options Panel", () => {
     expect(baseMapId).toEqual("first");
   });
 
-  it("Should render options menu", () => {
+  it("Should render options menu", async () => {
     const store = setupStore();
     store.dispatch(
       addBaseMap({
@@ -168,8 +168,8 @@ describe("Map Options Panel", () => {
     const iconWrapperElement = el.parentElement;
     const optionsElement = iconWrapperElement?.lastElementChild;
     // Click on options menu
-    act(() => {
-      optionsElement && userEvent.click(optionsElement);
+    await act(async () => {
+      optionsElement && await userEvent.click(optionsElement);
     });
 
     const optionsMenu = screen.getByText("BaseMap Options");

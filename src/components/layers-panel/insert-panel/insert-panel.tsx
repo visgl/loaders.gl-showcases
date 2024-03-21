@@ -114,7 +114,7 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const validateFields = (): void => {
+  const validateFields = async (): Promise<void> => {
     let isFormValid = true;
     const type = getTilesetType(url);
 
@@ -135,7 +135,7 @@ export const InsertPanel = ({
     }
 
     if (isFormValid) {
-      onInsert({
+      await onInsert({
         name: name || layerNames[url]?.name,
         url,
         token,
@@ -153,6 +153,7 @@ export const InsertPanel = ({
         name.length > 0
       ) {
         setValidateInProgress(false);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         validateFields();
       } else if (!layerNames[url]) {
         void dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
@@ -164,6 +165,7 @@ export const InsertPanel = ({
     event.preventDefault();
 
     if (getTilesetType(url) !== TilesetType.I3S) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       validateFields();
     } else {
       setValidateInProgress(true);
