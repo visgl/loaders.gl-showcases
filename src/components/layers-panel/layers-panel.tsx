@@ -39,7 +39,6 @@ import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
-import CustomMap from "../../../public/icons/basemaps/custom-map.png";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -366,7 +365,7 @@ export const LayersPanel = ({
         mapUrl: map.url,
         name: map.name,
         token: map.token,
-        icon: CustomMap,
+        iconName: "Custom",
         custom: true,
         group: map.group,
       };
@@ -559,8 +558,12 @@ export const LayersPanel = ({
           <InsertPanel
             title={"Insert Base Map"}
             groups={[BaseMapGroup.Maplibre]}
-            onInsert={(map) => { handleInsertMap(map); }}
-            onCancel={() => { setShowInsertMapPanel(false); }}
+            onInsert={(map) => {
+              handleInsertMap(map);
+            }}
+            onCancel={() => {
+              setShowInsertMapPanel(false);
+            }}
           />
         </PanelWrapper>
       )}

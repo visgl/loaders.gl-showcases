@@ -5,12 +5,8 @@ import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "../../types";
 import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  selectBaseMaps,
-  deleteBaseMaps,
-  setSelectedBaseMaps,
-} from "../../redux/slices/base-maps-slice";
+import { useAppDispatch } from "../../redux/hooks";
+import { deleteBaseMaps } from "../../redux/slices/base-maps-slice";
 import { BasemapListPanel } from "../basemap-list-panel/basemap-list-panel";
 
 interface MapOptionPanelProps {
@@ -44,7 +40,6 @@ const InsertButtons = styled.div`
 
 export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
   const dispatch = useAppDispatch();
-  const baseMaps = useAppSelector(selectBaseMaps);
   const [optionsMapId, setOptionsMapId] = useState<string>("");
   const [mapToDeleteId, setMapToDeleteId] = useState<string>("");
   const [mapToDeleteGroup, setMapToDeleteGroup] = useState<string>("");
@@ -71,9 +66,6 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
                     setMapToDeleteId(optionsMapId);
                     setOptionsMapId("");
                   }}
-                  onCancel={() => {
-                    setOptionsMapId("");
-                  }}
                 />
               }
             />
@@ -84,11 +76,6 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
                 }}
                 onDeleteHandler={() => {
                   dispatch(deleteBaseMaps(mapToDeleteId));
-                  // Pick the first item of the list
-                  if (baseMaps.length) {
-                    const item = baseMaps[0];
-                    dispatch(setSelectedBaseMaps(item.id));
-                  }
                   setMapToDeleteId("");
                 }}
               >

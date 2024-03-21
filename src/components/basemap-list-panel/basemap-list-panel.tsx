@@ -7,6 +7,7 @@ import {
   setSelectedBaseMaps,
   selectBaseMapsByGroup,
 } from "../../redux/slices/base-maps-slice";
+import { basemapIcons } from "../../constants/map-styles";
 import { Popover } from "react-tiny-popover";
 
 const BASEMAP_ICON_WIDTH = 100;
@@ -70,6 +71,21 @@ const BasemapImageWrapper = styled.div<{
     css`
       background-color: #393a45;
     `}
+`;
+
+const BasemapCustomIcon = styled.div<{
+  width: number;
+  height: number;
+}>`
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  height: ${({ height }) => `${height}px`};
+  width: ${({ width }) => `${width}px`};
+  margin: 0;
+  border-width: 0;
+  border-radius: 8px;
 `;
 
 const BasemapIcon = styled.div<{
@@ -149,44 +165,64 @@ export const BasemapListPanel = ({
     <BasemapContainer>
       <BasemapTitle>{group}</BasemapTitle>
       <BasemapPanel>
-        {imageArray.map((item) => (
-          <BasemapImageWrapper
-            key={item.id}
-            active={imagePickedKey === item.id}
-            width={BASEMAP_ICON_WIDTH}
-            onClick={() => {
-              dispatch(setSelectedBaseMaps(item.id));
-            }}
-        >
-            <BasemapIcon
-              key={`${item.id}`}
-              icon={`${item.icon}`}
+        {imageArray.map((item) => {
+          const basemapIcon = item.iconName
+            ? basemapIcons[item.iconName]
+            : null;
+          const iconUrl = basemapIcon?.icon;
+          const IconComponent = basemapIcon?.Icon;
+          return (
+            <BasemapImageWrapper
+              key={item.id}
+              active={imagePickedKey === item.id}
               width={BASEMAP_ICON_WIDTH}
-              height={BASEMAP_ICON_HEIGHT}
-            />
-            <BasemapImageName>{item.name || ""}</BasemapImageName>
-            {item.custom && onOptionsClick && optionsContent && (
-              <Popover
-                isOpen={optionsMapId === item.id}
-                reposition={false}
-                positions={["left", "top", "bottom"]}
-                align="start"
-                content={optionsContent}
-                containerStyle={{ zIndex: "2" }}
-                onClickOutside={onOptionsClickOutside}
-              >
-                <OptionsButton
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onOptionsClick(item.id);
-                  }}
+              onClick={() => {
+                dispatch(setSelectedBaseMaps(item.id));
+              }}
+            >
+              {iconUrl && (
+                <BasemapIcon
+                  key={`${item.id}`}
+                  icon={`${iconUrl}`}
+                  width={BASEMAP_ICON_WIDTH}
+                  height={BASEMAP_ICON_HEIGHT}
+                />
+              )}
+
+              {IconComponent && (
+                <BasemapCustomIcon
+                  key={`${item.id}`}
+                  width={BASEMAP_ICON_WIDTH}
+                  height={BASEMAP_ICON_HEIGHT}
                 >
-                  <OptionsIcon $panel={Panels.Bookmarks} />
-                </OptionsButton>
-              </Popover>
-            )}
-          </BasemapImageWrapper>
-        ))}
+                  <IconComponent></IconComponent>
+                </BasemapCustomIcon>
+              )}
+
+              <BasemapImageName>{item.name || ""}</BasemapImageName>
+              {item.custom && onOptionsClick && optionsContent && (
+                <Popover
+                  isOpen={optionsMapId === item.id}
+                  reposition={false}
+                  positions={["left", "top", "bottom"]}
+                  align="start"
+                  content={optionsContent}
+                  containerStyle={{ zIndex: "2" }}
+                  onClickOutside={onOptionsClickOutside}
+                >
+                  <OptionsButton
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onOptionsClick(item.id);
+                    }}
+                  >
+                    <OptionsIcon $panel={Panels.Bookmarks} />
+                  </OptionsButton>
+                </Popover>
+              )}
+            </BasemapImageWrapper>
+          );
+        })}
       </BasemapPanel>
     </BasemapContainer>
   );

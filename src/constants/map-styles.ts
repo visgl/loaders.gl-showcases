@@ -1,3 +1,5 @@
+import CustomMap from "../../public/icons/custom-map.svg";
+
 import MaplibreDarkMap from "../../public/icons/basemaps/maplibre-dark.png";
 import MaplibreLightMap from "../../public/icons/basemaps/maplibre-light.png";
 
@@ -9,11 +11,28 @@ import ArcGisStreetsDarkMap from "../../public/icons/basemaps/arcgis-streets-dar
 import ArcGisStreetsMap from "../../public/icons/basemaps/arcgis-streets.png";
 import { type BaseMap, BaseMapGroup } from "../types";
 
+interface BasemapIcon {
+  Icon?: any;
+  icon?: string;
+}
+
+export const basemapIcons: Record<string, BasemapIcon> = {
+  MaplibreDark: { icon: MaplibreDarkMap },
+  MaplibreLight: { icon: MaplibreLightMap },
+  Terrain: { icon: TerrainMap },
+  ArcGisDarkGray: { icon: ArcGisDarkGrayMap },
+  ArcGisLightGray: { icon: ArcGisLightGrayMap },
+  ArcGisStreetsDark: { icon: ArcGisStreetsDarkMap },
+  ArcGisStreets: { icon: ArcGisStreetsMap },
+
+  Custom: { Icon: CustomMap },
+};
+
 export const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
     name: "Dark",
-    icon: MaplibreDarkMap,
+    iconName: "MaplibreDark",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
@@ -21,7 +40,7 @@ export const BASE_MAPS: BaseMap[] = [
   {
     id: "Light",
     name: "Light",
-    icon: MaplibreLightMap,
+    iconName: "MaplibreLight",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
@@ -31,40 +50,36 @@ export const BASE_MAPS: BaseMap[] = [
     id: "Terrain",
     name: "Terrain",
     group: BaseMapGroup.Terrain,
-    icon: TerrainMap,
+    iconName: "Terrain",
     mapUrl: "",
   },
 
   {
-    //          id: "arcgis/light-gray", // "ArcGisLightGray",
     id: "gray-vector",
     name: "Light gray",
     group: BaseMapGroup.ArcGIS,
-    icon: ArcGisLightGrayMap,
+    iconName: "ArcGisLightGray",
     mapUrl: "",
   },
   {
-    //          id: "arcgis/dark-gray", // "ArcGisDarkGray",
     id: "dark-gray-vector",
     name: "Dark gray",
     group: BaseMapGroup.ArcGIS,
-    icon: ArcGisDarkGrayMap,
+    iconName: "ArcGisDarkGray",
     mapUrl: "",
   },
   {
-    //          id: "arcgis/streets",
     id: "streets-vector",
     name: "Streets",
     group: BaseMapGroup.ArcGIS,
-    icon: ArcGisStreetsMap,
+    iconName: "ArcGisStreets",
     mapUrl: "",
   },
   {
-    //          id: "arcgis/streets-night",
     id: "streets-night-vector",
     name: "Streets(night)",
     group: BaseMapGroup.ArcGIS,
-    icon: ArcGisStreetsDarkMap,
+    iconName: "ArcGisStreetsDark",
     mapUrl: "",
   },
 ];

@@ -202,7 +202,7 @@ export interface BaseMap {
   token?: string;
   custom?: boolean;
   group: BaseMapGroup;
-  icon?: string;
+  iconName?: string;
 };
 
 export interface PositionsData {

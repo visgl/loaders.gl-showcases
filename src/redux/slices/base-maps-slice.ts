@@ -33,10 +33,13 @@ const baseMapsSlice = createSlice({
       }
     },
     deleteBaseMaps: (state: BaseMapsState, action: PayloadAction<string>) => {
+      const idToDelete = action.payload;
       state.baseMap = state.baseMap.filter(
-        (keepMap) => keepMap.id !== action.payload
+        (keepMap) => keepMap.id !== idToDelete
       );
-      state.selectedBaseMap = state.baseMap[0].id;
+      if (state.selectedBaseMap === idToDelete) {
+        state.selectedBaseMap = state.baseMap[0].id;
+      }
     },
   },
 });
@@ -53,7 +56,7 @@ export const selectBaseMaps = (state: RootState): BaseMap[] =>
 export const selectBaseMapsByGroup =
   (group?: string) =>
     (state: RootState): BaseMap[] => {
-      const maps = state.baseMaps.baseMap || [];
+      const maps = state.baseMaps.baseMap;
       return group ? maps.filter((item) => item.group === group) : maps;
     };
 

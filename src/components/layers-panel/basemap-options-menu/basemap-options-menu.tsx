@@ -38,21 +38,20 @@ const SettingsMenuContainer = styled.div`
 
 interface BaseMapOptionsMenuProps {
   onDeleteBasemap: () => void;
-  onCancel: () => void;
 }
 
 export const BaseMapOptionsMenu = ({
   onDeleteBasemap,
-  onCancel,
 }: BaseMapOptionsMenuProps) => {
   return (
     <SettingsMenuContainer>
       <MapSettingsItem
         customColor={color_accent_primary}
         opacity={0.8}
-        onClick={onDeleteBasemap}
-        // onClickOutside={() => {
-        // }}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDeleteBasemap();
+        }}
       >
         <MapSettingsIcon>
           <DeleteIcon fill={color_accent_primary} />
@@ -62,14 +61,3 @@ export const BaseMapOptionsMenu = ({
     </SettingsMenuContainer>
   );
 };
-
-/*
-      {showConfirmation && (
-        <DeleteConfirmation
-          onKeepHandler={onCancel}
-          onDeleteHandler={onDeleteConfirmationHandler}
-        >
-          Delete map?
-        </DeleteConfirmation>
-      )}
-*/
