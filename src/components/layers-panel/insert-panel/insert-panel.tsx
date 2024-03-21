@@ -35,7 +35,7 @@ interface InsertLayerProps {
     url: string;
     token?: string;
     group?: BaseMapGroup;
-  }) => void;
+  }) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
 }
@@ -114,7 +114,7 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const validateFields = () => {
+  const validateFields = (): void => {
     let isFormValid = true;
     const type = getTilesetType(url);
 

@@ -1,18 +1,16 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { type RenderResult, fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../../utils/testing-utils/render-with-theme";
 import { InsertPanel } from "./insert-panel";
 import { setupStore } from "../../../redux/store";
 import { BaseMapGroup } from "../../../types";
 
+import "@testing-library/jest-dom";
+
 const onInsertMock = jest.fn();
 const onCancelMock = jest.fn();
 
-async function sleep(ms) {
-  return await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (renderFunc, props = {}, store = setupStore()): RenderResult => {
   return renderFunc(
     <InsertPanel
       title={"Test Title"}
@@ -56,8 +54,7 @@ describe("Insert panel", () => {
   it("Should show name error and url error if they are not provided", async () => {
     const { container } = callRender(renderWithThemeProviders);
 
-    userEvent.click(screen.getByText("Insert"));
-    await sleep(200);
+    await userEvent.click(screen.getByText("Insert"));
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Please enter name")).toBeInTheDocument();
     expect(screen.getByText("Invalid URL")).toBeInTheDocument();
@@ -70,8 +67,7 @@ describe("Insert panel", () => {
 
     fireEvent.change(nameInput, { target: { value: "test name" } });
 
-    userEvent.click(screen.getByText("Insert"));
-    await sleep(200);
+    await userEvent.click(screen.getByText("Insert"));
     expect(screen.getByText("Invalid URL")).toBeInTheDocument();
     expect(screen.queryByText("Please enter name")).toBeNull();
   });
@@ -86,8 +82,7 @@ describe("Insert panel", () => {
     fireEvent.change(nameInput, { target: { value: "test name" } });
     fireEvent.change(urlInput, { target: { value: "test url" } });
 
-    userEvent.click(screen.getByText("Insert"));
-    await sleep(200);
+    await userEvent.click(screen.getByText("Insert"));
     expect(screen.getByText("Invalid URL")).toBeInTheDocument();
     expect(screen.queryByText("Please enter name")).toBeNull();
   });
@@ -105,15 +100,14 @@ describe("Insert panel", () => {
     fireEvent.change(urlInput, { target: { value: "http://123.com" } });
     fireEvent.change(tokenInput, { target: { value: "test token" } });
 
-    userEvent.click(screen.getByText("Insert"));
-    await sleep(200);
-    expect(onInsertMock).toBeCalled();
+    await userEvent.click(screen.getByText("Insert"));
+    expect(onInsertMock).toHaveBeenCalled();
   });
 
-  it("Should be able to cancel panel", () => {
+  it("Should be able to cancel panel", async () => {
     callRender(renderWithThemeProviders);
 
-    userEvent.click(screen.getByText("Cancel"));
-    expect(onCancelMock).toBeCalled();
+    await userEvent.click(screen.getByText("Cancel"));
+    expect(onCancelMock).toHaveBeenCalled();
   });
 });

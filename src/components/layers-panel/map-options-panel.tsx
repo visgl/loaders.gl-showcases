@@ -45,7 +45,7 @@ export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
   const [mapToDeleteGroup, setMapToDeleteGroup] = useState<string>("");
 
   return (
-    <MapOptionsContainer>
+    <MapOptionsContainer id="map-options-container">
       <MapOptionTitle>Base Map</MapOptionTitle>
       {["Maplibre", "ArcGIS", "Terrain"].map((mapGroup) => {
         return (

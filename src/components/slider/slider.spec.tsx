@@ -61,57 +61,57 @@ describe("Slider", () => {
     expect(container.childNodes[1].childNodes.length).toBe(3);
   });
 
-  it("Should click arrow right", () => {
+  it("Should click arrow right", async () => {
     const { container } = callRender(renderWithTheme);
     const arrowRight = container.lastChild;
-    userEvent.click(arrowRight);
+    await userEvent.click(arrowRight);
     expect(onSelect).toHaveBeenCalled();
   });
 
-  it("Should click arrow bottom", () => {
+  it("Should click arrow bottom", async () => {
     const { container } = callRender(renderWithTheme, {
       sliderType: SliderType.Floors,
     });
     const arrowBottom = container.lastChild;
-    userEvent.click(arrowBottom);
+    await userEvent.click(arrowBottom);
     expect(onSelect).toHaveBeenCalled();
   });
 
-  it("Should click arrow left", () => {
+  it("Should click arrow left", async () => {
     const { container } = callRender(renderWithTheme);
     const arrowLeft = container.firstChild;
-    userEvent.click(arrowLeft);
+    await userEvent.click(arrowLeft);
     expect(onSelect).toHaveBeenCalled();
   });
 
-  it("Should click arrow top", () => {
+  it("Should click arrow top", async () => {
     const { container } = callRender(renderWithTheme, {
       sliderType: SliderType.Floors,
     });
     const arrowTop = container.firstChild;
-    userEvent.click(arrowTop);
+    await userEvent.click(arrowTop);
     expect(onSelect).toHaveBeenCalled();
   });
 
-  it("Should select slider item", () => {
+  it("Should select slider item", async () => {
     const { container } = callRender(renderWithTheme);
     const sliderItem = container.childNodes[1].firstChild;
 
-    userEvent.click(sliderItem);
+    await userEvent.click(sliderItem);
     expect(onSelect).toHaveBeenCalled();
   });
 
-  it("Should delete slider item", () => {
+  it("Should delete slider item", async () => {
     const { container } = callRender(renderWithTheme, {
       editingMode: true,
     });
     const sliderItem = container.childNodes[1].firstChild;
 
-    userEvent.hover(sliderItem);
+    await userEvent.hover(sliderItem);
     const deleteButton = sliderItem.firstChild;
-    userEvent.click(deleteButton);
+    await userEvent.click(deleteButton);
     const confirmButton = sliderItem.firstChild;
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
     expect(onDeleteBookmark).toHaveBeenCalled();
   });
 });

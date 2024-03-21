@@ -1,16 +1,15 @@
-import { screen } from "@testing-library/react";
+import { type RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ButtonSize } from "../../types";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
-import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 
 const onClickMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <ActionIconButton
-      Icon={PlusIcon}
+      Icon={() => <></>}
       style="disabled"
       size={ButtonSize.Small}
       onClick={onClickMock}
@@ -20,7 +19,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("ActionIconButton", () => {
-  it("Should render small Plus icon in the button", () => {
+  it("Should render small Plus icon in the button", async () => {
     const { container } = callRender(renderWithTheme, {
       children: "Test Button",
     });
@@ -31,11 +30,11 @@ describe("ActionIconButton", () => {
     ).getPropertyValue("height");
     expect(buttonHeight).toEqual("24px");
 
-    userEvent.click(button);
+    await userEvent.click(button);
     expect(onClickMock).toHaveBeenCalled();
   });
 
-  it("Should render Big Plus icon in the button", () => {
+  it("Should render Big Plus icon in the button", async () => {
     const { container } = callRender(renderWithTheme, {
       children: "Test Button",
       size: ButtonSize.Big,
@@ -46,7 +45,7 @@ describe("ActionIconButton", () => {
       button.previousSibling as Element
     ).getPropertyValue("height");
     expect(buttonHeight).toEqual("40px");
-    userEvent.click(button);
+    await userEvent.click(button);
     expect(onClickMock).toHaveBeenCalled();
   });
 });

@@ -11,7 +11,10 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test" onChange={onChange} />
     );
-
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
     const inputLabel: HTMLLabelElement | null =
@@ -32,6 +35,10 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
     const inputLabel: HTMLLabelElement | null =
@@ -52,6 +59,10 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test" onChange={onChange} />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
     if (input) {
@@ -68,6 +79,10 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test-prop-value" onChange={onChange} />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
 

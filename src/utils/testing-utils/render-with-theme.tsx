@@ -1,5 +1,5 @@
 import { type PropsWithChildren } from "react";
-import { render } from "@testing-library/react";
+import { type RenderResult, render } from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
 import { Provider } from "react-redux";
 import { type AppStore } from "../../redux/store";
@@ -31,15 +31,20 @@ const theme = {
  */
 export const renderWithTheme = (
   children: React.ReactNode,
-  renderFunc = render
-) => {
-  return renderFunc(<ThemeProvider theme={theme}>{children}</ThemeProvider>);
+  renderFunc: ((ui: React.ReactNode) => void) | typeof render = render
+): RenderResult | undefined => {
+  const result = renderFunc(
+    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  );
+  if (result) {
+    return result;
+  }
 };
 
 export function renderWithThemeProviders(
   ui: React.ReactElement,
   store: AppStore
-) {
+): RenderResult & { store: AppStore } {
   // eslint-disable-next-line @typescript-eslint/ban-types
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return (
@@ -48,5 +53,6 @@ export function renderWithThemeProviders(
       </Provider>
     );
   }
-  return { store, ...render(ui, { wrapper: Wrapper }) };
+  const renderResult: RenderResult = render(ui, { wrapper: Wrapper });
+  return { store, ...renderResult };
 }

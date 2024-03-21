@@ -7,6 +7,7 @@ import { fetchFile } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
 import { setupStore } from "../../../redux/store";
 import { setColorsByAttrubute } from "../../../redux/slices/symbolization-slice";
+import { type StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
 jest.mock("@loaders.gl/i3s", () => {
@@ -20,7 +21,7 @@ jest.mock("../histogram", () => ({
 
 const fetchMock = fetchFile as unknown as jest.Mocked<any>;
 
-const stats = {
+const stats: StatsInfo = {
   totalValuesCount: 1,
   min: 0,
   max: 100,
@@ -46,8 +47,8 @@ const stats = {
   ],
 };
 
-async function sleep(ms) {
-  return await new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 jest.mock("../../toogle-switch/toggle-switch", () => ({
@@ -167,13 +168,13 @@ describe("AttributeStats", () => {
 
     const histogramIcon = screen.getByText("Histogram").firstElementChild;
 
-    histogramIcon && userEvent.click(histogramIcon);
+    histogramIcon && (await userEvent.click(histogramIcon));
 
     expect(
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -250,7 +251,7 @@ describe("AttributeStats", () => {
     await sleep(100);
     expect(screen.queryByTestId("colorsByAttributeFadeContainer")).toBeNull();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -296,7 +297,7 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -332,7 +333,7 @@ describe("AttributeStats", () => {
     });
     await sleep(100);
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttributeMode")).getByText(
         "ToggleSwitch"
       )
@@ -380,7 +381,7 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttributeMode")).getByText(
         "ToggleSwitch"
       )

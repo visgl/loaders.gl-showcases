@@ -41,7 +41,7 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 };
 
 describe("Layers Settings Panel", () => {
-  it("Should render LayerSettingsPanel", () => {
+  it("Should render LayerSettingsPanel", async () => {
     const { container } = callRender(renderWithThemeProviders);
     expect(container).toBeInTheDocument();
 
@@ -55,7 +55,7 @@ describe("Layers Settings Panel", () => {
 
     expect(onCloseClick).toHaveBeenCalled();
 
-    userEvent.click(screen.getByTestId("back-button-layers-panel"));
+    await userEvent.click(screen.getByTestId("back-button-layers-panel"));
     expect(onBackClick).toHaveBeenCalled();
 
     expect(screen.getByText("Building Explorer"));

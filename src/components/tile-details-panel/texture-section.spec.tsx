@@ -22,7 +22,7 @@ describe("Texture Section", () => {
     expect(texturePanel).toBeInTheDocument();
 
     const texture = texturePanel?.nextSibling as Element;
-    texture && userEvent.click(texture);
+    texture && (await userEvent.click(texture));
 
     const texturePreview = await screen.findByText("Preview texture");
     expect(texturePreview).toBeInTheDocument();

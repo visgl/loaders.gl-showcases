@@ -28,7 +28,7 @@ describe("FiltrationSection", () => {
     getByText("CONSTR_PHASE");
   });
 
-  it("Should select phase", () => {
+  it("Should select phase", async () => {
     const store = setupStore();
     const { getByText, getAllByRole } = callRender(
       renderWithThemeProviders,
@@ -39,7 +39,7 @@ describe("FiltrationSection", () => {
     const leftArrow = arrows[2];
     const rightArrow = arrows[3];
     const secondPhase = getByText("3");
-    userEvent.click(secondPhase);
+    await userEvent.click(secondPhase);
     expect(leftArrow).not.toBeDisabled();
     expect(rightArrow).not.toBeDisabled();
   });
@@ -69,7 +69,7 @@ describe("FiltrationSection", () => {
     const secondFloorImage =
       filtrationSection.childNodes[1].lastChild.childNodes[1];
     expect(secondFloorImage).not.toHaveStyle("margin: 5px 0");
-    userEvent.click(secondFloor);
+    await userEvent.click(secondFloor);
     expect(secondFloorImage).toHaveStyle("margin: 5px 0");
     expect(leftArrow).not.toBeDisabled();
     expect(rightArrow).not.toBeDisabled();

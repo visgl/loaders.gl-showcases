@@ -16,27 +16,28 @@ jest.mock("./attributes-stats/attribute-stats", () => ({
 describe("AttributesPanel", () => {
   const handleClosePanel = jest.fn();
 
-  it("Should render AttributesPanel", () => {
+  it("Should render AttributesPanel", async () => {
     const attributes = {
       OBJECTID: "12345",
       NAME: "Test Name",
     };
 
-    const { container } = renderWithTheme(
-      <AttributesPanel
-        title={"Test"}
-        tilesetName={"Test Tileset"}
-        attributes={attributes}
-        tilesetBasePath={""}
-        statisticsInfo={null}
-        onClose={handleClosePanel}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <AttributesPanel
+          title={"Test"}
+          tilesetName={"Test Tileset"}
+          attributes={attributes}
+          tilesetBasePath={""}
+          statisticsInfo={null}
+          onClose={handleClosePanel}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.queryByText("Test")).toBeInTheDocument();
     expect(screen.getByText("CloseButton")).toBeInTheDocument();
-    userEvent.click(screen.getByText("CloseButton"));
+    await userEvent.click(screen.getByText("CloseButton"));
     expect(handleClosePanel).toHaveBeenCalled();
 
     expect(screen.queryByText("OBJECTID")).toBeInTheDocument();
@@ -46,7 +47,7 @@ describe("AttributesPanel", () => {
     expect(screen.queryByText("Test Name")).toBeInTheDocument();
   });
 
-  it("Should render statistics in attributes panel", () => {
+  it("Should render statistics in attributes panel", async () => {
     const attributes = {
       OBJECTID: "12345",
       NAME: "Test Name",
@@ -54,21 +55,22 @@ describe("AttributesPanel", () => {
 
     const statisticsInfo = [{ key: "f_0", name: "NAME", href: "../testPath" }];
 
-    const { container } = renderWithTheme(
-      <AttributesPanel
-        title={"Test"}
-        tilesetName={"Test Tileset"}
-        attributes={attributes}
-        tilesetBasePath={""}
-        statisticsInfo={statisticsInfo}
-        onClose={handleClosePanel}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <AttributesPanel
+          title={"Test"}
+          tilesetName={"Test Tileset"}
+          attributes={attributes}
+          tilesetBasePath={""}
+          statisticsInfo={statisticsInfo}
+          onClose={handleClosePanel}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("NAME")).toBeInTheDocument();
 
-    userEvent.click(screen.getByText("NAME"));
+    await userEvent.click(screen.getByText("NAME"));
 
     expect(
       screen.getByTestId("attributes-panel-back-button")
@@ -76,7 +78,7 @@ describe("AttributesPanel", () => {
     expect(screen.getByText("Statistics")).toBeInTheDocument();
     expect(screen.getByText("AttributeStats")).toBeInTheDocument();
 
-    userEvent.click(screen.getByTestId("attributes-panel-back-button"));
+    await userEvent.click(screen.getByTestId("attributes-panel-back-button"));
 
     expect(
       screen.queryByTestId("attributes-panel-back-button")

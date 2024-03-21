@@ -1,4 +1,9 @@
-import { type ReactEventHandler, type ReactNode } from "react";
+import {
+  type PropsWithChildren,
+  type ReactEventHandler,
+  type ReactNode,
+  type FC,
+} from "react";
 import styled, { type DefaultTheme, useTheme } from "styled-components";
 import { color_accent_primary } from "../../constants/colors";
 
@@ -25,24 +30,21 @@ const ConfirmationButton = styled.div<{ color?: string; theme?: DefaultTheme }>`
   cursor: pointer;
 `;
 
-export const DeleteConfirmation = ({
-  onKeepHandler,
-  onDeleteHandler,
-  children,
-}: {
+interface DeleteConfirmationProps {
   onKeepHandler: ReactEventHandler;
   onDeleteHandler: ReactEventHandler;
   children: ReactNode;
-}) => {
+}
+
+export const DeleteConfirmation: FC<
+PropsWithChildren<DeleteConfirmationProps>
+> = ({ onKeepHandler, onDeleteHandler, children }) => {
   const theme = useTheme();
   return (
     <Container theme={theme}>
       {children}
       <ConfirmationButtons>
-        <ConfirmationButton
-          theme={theme}
-          onClick={onKeepHandler}
-        >
+        <ConfirmationButton theme={theme} onClick={onKeepHandler}>
           No, keep
         </ConfirmationButton>
         <ConfirmationButton

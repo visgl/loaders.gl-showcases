@@ -189,19 +189,19 @@ describe("ComparisonSide", () => {
     const store = setupStore();
     store.dispatch(setDragMode(DragMode.pan));
     const { rerender } = callRender(renderWithThemeProviders, undefined, store);
-    expect(LayersPanelMock.mock.calls.length).toBe(2);
+    expect(LayersPanelMock.mock.calls.length).toBe(3);
 
     callRender(rerender, {
       mode: ComparisonMode.withinLayer,
       showLayerOptions: false,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(3);
+    expect(LayersPanelMock.mock.calls.length).toBe(4);
 
     callRender(rerender, {
       mode: ComparisonMode.acrossLayers,
       showLayerOptions: true,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(5);
+    expect(LayersPanelMock.mock.calls.length).toBe(7);
   });
 
   it("Should handle staticLayers", () => {
@@ -318,7 +318,7 @@ describe("ComparisonSide", () => {
   describe("LayersPanel", () => {
     it("Should render", () => {
       callRender(renderWithThemeProviders);
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
     });
 
     it("Should call onLayerInsert", async () => {
@@ -937,10 +937,10 @@ describe("ComparisonSide", () => {
 
     it("Should close", async () => {
       callRender(renderWithThemeProviders);
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
       const { onClose } = LayersPanelMock.mock.lastCall[0];
       await act(() => onClose());
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
     });
   });
 

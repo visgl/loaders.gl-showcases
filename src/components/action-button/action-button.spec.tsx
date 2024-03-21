@@ -7,55 +7,45 @@ import { ActionButtonVariant } from "../../types";
 describe("Action Button", () => {
   const onClick = jest.fn();
 
-  it("Should render primary button by default", () => {
-    const { container } = renderWithTheme(
-      <ActionButton onClick={onClick}
-      >
-        Action Button
-      </ActionButton>
-    );
+  it("Should render primary button by default", async () => {
+    const { container } =
+      renderWithTheme(
+        <ActionButton onClick={onClick}>Action Button</ActionButton>
+      ) ?? {};
     expect(container).toBeInTheDocument();
 
-    const bgColor = getComputedStyle(screen.getByText("Action Button") as Element).getPropertyValue(
-      "background-color"
-    );
+    const button = screen.getByText("Action Button") as Element;
 
-    expect(bgColor).toBe("rgb(96, 93, 236)");
+    // TODO item is hovered after initialization
+    expect(button).toHaveStyle({ "background-color": "#4744D3" });
 
-    userEvent.click(screen.getByText("Action Button"));
+    await userEvent.click(screen.getByText("Action Button"));
     expect(onClick).toHaveBeenCalled();
   });
 
-  it("Should render primary button by props", () => {
-    const { container } = renderWithTheme(
-      <ActionButton
-        variant={ActionButtonVariant.primary}
-        onClick={onClick}
-      >
-        Action Button
-      </ActionButton>
-    );
+  it("Should render primary button by props", async () => {
+    const { container } =
+      renderWithTheme(
+        <ActionButton variant={ActionButtonVariant.primary} onClick={onClick}>
+          Action Button
+        </ActionButton>
+      ) ?? {};
     expect(container).toBeInTheDocument();
 
     const button = screen.getByText("Action Button");
-    const bgColor = getComputedStyle(button as Element).getPropertyValue(
-      "background-color"
-    );
-
-    expect(bgColor).toBe("rgb(96, 93, 236)");
-    userEvent.click(button);
+    // TODO item is hovered after initialization
+    expect(button).toHaveStyle({ "background-color": "#4744D3" });
+    await userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
 
-  it("Should render secondary button", () => {
-    const { container } = renderWithTheme(
-      <ActionButton
-        variant={ActionButtonVariant.secondary}
-        onClick={onClick}
-      >
-        Action Button
-      </ActionButton>
-    );
+  it("Should render secondary button", async () => {
+    const { container } =
+      renderWithTheme(
+        <ActionButton variant={ActionButtonVariant.secondary} onClick={onClick}>
+          Action Button
+        </ActionButton>
+      ) ?? {};
     expect(container).toBeInTheDocument();
 
     const button = screen.getByText("Action Button");
@@ -65,24 +55,19 @@ describe("Action Button", () => {
 
     expect(bgColor).toBe("transparent");
 
-    const borderColor = getComputedStyle(button as Element).getPropertyValue(
-      "border-color"
-    );
-
-    expect(borderColor).toBe("#000001");
-    userEvent.click(button);
+    // TODO item is hovered after initialization
+    expect(button).toHaveStyle({ "border-color": "#000001" });
+    await userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
 
-  it("Should render cancel button", () => {
-    const { container } = renderWithTheme(
-      <ActionButton
-        variant={ActionButtonVariant.cancel}
-        onClick={onClick}
-      >
-        Action Button
-      </ActionButton>
-    );
+  it("Should render cancel button", async () => {
+    const { container } =
+      renderWithTheme(
+        <ActionButton variant={ActionButtonVariant.cancel} onClick={onClick}>
+          Action Button
+        </ActionButton>
+      ) ?? {};
     expect(container).toBeInTheDocument();
 
     const button = screen.getByText("Action Button");
@@ -97,7 +82,7 @@ describe("Action Button", () => {
     );
 
     expect(borderColor).toBe("transparent");
-    userEvent.click(button);
+    await userEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });
 

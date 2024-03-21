@@ -8,18 +8,21 @@ describe("WarningPanel", () => {
   const onConfirm = jest.fn();
 
   beforeEach(() => {
-    const { container } = renderWithTheme(
-      <WarningPanel title={"Warning"} onConfirm={onConfirm} />
-    );
-    componentElement = container.firstChild;
+    const { container } =
+      renderWithTheme(
+        <WarningPanel title={"Warning"} onConfirm={onConfirm} />
+      ) ?? {};
+    if (container) {
+      componentElement = container.firstChild;
+    }
   });
 
-  it("Should render", () => {
+  it("Should render", async () => {
     const title = screen.getByText("Warning");
     const confirmButton = screen.getByRole("button");
     expect(componentElement).toBeInTheDocument();
     expect(title).toBeInTheDocument();
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 });

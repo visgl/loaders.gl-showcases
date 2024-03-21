@@ -4,14 +4,14 @@ import { BaseMapOptionsMenu } from "./basemap-options-menu";
 import { renderWithTheme } from "../../../utils/testing-utils/render-with-theme";
 
 describe("Basemap options menu", () => {
-  it("Should render delete option", () => {
+  it("Should render delete option", async () => {
     const onDeleteBasemap = jest.fn();
 
     renderWithTheme(<BaseMapOptionsMenu onDeleteBasemap={onDeleteBasemap} />);
 
     const deleteMap = screen.getByText("Delete map");
     expect(deleteMap).toBeInTheDocument();
-    userEvent.click(deleteMap);
+    await userEvent.click(deleteMap);
     expect(onDeleteBasemap).toHaveBeenCalled();
   });
 });

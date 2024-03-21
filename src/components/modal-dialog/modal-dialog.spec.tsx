@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { type RenderResult, screen, within } from "@testing-library/react";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { ModalDialog } from "./modal-dialog";
 import userEvent from "@testing-library/user-event";
@@ -7,7 +7,7 @@ import { setupStore } from "../../redux/store";
 const onCancel = jest.fn();
 const onConfirm = jest.fn();
 
-const callRender = (renderFunc, store = setupStore()) => {
+const callRender = (renderFunc, store = setupStore()): RenderResult => {
   return renderFunc(
     <ModalDialog
       title={"Test Title"}
@@ -34,11 +34,11 @@ describe("ModalDialog", () => {
     expect(title).toBeInTheDocument();
 
     const okButton = within(dialog).getByText("Log out");
-    okButton && userEvent.click(okButton);
+    okButton && (await userEvent.click(okButton));
     expect(onConfirm).toHaveBeenCalledTimes(1);
 
     const cancelButton = within(dialog).getByText("Exit");
-    cancelButton && userEvent.click(cancelButton);
+    cancelButton && (await userEvent.click(cancelButton));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });
