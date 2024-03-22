@@ -17,7 +17,7 @@ import {
   type Position,
   WebMercatorViewport,
 } from "@deck.gl/core/typed";
-import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
+import { DataDrivenTile3DLayer } from "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer";
 import { colorizeTile } from "../colorize-tile";
 import { filterTile } from "../../utils/tiles-filtering/filter-tile";
 import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
@@ -30,9 +30,11 @@ import {
 import { buildMinimapData } from "../debug/build-minimap-data";
 import { ScatterplotLayer, LineLayer } from "@deck.gl/layers/typed";
 import { I3SLoader } from "@loaders.gl/i3s";
+import { BoundingVolumeLayer } from "../../layers/bounding-volume-layer/bounding-volume-layer";
 
 // https://github.com/tilezen/joerd/blob/master/docs/use-service.md#additional-amazon-s3-endpoints
-const MAPZEN_TERRAIN_IMAGES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
+const MAPZEN_TERRAIN_IMAGES =
+  "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 const TERRAIN_TEXTURE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const MAPZEN_ELEVATION_DECODE_PARAMETERS = {
   rScaler: 256,
@@ -129,7 +131,7 @@ const renderI3SLayer = (
     urlObject.searchParams.append("token", layer.token);
     url = urlObject.href;
   }
-  return new CustomTile3DLayer({
+  return new DataDrivenTile3DLayer({
     id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
     data: url,
     // @ts-expect-error loader

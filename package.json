@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "@arcgis/core": "^4.28.7",
+    "@deck.gl-community/layers": "0.0.0",
     "@deck.gl/arcgis": "^8.9.32",
     "@deck.gl/core": "^8.9.32",
     "@deck.gl/extensions": "^8.9.32",
