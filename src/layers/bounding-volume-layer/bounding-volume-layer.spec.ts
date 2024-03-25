@@ -1,5 +1,5 @@
 import { BoundingVolumeType } from "../../types";
-import BoundingVolumeLayer from "./bounding-volume-layer";
+import { BoundingVolumeLayer } from "./bounding-volume-layer";
 
 jest.mock("@math.gl/core", () => ({
   Vector3: jest.fn().mockImplementation(() => ({

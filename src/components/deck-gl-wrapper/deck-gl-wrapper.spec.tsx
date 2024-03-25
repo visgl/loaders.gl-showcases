@@ -6,11 +6,11 @@ import { DragMode, TilesetType, TileColoredBy } from "../../types";
 import { act } from "@testing-library/react";
 import { DeckGlWrapper } from "./deck-gl-wrapper";
 import DeckGL from "@deck.gl/react";
+import { DataDrivenTile3DLayer } from "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer";
 import { MapController } from "@deck.gl/core";
 import { TerrainLayer } from "@deck.gl/geo-layers";
 import { load } from "@loaders.gl/core";
 import { ImageLoader } from "@loaders.gl/images";
-import { CustomTile3DLayer } from "../../layers";
 import ColorMap from "../../utils/debug/colors-map";
 import {
   selectDebugTextureForTile,
@@ -66,6 +66,14 @@ jest.mock("@deck.gl/geo-layers", () => {
     TerrainLayer: jest.fn(),
   };
 });
+jest.mock(
+  "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer",
+  () => {
+    return {
+      DataDrivenTile3DLayer: jest.fn(),
+    };
+  }
+);
 jest.mock("../../utils/debug/build-minimap-data");
 jest.mock("../../utils/debug/texture-selector-utils");
 jest.mock("../../utils/debug/frustum-utils");
@@ -264,9 +272,9 @@ describe("Deck.gl I3S map component", () => {
   describe("Render Tile3DLayer", () => {
     it("Should call Tile3DLayer tileset callbacks", async () => {
       const { rerender } = callRender(renderWithProvider);
-      expect(CustomTile3DLayer).toHaveBeenCalled();
+      expect(DataDrivenTile3DLayer).toHaveBeenCalled();
       const { onTileLoad, onTilesetLoad, onTileUnload } = (
-        CustomTile3DLayer as any
+        DataDrivenTile3DLayer as any
       ).mock.lastCall[0];
       const tile3d = getTile3d();
       await act(() => onTileLoad(tile3d));
@@ -282,14 +290,14 @@ describe("Deck.gl I3S map component", () => {
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileLoad: undefined });
-      const { onTileLoad: onTileLoad2 } = (CustomTile3DLayer as any).mock
+      const { onTileLoad: onTileLoad2 } = (DataDrivenTile3DLayer as any).mock
         .lastCall[0];
       await act(() => onTileLoad2(tile3d));
       expect(simpleCallbackMock).toHaveBeenCalledTimes(2);
 
       callRender(rerender, { onTileUnload: undefined });
-      const { onTileUnload: onTileUnload2 } = (CustomTile3DLayer as any).mock
-        .lastCall[0];
+      const { onTileUnload: onTileUnload2 } = (DataDrivenTile3DLayer as any)
+        .mock.lastCall[0];
       expect(async () => {
         await act(() => onTileUnload2(tile3d));
       }).not.toThrow();
@@ -306,8 +314,8 @@ describe("Deck.gl I3S map component", () => {
         coloredTilesMap: { "selected-tile-id": [33, 55, 66] },
         store,
       });
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { _getMeshColor } = (CustomTile3DLayer as any).mock.lastCall[0];
+      expect(DataDrivenTile3DLayer).toHaveBeenCalled();
+      const { _getMeshColor } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
       _getMeshColor();
       expect(getColorMock).toHaveBeenCalledWith(undefined, {
         coloredBy: "Original",
@@ -318,8 +326,8 @@ describe("Deck.gl I3S map component", () => {
 
     it("Should remove featureIds", async () => {
       callRender(renderWithProvider, { featurePicking: false });
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
+      expect(DataDrivenTile3DLayer).toHaveBeenCalled();
+      const { onTileLoad } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
       tile3d.content.featureIds = new Uint32Array([10, 20, 30]);
       await act(() => onTileLoad(tile3d));
@@ -330,8 +338,8 @@ describe("Deck.gl I3S map component", () => {
       const store = setupStore();
       store.dispatch(setDebugOptions({ showUVDebugTexture: false }));
       const { rerender } = callRender(renderWithProvider, undefined, store);
-      expect(CustomTile3DLayer).toHaveBeenCalled();
-      const { onTileLoad } = (CustomTile3DLayer as any).mock.lastCall[0];
+      expect(DataDrivenTile3DLayer).toHaveBeenCalled();
+      const { onTileLoad } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
       const tile3d = getTile3d();
       await act(() => onTileLoad(tile3d));
       expect(selectOriginalTextureForTile).toHaveBeenCalledWith(tile3d);
@@ -339,8 +347,8 @@ describe("Deck.gl I3S map component", () => {
 
       store.dispatch(setDebugOptions({ showUVDebugTexture: true }));
       callRender(rerender, undefined, store);
-      const { onTileLoad: onTileLoadSecond } = (CustomTile3DLayer as any).mock
-        .lastCall[0];
+      const { onTileLoad: onTileLoadSecond } = (DataDrivenTile3DLayer as any)
+        .mock.lastCall[0];
       await act(() => onTileLoadSecond(tile3d));
       expect(selectDebugTextureForTile).toHaveBeenCalledWith(tile3d, null);
       expect(selectOriginalTextureForTile).toHaveBeenCalledTimes(1);

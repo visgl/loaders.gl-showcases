@@ -12,7 +12,9 @@ import { COORDINATE_SYSTEM, WebMercatorViewport } from "@deck.gl/core/typed";
 import { LineLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { I3SLoader } from "@loaders.gl/i3s";
 import { Tile3DLayer } from "@deck.gl/geo-layers";
+import { DataDrivenTile3DLayer } from "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer";
 import { CesiumIonLoader, Tiles3DLoader } from "@loaders.gl/3d-tiles";
+import { BoundingVolumeLayer } from "../../layers/bounding-volume-layer/bounding-volume-layer";
 import { getFrustumBounds } from "../debug/frustum-utils";
 import ColorMap from "../../utils/debug/colors-map";
 import { buildMinimapData } from "../debug/build-minimap-data";
@@ -20,7 +22,6 @@ import {
   getNormalSourcePosition,
   getNormalTargetPosition,
 } from "../debug/normals-utils";
-import { BoundingVolumeLayer, CustomTile3DLayer } from "../../layers";
 import {
   BoundingVolumeColoredBy,
   BoundingVolumeType,
@@ -40,6 +41,14 @@ jest.mock("@deck.gl/geo-layers", () => {
     TerrainLayer: jest.fn(),
   };
 });
+jest.mock(
+  "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer",
+  () => {
+    return {
+      DataDrivenTile3DLayer: jest.fn(),
+    };
+  }
+);
 jest.mock("@deck.gl/core");
 jest.mock("@deck.gl/core/typed");
 jest.mock("@loaders.gl/i3s");
@@ -47,7 +56,6 @@ jest.mock("@loaders.gl/3d-tiles");
 jest.mock("../debug/frustum-utils");
 jest.mock("../debug/build-minimap-data");
 jest.mock("../debug/normals-utils");
-jest.mock("../../layers");
 
 const tilesetUrl =
   "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0";
@@ -277,7 +285,7 @@ describe("Render Tile3DLayer", () => {
         },
       ],
     });
-    expect(CustomTile3DLayer).toHaveBeenCalled();
+    expect(DataDrivenTile3DLayer).toHaveBeenCalled();
     const {
       id,
       data,
@@ -285,7 +293,7 @@ describe("Render Tile3DLayer", () => {
       loadOptions,
       autoHighlight,
       highlightedObjectIndex,
-    } = (CustomTile3DLayer as any).mock.lastCall[0];
+    } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--0"
     );
@@ -349,7 +357,7 @@ describe("Render Tile3DLayer", () => {
       ],
       loadNumber: 1,
     });
-    const { id } = (CustomTile3DLayer as any).mock.lastCall[0];
+    const { id } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--1"
     );
@@ -364,7 +372,7 @@ describe("Render Tile3DLayer", () => {
         },
       ],
     });
-    const { pickable, autoHighlight } = (CustomTile3DLayer as any).mock
+    const { pickable, autoHighlight } = (DataDrivenTile3DLayer as any).mock
       .lastCall[0];
     expect(pickable).toBe(true);
     expect(autoHighlight).toBe(true);
@@ -381,7 +389,7 @@ describe("Render Tile3DLayer", () => {
       autoHighlight: false,
       selectedTilesetBasePath: "http://another.tileset.local",
     });
-    const { highlightedObjectIndex } = (CustomTile3DLayer as any).mock
+    const { highlightedObjectIndex } = (DataDrivenTile3DLayer as any).mock
       .lastCall[0];
     expect(highlightedObjectIndex).toBe(-1);
   });
@@ -401,7 +409,7 @@ describe("Render Tile3DLayer", () => {
       _subLayerProps: {
         mesh: { wireframe },
       },
-    } = (CustomTile3DLayer as any).mock.lastCall[0];
+    } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(wireframe).toBe(false);
 
     callRenderLayers({
@@ -418,7 +426,7 @@ describe("Render Tile3DLayer", () => {
       _subLayerProps: {
         mesh: { wireframe: wireframe2 },
       },
-    } = (CustomTile3DLayer as any).mock.lastCall[0];
+    } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(wireframe2).toBe(true);
   });
 
@@ -431,7 +439,7 @@ describe("Render Tile3DLayer", () => {
         },
       ],
     });
-    const { loadOptions } = (CustomTile3DLayer as any).mock.lastCall[0];
+    const { loadOptions } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(loadOptions).toEqual({
       i3s: {
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
@@ -452,8 +460,8 @@ describe("Render Tile3DLayer", () => {
       ],
       pickable: false,
     });
-    expect(CustomTile3DLayer).toHaveBeenCalled();
-    const { pickable } = (CustomTile3DLayer as any).mock.lastCall[0];
+    expect(DataDrivenTile3DLayer).toHaveBeenCalled();
+    const { pickable } = (DataDrivenTile3DLayer as any).mock.lastCall[0];
     expect(pickable).toBe(false);
   });
 
@@ -474,8 +482,8 @@ describe("Render Tile3DLayer", () => {
         mode: "replace",
       },
     });
-    expect(CustomTile3DLayer).toHaveBeenCalled();
-    const { id, colorsByAttribute } = (CustomTile3DLayer as any).mock
+    expect(DataDrivenTile3DLayer).toHaveBeenCalled();
+    const { id, colorsByAttribute } = (DataDrivenTile3DLayer as any).mock
       .lastCall[0];
     expect(id).toBe(
       "tile-layer-undefined-draco-true-compressed-textures-true--0"
