@@ -15,7 +15,10 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
-
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLSelectElement | null =
       dom.container.querySelector("select");
     const inputLabel: HTMLLabelElement | null =
@@ -36,6 +39,10 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLSelectElement | null =
       dom.container.querySelector("select");
     const inputLabel: HTMLLabelElement | null =
@@ -84,6 +91,10 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLSelectElement | null =
       dom.container.querySelector("select");
 
