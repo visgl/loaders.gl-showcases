@@ -60,6 +60,10 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLSelectElement | null =
       dom.container.querySelector("select");
     if (input) {
