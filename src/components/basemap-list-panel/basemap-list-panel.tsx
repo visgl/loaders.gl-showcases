@@ -69,7 +69,7 @@ const BasemapImageWrapper = styled.div<{
   ${({ active = false }) =>
     active &&
     css`
-      background-color: #393a45;
+      background-color: ${({ theme }) => theme.colors.mainHiglightColor};
     `}
 `;
 
@@ -166,9 +166,7 @@ export const BasemapListPanel = ({
       <BasemapTitle>{group}</BasemapTitle>
       <BasemapPanel>
         {imageArray.map((item) => {
-          const basemapIcon = item.iconName
-            ? basemapIcons[item.iconName]
-            : null;
+          const basemapIcon = basemapIcons[item.iconId];
           const iconUrl = basemapIcon?.icon;
           const IconComponent = basemapIcon?.Icon;
           return (

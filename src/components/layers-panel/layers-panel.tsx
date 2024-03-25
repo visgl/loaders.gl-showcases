@@ -18,7 +18,7 @@ import {
   BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
-import { InsertPanel } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomItem } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
@@ -58,13 +58,6 @@ enum Tabs {
 
 interface TabProps {
   $active: boolean;
-}
-
-interface CustomItem {
-  name: string;
-  url: string;
-  token?: string;
-  group?: BaseMapGroup;
 }
 
 const Tab = styled.div<TabProps>`
@@ -213,11 +206,7 @@ export const LayersPanel = ({
     setShowExistedError(false);
   });
 
-  const handleInsertLayer = (layer: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
+  const handleInsertLayer = (layer: CustomItem) => {
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
@@ -274,11 +263,7 @@ export const LayersPanel = ({
   };
 
   // TODO Add loader to show webscene loading
-  const handleInsertScene = async (scene: {
-    name: string;
-    url: string;
-    token?: string;
-  }): Promise<void> => {
+  const handleInsertScene = async (scene: CustomItem): Promise<void> => {
     scene.url = convertUrlToRestFormat(scene.url);
 
     const existedScene = layers.some(
@@ -363,7 +348,7 @@ export const LayersPanel = ({
         mapUrl: map.url,
         name: map.name,
         token: map.token,
-        iconName: "Custom",
+        iconId: "Custom",
         custom: true,
         group: map.group,
       };

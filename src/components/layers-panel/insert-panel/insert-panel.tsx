@@ -27,15 +27,17 @@ import {
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
+export interface CustomItem {
+  name: string;
+  url: string;
+  token?: string;
+  group?: BaseMapGroup;
+}
+
 interface InsertLayerProps {
   title: string;
   groups?: string[];
-  onInsert: (object: {
-    name: string;
-    url: string;
-    token?: string;
-    group?: BaseMapGroup;
-  }) => Promise<void> | void;
+  onInsert: (object: CustomItem) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
 }

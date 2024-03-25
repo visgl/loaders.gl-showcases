@@ -1,7 +1,7 @@
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import {
   checkLayersPanel,
-  inserAndDeleteLayer,
+  insertAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 import { configurePage } from "../../utils/testing-utils/configure-tests";
 
@@ -134,7 +134,7 @@ describe("Viewer - Layers panel", () => {
   });
 
   it("Should insert and delete layers", async () => {
-    await inserAndDeleteLayer(
+    await insertAndDeleteLayer(
       page,
       "#viewer--layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"

@@ -1,4 +1,7 @@
-import type { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/src/types";
+import type {
+  BuildingSceneSublayer,
+  StatsInfo,
+} from "@loaders.gl/i3s/src/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import type { DefaultTheme } from "styled-components";
 import type { Vector3, Matrix4 } from "@math.gl/core";
@@ -202,8 +205,8 @@ export interface BaseMap {
   token?: string;
   custom?: boolean;
   group: BaseMapGroup;
-  iconName?: string;
-};
+  iconId: string;
+}
 
 export interface PositionsData {
   src: {

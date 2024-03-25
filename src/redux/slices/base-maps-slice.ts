@@ -10,7 +10,7 @@ export interface BaseMapsState {
 }
 const initialState: BaseMapsState = {
   baseMap: BASE_MAPS,
-  selectedBaseMap: BASE_MAPS[0].id,
+  selectedBaseMap: BASE_MAPS[0]?.id ?? "",
 };
 const baseMapsSlice = createSlice({
   name: "baseMaps",
@@ -38,7 +38,7 @@ const baseMapsSlice = createSlice({
         (keepMap) => keepMap.id !== idToDelete
       );
       if (state.selectedBaseMap === idToDelete) {
-        state.selectedBaseMap = state.baseMap[0].id;
+        state.selectedBaseMap = state.baseMap[0]?.id ?? "";
       }
     },
   },

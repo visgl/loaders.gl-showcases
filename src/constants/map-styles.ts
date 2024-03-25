@@ -32,7 +32,7 @@ export const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
     name: "Dark",
-    iconName: "MaplibreDark",
+    iconId: "MaplibreDark",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
@@ -40,7 +40,7 @@ export const BASE_MAPS: BaseMap[] = [
   {
     id: "Light",
     name: "Light",
-    iconName: "MaplibreLight",
+    iconId: "MaplibreLight",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
@@ -50,7 +50,7 @@ export const BASE_MAPS: BaseMap[] = [
     id: "Terrain",
     name: "Terrain",
     group: BaseMapGroup.Terrain,
-    iconName: "Terrain",
+    iconId: "Terrain",
     mapUrl: "",
   },
 
@@ -58,28 +58,28 @@ export const BASE_MAPS: BaseMap[] = [
     id: "gray-vector",
     name: "Light gray",
     group: BaseMapGroup.ArcGIS,
-    iconName: "ArcGisLightGray",
+    iconId: "ArcGisLightGray",
     mapUrl: "",
   },
   {
     id: "dark-gray-vector",
     name: "Dark gray",
     group: BaseMapGroup.ArcGIS,
-    iconName: "ArcGisDarkGray",
+    iconId: "ArcGisDarkGray",
     mapUrl: "",
   },
   {
     id: "streets-vector",
     name: "Streets",
     group: BaseMapGroup.ArcGIS,
-    iconName: "ArcGisStreets",
+    iconId: "ArcGisStreets",
     mapUrl: "",
   },
   {
     id: "streets-night-vector",
     name: "Streets(night)",
     group: BaseMapGroup.ArcGIS,
-    iconName: "ArcGisStreetsDark",
+    iconId: "ArcGisStreetsDark",
     mapUrl: "",
   },
 ];

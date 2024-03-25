@@ -34,6 +34,7 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
@@ -41,12 +42,14 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Dark",
@@ -60,6 +63,7 @@ describe("slice: base-maps", () => {
           mapUrl: "https://first-url.com",
           name: "first name",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         })
       )
     ).toEqual({
@@ -70,6 +74,7 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
@@ -77,18 +82,21 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
         {
           id: "first",
           mapUrl: "https://first-url.com",
           name: "first name",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
       ],
       selectedBaseMap: "first",
@@ -104,6 +112,7 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
@@ -111,12 +120,14 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Dark",
@@ -130,12 +141,14 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Light",
@@ -151,6 +164,7 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
@@ -158,12 +172,14 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Dark",
@@ -177,6 +193,7 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
           group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
@@ -184,12 +201,14 @@ describe("slice: base-maps", () => {
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
           group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
         {
           id: "Terrain",
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Light",
@@ -204,6 +223,7 @@ describe("slice: base-maps", () => {
           mapUrl: "",
           name: "Terrain",
           group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
         },
       ],
       selectedBaseMap: "Terrain",
@@ -230,6 +250,7 @@ describe("slice: base-maps", () => {
       mapUrl: "https://first-url.com",
       name: "first name",
       group: BaseMapGroup.Maplibre,
+      iconId: "Dark",
     };
     store.dispatch(addBaseMap(newItem));
     store.dispatch(setSelectedBaseMaps("Terrain"));

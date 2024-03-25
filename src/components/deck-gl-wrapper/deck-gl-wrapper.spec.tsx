@@ -1,7 +1,12 @@
 // Get tileset stub before Mocks. The order is important
 import { getTileset3d, getTile3d } from "../../test/tile-stub";
 import { getTilesetJson } from "../../test/tileset-header-stub";
-import { DragMode, TilesetType, TileColoredBy, BaseMapGroup } from "../../types";
+import {
+  DragMode,
+  TilesetType,
+  TileColoredBy,
+  BaseMapGroup,
+} from "../../types";
 
 import { act } from "@testing-library/react";
 import { DeckGlWrapper } from "./deck-gl-wrapper";
@@ -349,7 +354,15 @@ describe("Deck.gl I3S map component", () => {
 
   describe("Render TerrainLayer", () => {
     const store = setupStore();
-    store.dispatch(addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain", group: BaseMapGroup.Terrain }));
+    store.dispatch(
+      addBaseMap({
+        id: "Terrain",
+        mapUrl: "",
+        name: "Terrain",
+        group: BaseMapGroup.Terrain,
+        iconId: "Dark",
+      })
+    );
     it("Should render terrain", () => {
       callRender(renderWithProvider, undefined, store);
       expect(TerrainLayer).toHaveBeenCalled();
@@ -358,7 +371,13 @@ describe("Deck.gl I3S map component", () => {
     it("Should call onTerrainTileLoad", async () => {
       const store = setupStore();
       store.dispatch(
-        addBaseMap({ id: "Terrain", mapUrl: "", name: "Terrain", group: BaseMapGroup.Terrain })
+        addBaseMap({
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        })
       );
       const { rerender } = callRender(renderWithProvider, undefined, store);
       const { onTileLoad } = TerrainLayer.mock.lastCall[0];

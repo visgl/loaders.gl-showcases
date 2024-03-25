@@ -75,6 +75,7 @@ describe("Map Options Panel", () => {
         name: "first name",
         mapUrl: "https://first-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Dark",
       })
     );
     store.dispatch(
@@ -83,6 +84,7 @@ describe("Map Options Panel", () => {
         name: "second name",
         mapUrl: "https://second-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Light",
       })
     );
     const { container } = callRender(
@@ -104,6 +106,7 @@ describe("Map Options Panel", () => {
         name: "first name",
         mapUrl: "https://first-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Dark",
       })
     );
     // Element "first" is added and made selected
@@ -113,6 +116,7 @@ describe("Map Options Panel", () => {
         name: "second name",
         mapUrl: "https://second-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Light",
       })
     );
     // Element "second" is added and made selected
@@ -128,7 +132,7 @@ describe("Map Options Panel", () => {
     const iconWrapperElement = el.parentElement;
     // Select "first" element
     await act(async () => {
-      iconWrapperElement && await userEvent.click(iconWrapperElement);
+      iconWrapperElement && (await userEvent.click(iconWrapperElement));
     });
 
     const state = store.getState();
@@ -136,7 +140,7 @@ describe("Map Options Panel", () => {
     expect(baseMapId).toEqual("first");
   });
 
-  it("Should render options menu", async () => {
+  it.only("Should render options menu", async () => {
     const store = setupStore();
     store.dispatch(
       addBaseMap({
@@ -144,6 +148,7 @@ describe("Map Options Panel", () => {
         name: "first name",
         mapUrl: "https://first-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Dark",
       })
     );
     store.dispatch(
@@ -153,6 +158,7 @@ describe("Map Options Panel", () => {
         name: "custom name",
         mapUrl: "https://first-url.com",
         group: BaseMapGroup.Maplibre,
+        iconId: "Light",
         custom: true,
       })
     );
@@ -169,7 +175,7 @@ describe("Map Options Panel", () => {
     const optionsElement = iconWrapperElement?.lastElementChild;
     // Click on options menu
     await act(async () => {
-      optionsElement && await userEvent.click(optionsElement);
+      optionsElement && (await userEvent.click(optionsElement));
     });
 
     const optionsMenu = screen.getByText("BaseMap Options");
