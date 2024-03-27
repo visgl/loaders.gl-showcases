@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent } from "@testing-library/react";
-import { renderWithTheme } from "../../../../utils/testing-utils/render-with-theme";
+import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { InputDropdown } from "./input-dropdown";
 
 describe("Input Text", () => {
@@ -9,11 +9,7 @@ describe("Input Text", () => {
     const onChange = jest.fn();
 
     const dom = renderWithTheme(
-      <InputDropdown
-        id="input-dropdown"
-        value={["test1", "test2"]}
-        onChange={onChange}
-      />
+      <InputDropdown options={["test1", "test2"]} onChange={onChange} />
     );
     expect(dom).toBeDefined();
     if (!dom) {
@@ -33,9 +29,8 @@ describe("Input Text", () => {
 
     const dom = renderWithTheme(
       <InputDropdown
-        id="input-dropdown"
         label="Label Text"
-        value={["test1", "test2"]}
+        options={["test1", "test2"]}
         onChange={onChange}
       />
     );
@@ -61,11 +56,7 @@ describe("Input Text", () => {
       .mockImplementation((event) => (changedValue = event.target.value));
 
     const dom = renderWithTheme(
-      <InputDropdown
-        id="input-dropdown"
-        value={["test1", "test2"]}
-        onChange={onChange}
-      />
+      <InputDropdown options={["test1", "test2"]} onChange={onChange} />
     );
     expect(dom).toBeDefined();
     if (!dom) {
@@ -85,11 +76,7 @@ describe("Input Text", () => {
     const onChange = jest.fn();
 
     const dom = renderWithTheme(
-      <InputDropdown
-        id="input-dropdown"
-        value={["test1", "test2"]}
-        onChange={onChange}
-      />
+      <InputDropdown options={["test1", "test2"]} onChange={onChange} />
     );
     expect(dom).toBeDefined();
     if (!dom) {

@@ -18,7 +18,7 @@ import {
   BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
-import { InsertPanel, type CustomItem } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomLayerData } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
@@ -206,7 +206,7 @@ export const LayersPanel = ({
     setShowExistedError(false);
   });
 
-  const handleInsertLayer = (layer: CustomItem) => {
+  const handleInsertLayer = (layer: CustomLayerData) => {
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
@@ -263,7 +263,7 @@ export const LayersPanel = ({
   };
 
   // TODO Add loader to show webscene loading
-  const handleInsertScene = async (scene: CustomItem): Promise<void> => {
+  const handleInsertScene = async (scene: CustomLayerData): Promise<void> => {
     scene.url = convertUrlToRestFormat(scene.url);
 
     const existedScene = layers.some(
@@ -340,7 +340,7 @@ export const LayersPanel = ({
     }
   };
 
-  const handleInsertMap = (map: CustomItem): void => {
+  const handleInsertMap = (map: CustomLayerData): void => {
     const id = map.url.replace(/" "/g, "-");
     if (map.group !== undefined) {
       const newMap: BaseMap = {

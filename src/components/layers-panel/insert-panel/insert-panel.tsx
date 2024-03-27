@@ -14,7 +14,7 @@ import {
 } from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
 import { InputText } from "./input-text/input-text";
-import { InputDropdown } from "./input-dropdown/input-dropdown";
+import { InputDropdown } from "../../input-dropdown/input-dropdown";
 
 import { getTilesetType } from "../../../utils/url-utils";
 import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
@@ -27,7 +27,7 @@ import {
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
-export interface CustomItem {
+export interface CustomLayerData {
   name: string;
   url: string;
   token?: string;
@@ -37,7 +37,7 @@ export interface CustomItem {
 interface InsertLayerProps {
   title: string;
   groups?: string[];
-  onInsert: (object: CustomItem) => Promise<void> | void;
+  onInsert: (object: CustomLayerData) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
 }
@@ -116,7 +116,7 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const validateFields = async (): Promise<void> => {
+  const validateFields = (): void => {
     let isFormValid = true;
     const type = getTilesetType(url);
 
@@ -137,7 +137,7 @@ export const InsertPanel = ({
     }
 
     if (isFormValid) {
-      await onInsert({
+      void onInsert({
         name: name || layerNames[url]?.name,
         url,
         token,
@@ -155,7 +155,6 @@ export const InsertPanel = ({
         name.length > 0
       ) {
         setValidateInProgress(false);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         validateFields();
       } else if (!layerNames[url]) {
         void dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
@@ -167,7 +166,6 @@ export const InsertPanel = ({
     event.preventDefault();
 
     if (getTilesetType(url) !== TilesetType.I3S) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       validateFields();
     } else {
       setValidateInProgress(true);
@@ -212,9 +210,8 @@ export const InsertPanel = ({
         <InputsWrapper>
           {groups && (
             <InputDropdown
-              name="BasemapProvider"
               label="Basemap Provider"
-              value={groups}
+              options={groups}
               onChange={handleInputChange}
             ></InputDropdown>
           )}

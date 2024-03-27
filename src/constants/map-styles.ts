@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import CustomMap from "../../public/icons/custom-map.svg";
 
 import MaplibreDarkMap from "../../public/icons/basemaps/maplibre-dark.png";
@@ -12,13 +13,13 @@ import ArcGisStreetsMap from "../../public/icons/basemaps/arcgis-streets.png";
 import { type BaseMap, BaseMapGroup } from "../types";
 
 interface BasemapIcon {
-  Icon?: any;
+  Icon?: FC;
   icon?: string;
 }
 
 export const basemapIcons: Record<string, BasemapIcon> = {
-  MaplibreDark: { icon: MaplibreDarkMap },
-  MaplibreLight: { icon: MaplibreLightMap },
+  Dark: { icon: MaplibreDarkMap },
+  Light: { icon: MaplibreLightMap },
   Terrain: { icon: TerrainMap },
   ArcGisDarkGray: { icon: ArcGisDarkGrayMap },
   ArcGisLightGray: { icon: ArcGisLightGrayMap },
@@ -32,7 +33,7 @@ export const BASE_MAPS: BaseMap[] = [
   {
     id: "Dark",
     name: "Dark",
-    iconId: "MaplibreDark",
+    iconId: "Dark",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
@@ -40,7 +41,7 @@ export const BASE_MAPS: BaseMap[] = [
   {
     id: "Light",
     name: "Light",
-    iconId: "MaplibreLight",
+    iconId: "Light",
     group: BaseMapGroup.Maplibre,
     mapUrl:
       "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",

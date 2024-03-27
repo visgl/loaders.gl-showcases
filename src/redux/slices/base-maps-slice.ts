@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type BaseMap } from "../../types";
 import { BASE_MAPS } from "../../constants/map-styles";
 import { type RootState } from "../store";
+import { createSelector } from "reselect";
 
 // Define a type for the slice state
 export interface BaseMapsState {
@@ -44,24 +45,26 @@ const baseMapsSlice = createSlice({
   },
 });
 
-export const selectSelectedBaseMap = (state: RootState): BaseMap | null => {
-  const selectedId = state.baseMaps.selectedBaseMap;
-  const el = state.baseMaps.baseMap.find((item) => item.id === selectedId);
-  return el ?? null;
-};
+export const selectSelectedBaseMap = createSelector(
+  [
+    (state: RootState) => state.baseMaps.baseMap,
+    (state: RootState) => state.baseMaps.selectedBaseMap,
+  ],
+  (maps, selectedId): BaseMap | null => {
+    const el = maps.find((item) => item.id === selectedId);
+    return el ?? null;
+  }
+);
 
-export const selectBaseMaps = (state: RootState): BaseMap[] =>
-  state.baseMaps.baseMap;
-
-export const selectBaseMapsByGroup =
-  (group?: string) =>
-    (state: RootState): BaseMap[] => {
-      const maps = state.baseMaps.baseMap;
-      return group ? maps.filter((item) => item.group === group) : maps;
-    };
-
-export const selectSelectedBaseMapId = (state: RootState): string =>
-  state.baseMaps.selectedBaseMap;
+export const selectBaseMapsByGroup = createSelector(
+  [
+    (state: RootState) => state.baseMaps.baseMap,
+    (_: RootState, group: string) => group,
+  ],
+  (maps, group): BaseMap[] => {
+    return group ? maps.filter((item) => item.group === group) : maps;
+  }
+);
 
 export const { setInitialBaseMaps } = baseMapsSlice.actions;
 export const { addBaseMap } = baseMapsSlice.actions;

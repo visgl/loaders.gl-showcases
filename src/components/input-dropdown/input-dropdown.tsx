@@ -1,18 +1,7 @@
-import { type ChangeEvent, useMemo } from "react";
-import styled from "styled-components";
-import ChevronIcon from "../../../../../public/icons/chevron.png";
-
-interface InputProps {
-  id?: string;
-  name?: string;
-  label?: string;
-  value: string[];
-  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-}
-
-interface LabelProps {
-  htmlFor: string;
-}
+import { type ChangeEvent, type FC, useId } from "react";
+import styled, { useTheme } from "styled-components";
+import { ExpandIcon } from "../expand-icon/expand-icon";
+import { CollapseDirection, ExpandState } from "../../types";
 
 const InputWrapper = styled.div`
   display: flex;
@@ -21,12 +10,10 @@ const InputWrapper = styled.div`
 `;
 
 const SelectDiv = styled.div`
-  display: flex;
   position: relative;
   width: 100%;
   height: 46px;
   border-radius: 8px;
-  outline: none;
   background: ${({ theme }) => theme.colors.mainHiglightColor};
   &:hover {
     background: ${({ theme }) => theme.colors.mainDimColor};
@@ -34,28 +21,23 @@ const SelectDiv = styled.div`
   magrin: 0;
 `;
 
-const Input = styled.select<{ arrowUrl: string }>`
-  // Width is calculated as 100% - horizontal padding.
-  position: absolute;
+const Input = styled.select`
   width: 100%;
   padding: 13px 12px 13px 16px;
   border-radius: 8px;
-  outline: none;
   color: ${({ theme }) => theme.colors.secondaryFontColor};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColor};
 
   &:hover {
     border: 1px solid ${({ theme }) => theme.colors.mainDimColor};
+    cursor: pointer;
   }
   &:focus {
     color: ${({ theme }) => theme.colors.fontColor};
+    outline: none;
   }
-  appearance: none !important;
-  background: transparent !important;
-  background-image: url(${(props) => props.arrowUrl}) !important;
-  background-repeat: no-repeat !important;
-  background-position-x: calc(100% - 12px) !important;
-  background-position-y: center !important;
+  appearance: none;
+  background: transparent;
   magrin: 0;
 `;
 
@@ -63,17 +45,24 @@ const SelectOption = styled.option`
   height: 20px;
   background: ${({ theme }) => theme.colors.mainHiglightColor};
   &:hover {
-    background-color: ${({ theme }) => theme.colors.mainDimColor} !important;
+    background-color: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0 0 10px 100px green inset;
   }
   &:checked {
-    background-color: ${({ theme }) => theme.colors.mainDimColor} !important;
+    background-color: ${({ theme }) => theme.colors.mainDimColor};
     box-shadow: 0 0 10px 100px green inset;
   }
   box-shadow: 0 0 10px 100px green inset;
 `;
 
-const Label = styled.label<LabelProps>`
+const ExpandIconWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  right: 12px;
+`;
+
+const Label = styled.label`
   display: block;
   font-style: normal;
   font-weight: 500;
@@ -83,28 +72,39 @@ const Label = styled.label<LabelProps>`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
-export const InputDropdown = ({
-  id,
+interface InputDropdownProps {
+  label?: string;
+  options: string[];
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+}
+
+export const InputDropdown: FC<InputDropdownProps> = ({
   label,
-  value,
+  options,
   onChange,
-  name,
   ...rest
-}: InputProps) => {
-  const inputId = useMemo(() => id ?? name ?? "select-option", [id, name]);
+}) => {
+  const inputId = useId();
+  const theme = useTheme();
   return (
     <InputWrapper>
       {label && <Label htmlFor={inputId}>{label}</Label>}
       <SelectDiv>
+        <ExpandIconWrapper>
+          <ExpandIcon
+            expandState={ExpandState.expanded}
+            collapseDirection={CollapseDirection.bottom}
+            fillExpanded={theme.colors.dropdownArrow}
+            onClick={() => {}}
+          />
+        </ExpandIconWrapper>
         <Input
-          disabled={value.length <= 1}
+          disabled={options.length <= 1}
           id={inputId}
-          arrowUrl={ChevronIcon}
-          name={name}
           onChange={onChange}
           {...rest}
         >
-          {value.map((item) => (
+          {options.map((item) => (
             <SelectOption value={item} key={item}>
               {item}
             </SelectOption>

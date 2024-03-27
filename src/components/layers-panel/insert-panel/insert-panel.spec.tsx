@@ -10,7 +10,11 @@ import "@testing-library/jest-dom";
 const onInsertMock = jest.fn();
 const onCancelMock = jest.fn();
 
-const callRender = (renderFunc, props = {}, store = setupStore()): RenderResult => {
+const callRender = (
+  renderFunc,
+  props = {},
+  store = setupStore()
+): RenderResult => {
   return renderFunc(
     <InsertPanel
       title={"Test Title"}

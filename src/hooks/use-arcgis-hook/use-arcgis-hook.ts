@@ -68,7 +68,7 @@ export function useArcgis(
         const sceneView = new SceneView({
           container: mapContainer.current,
           map: new ArcGISMap({
-            basemap: selectedBaseMapId, // ""
+            basemap: selectedBaseMapId,
           }),
           environment: {
             atmosphereEnabled: false,

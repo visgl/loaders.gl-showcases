@@ -1,8 +1,8 @@
 import { setupStore } from "../store";
 import reducer, {
   type BaseMapsState,
-  selectBaseMaps,
-  selectSelectedBaseMapId,
+  selectBaseMapsByGroup,
+  selectSelectedBaseMap,
   setInitialBaseMaps,
   addBaseMap,
   setSelectedBaseMaps,
@@ -235,11 +235,12 @@ describe("slice: base-maps", () => {
     });
   });
 
-  it("Selectors should return initial value", () => {
+  it("Selectors should return initially selected value", () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectSelectedBaseMapId(state)).toEqual("Dark");
-    expect(selectBaseMaps(state)).toEqual(BASE_MAPS);
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Dark");
+    expect(selectBaseMapsByGroup(state, "")).toEqual(BASE_MAPS);
   });
 
   it("Selectors should return updated value", () => {
@@ -255,16 +256,42 @@ describe("slice: base-maps", () => {
     store.dispatch(addBaseMap(newItem));
     store.dispatch(setSelectedBaseMaps("Terrain"));
     const state = store.getState();
-    expect(selectSelectedBaseMapId(state)).toEqual("Terrain");
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Terrain");
 
     const expectedArray = BASE_MAPS.filter((item) => item.id !== "Dark");
     expectedArray.push(newItem);
 
-    expect(selectBaseMaps(state)).toEqual(expectedArray);
+    expect(selectBaseMapsByGroup(state, "")).toEqual(expectedArray);
     // set wrong id of basemap
     store.dispatch(setSelectedBaseMaps("Dark"));
     const newState = store.getState();
     // it doesn't use wrong id and keeps previous one
-    expect(selectSelectedBaseMapId(newState)).toEqual("Terrain");
+    expect(selectSelectedBaseMap(newState)?.id).toEqual("Terrain");
+  });
+
+  it("Selector should return value selected by group", () => {
+    const store = setupStore();
+    const state = store.getState();
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Dark");
+    expect(selectBaseMapsByGroup(state, BaseMapGroup.Maplibre)).toEqual([
+      {
+        id: "Dark",
+        mapUrl:
+          "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+        name: "Dark",
+        group: BaseMapGroup.Maplibre,
+        iconId: "Dark",
+      },
+      {
+        id: "Light",
+        mapUrl:
+          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+        name: "Light",
+        group: BaseMapGroup.Maplibre,
+        iconId: "Light",
+      },
+    ]);
   });
 });

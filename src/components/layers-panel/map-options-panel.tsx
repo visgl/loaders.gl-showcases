@@ -1,13 +1,8 @@
-import { useState } from "react";
 import styled from "styled-components";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import { DeleteConfirmation } from "./delete-confirmation";
 import { ButtonSize } from "../../types";
-import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
-import { useAppDispatch } from "../../redux/hooks";
-import { deleteBaseMaps } from "../../redux/slices/base-maps-slice";
-import { BasemapListPanel } from "../basemap-list-panel/basemap-list-panel";
+import { BasemapListPanel } from "../layers-panel/basemap-list-panel/basemap-list-panel";
 
 interface MapOptionPanelProps {
   insertBaseMap: () => void;
@@ -39,49 +34,13 @@ const InsertButtons = styled.div`
 `;
 
 export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
-  const dispatch = useAppDispatch();
-  const [optionsMapId, setOptionsMapId] = useState<string>("");
-  const [mapToDeleteId, setMapToDeleteId] = useState<string>("");
-  const [mapToDeleteGroup, setMapToDeleteGroup] = useState<string>("");
-
   return (
     <MapOptionsContainer id="map-options-container">
       <MapOptionTitle>Base Map</MapOptionTitle>
       {["Maplibre", "ArcGIS", "Terrain"].map((mapGroup) => {
         return (
           <>
-            <BasemapListPanel
-              group={mapGroup}
-              optionsMapId={optionsMapId}
-              onOptionsClick={(id) => {
-                setOptionsMapId(id);
-                setMapToDeleteGroup(mapGroup);
-              }}
-              onOptionsClickOutside={() => {
-                setOptionsMapId("");
-              }}
-              optionsContent={
-                <BaseMapOptionsMenu
-                  onDeleteBasemap={() => {
-                    setMapToDeleteId(optionsMapId);
-                    setOptionsMapId("");
-                  }}
-                />
-              }
-            />
-            {mapToDeleteId && mapToDeleteGroup === mapGroup && (
-              <DeleteConfirmation
-                onKeepHandler={() => {
-                  setMapToDeleteId("");
-                }}
-                onDeleteHandler={() => {
-                  dispatch(deleteBaseMaps(mapToDeleteId));
-                  setMapToDeleteId("");
-                }}
-              >
-                Delete map?
-              </DeleteConfirmation>
-            )}
+            <BasemapListPanel group={mapGroup} />
           </>
         );
       })}
