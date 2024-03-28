@@ -135,7 +135,7 @@ const THEMES: AppThemes = {
       switchCheckedBackgroundHovered: dim_brand_tertinary,
       bullet: hilite_canvas_primary,
       dropdownArrow: color_brand_primary,
-      customIconBackground: hilite_canvas_secondary,
+      customIconBackground: dim_canvas_secondary,
     },
     name: Theme.Light,
   },
