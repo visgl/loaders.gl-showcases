@@ -3,10 +3,6 @@ import styled from "styled-components";
 import { color_accent_primary } from "../../../constants/colors";
 import DeleteIcon from "../../../../public/icons/delete.svg";
 
-interface BaseMapOptionsMenuProps {
-  onDeleteBasemap: () => void;
-}
-
 const MapSettingsItem = styled.div<{
   customColor?: string;
   opacity?: number;
@@ -16,8 +12,7 @@ const MapSettingsItem = styled.div<{
   font-size: 16px;
   line-height: 19px;
   padding: 10px 0px;
-  color: ${({ theme, customColor }) =>
-    customColor ?? theme.colors.fontColor};
+  color: ${({ theme, customColor }) => customColor ?? theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
   display: flex;
   gap: 10px;
@@ -41,19 +36,28 @@ const SettingsMenuContainer = styled.div`
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
+interface BaseMapOptionsMenuProps {
+  onDeleteBasemap: () => void;
+}
+
 export const BaseMapOptionsMenu = ({
   onDeleteBasemap,
-}: BaseMapOptionsMenuProps) => (
-  <SettingsMenuContainer>
-    <MapSettingsItem
-      customColor={color_accent_primary}
-      opacity={0.8}
-      onClick={onDeleteBasemap}
-    >
-      <MapSettingsIcon>
-        <DeleteIcon fill={color_accent_primary} />
-      </MapSettingsIcon>
-      Delete map
-    </MapSettingsItem>
-  </SettingsMenuContainer>
-);
+}: BaseMapOptionsMenuProps) => {
+  return (
+    <SettingsMenuContainer>
+      <MapSettingsItem
+        customColor={color_accent_primary}
+        opacity={0.8}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDeleteBasemap();
+        }}
+      >
+        <MapSettingsIcon>
+          <DeleteIcon fill={color_accent_primary} />
+        </MapSettingsIcon>
+        Delete map
+      </MapSettingsItem>
+    </SettingsMenuContainer>
+  );
+};

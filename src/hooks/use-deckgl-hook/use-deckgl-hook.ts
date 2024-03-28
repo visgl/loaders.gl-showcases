@@ -25,10 +25,7 @@ import {
   selectBoundingVolumeColorMode,
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
-import {
-  selectBaseMaps,
-  selectSelectedBaseMapId,
-} from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 import { selectViewState } from "../../redux/slices/view-state-slice";
 import type { Tileset3D } from "@loaders.gl/tiles";
 
@@ -51,9 +48,7 @@ export function useDeckGl(
   const tileColorMode = useAppSelector(selectTileColorMode);
   const boundingVolumeColorMode = useAppSelector(selectBoundingVolumeColorMode);
   const wireframe = useAppSelector(selectWireframe);
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const selectedBaseMap = baseMaps.find((map) => map.id === selectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const showTerrain = selectedBaseMap?.id === "Terrain";
   const mapStyle = selectedBaseMap?.mapUrl;
   const boundingVolume = useAppSelector(selectBoundingVolume);

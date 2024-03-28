@@ -4,6 +4,7 @@ import { addIconItem } from "../../redux/slices/icon-list-slice";
 import {
   type IIconItem,
   IconListSetName,
+  BaseMapGroup,
   ButtonSize,
   FileType,
   type FileUploaded,
@@ -18,7 +19,6 @@ import { IconListPanel } from "../icon-list-panel/icon-list-panel";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { UploadPanel } from "../upload-panel/upload-panel";
-
 import { useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import {
@@ -35,7 +35,7 @@ import {
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 
 export const TEXTURE_ICON_SIZE = 54;
 
@@ -95,8 +95,8 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const dispatch = useAppDispatch();
   const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const minimapDisabled = selectedBaseMapId === "ArcGis";
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
+  const minimapDisabled = selectedBaseMap?.group === BaseMapGroup.ArcGIS;
   if (minimapDisabled && debugOptions.minimap) {
     dispatch(setDebugOptions({ minimap: false }));
   }

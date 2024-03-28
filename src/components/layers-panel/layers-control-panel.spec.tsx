@@ -54,7 +54,7 @@ beforeAll(() => {
     <div onClick={onClick}>{children}</div>
   ));
   DeleteConfirmationMock.mockImplementation(() => (
-    <div>Delete Conformation</div>
+    <div>Delete Confirmation</div>
   ));
   LayerOptionsMenuMock.mockImplementation(() => <div>Layers Options</div>);
 });
@@ -150,7 +150,7 @@ describe("Layers Control Panel", () => {
     });
   });
 
-  it("Should render conformation panel", () => {
+  it("Should render confirmation panel", () => {
     callRender(renderWithThemeProviders, {
       layers: [
         { id: "first", name: "first name", mapUrl: "https://first-url.com" },
@@ -159,7 +159,7 @@ describe("Layers Control Panel", () => {
       ],
     });
 
-    expect(screen.getByText("Delete Conformation")).toBeInTheDocument();
+    expect(screen.getByText("Delete Confirmation")).toBeInTheDocument();
 
     const { onDeleteHandler, onKeepHandler } =
       DeleteConfirmationMock.mock.lastCall[0];
