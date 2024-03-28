@@ -141,7 +141,6 @@ module.exports = (env) => {
         },
         {
           test: /\.ts(x?)$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: "ts-loader",
@@ -150,6 +149,7 @@ module.exports = (env) => {
                 getCustomTransformers: () => ({
                   before: [styledComponentsTransformer],
                 }),
+                allowTsInNodeModules: true,
               },
             },
           ],

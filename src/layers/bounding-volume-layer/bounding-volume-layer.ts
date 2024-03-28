@@ -26,7 +26,7 @@ const defaultProps = {
   },
 };
 
-export default class BoundingVolumeLayer extends CompositeLayer {
+export class BoundingVolumeLayer extends CompositeLayer {
   props: any;
   state: any;
   static layerName: string;

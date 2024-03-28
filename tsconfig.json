@@ -1,4 +1,11 @@
 {
   "extends": "./tsconfig.eslint.json",
+  "include": [
+    "./jest-setup.ts",
+    "src",
+    "index.d.ts",
+    "styled.d.ts",
+    "node_modules/@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer.ts"
+  ],
   "exclude": ["src/**/*.spec.ts", "src/**/*.spec.tsx"]
 }
