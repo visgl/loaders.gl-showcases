@@ -1,13 +1,13 @@
-import styled, { css } from "styled-components";
+import styled, { css, useTheme } from "styled-components";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 import { OptionsIcon, Panels } from "../../common";
 import {
   selectSelectedBaseMap,
-  setSelectedBaseMaps,
+  setSelectedBaseMap,
   selectBaseMapsByGroup,
-  deleteBaseMaps,
+  deleteBaseMap,
 } from "../../../redux/slices/base-maps-slice";
 import { basemapIcons } from "../../../constants/map-styles";
 import { Popover } from "react-tiny-popover";
@@ -85,6 +85,7 @@ const BasemapCustomIcon = styled.div`
   margin: 0;
   border-width: 0;
   border-radius: 8px;
+  background-color: ${({ theme }) => theme.colors.customIconBackground};
 `;
 
 const BasemapIcon = styled.div<{
@@ -144,6 +145,7 @@ interface BasemapListPanelProps {
 }
 
 export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const baseMapArray = useAppSelector((state) =>
@@ -157,18 +159,18 @@ export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
   return (
     <>
       <BasemapContainer>
-        <BasemapTitle>{group}</BasemapTitle>
+        {baseMapArray.length && <BasemapTitle>{group}</BasemapTitle>}
         <BasemapPanel>
           {baseMapArray.map((item) => {
             const basemapIcon = basemapIcons[item.iconId];
-            const iconUrl = basemapIcon?.icon;
-            const IconComponent = basemapIcon?.Icon;
+            const iconUrl = basemapIcon?.iconUrl;
+            const IconComponent = basemapIcon?.IconComponent;
             return (
               <BasemapImageWrapper
                 key={item.id}
                 active={baseMapPicked?.id === item.id}
                 onClick={() => {
-                  dispatch(setSelectedBaseMaps(item.id));
+                  dispatch(setSelectedBaseMap(item.id));
                 }}
               >
                 {iconUrl && (
@@ -177,7 +179,7 @@ export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
 
                 {IconComponent && (
                   <BasemapCustomIcon key={`${item.id}`}>
-                    <IconComponent />
+                    <IconComponent fill={theme.colors.buttonDimIconColor} />
                   </BasemapCustomIcon>
                 )}
 
@@ -197,7 +199,9 @@ export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
                       />
                     }
                     containerStyle={{ zIndex: "2" }}
-                    onClickOutside={() => { setOptionsMapId(""); }}
+                    onClickOutside={() => {
+                      setOptionsMapId("");
+                    }}
                   >
                     <OptionsButton
                       onClick={(event) => {
@@ -220,7 +224,7 @@ export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
             setMapToDeleteId("");
           }}
           onDeleteHandler={() => {
-            dispatch(deleteBaseMaps(mapToDeleteId));
+            dispatch(deleteBaseMap(mapToDeleteId));
             setMapToDeleteId("");
           }}
         >

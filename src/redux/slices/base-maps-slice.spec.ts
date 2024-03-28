@@ -5,8 +5,8 @@ import reducer, {
   selectSelectedBaseMap,
   setInitialBaseMaps,
   addBaseMap,
-  setSelectedBaseMaps,
-  deleteBaseMaps,
+  setSelectedBaseMap,
+  deleteBaseMap,
 } from "./base-maps-slice";
 import { BaseMapGroup } from "../../types";
 import { BASE_MAPS } from "../../constants/map-styles";
@@ -20,14 +20,14 @@ jest.mock("@loaders.gl/i3s", () => {
 describe("slice: base-maps", () => {
   it("Reducer should return the initial state", () => {
     expect(reducer(undefined, { type: "none" })).toEqual({
-      baseMap: BASE_MAPS,
-      selectedBaseMap: "Dark",
+      basemaps: BASE_MAPS,
+      selectedBaseMapId: "Dark",
     });
   });
 
   it("Reducer setBaseMaps should add base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
@@ -52,7 +52,7 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
     expect(
@@ -67,7 +67,7 @@ describe("slice: base-maps", () => {
         })
       )
     ).toEqual({
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
@@ -99,13 +99,13 @@ describe("slice: base-maps", () => {
           iconId: "Dark",
         },
       ],
-      selectedBaseMap: "first",
+      selectedBaseMapId: "first",
     });
   });
 
-  it("Reducer deleteBaseMaps should remove base map", () => {
+  it("Reducer deleteBaseMap should remove base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
@@ -130,11 +130,11 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
-    expect(reducer(previousState, deleteBaseMaps("Dark"))).toEqual({
-      baseMap: [
+    expect(reducer(previousState, deleteBaseMap("Dark"))).toEqual({
+      basemaps: [
         {
           id: "Light",
           mapUrl:
@@ -151,13 +151,13 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Light",
+      selectedBaseMapId: "Light",
     });
   });
 
-  it("Reducer setSelectedBaseMaps should update selected base map", () => {
+  it("Reducer setSelectedBaseMap should update selected base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
@@ -182,11 +182,11 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
-    expect(reducer(previousState, setSelectedBaseMaps("Light"))).toEqual({
-      baseMap: [
+    expect(reducer(previousState, setSelectedBaseMap("Light"))).toEqual({
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
@@ -211,13 +211,13 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Light",
+      selectedBaseMapId: "Light",
     });
   });
 
   it("Reducer setInitialBaseMaps should return initial base maps", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Terrain",
           mapUrl: "",
@@ -226,12 +226,12 @@ describe("slice: base-maps", () => {
           iconId: "Terrain",
         },
       ],
-      selectedBaseMap: "Terrain",
+      selectedBaseMapId: "Terrain",
     };
 
     expect(reducer(previousState, setInitialBaseMaps())).toEqual({
-      baseMap: BASE_MAPS,
-      selectedBaseMap: "Dark",
+      basemaps: BASE_MAPS,
+      selectedBaseMapId: "Dark",
     });
   });
 
@@ -245,7 +245,7 @@ describe("slice: base-maps", () => {
 
   it("Selectors should return updated value", () => {
     const store = setupStore();
-    store.dispatch(deleteBaseMaps("Dark"));
+    store.dispatch(deleteBaseMap("Dark"));
     const newItem = {
       id: "first",
       mapUrl: "https://first-url.com",
@@ -254,7 +254,7 @@ describe("slice: base-maps", () => {
       iconId: "Dark",
     };
     store.dispatch(addBaseMap(newItem));
-    store.dispatch(setSelectedBaseMaps("Terrain"));
+    store.dispatch(setSelectedBaseMap("Terrain"));
     const state = store.getState();
     const mapId = selectSelectedBaseMap(state)?.id;
     expect(mapId).toEqual("Terrain");
@@ -264,7 +264,7 @@ describe("slice: base-maps", () => {
 
     expect(selectBaseMapsByGroup(state, "")).toEqual(expectedArray);
     // set wrong id of basemap
-    store.dispatch(setSelectedBaseMaps("Dark"));
+    store.dispatch(setSelectedBaseMap("Dark"));
     const newState = store.getState();
     // it doesn't use wrong id and keeps previous one
     expect(selectSelectedBaseMap(newState)?.id).toEqual("Terrain");

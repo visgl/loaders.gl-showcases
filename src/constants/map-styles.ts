@@ -13,20 +13,20 @@ import ArcGisStreetsMap from "../../public/icons/basemaps/arcgis-streets.png";
 import { type BaseMap, BaseMapGroup } from "../types";
 
 interface BasemapIcon {
-  Icon?: FC;
-  icon?: string;
+  IconComponent?: FC<{ fill: string }>;
+  iconUrl?: string;
 }
 
 export const basemapIcons: Record<string, BasemapIcon> = {
-  Dark: { icon: MaplibreDarkMap },
-  Light: { icon: MaplibreLightMap },
-  Terrain: { icon: TerrainMap },
-  ArcGisDarkGray: { icon: ArcGisDarkGrayMap },
-  ArcGisLightGray: { icon: ArcGisLightGrayMap },
-  ArcGisStreetsDark: { icon: ArcGisStreetsDarkMap },
-  ArcGisStreets: { icon: ArcGisStreetsMap },
+  Dark: { iconUrl: MaplibreDarkMap },
+  Light: { iconUrl: MaplibreLightMap },
+  Terrain: { iconUrl: TerrainMap },
+  ArcGisDarkGray: { iconUrl: ArcGisDarkGrayMap },
+  ArcGisLightGray: { iconUrl: ArcGisLightGrayMap },
+  ArcGisStreetsDark: { iconUrl: ArcGisStreetsDarkMap },
+  ArcGisStreets: { iconUrl: ArcGisStreetsMap },
 
-  Custom: { Icon: CustomMap },
+  Custom: { IconComponent: CustomMap },
 };
 
 export const BASE_MAPS: BaseMap[] = [

@@ -408,6 +408,7 @@ export const LayersPanel = ({
             )}
             {tab === Tabs.MapOptions && (
               <MapOptionPanel
+                pageId={pageId}
                 insertBaseMap={() => {
                   setShowInsertMapPanel(true);
                 }}

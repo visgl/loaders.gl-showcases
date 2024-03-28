@@ -1,12 +1,8 @@
 import styled from "styled-components";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import { ButtonSize } from "../../types";
+import { ButtonSize, PageId, BaseMapGroup } from "../../types";
 import { BasemapListPanel } from "../layers-panel/basemap-list-panel/basemap-list-panel";
-
-interface MapOptionPanelProps {
-  insertBaseMap: () => void;
-}
 
 const MapOptionTitle = styled.div`
   width: 100;
@@ -33,17 +29,26 @@ const InsertButtons = styled.div`
   row-gap: 8px;
 `;
 
-export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
+interface MapOptionPanelProps {
+  pageId: PageId;
+  insertBaseMap: () => void;
+}
+
+export const MapOptionPanel = ({
+  pageId,
+  insertBaseMap,
+}: MapOptionPanelProps) => {
   return (
     <MapOptionsContainer id="map-options-container">
       <MapOptionTitle>Base Map</MapOptionTitle>
-      {["Maplibre", "ArcGIS", "Terrain"].map((mapGroup) => {
-        return (
-          <>
-            <BasemapListPanel group={mapGroup} />
-          </>
-        );
-      })}
+
+      <BasemapListPanel group={BaseMapGroup.Maplibre} />
+      {pageId !== PageId.comparison && (
+        <BasemapListPanel group={BaseMapGroup.ArcGIS} />
+      )}
+      {pageId !== PageId.comparison && (
+        <BasemapListPanel group={BaseMapGroup.Terrain} />
+      )}
 
       <InsertButtons>
         <ActionIconButton
