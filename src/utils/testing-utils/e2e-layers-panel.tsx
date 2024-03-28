@@ -55,17 +55,17 @@ export const checkLayersPanel = async (
   // Header
   await expect(panel).toMatchTextContent("Base Map");
 
-  // Base maps list
-  let names = [
-    "Dark",
-    "Light",
+  // Basemap list
+  let names = ["Dark", "Light"];
+  const namesForViewDebug = [
     "Light gray",
     "Dark gray",
     "Streets",
     "Streets(night)",
+    "Terrain",
   ];
   if (appMode !== PageId.comparison) {
-    names = [...names, "Terrain"];
+    names = [...names, ...namesForViewDebug];
   }
   let successCount = 0;
   for (const text of names) {
