@@ -2,6 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { MapOptionPanel } from "./map-options-panel";
+import { PageId } from "../../types";
 
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
 import { setupStore } from "../../redux/store";
@@ -20,7 +21,11 @@ const onInsertBaseMapMock = jest.fn();
 
 const callRender = (renderFunc, props = {}, store = setupStore()) => {
   return renderFunc(
-    <MapOptionPanel insertBaseMap={onInsertBaseMapMock} {...props} />,
+    <MapOptionPanel
+      pageId={PageId.debug}
+      insertBaseMap={onInsertBaseMapMock}
+      {...props}
+    />,
     store
   );
 };

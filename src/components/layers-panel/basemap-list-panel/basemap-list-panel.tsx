@@ -159,7 +159,7 @@ export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
   return (
     <>
       <BasemapContainer>
-        {baseMapArray.length && <BasemapTitle>{group}</BasemapTitle>}
+        <BasemapTitle>{group}</BasemapTitle>
         <BasemapPanel>
           {baseMapArray.map((item) => {
             const basemapIcon = basemapIcons[item.iconId];
