@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { fireEvent } from "@testing-library/react";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { InputDropdown } from "./input-dropdown";

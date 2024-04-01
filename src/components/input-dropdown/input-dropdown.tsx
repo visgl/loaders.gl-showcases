@@ -23,7 +23,7 @@ const SelectDiv = styled.div`
 
 const Input = styled.select`
   width: 100%;
-  padding: 13px 12px 13px 16px;
+  padding: 13px 30px 13px 16px;
   border-radius: 8px;
   color: ${({ theme }) => theme.colors.secondaryFontColor};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColor};
@@ -39,6 +39,9 @@ const Input = styled.select`
   appearance: none;
   background: transparent;
   magrin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SelectOption = styled.option`

@@ -1,5 +1,5 @@
 import styled, { css, useTheme } from "styled-components";
-import { useState } from "react";
+import { useState, type FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 import { OptionsIcon, Panels } from "../../common";
@@ -141,10 +141,9 @@ const OptionsButton = styled.div`
 
 interface BasemapListPanelProps {
   group: string;
-  onOptionsClickOutside?: () => void;
 }
 
-export const BasemapListPanel = ({ group }: BasemapListPanelProps) => {
+export const BasemapListPanel: FC<BasemapListPanelProps> = ({ group }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
 

@@ -384,7 +384,7 @@ export const LayersPanel = ({
           <CloseButtonWrapper>
             <CloseButton id="layers-panel-close-button" onClick={onClose} />
           </CloseButtonWrapper>
-          <PanelHorizontalLine $bottom={16} />
+          <PanelHorizontalLine />
           <PanelContent>
             {tab === Tabs.Layers && (
               <LayersControlPanel
