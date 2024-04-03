@@ -283,6 +283,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         if (bookmarks.length) {
           onSelectBookmarkHandler(bookmarks[0].id);
         }
+        setPreventTransitions(true);
         return CompareButtonMode.Comparing;
       }
       loadManagerRef.current.stopLoading();
