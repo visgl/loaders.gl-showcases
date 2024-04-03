@@ -19,6 +19,7 @@ import {
   PageId,
   type TilesetMetadata,
   type LayoutProps,
+  BaseMapGroup,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -61,7 +62,7 @@ import { useSelector } from "react-redux";
 import { type RootState } from "../../../redux/store";
 import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
 import { selectViewState } from "../../../redux/slices/view-state-slice";
-import { selectSelectedBaseMapId } from "../../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../../redux/slices/base-maps-slice";
 import { ArcgisWrapper } from "../../../components/arcgis-wrapper/arcgis-wrapper";
 
 const Container = styled.div<LayoutProps>`
@@ -138,9 +139,11 @@ export const ComparisonSide = ({
       ? selectLeftSublayers
       : selectRightSublayers
   );
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const MapWrapper =
-    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+    selectedBaseMap?.group === BaseMapGroup.ArcGIS
+      ? ArcgisWrapper
+      : DeckGlWrapper;
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =

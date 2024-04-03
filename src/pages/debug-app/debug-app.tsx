@@ -15,6 +15,7 @@ import {
   type MinimapPosition,
   type TileSelectedColor,
   PageId,
+  BaseMapGroup,
   type TilesetMetadata,
 } from "../../types";
 
@@ -22,7 +23,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // eslint-disable-next-line react/no-deprecated
 import { render } from "react-dom";
 import { lumaStats } from "@luma.gl/core";
-import { type PickingInfo, type InteractionStateChange, type ViewState } from "@deck.gl/core";
+import {
+  type PickingInfo,
+  type InteractionStateChange,
+  type ViewState,
+} from "@deck.gl/core";
 
 import { v4 as uuidv4 } from "uuid";
 import { type Stats } from "@probe.gl/stats";
@@ -82,14 +87,20 @@ import {
 } from "../../redux/slices/flattened-sublayers-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
-import { setColorsByAttrubute, setFiltersByAttrubute } from "../../redux/slices/symbolization-slice";
+import {
+  setColorsByAttrubute,
+  setFiltersByAttrubute,
+} from "../../redux/slices/symbolization-slice";
 import {
   resetDebugOptions,
   setDebugOptions,
   selectDebugOptions,
   selectPickable,
 } from "../../redux/slices/debug-options-slice";
-import { setInitialBaseMaps, selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import {
+  setInitialBaseMaps,
+  selectSelectedBaseMap,
+} from "../../redux/slices/base-maps-slice";
 import { clearBSLStatisitcsSummary } from "../../redux/slices/i3s-stats-slice";
 import {
   selectViewState,
@@ -107,7 +118,7 @@ export const DebugApp = () => {
   const tilesetRef = useRef<Tileset3D | null>(null);
   const layout = useAppLayout();
   const debugOptions = useAppSelector(selectDebugOptions);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const [normalsDebugData, setNormalsDebugData] =
     useState<NormalsDebugData | null>(null);
   const [trianglesPercentage, setTrianglesPercentage] = useState(
@@ -139,7 +150,9 @@ export const DebugApp = () => {
   const [buildingExplorerOpened, setBuildingExplorerOpened] =
     useState<boolean>(false);
   const MapWrapper =
-    selectedBaseMapId === "ArcGis" ? ArcgisWrapper : DeckGlWrapper;
+    selectedBaseMap?.group === BaseMapGroup.ArcGIS
+      ? ArcgisWrapper
+      : DeckGlWrapper;
 
   const [stateUrlViewStateParams, setStateUrlViewStateParams] =
     useState<ViewState>({});
@@ -244,7 +257,11 @@ export const DebugApp = () => {
     setColoredTilesMap({});
     setSelectedTile(null);
     dispatch(resetDebugOptions());
-    dispatch(setDebugOptions({ minimap: !(selectedBaseMapId === "ArcGis") }));
+    dispatch(
+      setDebugOptions({
+        minimap: !(selectedBaseMap?.group === BaseMapGroup.ArcGIS),
+      })
+    );
     dispatch(clearBSLStatisitcsSummary());
     dispatch(setFiltersByAttrubute({ filter: null }));
   }, [activeLayers, buildingExplorerOpened]);
@@ -366,7 +383,9 @@ export const DebugApp = () => {
     setColoredTilesMap(updatedColoredMap);
   };
 
-  const handleClearWarnings = () => { setWarnings([]); };
+  const handleClearWarnings = () => {
+    setWarnings([]);
+  };
 
   const onShowNormals = (tile) => {
     if (normalsDebugData === null) {
@@ -425,8 +444,12 @@ export const DebugApp = () => {
         onChangeTrianglesPercentage={onChangeTrianglesPercentage}
         onChangeNormalsLength={onChangeNormalsLength}
         handleClosePanel={handleCloseTilePanel}
-        deactiveDebugPanel={() => { setActiveButton(ActiveButton.none); }}
-        activeDebugPanel={() => { setActiveButton(ActiveButton.debug); }}
+        deactiveDebugPanel={() => {
+          setActiveButton(ActiveButton.none);
+        }}
+        activeDebugPanel={() => {
+          setActiveButton(ActiveButton.debug);
+        }}
       >
         {isShowColorPicker && (
           <TileColorSection
@@ -798,21 +821,30 @@ export const DebugApp = () => {
             selectedLayerIds={selectedLayerIds}
             onLayerInsert={onLayerInsertHandler}
             onLayerSelect={onLayerSelectHandler}
-            onLayerDelete={(id) => { onLayerDeleteHandler(id); }}
-            onPointToLayer={(viewState) => { pointToTileset(viewState); }}
+            onLayerDelete={(id) => {
+              onLayerDeleteHandler(id);
+            }}
+            onPointToLayer={(viewState) => {
+              pointToTileset(viewState);
+            }}
             type={ListItemType.Radio}
             sublayers={sublayers}
             onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.options); }}
-            onBuildingExplorerOpened={(opened) => { setBuildingExplorerOpened(opened); }
-            }
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.options);
+            }}
+            onBuildingExplorerOpened={(opened) => {
+              setBuildingExplorerOpened(opened);
+            }}
           />
         </RightSidePanelWrapper>
       )}
       {activeButton === ActiveButton.debug && (
         <RightSidePanelWrapper $layout={layout}>
           <DebugPanel
-            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.debug); }}
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.debug);
+            }}
           />
         </RightSidePanelWrapper>
       )}
@@ -821,8 +853,9 @@ export const DebugApp = () => {
           <SemanticValidator
             warnings={warnings}
             clearWarnings={handleClearWarnings}
-            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.validator); }
-            }
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.validator);
+            }}
           />
         </RightSidePanelWrapper>
       )}
@@ -835,7 +868,9 @@ export const DebugApp = () => {
             tilesetStats={tilesetsStats}
             contentFormats={tilesetRef.current?.contentFormats}
             updateNumber={updateStatsNumber}
-            onClose={() => { onChangeMainToolsPanelHandler(ActiveButton.memory); }}
+            onClose={() => {
+              onChangeMainToolsPanelHandler(ActiveButton.memory);
+            }}
           />
         </RightSidePanelWrapper>
       )}
@@ -850,7 +885,9 @@ export const DebugApp = () => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
-          onClearBookmarks={() => { setBookmarks([]); }}
+          onClearBookmarks={() => {
+            setBookmarks([]);
+          }}
           onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
@@ -861,13 +898,15 @@ export const DebugApp = () => {
         onZoomIn={onZoomIn}
         onZoomOut={onZoomOut}
         onCompassClick={onCompassClick}
-        isDragModeVisible={selectedBaseMapId !== "ArcGis"}
+        isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
       />
       {wrongBookmarkPageId && (
         <CenteredContainer>
           <WarningPanel
             title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
-            onConfirm={() => { setWrongBookmarkPageId(null); }}
+            onConfirm={() => {
+              setWrongBookmarkPageId(null);
+            }}
           />
         </CenteredContainer>
       )}

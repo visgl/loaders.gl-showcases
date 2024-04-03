@@ -3,27 +3,27 @@ import { PageId } from "../../types";
 import type { Page } from "puppeteer";
 
 export const checkLayersPanel = async (
-  page,
+  page: Page,
   panelId: string,
   hasSelectedLayer = false,
   appMode = ""
 ): Promise<void> => {
   // Tabs
   const tabsContainer = await page.$(`${panelId} > :first-child`);
-  expect((await tabsContainer.$$(":scope > *")).length).toBe(2);
-  expect(await tabsContainer.$(":first-child::after")).toBeDefined();
-  expect(await tabsContainer.$(":last-child::after")).toBeNull();
+  expect((await tabsContainer?.$$(":scope > *"))?.length).toBe(2);
+  expect(await tabsContainer?.$(":first-child::after")).toBeDefined();
+  expect(await tabsContainer?.$(":last-child::after")).toBeNull();
 
   // Close button
   const closeButtonIcon = await page.$(
     `${panelId} > :nth-child(2) > :first-child > :first-child`
   );
-  expect(await closeButtonIcon.$(":scope::after")).toBeDefined();
-  expect(await closeButtonIcon.$(":scope::before")).toBeDefined();
+  expect(await closeButtonIcon?.$(":scope::after")).toBeDefined();
+  expect(await closeButtonIcon?.$(":scope::before")).toBeDefined();
 
   // Horizontal Line
   expect(
-    await page.$eval(`${panelId} > :nth-child(3)`, (node) => node.innerText)
+    await page.$eval(`${panelId} > :nth-child(3)`, (node) => node.innerHTML)
   ).toBe("");
 
   // Layers
@@ -47,38 +47,55 @@ export const checkLayersPanel = async (
   await expect(panel).toMatchTextContent("Insert scene");
 
   // Open map options
-  const mapOptionsTab = await tabsContainer.$(":last-child");
-  await mapOptionsTab.click();
-  expect(await tabsContainer.$(":first-child::after")).toBeNull();
-  expect(await tabsContainer.$(":last-child::after")).toBeDefined();
+  const mapOptionsTab = await tabsContainer?.$(":last-child");
+  await mapOptionsTab?.click();
+  expect(await tabsContainer?.$(":first-child::after")).toBeNull();
+  expect(await tabsContainer?.$(":last-child::after")).toBeDefined();
 
   // Header
   await expect(panel).toMatchTextContent("Base Map");
 
-  // Base maps list
-  const baseMapsNames = await page.$$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > div`,
-    (nodes) => nodes.map((node) => node.innerText)
-  );
-
-  if (appMode === PageId.comparison) {
-    expect(baseMapsNames.length).toBe(3);
-    expect(baseMapsNames).toEqual(["Dark", "Light", "ArcGis"]);
-  } else {
-    expect(baseMapsNames.length).toBe(4);
-    expect(baseMapsNames).toEqual(["Dark", "Light", "Terrain", "ArcGis"]);
+  // Basemap list
+  let names = ["Dark", "Light"];
+  const namesForViewDebug = [
+    "Light gray",
+    "Dark gray",
+    "Streets",
+    "Streets(night)",
+    "Terrain",
+  ];
+  if (appMode !== PageId.comparison) {
+    names = [...names, ...namesForViewDebug];
   }
+  let successCount = 0;
+  for (const text of names) {
+    const element = await page?.$(`text/${text}`);
+    if (element) {
+      successCount++;
+    }
+  }
+  expect(successCount).toBe(names.length);
 
   // Dark is selected
-  const darkMapBackground = await page.$eval(
-    `${panelId} > :nth-child(4) > :first-child > :nth-child(2) > :first-child`,
-    (node) => getComputedStyle(node).getPropertyValue("background-color")
-  );
-  expect(darkMapBackground).toBe("rgb(57, 58, 69)");
+  const elementDark = await page?.$("div ::-p-text(Dark)");
+
+  let darkMapBackground;
+  if (elementDark) {
+    darkMapBackground = await page.evaluate((el) => {
+      const parent = el.parentElement;
+      if (parent) {
+        const computedStyle = window.getComputedStyle(parent);
+        return computedStyle.backgroundColor;
+      } else {
+        return null;
+      }
+    }, elementDark);
+  }
+  expect(darkMapBackground).toBe("rgb(57, 58, 69)"); //  "#393A45"
 
   // Insert Base Map button
   await page.waitForSelector("#map-options-container");
-  const optionsContainer = await panel.$("#map-options-container");
+  const optionsContainer = await panel?.$("#map-options-container");
   await expect(optionsContainer).toMatchTextContent("Insert Base Map");
 };
 
@@ -170,7 +187,7 @@ export const checkInserLayerErrors = async (
   expect(anyExtraPanel).toBeNull();
 };
 
-export const inserAndDeleteLayer = async (
+export const insertAndDeleteLayer = async (
   page: Page,
   panelId: string,
   url: string

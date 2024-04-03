@@ -1,4 +1,7 @@
-import type { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/src/types";
+import type {
+  BuildingSceneSublayer,
+  StatsInfo,
+} from "@loaders.gl/i3s/src/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
 import type { DefaultTheme } from "styled-components";
 import type { Vector3, Matrix4 } from "@math.gl/core";
@@ -189,12 +192,20 @@ export interface Sublayer extends BuildingSceneSublayer {
   sublayers: Sublayer[];
 }
 
+export enum BaseMapGroup {
+  Maplibre = "Maplibre",
+  ArcGIS = "ArcGIS",
+  Terrain = "Terrain",
+}
+
 export interface BaseMap {
   id: string;
   name: string;
   mapUrl: string;
   token?: string;
   custom?: boolean;
+  group: BaseMapGroup;
+  iconId: string;
 }
 
 export interface PositionsData {

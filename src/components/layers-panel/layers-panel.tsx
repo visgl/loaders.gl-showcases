@@ -15,9 +15,10 @@ import {
   type Bookmark,
   type PageId,
   type ComparisonSideMode,
+  BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
-import { InsertPanel } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomLayerData } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
 import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
@@ -57,12 +58,6 @@ enum Tabs {
 
 interface TabProps {
   $active: boolean;
-}
-
-interface CustomItem {
-  name: string;
-  url: string;
-  token?: string;
 }
 
 const Tab = styled.div<TabProps>`
@@ -211,11 +206,7 @@ export const LayersPanel = ({
     setShowExistedError(false);
   });
 
-  const handleInsertLayer = (layer: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
+  const handleInsertLayer = (layer: CustomLayerData) => {
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
@@ -272,11 +263,7 @@ export const LayersPanel = ({
   };
 
   // TODO Add loader to show webscene loading
-  const handleInsertScene = async (scene: {
-    name: string;
-    url: string;
-    token?: string;
-  }): Promise<void> => {
+  const handleInsertScene = async (scene: CustomLayerData): Promise<void> => {
     scene.url = convertUrlToRestFormat(scene.url);
 
     const existedScene = layers.some(
@@ -353,17 +340,20 @@ export const LayersPanel = ({
     }
   };
 
-  const handleInsertMap = (map: CustomItem): void => {
+  const handleInsertMap = (map: CustomLayerData): void => {
     const id = map.url.replace(/" "/g, "-");
-    const newMap: BaseMap = {
-      id,
-      mapUrl: map.url,
-      name: map.name,
-      token: map.token,
-      custom: true,
-    };
-
-    dispatch(addBaseMap(newMap));
+    if (map.group !== undefined) {
+      const newMap: BaseMap = {
+        id,
+        mapUrl: map.url,
+        name: map.name,
+        token: map.token,
+        iconId: "Custom",
+        custom: true,
+        group: map.group,
+      };
+      dispatch(addBaseMap(newMap));
+    }
     setShowInsertMapPanel(false);
   };
 
@@ -418,6 +408,7 @@ export const LayersPanel = ({
             )}
             {tab === Tabs.MapOptions && (
               <MapOptionPanel
+                pageId={pageId}
                 insertBaseMap={() => {
                   setShowInsertMapPanel(true);
                 }}
@@ -550,6 +541,7 @@ export const LayersPanel = ({
         <PanelWrapper>
           <InsertPanel
             title={"Insert Base Map"}
+            groups={[BaseMapGroup.Maplibre]}
             onInsert={(map) => {
               handleInsertMap(map);
             }}

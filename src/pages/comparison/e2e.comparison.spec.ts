@@ -2,7 +2,7 @@ import puppeteer, { type Page } from "puppeteer";
 
 import {
   checkLayersPanel,
-  inserAndDeleteLayer,
+  insertAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 import { PageId } from "../../types";
 import { configurePage } from "../../utils/testing-utils/configure-tests";
@@ -231,13 +231,13 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   });
 
   it("Should insert and delete layer", async () => {
-    await inserAndDeleteLayer(
+    await insertAndDeleteLayer(
       page,
       "#left-layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
 
-    await inserAndDeleteLayer(
+    await insertAndDeleteLayer(
       page,
       "#right-layers-panel",
       "https://fake.layer.url"
@@ -391,7 +391,10 @@ describe("Compare - Comparison Params Panel", () => {
 
     // Horizontal Line
     expect(
-      await page.$eval(`${panelId} > :nth-child(2)`, (node) => (node as HTMLElement).innerText)
+      await page.$eval(
+        `${panelId} > :nth-child(2)`,
+        (node) => (node as HTMLElement).innerText
+      )
     ).toBe("");
 
     // Draco
@@ -484,7 +487,10 @@ describe("Compare - Statistics", () => {
 
     // Horizontal Line
     expect(
-      await page.$eval(`${panelId} > :nth-child(2)`, (node) => (node as HTMLElement).innerText)
+      await page.$eval(
+        `${panelId} > :nth-child(2)`,
+        (node) => (node as HTMLElement).innerText
+      )
     ).toBe("");
   };
 
