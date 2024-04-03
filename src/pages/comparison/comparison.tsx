@@ -14,6 +14,7 @@ import {
   type LayerViewState,
   type StatsData,
   PageId,
+  BaseMapGroup,
   type LayoutProps,
 } from "../../types";
 
@@ -35,9 +36,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
-  deleteBaseMaps,
-  setInitialBaseMaps,
-  selectSelectedBaseMapId,
+  selectSelectedBaseMap,
 } from "../../redux/slices/base-maps-slice";
 import {
   selectViewState,
@@ -45,10 +44,6 @@ import {
 } from "../../redux/slices/view-state-slice";
 import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
 import { CenteredContainer } from "../../components/common";
-
-interface ComparisonPageProps {
-  mode: ComparisonMode;
-}
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -92,12 +87,16 @@ const Devider = styled.div<LayoutProps>`
   background-color: ${color_brand_primary};
 `;
 
+interface ComparisonPageProps {
+  mode: ComparisonMode;
+}
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   const loadManagerRef = useRef<ComparisonLoadManager>(
     new ComparisonLoadManager()
   );
 
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
   const globalViewState = useAppSelector(selectViewState);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
@@ -148,10 +147,6 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
     dispatch(setViewState(INITIAL_VIEW_STATE));
-    dispatch(deleteBaseMaps("Terrain"));
-    return () => {
-      dispatch(setInitialBaseMaps());
-    };
   }, [mode]);
 
   useEffect(() => {
@@ -560,7 +555,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
-          isDragModeVisible={selectedBaseMapId !== "ArcGis"}
+          isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
         />
       )}
       {wrongBookmarkPageId && (

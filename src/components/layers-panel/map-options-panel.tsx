@@ -1,32 +1,16 @@
-import { useState, Fragment } from "react";
 import styled from "styled-components";
-import { BaseMapListItem } from "./base-map-list-item/base-map-list-item";
 import PlusIcon from "../../../public/icons/plus.svg";
 import { ActionIconButton } from "../action-icon-button/action-icon-button";
-import { DeleteConfirmation } from "./delete-confirmation";
-import { SelectionState, ButtonSize } from "../../types";
-import { BaseMapOptionsMenu } from "./basemap-options-menu/basemap-options-menu";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  selectBaseMaps,
-  deleteBaseMaps,
-  selectSelectedBaseMapId,
-  setSelectedBaseMaps,
-} from "../../redux/slices/base-maps-slice";
-
-interface MapOptionPanelProps {
-  insertBaseMap: () => void;
-}
+import { ButtonSize, PageId, BaseMapGroup } from "../../types";
+import { BasemapListPanel } from "../layers-panel/basemap-list-panel/basemap-list-panel";
 
 const MapOptionTitle = styled.div`
   width: 100;
-  height: 19px;
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
-  margin-bottom: 24px;
 `;
 
 const MapOptionsContainer = styled.div`
@@ -35,12 +19,8 @@ const MapOptionsContainer = styled.div`
   width: 100%;
   overflow: auto;
   position: relative;
-`;
-
-const MapList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  gap: 16px;
+  margin-bottom: 8px;
 `;
 
 const InsertButtons = styled.div`
@@ -49,71 +29,33 @@ const InsertButtons = styled.div`
   row-gap: 8px;
 `;
 
-export const MapOptionPanel = ({ insertBaseMap }: MapOptionPanelProps) => {
-  const dispatch = useAppDispatch();
-  const baseMaps = useAppSelector(selectBaseMaps);
-  const selectedBaseMapId = useAppSelector(selectSelectedBaseMapId);
-  const [settingsMapId, setSettingsMapId] = useState<string>("");
-  const [showMapSettings, setShowMapSettings] = useState<boolean>(false);
-  const [mapToDeleteId, setMapToDeleteId] = useState<string>("");
+interface MapOptionPanelProps {
+  pageId: PageId;
+  insertBaseMap: () => void;
+}
 
+export const MapOptionPanel = ({
+  pageId,
+  insertBaseMap,
+}: MapOptionPanelProps) => {
   return (
     <MapOptionsContainer id="map-options-container">
       <MapOptionTitle>Base Map</MapOptionTitle>
-      <MapList>
-        {baseMaps.map((baseMap) => {
-          const isMapSelected = selectedBaseMapId === baseMap.id;
 
-          return (
-            <Fragment key={baseMap.id}>
-              <BaseMapListItem
-                id={baseMap.id}
-                title={baseMap.name}
-                selected={
-                  isMapSelected
-                    ? SelectionState.selected
-                    : SelectionState.unselected
-                }
-                onOptionsClick={() => {
-                  setShowMapSettings(true);
-                  setSettingsMapId(baseMap.id);
-                }}
-                onMapsSelect={() => {
-                  dispatch(setSelectedBaseMaps(baseMap.id));
-                }}
-                isOptionsPanelOpen={
-                  showMapSettings && settingsMapId === baseMap.id
-                }
-                optionsContent={
-                  <BaseMapOptionsMenu
-                    onDeleteBasemap={() => {
-                      setMapToDeleteId(settingsMapId);
-                      setShowMapSettings(false);
-                    }}
-                  />
-                }
-                onClickOutside={() => {
-                  setShowMapSettings(false);
-                  setSettingsMapId("");
-                }}
-              />
-              {mapToDeleteId === baseMap.id && (
-                <DeleteConfirmation
-                  onKeepHandler={() => { setMapToDeleteId(""); }}
-                  onDeleteHandler={() => {
-                    dispatch(deleteBaseMaps(settingsMapId));
-                    setMapToDeleteId("");
-                  }}
-                >
-                  Delete map?
-                </DeleteConfirmation>
-              )}
-            </Fragment>
-          );
-        })}
-      </MapList>
+      <BasemapListPanel group={BaseMapGroup.Maplibre} />
+      {pageId !== PageId.comparison && (
+        <BasemapListPanel group={BaseMapGroup.ArcGIS} />
+      )}
+      {pageId !== PageId.comparison && (
+        <BasemapListPanel group={BaseMapGroup.Terrain} />
+      )}
+
       <InsertButtons>
-        <ActionIconButton Icon={PlusIcon} size={ButtonSize.Big} onClick={insertBaseMap}>
+        <ActionIconButton
+          Icon={PlusIcon}
+          size={ButtonSize.Small}
+          onClick={insertBaseMap}
+        >
           Insert Base Map
         </ActionIconButton>
       </InsertButtons>

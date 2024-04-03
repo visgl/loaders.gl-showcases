@@ -11,13 +11,13 @@ import { LayersPanel } from "./layers-panel";
 // Mocked compnents
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import { InsertPanel } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomLayerData } from "./insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
-import { PageId } from "../../types";
+import { BaseMapGroup, PageId } from "../../types";
 import { setupStore } from "../../redux/store";
-import { selectSelectedBaseMapId } from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
 import "@testing-library/jest-dom";
 
 jest.mock("@loaders.gl/core", () => ({
@@ -275,16 +275,18 @@ describe("Layers Panel", () => {
 
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
     // Click insert baseMap
-    act(() => {
-      onInsert({
+    await act(async () => {
+      const customMap: CustomLayerData = {
         name: "test-basemap",
         url: "https://test-base-map.url",
         token: "",
-      });
+        group: BaseMapGroup.Maplibre,
+      };
+      await onInsert(customMap);
     });
 
     const state = store.getState();
-    const baseMapId = selectSelectedBaseMapId(state);
+    const baseMapId = selectSelectedBaseMap(state)?.id;
     expect(baseMapId).toEqual("https://test-base-map.url");
   });
 
