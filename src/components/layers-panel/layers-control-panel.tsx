@@ -28,6 +28,7 @@ interface LayersControlPanelProps {
 }
 
 const LayersContainer = styled.div`
+  overflow: auto;
   display: flex;
   flex-direction: column;
   width: 100%;
