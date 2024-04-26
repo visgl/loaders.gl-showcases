@@ -93,13 +93,9 @@ const Tab = styled.div<TabProps>`
     `}
 `;
 
-export const LoginPanelContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  overflow-x: hidden;
-  overflow:hidden;
-  scrollbar-width: none;
+
+export const LoginPanelContent = styled(PanelContent)`
+  overflow-y: hidden;
   min-height: 60px;
 `;
 
