@@ -29,8 +29,8 @@ describe("Compare", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
@@ -42,8 +42,8 @@ describe("Compare", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
@@ -69,7 +69,7 @@ describe("Compare - Main tools panel Across Layers mode", () => {
   it("Left panel should be present", async () => {
     await page.waitForSelector("#left-tools-panel");
 
-    expect(await page.$$("#left-tools-panel")).toBeDefined();
+    expect(await page.$("#left-tools-panel")).not.toBeNull();
 
     const panel = await page.$("#left-tools-panel");
     expect(panel).not.toBeNull();
@@ -85,8 +85,6 @@ describe("Compare - Main tools panel Across Layers mode", () => {
 
   it("Right panel should be present", async () => {
     await page.waitForSelector("#right-tools-panel");
-    expect(await page.$$("#right-tools-panel")).toBeDefined();
-
     const panel = await page.$("#right-tools-panel");
     expect(panel).not.toBeNull();
 
@@ -119,8 +117,6 @@ describe("Compare - Main tools panel Within Layer mode", () => {
   it("Left panel should be present", async () => {
     await page.waitForSelector("#left-tools-panel");
 
-    expect(await page.$$("#left-tools-panel")).toBeDefined();
-
     const panel = await page.$("#left-tools-panel");
     expect(panel).not.toBeNull();
 
@@ -135,7 +131,6 @@ describe("Compare - Main tools panel Within Layer mode", () => {
 
   it("Right panel should be present", async () => {
     await page.waitForSelector("#right-tools-panel");
-    expect(await page.$$("#right-tools-panel")).toBeDefined();
 
     const panel = await page.$("#right-tools-panel");
     expect(panel).not.toBeNull();
@@ -169,14 +164,14 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   it("Should show left layers panel", async () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Should show right layers panel", async () => {
     const panelId = "#right-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
@@ -265,7 +260,7 @@ describe("Compare - Layers Panel Within Layer mode", () => {
   it("Should show left layers panel", async () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
@@ -540,7 +535,7 @@ describe("Compare - Compare button", () => {
 
   it("Compare button should be present", async () => {
     await page.waitForSelector("#compare-button");
-    expect(await page.$$("#compare-button")).toBeDefined();
+    expect(await page.$("#compare-button")).not.toBeNull();
 
     const compareButtonText = await page.$eval(
       "#compare-button > :first-child",

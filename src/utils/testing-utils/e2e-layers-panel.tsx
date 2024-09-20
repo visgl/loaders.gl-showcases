@@ -196,6 +196,7 @@ export const insertAndDeleteLayer = async (
     `${panelId} div[data-testid='action-icon-button']`,
     {
       text: "Insert layer",
+      timeout: 1000,
     }
   );
 

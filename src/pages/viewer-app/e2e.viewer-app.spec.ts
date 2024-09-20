@@ -58,7 +58,7 @@ describe("Viewer - Main tools panel", () => {
   });
 
   it("Should show Main tools panel", async () => {
-    expect(await page.$$("#viewer--tools-panel")).toBeDefined();
+    expect(await page.$("#viewer--tools-panel")).not.toBeNull();
     const panel = await page.$("#viewer--tools-panel");
     const panelChildren = await panel?.$$(":scope > *");
     expect(panelChildren?.length).toEqual(3);
@@ -120,7 +120,7 @@ describe("Viewer - Layers panel", () => {
   it("Should show layers panel", async () => {
     const panelId = "#viewer--layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, true);
   });
 

@@ -49,8 +49,8 @@ describe("Dashboard Default View", () => {
   it("Contains dashboard canvas", async () => {
     await page.waitForSelector("#dashboard-app");
 
-    const dashboardCanvas = await page.$$("#dashboard-app");
-    expect(dashboardCanvas).toBeDefined();
+    const dashboardCanvas = await page.$("#dashboard-app");
+    expect(dashboardCanvas).not.toBeNull();
   });
 
   it("Should go to the Viewer page", async () => {
@@ -65,8 +65,8 @@ describe("Dashboard Default View", () => {
     expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
-    const controlPanel = await page.$$("#control-panel");
-    expect(controlPanel).toBeDefined();
+    const controlPanel = await page.$("#viewer--tools-panel");
+    expect(controlPanel).not.toBeNull();
   });
 
   it("Should go to the Debug page", async () => {
@@ -80,8 +80,8 @@ describe("Dashboard Default View", () => {
     expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
-    const toolBar = await page.$$("#tool-bar");
-    expect(toolBar).toBeDefined();
+    const toolBar = await page.$("#debug-tools-panel");
+    expect(toolBar).not.toBeNull();
   });
 
   it("Should go to the Comparison Across Layers Page", async () => {
@@ -124,8 +124,8 @@ describe("Dashboard Default View", () => {
     await page.goto("http://localhost:3000/viewer");
     const currentUrl = await clickAndNavigate(page, "a[href='/dashboard']");
     expect(currentUrl).toBe("http://localhost:3000/dashboard");
-    const dashboardCanvas = await page.$$("#dashboard-app");
-    expect(dashboardCanvas).toBeDefined();
+    const dashboardCanvas = await page.$("#dashboard-app");
+    expect(dashboardCanvas).not.toBeNull();
   });
 
   it("Should contain help button", async () => {
@@ -136,13 +136,13 @@ describe("Dashboard Default View", () => {
 
   it("Should contain theme button", async () => {
     await page.waitForSelector("#toggle-button-default");
-    const themeButton = await page.$$("#toggle-button-default");
-    const darkButton = await page.$$("#toggle-dark-default");
-    const lightButton = await page.$$("#toggle-light-default");
+    const themeButton = await page.$("#toggle-button-default");
+    const darkButton = await page.$("#toggle-dark-default");
+    const lightButton = await page.$("#toggle-light-default");
 
-    expect(themeButton).toBeDefined();
-    expect(darkButton).toBeDefined();
-    expect(lightButton).toBeDefined();
+    expect(themeButton).not.toBeNull();
+    expect(darkButton).not.toBeNull();
+    expect(lightButton).not.toBeNull();
   });
 
   it("Should switch between themes", async () => {
@@ -250,31 +250,31 @@ describe("Dashboard Default View", () => {
   it("Should contain tools container", async () => {
     await page.waitForSelector("#tools-description-container");
 
-    const toolsDescriptionContainer = await page.$$("#tools-wrapper");
+    const toolsDescriptionContainer = await page.$("#tools-wrapper");
     const appShowcase = await page.$("#app-showcase");
-    expect(toolsDescriptionContainer).toBeDefined();
+    expect(toolsDescriptionContainer).not.toBeNull();
     expect(appShowcase).toBeNull();
   });
 
   it("Should contain tools description container", async () => {
     await page.waitForSelector("#tools-description-container");
 
-    const toolsDescription = await page.$$("#tools-description-container");
-    expect(toolsDescription).toBeDefined();
+    const toolsDescription = await page.$("#tools-description-container");
+    expect(toolsDescription).not.toBeNull();
   });
 
   it("Should contain mac image", async () => {
     await page.waitForSelector("#mac-image");
 
-    const macImage = await page.$$("#mac-image");
-    expect(macImage).toBeDefined();
+    const macImage = await page.$("#mac-image");
+    expect(macImage).not.toBeNull();
   });
 
   it("Should contain iphone image", async () => {
     await page.waitForSelector("#iphone-image");
 
-    const iphoneImage = await page.$$("#iphone-image");
-    expect(iphoneImage).toBeDefined();
+    const iphoneImage = await page.$("#iphone-image");
+    expect(iphoneImage).not.toBeNull();
   });
 
   it("Should contain tool items", async () => {
@@ -362,8 +362,8 @@ describe("Dashboard Tablet or Mobile view", () => {
   it("Should contain app showcase image", async () => {
     await page.waitForSelector("#app-showcase");
 
-    const qppShowCaseImage = await page.$$("#app-showcase");
-    expect(qppShowCaseImage).toBeDefined();
+    const qppShowCaseImage = await page.$("#app-showcase");
+    expect(qppShowCaseImage).not.toBeNull();
   });
 
   it("Should automatically redirect from '/' path", async () => {
@@ -378,12 +378,12 @@ describe("Dashboard Tablet or Mobile view", () => {
     const text = await page.$eval("#header-logo", (e) => e.textContent);
     expect(text).toContain("I3S Explorer");
 
-    expect(await page.$$("#burger-menu")).toBeDefined();
+    expect(await page.$("#burger-menu")).not.toBeNull();
 
     await page.click("#burger-menu");
     await page.waitForSelector("#close-header-menu");
-    expect(await page.$$("#close-header-menu")).toBeDefined();
-    expect(await page.$$("#tablet-or-mobile-menu")).toBeDefined();
+    expect(await page.$("#close-header-menu")).not.toBeNull();
+    expect(await page.$("#tablet-or-mobile-menu")).not.toBeNull();
     await page.click("#close-header-menu");
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
@@ -422,8 +422,8 @@ describe("Dashboard Tablet or Mobile view", () => {
   it("Contains dashboard canvas", async () => {
     await page.waitForSelector("#dashboard-app");
 
-    const dashboardCanvas = await page.$$("#dashboard-app");
-    expect(dashboardCanvas).toBeDefined();
+    const dashboardCanvas = await page.$("#dashboard-app");
+    expect(dashboardCanvas).not.toBeNull();
   });
 
   it("Should go to the Viewer page", async () => {
@@ -439,8 +439,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(currentUrl).toContain(
       "http://localhost:3000/viewer?tileset=san-francisco-v1_7"
     );
-    const controlPanel = await page.$$("#control-panel");
-    expect(controlPanel).toBeDefined();
+    const controlPanel = await page.$("#viewer--tools-panel");
+    expect(controlPanel).not.toBeNull();
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
 
@@ -457,8 +457,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     expect(currentUrl).toContain(
       "http://localhost:3000/debug?tileset=san-francisco-v1_7"
     );
-    const toolBar = await page.$$("#tool-bar");
-    expect(toolBar).toBeDefined();
+    const toolBar = await page.$("#debug-tools-panel");
+    expect(toolBar).not.toBeNull();
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
 
@@ -483,8 +483,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#header-links");
     const currentUrl = await clickAndNavigate(page, "a[href='/dashboard']");
     expect(currentUrl).toBe("http://localhost:3000/dashboard");
-    const dashboardCanvas = await page.$$("#dashboard-app");
-    expect(dashboardCanvas).toBeDefined();
+    const dashboardCanvas = await page.$("#dashboard-app");
+    expect(dashboardCanvas).not.toBeNull();
     expect(!(await page.$("#tablet-or-mobile-menu")));
   });
 
@@ -497,8 +497,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#across-layers-item");
     await page.waitForSelector("#within-layer-item");
 
-    expect(await page.$$("#across-layers-item")).toBeDefined();
-    expect(await page.$$("#within-layer-item")).toBeDefined();
+    expect(await page.$("#across-layers-item")).not.toBeNull();
+    expect(await page.$("#within-layer-item")).not.toBeNull();
 
     expect(
       await page.$eval("#across-layers-item", (e) => e.textContent)
@@ -529,8 +529,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
   });
 
@@ -550,8 +550,8 @@ describe("Dashboard Tablet or Mobile view", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
   });
 });
