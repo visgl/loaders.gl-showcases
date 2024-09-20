@@ -37,6 +37,16 @@ const TextureButton = styled.button<{
   background-repeat: no-repeat;
   cursor: inherit;
 `;
+const TileInfoTitle = styled(Title)`
+  flex: 1;
+`;
+const TileInfoValue = styled(Title)`
+  flex: 1;
+  color: ${({ theme }) => theme.colors.mainDimColorInverted};
+  font-weight: 400;
+  word-break: break-all;
+  white-space: pre-wrap;
+`;
 
 const SIZE = 149;
 const PREVIEW_SIZE = 592;
@@ -106,14 +116,18 @@ export const TextureSection = ({ tile }: TextureSectionProps) => {
   return (
     <>
       <TileInfoSectionWrapper>
-        <Title $left={16}>Texture:</Title>
-        <TextureContainer onClick={onClickHandler}>
-          <TextureButton
-            image={`url(${texture})`}
-            width={size.width}
-            height={size.height}
-          ></TextureButton>
-        </TextureContainer>
+        <TileInfoTitle $left={16}>Texture:</TileInfoTitle>
+        {texture ?
+          <TextureContainer onClick={onClickHandler}>
+            <TextureButton
+              image={`url(${texture})`}
+              width={size.width}
+              height={size.height}
+            ></TextureButton>
+          </TextureContainer>
+        :
+          <TileInfoValue>none</TileInfoValue>
+        }
       </TileInfoSectionWrapper>
 
       {showPreviewTexture && (
