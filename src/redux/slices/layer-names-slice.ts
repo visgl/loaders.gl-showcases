@@ -27,7 +27,8 @@ const layerNamesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getLayerNameInfo.pending, (state, action) => {
-        state.map[action.meta.arg.layerUrl] = {
+        const layerName = typeof action.meta.arg.layerUrl === "string" ? action.meta.arg.layerUrl : action.meta.arg.layerUrl.name;
+        state.map[layerName] = {
           name: "",
           status: FetchingStatus.pending,
         };
@@ -39,7 +40,8 @@ const layerNamesSlice = createSlice({
         };
       })
       .addCase(getLayerNameInfo.rejected, (state, action) => {
-        state.map[action.meta.arg.layerUrl] = {
+        const layerName = typeof action.meta.arg.layerUrl === "string" ? action.meta.arg.layerUrl : action.meta.arg.layerUrl.name;
+        state.map[layerName] = {
           name: "",
           status: FetchingStatus.ready,
         };
@@ -49,8 +51,11 @@ const layerNamesSlice = createSlice({
 
 export const getLayerNameInfo = createAsyncThunk<
 { name: string; layerUrl: string },
-{ layerUrl: string; type: TilesetType; token: string }
+{ layerUrl: string | File; type: TilesetType; token: string }
 >("getLayerNameInfo", async ({ layerUrl, type, token }) => {
+  if (typeof layerUrl !== "string") {
+    return { name: layerUrl.name, layerUrl: "layerUrl" };
+  }
   const params = parseTilesetUrlParams(layerUrl, { type, token });
   let url = params.tilesetUrl;
   if (params.token) {

@@ -6,11 +6,14 @@ import {
   type TilesetMetadata,
   type ComparisonSideMode,
 } from "../../types";
-import { I3SBuildingSceneLayerLoader } from "@loaders.gl/i3s";
+import { I3SBuildingSceneLayerLoader, parseSLPKArchive } from "@loaders.gl/i3s";
 import { buildSublayersTree } from "../../utils/sublayers";
-import { load } from "@loaders.gl/core";
+import { type LoaderOptions, load } from "@loaders.gl/core";
 import { type RootState } from "../store";
 import { type BuildingSceneLayerTileset } from "@loaders.gl/i3s/src/types";
+
+import { ZipFileSystem } from "@loaders.gl/zip";
+import { FileProvider, BlobFile } from "@loaders.gl/loader-utils";
 
 // Define a type for the slice states
 interface SublayersState {
@@ -144,27 +147,41 @@ const getLayersAndSublayers = async (
   | BuildingSceneSublayerExtended[]
   | Array<{
     id: string;
-    url: string;
+    url: string | File;
     visibility: boolean;
     token?: string;
     type: TilesetType | undefined;
   }>;
   sublayers: Sublayer[];
 }> => {
+  const options: LoaderOptions = {};
+  if (typeof tilesetData.url !== "string") {
+    try {
+      const fileProvider = await FileProvider.create(new BlobFile(tilesetData.url));
+      const archive = await parseSLPKArchive(fileProvider, undefined, tilesetData.url.name);
+      const fileSystem = new ZipFileSystem(archive);
+      options.fetch = fileSystem.fetch.bind(fileSystem) as (filename: string) => Promise<Response>;
+    } catch (e) {
+      console.log("error", e);
+    }
+  }
   try {
     const tileset = (await load(
-      tilesetData.url,
-      I3SBuildingSceneLayerLoader
+      typeof tilesetData.url === "string" ? tilesetData.url : "",
+      I3SBuildingSceneLayerLoader,
+      options
     )) as BuildingSceneLayerTileset;
     const sublayersTree = buildSublayersTree(tileset.header.sublayers);
     const childSublayers = sublayersTree?.sublayers ?? [];
     const overviewLayer = tileset?.sublayers.find(
       (sublayer) => sublayer.name === "Overview"
-    );
+    ) as BuildingSceneSublayerExtended;
+    overviewLayer.fetch = options.fetch as ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
     const sublayers = tileset?.sublayers
       .filter((sublayer) => sublayer.name !== "Overview")
       .map((item) => ({
         ...item,
+        fetch: options.fetch as ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>),
         token: tilesetData.token,
         type: tilesetData.type,
       }));

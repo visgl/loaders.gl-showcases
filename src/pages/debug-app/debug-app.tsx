@@ -218,7 +218,10 @@ export const DebugApp = () => {
    * Hook for start using tilesets stats.
    */
   useEffect(() => {
-    const tilesetsStats = initStats(activeLayers[0]?.url);
+    const activeLayerPath = (typeof activeLayers[0]?.url === "string" || typeof activeLayers[0]?.url === "undefined")
+      ? activeLayers[0]?.url
+      : activeLayers[0]?.url.name;
+    const tilesetsStats = initStats(activeLayerPath);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
 
@@ -232,7 +235,11 @@ export const DebugApp = () => {
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      const params = parseTilesetUrlParams(layer.url, layer);
+      let params = { tilesetUrl: "", token: "" };
+      if (typeof layer.url === "string") {
+        params = parseTilesetUrlParams(layer.url, layer);
+      }
+
       const { tilesetUrl, token } = params;
 
       tilesetsData.push({

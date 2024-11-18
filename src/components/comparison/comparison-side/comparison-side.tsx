@@ -234,7 +234,11 @@ export const ComparisonSide = ({
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      const params = parseTilesetUrlParams(layer.url, layer);
+      let params = { tilesetUrl: "", token: "" };
+      if (typeof layer.url === "string") {
+        params = parseTilesetUrlParams(layer.url, layer);
+      }
+
       const { tilesetUrl, token } = params;
 
       tilesetsData.push({
@@ -254,8 +258,9 @@ export const ComparisonSide = ({
       })
     );
     if (buildingExplorerOpened && tilesetsData[0]) {
+      const tilesetDataUrl = typeof tilesetsData[0].url === "string" ? tilesetsData[0].url : tilesetsData[0].url.name;
       void dispatch(
-        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url, side })
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetDataUrl, side })
       );
     }
   }, [activeLayers, buildingExplorerOpened]);
@@ -279,7 +284,7 @@ export const ComparisonSide = ({
 
     if (loadedTilesetsCount && activeLayersCount) {
       const isBSL = loadedTilesetsCount > activeLayersCount;
-      let statsName = activeLayers[0].url;
+      let statsName = typeof activeLayers[0].url === "string" ? activeLayers[0].url : activeLayers[0].url.name;
 
       if (!isBSL) {
         statsName = loadedTilesets
@@ -317,7 +322,7 @@ export const ComparisonSide = ({
       }));
   };
 
-  const onTraversalCompleteHandler = (selectedTiles) => {
+  const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
     // A parent tileset of selected tiles
     const aTileset = selectedTiles?.[0]?.tileset;
     // Make sure that the actual tileset has been traversed traversed
