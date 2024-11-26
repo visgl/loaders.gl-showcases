@@ -173,9 +173,11 @@ const getLayersAndSublayers = async (
     )) as BuildingSceneLayerTileset;
     const sublayersTree = buildSublayersTree(tileset.header.sublayers);
     const childSublayers = sublayersTree?.sublayers ?? [];
-    const overviewLayer = {...tileset?.sublayers.find(
-      (sublayer) => sublayer.name === "Overview"
-    ) as BuildingSceneSublayerExtended}
+    const overviewLayer = {
+      ...tileset?.sublayers.find(
+        (sublayer) => sublayer.name === "Overview"
+      ) as BuildingSceneSublayerExtended,
+    };
     overviewLayer.fetch = options.fetch as ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
     const sublayers = tileset?.sublayers
       .filter((sublayer) => sublayer.name !== "Overview")
