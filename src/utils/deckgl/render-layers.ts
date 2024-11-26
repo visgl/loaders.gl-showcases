@@ -135,7 +135,7 @@ const renderI3SLayer = (
   }
   return new DataDrivenTile3DLayer({
     id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
-    data: url!,
+    data: url,
     loader: I3SLoader,
     colorsByAttribute,
     customizeColors: colorizeTile,
