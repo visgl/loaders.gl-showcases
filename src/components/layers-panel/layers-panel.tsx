@@ -8,17 +8,19 @@ import styled, { css } from "styled-components";
 import { load } from "@loaders.gl/core";
 
 import {
-  LayerExample,
-  ListItemType,
-  BaseMap,
-  LayerViewState,
-  Bookmark,
-  PageId,
-  ComparisonSideMode,
+  type LayerExample,
+  type ListItemType,
+  type BaseMap,
+  type LayerViewState,
+  type Bookmark,
+  type PageId,
+  type ComparisonSideMode,
+  BaseMapGroup,
 } from "../../types";
 import { CloseButton } from "../close-button/close-button";
-import { InsertPanel } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomLayerData } from "./insert-panel/insert-panel";
 import { LayersControlPanel } from "./layers-control-panel";
+import { ArcGisControlPanel } from "./arcgis-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
 import {
   PanelContainer,
@@ -27,22 +29,21 @@ import {
   PanelHorizontalLine,
   Panels,
 } from "../common";
-import { color_brand_senary } from "../../constants/colors";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
-import { ArcGISWebSceneLoader } from "@loaders.gl/i3s";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { ArcGISWebSceneLoader, type LayerError } from "@loaders.gl/i3s";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { useAppLayout } from "../../utils/hooks/layout";
-import { getTilesetType } from "../../utils/url-utils";
+import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
-const NOT_SUPPORTED_LAYERS_ERROR =
-  "There are no supported layers in the scene. Supported layers:";
+const LAYERS_ERROR_UNSUPPORTED = "There are unsupported layers in the scene:";
+const LAYERS_ERROR_SUPPORTED = "Supported layer types:";
 
 const NOT_SUPPORTED_CRS_ERROR =
   "There is no supported CRS system. Only WGS84 is supported.";
@@ -55,15 +56,9 @@ enum Tabs {
   MapOptions,
 }
 
-type TabProps = {
-  active: boolean;
-};
-
-type CustomItem = {
-  name: string;
-  url: string;
-  token?: string;
-};
+interface TabProps {
+  $active: boolean;
+}
 
 const Tab = styled.div<TabProps>`
   position: relative;
@@ -82,8 +77,8 @@ const Tab = styled.div<TabProps>`
     }
   }
 
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     css`
       &::after {
         content: "";
@@ -115,30 +110,41 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 
-const SupportedLayersList = styled.ul`
-  margin-top: 28px;
+const LayersList = styled.ul`
+  margin-top: 16px;
   padding-left: 25px;
   margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const SupportedLayerItem = styled.li`
+const LayerItem = styled.li`
+  padding-left: 6px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 16px;
   line-height: 19px;
   color: ${({ theme }) => theme.colors.fontColor};
-  margin-bottom: 13px;
 
   &::marker {
-    color: ${color_brand_senary};
-  }
-
-  &:last-child {
-    margin-bottom: 0px;
+    color: ${({ theme }) => theme.colors.bullet};
   }
 `;
 
-type LayersPanelProps = {
+const TitleWrapper = styled.div`
+  margin-top: 28px;
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: ${({ theme }) => theme.colors.fontColor};
+`;
+
+interface LayersPanelProps {
   id: string;
   pageId: PageId;
   layers: LayerExample[];
@@ -156,7 +162,7 @@ type LayersPanelProps = {
   onClose: () => void;
   onPointToLayer: (viewState?: LayerViewState) => void;
   onBuildingExplorerOpened: (opened: boolean) => void;
-};
+}
 
 export const LayersPanel = ({
   id,
@@ -194,20 +200,18 @@ export const LayersPanel = ({
     useState(false);
   const [warningNode, setWarningNode] = useState<HTMLDivElement | null>(null);
   const [showAddingSlidesWarning, setShowAddingSlidesWarning] = useState(false);
+  const [unsupportedLayers, setUnsupportedLayers] = useState<string[]>([]);
 
-  useClickOutside([warningNode], () => setShowExistedError(false));
+  useClickOutside([warningNode], () => {
+    setShowExistedError(false);
+  });
 
-  const handleInsertLayer = (layer: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
+  const handleInsertLayer = (layer: CustomLayerData) => {
     const existedLayer = layers.some(
       (exisLayer) => exisLayer.url.trim() === layer.url.trim()
     );
 
     if (existedLayer) {
-      setShowLayerInsertPanel(false);
       setShowExistedError(true);
       return;
     }
@@ -221,7 +225,6 @@ export const LayersPanel = ({
     };
 
     onLayerInsert(newLayer);
-    setShowLayerInsertPanel(false);
   };
 
   const prepareLayerExamples = (layers: OperationalLayer[]): LayerExample[] => {
@@ -247,12 +250,22 @@ export const LayersPanel = ({
     return layersList;
   };
 
+  const saveLayerTypes = (layers) => {
+    const layerTypes: string[] = [];
+    if (layers) {
+      for (const layer of layers) {
+        if (!layerTypes.find((item) => item === layer.layerType)) {
+          layerTypes.push(layer.layerType);
+        }
+      }
+    }
+    setUnsupportedLayers(layerTypes);
+  };
+
   // TODO Add loader to show webscene loading
-  const handleInsertScene = async (scene: {
-    name: string;
-    url: string;
-    token?: string;
-  }) => {
+  const handleInsertScene = async (scene: CustomLayerData): Promise<void> => {
+    scene.url = convertUrlToRestFormat(scene.url);
+
     const existedScene = layers.some(
       (exisLayer) => exisLayer.url.trim() === scene.url.trim()
     );
@@ -268,6 +281,12 @@ export const LayersPanel = ({
         scene.url,
         ArcGISWebSceneLoader
       )) as ArcGISWebSceneData;
+
+      if (webScene.unsupportedLayers?.length) {
+        saveLayerTypes(webScene.unsupportedLayers);
+        setShowNoSupportedLayersInSceneError(true);
+      }
+
       const webSceneLayerExamples = prepareLayerExamples(webScene.layers);
 
       const newLayer: LayerExample = {
@@ -284,31 +303,30 @@ export const LayersPanel = ({
       const bookmarks =
         isAddingBookmarksAllowed && pageId
           ? convertArcGisSlidesToBookmars(
-              webScene.header,
-              webSceneLayerExamples,
-              newLayersExamples,
-              pageId,
-              viewWidth,
-              viewHeight
-            )
+            webScene.header,
+            webSceneLayerExamples,
+            newLayersExamples,
+            pageId,
+            viewWidth,
+            viewHeight
+          )
           : [];
 
       if (isWebsceneHasSlides && !isAddingBookmarksAllowed) {
         setShowAddingSlidesWarning(true);
       }
 
-      // TODO Check unsupported layers inside webScene to show warning about some layers are not included to the webscene.
       onLayerInsert(newLayer, bookmarks);
     } catch (error) {
       if (error instanceof Error) {
         switch (error.message) {
           case "NO_AVAILABLE_SUPPORTED_LAYERS_ERROR": {
-            setShowSceneInsertPanel(false);
+            const layers = (error as LayerError).details;
+            saveLayerTypes(layers);
             setShowNoSupportedLayersInSceneError(true);
             break;
           }
           case "NOT_SUPPORTED_CRS_ERROR": {
-            setShowSceneInsertPanel(false);
             setShowNoSupportedCRSInSceneError(true);
             break;
           }
@@ -322,36 +340,43 @@ export const LayersPanel = ({
     }
   };
 
-  const handleInsertMap = (map: CustomItem) => {
+  const handleInsertMap = (map: CustomLayerData): void => {
     const id = map.url.replace(/" "/g, "-");
-    const newMap: BaseMap = {
-      id,
-      mapUrl: map.url,
-      name: map.name,
-      token: map.token,
-      custom: true,
-    };
-
-    dispatch(addBaseMap(newMap));
+    if (map.group !== undefined) {
+      const newMap: BaseMap = {
+        id,
+        mapUrl: map.url,
+        name: map.name,
+        token: map.token,
+        iconId: "Custom",
+        custom: true,
+        group: map.group,
+      };
+      dispatch(addBaseMap(newMap));
+    }
     setShowInsertMapPanel(false);
   };
 
   return (
-    <PanelContainer id={id} layout={layout}>
+    <PanelContainer id={id} $layout={layout}>
       {!showLayerSettings && (
         <>
-          <PanelHeader panel={Panels.Layers}>
+          <PanelHeader $panel={Panels.Layers}>
             <Tab
               id="layers-tab"
-              active={tab === Tabs.Layers}
-              onClick={() => setTab(Tabs.Layers)}
+              $active={tab === Tabs.Layers}
+              onClick={() => {
+                setTab(Tabs.Layers);
+              }}
             >
               Layers
             </Tab>
             <Tab
               id="map-options-tab"
-              active={tab === Tabs.MapOptions}
-              onClick={() => setTab(Tabs.MapOptions)}
+              $active={tab === Tabs.MapOptions}
+              onClick={() => {
+                setTab(Tabs.MapOptions);
+              }}
             >
               Map Options
             </Tab>
@@ -368,55 +393,105 @@ export const LayersPanel = ({
                 selectedLayerIds={selectedLayerIds}
                 hasSettings={Boolean(sublayers.length)}
                 onLayerSelect={onLayerSelect}
-                onLayerInsertClick={() => setShowLayerInsertPanel(true)}
-                onSceneInsertClick={() => setShowSceneInsertPanel(true)}
-                onLayerSettingsClick={() => setShowLayerSettings(true)}
+                onLayerInsertClick={() => {
+                  setShowLayerInsertPanel(true);
+                }}
+                onSceneInsertClick={() => {
+                  setShowSceneInsertPanel(true);
+                }}
+                onLayerSettingsClick={() => {
+                  setShowLayerSettings(true);
+                }}
                 onPointToLayer={onPointToLayer}
                 deleteLayer={onLayerDelete}
               />
             )}
             {tab === Tabs.MapOptions && (
               <MapOptionPanel
-                insertBaseMap={() => setShowInsertMapPanel(true)}
+                pageId={pageId}
+                insertBaseMap={() => {
+                  setShowInsertMapPanel(true);
+                }}
               />
             )}
           </PanelContent>
+
+          <PanelHorizontalLine $top={0} $bottom={0} />
+
+          <PanelContent>
+            <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />
+          </PanelContent>
+
           {showExistedError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={EXISTING_AREA_ERROR}
-                onConfirm={() => setShowExistedError(false)}
+                onConfirm={() => {
+                  setShowExistedError(false);
+                }}
               />
             </PanelWrapper>
           )}
           {showNoSupportedLayersInSceneError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
-                title={NOT_SUPPORTED_LAYERS_ERROR}
-                onConfirm={() => setShowNoSupportedLayersInSceneError(false)}
+                title={LAYERS_ERROR_UNSUPPORTED}
+                onConfirm={() => {
+                  setShowNoSupportedLayersInSceneError(false);
+                }}
               >
-                <SupportedLayersList>
-                  <SupportedLayerItem>IntegratedMesh</SupportedLayerItem>
-                  <SupportedLayerItem>3DObjects</SupportedLayerItem>
-                  <SupportedLayerItem>Building</SupportedLayerItem>
-                </SupportedLayersList>
+                <>
+                  <LayersList>
+                    {unsupportedLayers.map((layer) => {
+                      return <LayerItem key={layer}>{layer}</LayerItem>;
+                    })}
+                  </LayersList>
+
+                  <TitleWrapper>{LAYERS_ERROR_SUPPORTED}</TitleWrapper>
+
+                  <LayersList>
+                    <LayerItem>IntegratedMesh</LayerItem>
+                    <LayerItem>3DObjects</LayerItem>
+                    <LayerItem>Building</LayerItem>
+                  </LayersList>
+                </>
               </WarningPanel>
             </PanelWrapper>
           )}
           {showNoSupportedCRSInSceneError && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={NOT_SUPPORTED_CRS_ERROR}
-                onConfirm={() => setShowNoSupportedCRSInSceneError(false)}
+                onConfirm={() => {
+                  setShowNoSupportedCRSInSceneError(false);
+                }}
               />
             </PanelWrapper>
           )}
 
           {showAddingSlidesWarning && (
-            <PanelWrapper ref={(element) => setWarningNode(element)}>
+            <PanelWrapper
+              ref={(element) => {
+                setWarningNode(element);
+              }}
+            >
               <WarningPanel
                 title={DONT_LOAD_SLIDES_IN_ACROSS_LAYER_MODE}
-                onConfirm={() => setShowAddingSlidesWarning(false)}
+                onConfirm={() => {
+                  setShowAddingSlidesWarning(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -424,8 +499,13 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Layer"}
-                onInsert={(layer) => handleInsertLayer(layer)}
-                onCancel={() => setShowLayerInsertPanel(false)}
+                onInsert={(layer) => {
+                  handleInsertLayer(layer);
+                  setShowLayerInsertPanel(false);
+                }}
+                onCancel={() => {
+                  setShowLayerInsertPanel(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -433,8 +513,12 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Scene"}
-                onInsert={(scene) => handleInsertScene(scene)}
-                onCancel={() => setShowSceneInsertPanel(false)}
+                onInsert={async (scene) => {
+                  await handleInsertScene(scene);
+                }}
+                onCancel={() => {
+                  setShowSceneInsertPanel(false);
+                }}
               />
             </PanelWrapper>
           )}
@@ -444,7 +528,9 @@ export const LayersPanel = ({
         <LayerSettingsPanel
           sublayers={sublayers}
           onUpdateSublayerVisibility={onUpdateSublayerVisibility}
-          onBackClick={() => setShowLayerSettings(false)}
+          onBackClick={() => {
+            setShowLayerSettings(false);
+          }}
           onBuildingExplorerOpened={onBuildingExplorerOpened}
           onCloseClick={onClose}
           side={side}
@@ -455,8 +541,13 @@ export const LayersPanel = ({
         <PanelWrapper>
           <InsertPanel
             title={"Insert Base Map"}
-            onInsert={(map) => handleInsertMap(map)}
-            onCancel={() => setShowInsertMapPanel(false)}
+            groups={[BaseMapGroup.Maplibre]}
+            onInsert={(map) => {
+              handleInsertMap(map);
+            }}
+            onCancel={() => {
+              setShowInsertMapPanel(false);
+            }}
           />
         </PanelWrapper>
       )}

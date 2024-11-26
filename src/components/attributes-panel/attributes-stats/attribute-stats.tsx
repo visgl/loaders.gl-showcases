@@ -31,9 +31,9 @@ import {
   selectStatisitcsMap,
 } from "../../../redux/slices/i3s-stats-slice";
 
-type VisibilityProps = {
+interface VisibilityProps {
   visible: boolean;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -158,12 +158,12 @@ const COUNT_TITLE = "Count";
 const MODE_MULTIPLY = "multiply";
 const MODE_REPLACE = "replace";
 
-type AttributeStatsProps = {
+interface AttributeStatsProps {
   attributeName: string;
   statisticsInfo: StatisticsInfo;
   tilesetName: string;
   tilesetBasePath: string;
-};
+}
 
 export const AttributeStats = ({
   attributeName,
@@ -200,7 +200,7 @@ export const AttributeStats = ({
       setStatistics(statsMap[statAttributeUrl]);
       setIsLoading(false);
     } else {
-      dispatch(getAttributeStatsInfo(statAttributeUrl));
+      void dispatch(getAttributeStatsInfo(statAttributeUrl));
     }
   }, [attributeName, statsMap]);
 
@@ -273,8 +273,8 @@ export const AttributeStats = ({
         dispatch(
           setColorsByAttrubute({
             attributeName,
-            minValue: statistics.min || 0,
-            maxValue: statistics.max || 0,
+            minValue: statistics.min ?? 0,
+            maxValue: statistics.max ?? 0,
             minColor: COLORS_BY_ATTRIBUTE.min.rgba,
             maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
             mode: MODE_REPLACE,
@@ -298,8 +298,8 @@ export const AttributeStats = ({
       dispatch(
         setColorsByAttrubute({
           attributeName,
-          minValue: statistics?.min || 0,
-          maxValue: statistics?.max || 0,
+          minValue: statistics?.min ?? 0,
+          maxValue: statistics?.max ?? 0,
           minColor: COLORS_BY_ATTRIBUTE.min.rgba,
           maxColor: COLORS_BY_ATTRIBUTE.max.rgba,
           mode: newMode,

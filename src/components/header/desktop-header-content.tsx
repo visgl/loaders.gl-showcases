@@ -4,10 +4,10 @@ import styled, { css } from "styled-components";
 
 import { useClickOutside } from "../../utils/hooks/use-click-outside-hook";
 import {
-  ActiveProps,
-  CompareButtonProps,
+  type ActiveProps,
+  type CompareButtonProps,
   GithubImage,
-  MenuProps,
+  type MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
 import {
@@ -16,12 +16,8 @@ import {
 } from "../../constants/colors";
 import { ThemeToggler } from "./theme-toggler";
 
-type CompareMenuProps = {
+interface CompareMenuProps {
   pathname: string;
-};
-
-type HelpButtonProps = {
-  showHelp?: boolean;
 }
 
 const MenuContainer = styled.div`
@@ -96,11 +92,11 @@ const CompareButton = styled.div<CompareButtonProps>`
   height: 30px;
   border-bottom: 2px solid
     ${(props) =>
-      props.active ? color_brand_secondary : props.theme.colors.mainColor};
+      props.$active ? color_brand_secondary : props.theme.colors.mainColor};
   border-radius: 2px;
 
   color: ${(props) =>
-    props.active ? color_brand_secondary : props.theme.colors.fontColor};
+    props.$active ? color_brand_secondary : props.theme.colors.fontColor};
 
   &::before,
   &::after {
@@ -115,12 +111,12 @@ const CompareButton = styled.div<CompareButtonProps>`
 
   &::before {
     transform: ${(props) =>
-      props.open ? "rotate(-45deg)" : "rotate(-135deg)"};
+      props.$open ? "rotate(-45deg)" : "rotate(-135deg)"};
     left: calc(100% + 16px);
   }
 
   &::after {
-    transform: ${(props) => (props.open ? "rotate(45deg)" : "rotate(135deg)")};
+    transform: ${(props) => (props.$open ? "rotate(45deg)" : "rotate(135deg)")};
     right: -14px;
   }
 
@@ -133,8 +129,8 @@ const CompareButton = styled.div<CompareButtonProps>`
     }
   }
 
-  ${({ active }) =>
-    active &&
+  ${({ $active }) =>
+    $active &&
     css`
       &:after,
       &:before {
@@ -143,9 +139,16 @@ const CompareButton = styled.div<CompareButtonProps>`
     `}
 `;
 
+interface HelpButtonProps {
+  $showHelp?: boolean;
+}
+
 const HelpButton = styled.button<HelpButtonProps>`
-  color: ${({theme, showHelp}) => showHelp ? color_brand_secondary : theme.colors.fontColor};
-  border: 1px solid ${({showHelp}) => showHelp ? color_brand_secondary : color_brand_quaternary};
+  color: ${({ theme, $showHelp }) =>
+    $showHelp ? color_brand_secondary : theme.colors.fontColor};
+  border: 1px solid
+    ${({ $showHelp }) =>
+      $showHelp ? color_brand_secondary : color_brand_quaternary};
   border-radius: 12px;
   padding: 6px 18px;
   line-height: 18px;
@@ -203,22 +206,24 @@ const CompareMenuLink = styled(MenuLink)`
 `;
 
 const CompareTab = React.forwardRef<HTMLInputElement, CompareMenuProps>(
-  ({ pathname }, forwardedRef) => (
-    <CompareTabContainer ref={forwardedRef}>
-      <CompareMenuLink
-        to="compare-across-layers"
-        active={pathname === "/compare-across-layers" ? 1 : 0}
-      >
-        Across Layers
-      </CompareMenuLink>
-      <CompareMenuLink
-        to="compare-within-layer"
-        active={pathname === "/compare-within-layer" ? 1 : 0}
-      >
-        Within a Layer
-      </CompareMenuLink>
-    </CompareTabContainer>
-  )
+  function CompareTab({ pathname }, forwardedRef) {
+    return (
+      <CompareTabContainer ref={forwardedRef}>
+        <CompareMenuLink
+          to="compare-across-layers"
+          active={pathname === "/compare-across-layers" ? 1 : 0}
+        >
+          Across Layers
+        </CompareMenuLink>
+        <CompareMenuLink
+          to="compare-within-layer"
+          active={pathname === "/compare-within-layer" ? 1 : 0}
+        >
+          Within a Layer
+        </CompareMenuLink>
+      </CompareTabContainer>
+    );
+  }
 );
 
 export const DesktopHeaderContent = ({
@@ -227,12 +232,14 @@ export const DesktopHeaderContent = ({
   setTheme,
   githubIcon,
   showHelp,
-  onHelpClick
+  onHelpClick,
 }: MenuProps) => {
   const compareTabRef = useRef<HTMLInputElement>(null);
   const [isCompareMenuOpen, setIsCompareMenuOpen] = useState(false);
 
-  useClickOutside([compareTabRef.current], () => setIsCompareMenuOpen(false));
+  useClickOutside([compareTabRef.current], () => {
+    setIsCompareMenuOpen(false);
+  });
 
   useEffect(() => {
     setIsCompareMenuOpen(false);
@@ -252,12 +259,14 @@ export const DesktopHeaderContent = ({
       <CompareItemWrapper ref={compareTabRef}>
         <CompareButton
           id="compare-default-button"
-          active={
+          $active={
             pathname === "/compare-across-layers" ||
             pathname === "/compare-within-layer"
           }
-          open={isCompareMenuOpen}
-          onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
+          $open={isCompareMenuOpen}
+          onClick={() => {
+            setIsCompareMenuOpen((prevValue) => !prevValue);
+          }}
         >
           Compare
         </CompareButton>
@@ -267,7 +276,13 @@ export const DesktopHeaderContent = ({
         GitHub
         <GithubImage src={githubIcon} />
       </GitHubLink>
-      <HelpButton id="help-button-default" showHelp={showHelp} onClick={onHelpClick}>Help</HelpButton>
+      <HelpButton
+        id="help-button-default"
+        $showHelp={showHelp}
+        onClick={onHelpClick}
+      >
+        Help
+      </HelpButton>
       <ThemeToggler theme={theme} setTheme={setTheme} />
     </MenuContainer>
   );

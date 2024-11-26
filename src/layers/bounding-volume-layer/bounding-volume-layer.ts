@@ -26,7 +26,7 @@ const defaultProps = {
   },
 };
 
-export default class BoundingVolumeLayer extends CompositeLayer {
+export class BoundingVolumeLayer extends CompositeLayer {
   props: any;
   state: any;
   static layerName: string;
@@ -183,7 +183,7 @@ export default class BoundingVolumeLayer extends CompositeLayer {
           } else if (!layer.props.visible) {
             layer = layer.clone({ visible: true });
           }
-        } else if (layer && layer.props.visible) {
+        } else if (layer?.props.visible) {
           layer = layer.clone({ visible: false });
         }
 

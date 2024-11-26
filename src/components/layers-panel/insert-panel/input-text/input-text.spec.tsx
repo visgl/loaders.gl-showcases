@@ -11,7 +11,10 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test" onChange={onChange} />
     );
-
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
       dom.container.querySelector("input[type=text]");
     const inputLabel: HTMLLabelElement | null =
@@ -32,13 +35,17 @@ describe("Input Text", () => {
         onChange={onChange}
       />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
-      dom.container.querySelector("input[type=text]")!;
+      dom.container.querySelector("input[type=text]");
     const inputLabel: HTMLLabelElement | null =
-      dom.container.querySelector("label")!;
+      dom.container.querySelector("label");
 
     expect(input).toBeInTheDocument();
-    expect(input.value).toBe("test");
+    expect(input?.value).toBe("test");
     expect(inputLabel).toBeInTheDocument();
     expect(inputLabel?.textContent).toEqual("Label Text");
   });
@@ -52,9 +59,15 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test" onChange={onChange} />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
-      dom.container.querySelector("input[type=text]")!;
-    fireEvent.change(input, { target: { value: "test-updated" } });
+      dom.container.querySelector("input[type=text]");
+    if (input) {
+      fireEvent.change(input, { target: { value: "test-updated" } });
+    }
 
     expect(changedValue).toBe("test-updated");
     expect(onChange).toHaveBeenCalledTimes(1);
@@ -66,10 +79,14 @@ describe("Input Text", () => {
     const dom = renderWithTheme(
       <InputText id="input-test" value="test-prop-value" onChange={onChange} />
     );
+    expect(dom).toBeDefined();
+    if (!dom) {
+      return;
+    }
     const input: HTMLInputElement | null =
-      dom.container.querySelector("input[type=text]")!;
+      dom.container.querySelector("input[type=text]");
 
-    expect(input.value).toBe("test-prop-value");
+    expect(input?.value).toBe("test-prop-value");
     expect(onChange).toHaveBeenCalledTimes(0);
   });
 });

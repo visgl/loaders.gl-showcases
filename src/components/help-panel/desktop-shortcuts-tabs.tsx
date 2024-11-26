@@ -11,14 +11,14 @@ import TrackpadImage from "../../../public/images/trackpadTabDesktop.svg";
 import MouseImage from "../../../public/images/mouseTabDesktop.svg";
 import TouchImage from "../../../public/images/touchTabDesktop.svg";
 
-type ShortcutTabsProps = {
+interface ShortcutTabsProps {
   selectedTab: HelpPanelSelectedTab;
   onTabSelect: (tab: HelpPanelSelectedTab) => void;
-};
+}
 
-type TabProps = {
+interface TabProps {
   active: boolean;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -94,21 +94,21 @@ export const DesktopShortcutTabs = ({
         <Tab
           data-testid="tab-mouse"
           active={selectedTab === HelpPanelSelectedTab.Mouse}
-          onClick={() => onTabSelect(HelpPanelSelectedTab.Mouse)}
+          onClick={() => { onTabSelect(HelpPanelSelectedTab.Mouse); }}
         >
           Mouse
         </Tab>
         <Tab
           data-testid="tab-trackpad"
           active={selectedTab === HelpPanelSelectedTab.Trackpad}
-          onClick={() => onTabSelect(HelpPanelSelectedTab.Trackpad)}
+          onClick={() => { onTabSelect(HelpPanelSelectedTab.Trackpad); }}
         >
           Trackpad
         </Tab>
         <Tab
           data-testid="tab-touch"
           active={selectedTab === HelpPanelSelectedTab.Touch}
-          onClick={() => onTabSelect(HelpPanelSelectedTab.Touch)}
+          onClick={() => { onTabSelect(HelpPanelSelectedTab.Touch); }}
         >
           Touch
         </Tab>

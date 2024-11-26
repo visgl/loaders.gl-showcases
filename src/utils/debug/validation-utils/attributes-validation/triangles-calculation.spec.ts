@@ -1,48 +1,32 @@
-import { getTriangleVertices, getTriangleArea } from './triangles-calculation';
-
-jest.mock('@math.gl/core', () => ({
-  Vector3: jest.fn()
-    .mockReturnValue({
-      test: 1,
-      set: jest.fn().mockReturnValue({
-        subtract: jest.fn().mockReturnValue({
-          angle: jest.fn().mockReturnValue(120),
-          magnitude: jest.fn().mockReturnValue(5)
-        })
-      })
-    })
-}));
+import { Vector3 } from "@math.gl/core";
+import { getTriangleVertices, getTriangleArea } from "./triangles-calculation";
 
 describe("Triangles Calculation - getTriangleVertices", () => {
   test("Should return geometry vertices", () => {
     const attribute = {
-      value: {
-        subarray: jest.fn().mockReturnValue('subarray'),
-        constructor: jest.fn().mockReturnValue({
-          test: 1,
-          set: jest.fn()
-        })
-      },
-      size: 5
+      value: new Float32Array([
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+      ]),
+      size: 3,
     };
     const offset = 10;
 
     const result = getTriangleVertices(attribute, offset);
-    expect(result[0].test).toStrictEqual(1);
-    expect(result[1].test).toStrictEqual(1);
-    expect(result[2].test).toStrictEqual(1);
+    expect(result[0]).toEqual([10, 11, 12]);
+    expect(result[1]).toEqual([13, 14, 15]);
+    expect(result[2]).toEqual([16, 17, 18]);
   });
-
 });
 
 describe("Triangles Calculation - getTriangleArea", () => {
   test("Should return area", () => {
     const vertices = [
-      { x: 1, y: 1, z: 1 },
-      { x: 2, y: 2, z: 2 }
+      new Vector3(1, 1, 1),
+      new Vector3(2, 2, 2),
+      new Vector3(0, 3, 3),
     ];
 
     const result = getTriangleArea(vertices);
-    expect(result).toStrictEqual(7.257639802653928);
+    expect(result).toStrictEqual(2.1213203435596424);
   });
 });

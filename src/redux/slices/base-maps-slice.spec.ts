@@ -1,54 +1,58 @@
 import { setupStore } from "../store";
 import reducer, {
-  BaseMapsState,
-  selectBaseMaps,
-  selectSelectedBaseMapId,
+  type BaseMapsState,
+  selectBaseMapsByGroup,
+  selectSelectedBaseMap,
   setInitialBaseMaps,
   addBaseMap,
-  setSelectedBaseMaps,
-  deleteBaseMaps,
+  setSelectedBaseMap,
+  deleteBaseMap,
 } from "./base-maps-slice";
+import { BaseMapGroup } from "../../types";
+import { BASE_MAPS } from "../../constants/map-styles";
+
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 
 describe("slice: base-maps", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
-      baseMap: [
-        {
-          id: "Dark",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-          name: "Dark",
-        },
-        {
-          id: "Light",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-          name: "Light",
-        },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
-      ],
-      selectedBaseMap: "Dark",
+    expect(reducer(undefined, { type: "none" })).toEqual({
+      basemaps: BASE_MAPS,
+      selectedBaseMapId: "Dark",
     });
   });
 
   it("Reducer setBaseMaps should add base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
     expect(
@@ -58,181 +62,236 @@ describe("slice: base-maps", () => {
           id: "first",
           mapUrl: "https://first-url.com",
           name: "first name",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         })
       )
     ).toEqual({
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
-        { id: "first", mapUrl: "https://first-url.com", name: "first name" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
+        {
+          id: "first",
+          mapUrl: "https://first-url.com",
+          name: "first name",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
+        },
       ],
-      selectedBaseMap: "first",
+      selectedBaseMapId: "first",
     });
   });
 
-  it("Reducer deleteBaseMaps should remove base map", () => {
+  it("Reducer deleteBaseMap should remove base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
-    expect(reducer(previousState, deleteBaseMaps("Dark"))).toEqual({
-      baseMap: [
+    expect(reducer(previousState, deleteBaseMap("Dark"))).toEqual({
+      basemaps: [
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
       ],
-      selectedBaseMap: "Light",
+      selectedBaseMapId: "Light",
     });
   });
 
-  it("Reducer setSelectedBaseMaps should update selected base map", () => {
+  it("Reducer setSelectedBaseMap should update selected base map", () => {
     const previousState: BaseMapsState = {
-      baseMap: [
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
       ],
-      selectedBaseMap: "Dark",
+      selectedBaseMapId: "Dark",
     };
 
-    expect(reducer(previousState, setSelectedBaseMaps("Light"))).toEqual({
-      baseMap: [
+    expect(reducer(previousState, setSelectedBaseMap("Light"))).toEqual({
+      basemaps: [
         {
           id: "Dark",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
           name: "Dark",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Dark",
         },
         {
           id: "Light",
           mapUrl:
             "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
           name: "Light",
+          group: BaseMapGroup.Maplibre,
+          iconId: "Light",
         },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
       ],
-      selectedBaseMap: "Light",
+      selectedBaseMapId: "Light",
     });
   });
 
   it("Reducer setInitialBaseMaps should return initial base maps", () => {
     const previousState: BaseMapsState = {
-      baseMap: [{ id: "Terrain", mapUrl: "", name: "Terrain" }],
-      selectedBaseMap: "Terrain",
+      basemaps: [
+        {
+          id: "Terrain",
+          mapUrl: "",
+          name: "Terrain",
+          group: BaseMapGroup.Terrain,
+          iconId: "Terrain",
+        },
+      ],
+      selectedBaseMapId: "Terrain",
     };
 
     expect(reducer(previousState, setInitialBaseMaps())).toEqual({
-      baseMap: [
-        {
-          id: "Dark",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
-          name: "Dark",
-        },
-        {
-          id: "Light",
-          mapUrl:
-            "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-          name: "Light",
-        },
-        { id: "Terrain", mapUrl: "", name: "Terrain" },
-      ],
-      selectedBaseMap: "Dark",
+      basemaps: BASE_MAPS,
+      selectedBaseMapId: "Dark",
     });
   });
 
-  it("Selectors should return initial value", () => {
+  it("Selectors should return initially selected value", () => {
     const store = setupStore();
     const state = store.getState();
-    expect(selectSelectedBaseMapId(state)).toEqual("Dark");
-    expect(selectBaseMaps(state)).toEqual([
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Dark");
+    expect(selectBaseMapsByGroup(state, "")).toEqual(BASE_MAPS);
+  });
+
+  it("Selectors should return updated value", () => {
+    const store = setupStore();
+    store.dispatch(deleteBaseMap("Dark"));
+    const newItem = {
+      id: "first",
+      mapUrl: "https://first-url.com",
+      name: "first name",
+      group: BaseMapGroup.Maplibre,
+      iconId: "Dark",
+    };
+    store.dispatch(addBaseMap(newItem));
+    store.dispatch(setSelectedBaseMap("Terrain"));
+    const state = store.getState();
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Terrain");
+
+    const expectedArray = BASE_MAPS.filter((item) => item.id !== "Dark");
+    expectedArray.push(newItem);
+
+    expect(selectBaseMapsByGroup(state, "")).toEqual(expectedArray);
+    // set wrong id of basemap
+    store.dispatch(setSelectedBaseMap("Dark"));
+    const newState = store.getState();
+    // it doesn't use wrong id and keeps previous one
+    expect(selectSelectedBaseMap(newState)?.id).toEqual("Terrain");
+  });
+
+  it("Selector should return value selected by group", () => {
+    const store = setupStore();
+    const state = store.getState();
+    const mapId = selectSelectedBaseMap(state)?.id;
+    expect(mapId).toEqual("Dark");
+    expect(selectBaseMapsByGroup(state, BaseMapGroup.Maplibre)).toEqual([
       {
         id: "Dark",
         mapUrl:
           "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
         name: "Dark",
+        group: BaseMapGroup.Maplibre,
+        iconId: "Dark",
       },
       {
         id: "Light",
         mapUrl:
           "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
         name: "Light",
-      },
-      { id: "Terrain", mapUrl: "", name: "Terrain" },
-    ]);
-  });
-
-  it("Selectors should return updated value", () => {
-    const store = setupStore();
-    store.dispatch(deleteBaseMaps("Dark"));
-    store.dispatch(
-      addBaseMap({
-        id: "first",
-        mapUrl: "https://first-url.com",
-        name: "first name",
-      })
-    );
-    store.dispatch(setSelectedBaseMaps("Terrain"));
-    const state = store.getState();
-    expect(selectSelectedBaseMapId(state)).toEqual("Terrain");
-    expect(selectBaseMaps(state)).toEqual([
-      {
-        id: "Light",
-        mapUrl:
-          "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
-        name: "Light",
-      },
-      { id: "Terrain", mapUrl: "", name: "Terrain" },
-      {
-        id: "first",
-        mapUrl: "https://first-url.com",
-        name: "first name",
+        group: BaseMapGroup.Maplibre,
+        iconId: "Light",
       },
     ]);
-    // set wrong id of basemap
-    store.dispatch(setSelectedBaseMaps("Dark"));
-    const newState = store.getState();
-    // it doesn't use wrong id and keeps previous one
-    expect(selectSelectedBaseMapId(newState)).toEqual("Terrain");
   });
 });

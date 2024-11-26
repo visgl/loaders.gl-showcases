@@ -1,5 +1,8 @@
-import styled from "styled-components";
-import { color_canvas_primary_inverted } from "../../constants/colors";
+import styled, { css } from "styled-components";
+import {
+  color_canvas_primary_inverted,
+  dim_canvas_tertiary,
+} from "../../constants/colors";
 
 const Switch = styled.div`
   position: relative;
@@ -17,12 +20,17 @@ const Input = styled.input`
 const Label = styled.label<{
   title?: string;
   htmlFor?: string;
+  disabled: boolean;
 }>`
   font-size: 6px;
   width: 28px;
   height: 18px;
   border-radius: 8px;
-  cursor: pointer;
+  ${({ disabled }) =>
+    !disabled &&
+    css`
+      cursor: pointer;
+    `}
   ${Input} {
     opacity: 0;
     width: 0;
@@ -30,9 +38,8 @@ const Label = styled.label<{
   }
 `;
 
-const Slider = styled.span`
+const Slider = styled.span<{ disabled: boolean }>`
   position: absolute;
-  cursor: pointer;
   top: 1px;
   left: 0;
   right: 0;
@@ -54,16 +61,25 @@ const Slider = styled.span`
     transition: 0.4s;
     border-radius: 8px;
   }
-  &:hover {
-    background-color: ${({ theme }) =>
-      theme.colors.switchDisabledBackgroundHovered};
-  }
+  ${({ disabled }) =>
+    !disabled &&
+    css`
+      &:hover {
+        background-color: ${({ theme }) =>
+          theme.colors.switchDisabledBackgroundHovered};
+      }
+    `}
 
   ${Input}:checked + & {
     background: ${({ theme }) => theme.colors.switchCheckedBackground};
-    &:hover {
-      background: ${({ theme }) => theme.colors.switchCheckedBackgroundHovered};
-    }
+    ${({ disabled }) =>
+      !disabled &&
+      css`
+        &:hover {
+          background: ${({ theme }) =>
+            theme.colors.switchCheckedBackgroundHovered};
+        }
+      `}
   }
 
   ${Input}:checked + &::before {
@@ -71,30 +87,42 @@ const Slider = styled.span`
     -ms-transform: translateX(11px);
     transform: translateX(11px);
   }
+
+  ${Input}:disabled + &::before {
+    background-color: ${dim_canvas_tertiary};
+  }
 `;
 
-/**
- * TODO: Add types to component
- */
+interface ToggleSwitchProps {
+  checked: boolean;
+  onChange: () => void;
+  name?: string;
+  id?: string;
+  title?: string;
+  disabled?: boolean;
+}
+
 export const ToggleSwitch = ({
   checked,
   onChange,
   name = "",
   id = "",
   title = "",
-}) => {
+  disabled = false,
+}: ToggleSwitchProps) => {
   return (
     <Switch>
-      <Label htmlFor={id} title={title}>
+      <Label htmlFor={id} title={title} disabled={disabled}>
         <Input
           id={id}
           type="checkbox"
           name={name}
           checked={checked}
+          disabled={disabled}
           title={title}
           onChange={onChange}
         />
-        <Slider />
+        <Slider disabled={disabled} />
       </Label>
     </Switch>
   );

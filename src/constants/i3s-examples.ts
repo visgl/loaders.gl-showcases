@@ -1,4 +1,4 @@
-import { LayerExample, TilesetType } from "../types";
+import { type LayerExample, TilesetType } from "../types";
 
 export const TRANSITION_DURATION = 4000;
 
@@ -10,16 +10,16 @@ export const INITIAL_EXAMPLE: LayerExample = {
   name: "San Francisco v1.7",
   url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_3DObjects_1_7/SceneServer/layers/0",
   type: TilesetType.I3S,
-  mapInfo: 'https://www.arcgis.com/home/item.html?id=f71313a22abb4431974374a009f2e54b'
+  mapInfo: "https://www.arcgis.com/home/item.html?id=f71313a22abb4431974374a009f2e54b",
 };
 
 export const EXAMPLES: LayerExample[] = [
   {
-    id: "san-francisco-v1_6",
-    name: "San Francisco v1.6",
+    id: "san-francisco-v1_8",
+    name: "San Francisco v1.8",
     url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
     type: TilesetType.I3S,
-    mapInfo: 'https://www.arcgis.com/home/item.html?id=d3344ba99c3f4efaa909ccfbcc052ed5'
+    mapInfo: "https://www.arcgis.com/home/item.html?id=d3344ba99c3f4efaa909ccfbcc052ed5",
   },
   INITIAL_EXAMPLE,
   {
@@ -27,7 +27,7 @@ export const EXAMPLES: LayerExample[] = [
     name: "New York",
     url: "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_NewYork_17/SceneServer/layers/0",
     type: TilesetType.I3S,
-    mapInfo: 'https://www.arcgis.com/home/item.html?id=a457834a6cb449cd958502d6e98ba305'
+    mapInfo: "https://www.arcgis.com/home/item.html?id=a457834a6cb449cd958502d6e98ba305",
   },
   {
     id: "turanga-library",

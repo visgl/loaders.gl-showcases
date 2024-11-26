@@ -1,8 +1,11 @@
 import styled, { useTheme } from "styled-components";
 import { ActionButton } from "../../action-button/action-button";
 import WarningIcon from "../../../../public/icons/warning.svg?svgr";
-import { getCurrentLayoutProperty, useAppLayout } from "../../../utils/hooks/layout";
-import { LayoutProps } from "../../../types";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../../utils/hooks/layout";
+import { type LayoutProps } from "../../../types";
 
 const Container = styled.div<LayoutProps>`
   position: relative;
@@ -52,11 +55,11 @@ const ButtonWrapper = styled.div`
   margin-top: 60px;
 `;
 
-type ExistedLayerWarningProps = {
+interface ExistedLayerWarningProps {
   title: string;
   children?: React.ReactNode;
   onConfirm: () => void;
-};
+}
 
 export const WarningPanel = ({
   title,
@@ -67,7 +70,7 @@ export const WarningPanel = ({
   const theme = useTheme();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <ContentContainer>
         <TitleWrapper>
           <WarningIconContainer>

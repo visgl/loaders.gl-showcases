@@ -4,14 +4,14 @@ import { CloseButton } from "../close-button/close-button";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../loading-spinner/loading-spinner";
 
-type NonDesktopVideoPanelProps = {
+interface NonDesktopVideoPanelProps {
   shortcut: HelpShortcutItem;
   onCloseVideoPanel: () => void;
-};
+}
 
-type VisibilityProps = {
+interface VisibilityProps {
   visible: boolean;
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -84,7 +84,7 @@ export const NonDesktopVideoPanel = ({
         autoPlay
         loop
         src={shortcut.video}
-        onLoadedData={() => setIsLoading(false)}
+        onLoadedData={() => { setIsLoading(false); }}
       />
     </Container>
   );

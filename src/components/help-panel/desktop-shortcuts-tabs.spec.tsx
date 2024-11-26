@@ -9,14 +9,15 @@ jest.mock("../../../public/images/mouseTabDesktop.svg");
 jest.mock("../../../public/images/touchTabDesktop.svg");
 
 describe("Desktop Shortcut Tabs", () => {
-  it("Should render DesktopShortcutTabs", () => {
+  it("Should render DesktopShortcutTabs", async () => {
     const onTabSelect = jest.fn();
-    const { container } = renderWithTheme(
-      <DesktopShortcutTabs
-        selectedTab={HelpPanelSelectedTab.Mouse}
-        onTabSelect={onTabSelect}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <DesktopShortcutTabs
+          selectedTab={HelpPanelSelectedTab.Mouse}
+          onTabSelect={onTabSelect}
+        />
+      ) ?? {};
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Shortcuts")).toBeInTheDocument();
     expect(screen.getByText("Mouse")).toBeInTheDocument();
@@ -27,15 +28,15 @@ describe("Desktop Shortcut Tabs", () => {
     const trackpadTab = screen.getByTestId("tab-trackpad");
     const mouseTab = screen.getByTestId("tab-mouse");
 
-    expect(mouseTab).toHaveStyle(`color: #60C2A4`);
+    expect(mouseTab).toHaveStyle("color: #60C2A4");
 
-    userEvent.click(mouseTab);
-    expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);
+    await userEvent.click(mouseTab);
+    expect(onTabSelect).toHaveBeenCalledWith(HelpPanelSelectedTab.Mouse);
 
-    userEvent.click(trackpadTab);
-    expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Trackpad);
+    await userEvent.click(trackpadTab);
+    expect(onTabSelect).toHaveBeenCalledWith(HelpPanelSelectedTab.Trackpad);
 
-    userEvent.click(touchTab);
-    expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Touch);
+    await userEvent.click(touchTab);
+    expect(onTabSelect).toHaveBeenCalledWith(HelpPanelSelectedTab.Touch);
   });
 });

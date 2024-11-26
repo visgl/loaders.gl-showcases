@@ -2,8 +2,8 @@ import styled, { css } from "styled-components";
 import { Title, TileInfoSectionWrapper } from "../common";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 import { useExpand } from "../../utils/hooks/use-expand";
-import { CollapseDirection, ExpandState, TileSelectedColor } from "../../types";
-import { HuePicker, MaterialPicker, ColorResult } from "react-color";
+import { CollapseDirection, ExpandState, type TileSelectedColor } from "../../types";
+import { HuePicker, MaterialPicker, type ColorResult } from "react-color";
 
 const SelectedColorContainer = styled.div`
   display: flex;
@@ -17,9 +17,9 @@ const SelectedColorContainer = styled.div`
   margin-right: 16px;
 `;
 
-type SelectedColorProp = {
+interface SelectedColorProp {
   tileSelectedColor: TileSelectedColor;
-};
+}
 
 const SelectedColor = styled.div.attrs<SelectedColorProp>(
   ({ tileSelectedColor }) => ({
@@ -63,13 +63,13 @@ const ResetColorTitle = styled(Title)`
   font-weight: 400;
 `;
 
-type TileColorSectionProps = {
+interface TileColorSectionProps {
   tileId: string;
   tileSelectedColor: TileSelectedColor;
   isResetButtonDisabled: boolean;
   handleResetColor: (tileId: string) => void;
   handleSelectTileColor: (tileId: string, color: ColorResult) => void;
-};
+}
 
 const MATERIAL_PICKER_STYLE = {
   default: {
@@ -92,7 +92,7 @@ export const TileColorSection = ({
   return (
     <>
       <TileInfoSectionWrapper>
-        <Title left={16}>Tile color:</Title>
+        <Title $left={16}>Tile color:</Title>
         <SelectedColorContainer>
           <SelectedColor tileSelectedColor={tileSelectedColor} />
           <ExpandIcon
@@ -107,16 +107,16 @@ export const TileColorSection = ({
           <HuePicker
             width={"auto"}
             color={tileSelectedColor}
-            onChange={(color) => handleSelectTileColor(tileId, color)}
+            onChange={(color) => { handleSelectTileColor(tileId, color); }}
           />
           <MaterialPicker
             styles={MATERIAL_PICKER_STYLE}
             color={tileSelectedColor}
-            onChange={(color) => handleSelectTileColor(tileId, color)}
+            onChange={(color) => { handleSelectTileColor(tileId, color); }}
           />
           <ResetColorButton
             disabled={isResetButtonDisabled}
-            onClick={() => handleResetColor(tileId)}
+            onClick={() => { handleResetColor(tileId); }}
           >
             <ResetColorTitle>Reset</ResetColorTitle>
           </ResetColorButton>

@@ -2,9 +2,16 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { DesktopHeaderContent } from "./desktop-header-content";
+import type { ReactChildren } from "react";
 
 jest.mock("react-router-dom", () => ({
-  Link: ({ children, active }) => {
+  Link: ({
+    children,
+    active,
+  }: {
+    children: ReactChildren;
+    active: boolean;
+  }) => {
     const LinkMock = "desktop-link-mock";
 
     return (
@@ -25,7 +32,7 @@ jest.mock("../../constants/common", () => ({
 }));
 
 jest.mock("./theme-toggler", () => ({
-  ThemeToggler: ({ setTheme }) => {
+  ThemeToggler: ({ setTheme }: { setTheme: () => void }) => {
     const ToggleMock = "theme-toggle-desktop";
     return (
       // @ts-expect-error - mock component
@@ -51,7 +58,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Desktop header content", () => {
-  it("Should render Desktop Header", () => {
+  it("Should render Desktop Header", async () => {
     const { container } = callRender(renderWithTheme);
 
     const home = screen.getByText("Home");
@@ -71,18 +78,18 @@ describe("Desktop header content", () => {
     expect(helpButton).toBeInTheDocument();
     expect(themeToggler).toBeInTheDocument();
 
-    userEvent.click(themeToggler);
+    await userEvent.click(themeToggler);
     expect(setThemeMock).toBeCalled();
 
-    userEvent.click(helpButton);
+    await userEvent.click(helpButton);
     expect(onHelpClickMock).toBeCalled();
   });
 
-  it("Should show Compare Menu Items", () => {
+  it("Should show Compare Menu Items", async () => {
     callRender(renderWithTheme, { theme: 1 });
 
     const compare = screen.getByText("Compare");
-    userEvent.click(compare);
+    await userEvent.click(compare);
 
     const across = screen.getByText("Across Layers");
     const within = screen.getByText("Within a Layer");
@@ -94,30 +101,30 @@ describe("Desktop header content", () => {
   it("Should show active Viewer mode", () => {
     callRender(renderWithTheme, { pathname: "/viewer" });
     const viewer = screen.getByText("Viewer");
-    expect(viewer).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(viewer).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
   it("Should show active Debug mode", () => {
     callRender(renderWithTheme, { pathname: "/debug" });
     const debug = screen.getByText("Debug");
-    expect(debug).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(debug).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
-  it("Should show active Across Layers mode", () => {
+  it("Should show active Across Layers mode", async () => {
     callRender(renderWithTheme, { pathname: "/compare-across-layers" });
     const compare = screen.getByText("Compare");
-    userEvent.click(compare);
+    await userEvent.click(compare);
 
     const across = screen.getByText("Across Layers");
-    expect(across).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(across).toHaveStyle("color: rgb(96, 194, 164)");
   });
 
-  it("Should show active Within a Layer mode", () => {
+  it("Should show active Within a Layer mode", async () => {
     callRender(renderWithTheme, { pathname: "/compare-within-layer" });
     const compare = screen.getByText("Compare");
-    userEvent.click(compare);
+    await userEvent.click(compare);
 
     const within = screen.getByText("Within a Layer");
-    expect(within).toHaveStyle(`color: rgb(96, 194, 164)`);
+    expect(within).toHaveStyle("color: rgb(96, 194, 164)");
   });
 });

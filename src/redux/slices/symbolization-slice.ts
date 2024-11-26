@@ -1,10 +1,10 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {
-  ColorsByAttribute,
-  ComparisonSideMode,
-  FiltersByAttribute,
+  type ColorsByAttribute,
+  type ComparisonSideMode,
+  type FiltersByAttribute,
 } from "../../types";
-import { RootState } from "../store";
+import { type RootState } from "../store";
 
 // Define a type for the slice state
 export interface SymbolizationState {
@@ -14,14 +14,14 @@ export interface SymbolizationState {
   filtersByAttribute: FiltersByAttributeState;
 }
 
-type FiltersByAttributeState = {
+interface FiltersByAttributeState {
   /** Single layer state for viewer component */
   single: FiltersByAttribute | null;
   /** Left side layer state for comparison mode */
   left: FiltersByAttribute | null;
   /** Right side layer state for comparison mode */
   right: FiltersByAttribute | null;
-};
+}
 
 const initialState: SymbolizationState = {
   colorsByAttribute: null,
@@ -39,7 +39,7 @@ const symbolizationSlice = createSlice({
         side?: ComparisonSideMode;
       }>
     ) => {
-      state.filtersByAttribute[action.payload.side || "single"] =
+      state.filtersByAttribute[action.payload.side ?? "single"] =
         action.payload.filter;
     },
     setColorsByAttrubute: (
@@ -59,7 +59,7 @@ export const selectFiltersByAttribute = (
   state: RootState,
   side?: ComparisonSideMode
 ): FiltersByAttribute | null => {
-  const selectedSide = side || "single";
+  const selectedSide = side ?? "single";
   return state.symbolization.filtersByAttribute[selectedSide];
 };
 

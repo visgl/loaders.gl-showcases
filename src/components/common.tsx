@@ -3,7 +3,7 @@ import {
   color_brand_quaternary,
   color_brand_tertiary,
 } from "../constants/colors";
-import { LayoutProps } from "../types";
+import { type LayoutProps } from "../types";
 import { Theme } from "../utils/enums";
 import { getCurrentLayoutProperty } from "../utils/hooks/layout";
 
@@ -26,8 +26,10 @@ export const PanelContainer = styled.div<LayoutProps>`
   display: flex;
   flex-direction: column;
   width: 359px;
-  background: ${({ theme }) => theme.colors.mainCanvasColor};
-  opacity: ${({ theme }) => (theme.name === Theme.Dark ? 0.9 : 1)};
+  background: ${({ theme }) =>
+    `${theme.colors.mainCanvasColor}${
+      theme.name === Theme.Dark ? "e6" : "ff"
+    }`};
   border-radius: 8px;
   padding-bottom: 26px;
   position: relative;
@@ -39,11 +41,11 @@ export const PanelContainer = styled.div<LayoutProps>`
   })};
 `;
 
-export const PanelHeader = styled.div<{ panel: number }>`
+export const PanelHeader = styled.div<{ $panel: number }>`
   display: flex;
   align-items: center;
   justify-content: ${(props) =>
-    props.panel === Panels.Layers ? "center" : "space-between"};
+    props.$panel === Panels.Layers ? "center" : "space-between"};
   background: transparent;
   position: relative;
   border-radius: 8px;
@@ -63,10 +65,13 @@ export const PanelContent = styled.div`
 `;
 
 export const PanelHorizontalLine = styled.div<{
-  top?: number;
-  bottom?: number;
+  $top?: number;
+  $bottom?: number;
+  $left?: number;
+  $right?: number;
 }>`
-  margin: ${({ top = 24, bottom = 16 }) => `${top}px 16px ${bottom}px 16px`};
+  margin: ${({ $top = 24, $bottom = 16, $left = 16, $right = 16 }) =>
+    `${$top}px ${$right}px ${$bottom}px ${$left}px`};
   border: 1px solid ${({ theme }) => theme.colors.mainHiglightColorInverted};
   border-radius: 1px;
   background: ${({ theme }) => theme.colors.mainHiglightColorInverted};
@@ -77,9 +82,9 @@ export const LeftSideToolsPanelWrapper = styled.div<LayoutProps>`
   position: absolute;
 
   left: ${getCurrentLayoutProperty({
-    desktop: "24px",
-    tablet: "24px",
-    mobile: "8px",
+    desktop: "24px;",
+    tablet: "24px;",
+    mobile: "8px;",
   })};
 
   ${getCurrentLayoutProperty({
@@ -94,9 +99,9 @@ export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    desktop: "right 24px",
-    tablet: "left 24px",
-    mobile: "left 8px",
+    desktop: "right: 24px;",
+    tablet: "left: 24px;",
+    mobile: "left: 8px;",
   })};
 
   ${getCurrentLayoutProperty({
@@ -106,15 +111,14 @@ export const RightSideToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   })};
 `;
 
-
 export const OnlyToolsPanelWrapper = styled(LeftSideToolsPanelWrapper)`
   left: auto;
   top: auto;
 
   ${getCurrentLayoutProperty({
-    desktop: "right 24px",
-    tablet: "right 24px",
-    mobile: "left 8px",
+    desktop: "right: 24px;",
+    tablet: "right: 24px;",
+    mobile: "left: 8px;",
   })};
 
   ${getCurrentLayoutProperty({
@@ -157,7 +161,7 @@ export const RightSidePanelWrapper = styled(LeftSidePanelWrapper)`
   top: auto;
 
   ${getCurrentLayoutProperty({
-    desktop: "right 100px;",
+    desktop: "right: 100px;",
     tablet: "right: 100px;",
     /**
      * Make mobile panel centered horisontally
@@ -198,12 +202,12 @@ export const AttributesSidePanelWrapper = styled(LeftSidePanelWrapper)`
   })};
 `;
 
-export const OptionsIcon = styled.div<{ panel: number }>`
+export const OptionsIcon = styled.div<{ $panel: number }>`
   position: relative;
   width: 4px;
   height: 4px;
-  background-color: ${({ theme, panel }) =>
-    panel === Panels.Layers
+  background-color: ${({ theme, $panel }) =>
+    $panel === Panels.Layers
       ? `${color_brand_quaternary}`
       : theme.colors.buttonIconColor};
   border-radius: 50%;
@@ -215,8 +219,8 @@ export const OptionsIcon = styled.div<{ panel: number }>`
     width: 4px;
     height: 4px;
     left: 0px;
-    background-color: ${({ theme, panel }) =>
-      panel === Panels.Layers
+    background-color: ${({ theme, $panel }) =>
+      $panel === Panels.Layers
         ? `${color_brand_quaternary}`
         : theme.colors.buttonIconColor};
     border-radius: inherit;
@@ -229,8 +233,13 @@ export const OptionsIcon = styled.div<{ panel: number }>`
   }
 `;
 
-export const Title = styled.div<{top?: number; bottom?: number; left?: number }>`
-  margin: ${({top = 0, bottom = 0, left = 0 }) => `${top}px 0 ${bottom}px ${left}px`};
+export const Title = styled.div<{
+  $top?: number;
+  $bottom?: number;
+  $left?: number;
+}>`
+  margin: ${({ $top = 0, $bottom = 0, $left = 0 }) =>
+    `${$top}px 0 ${$bottom}px ${$left}px`};
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -257,8 +266,7 @@ export const MenuItem = styled.div<{
   font-size: 16px;
   line-height: 19px;
   padding: 10px 0px;
-  color: ${({ theme, customColor }) =>
-    customColor ? customColor : theme.colors.fontColor};
+  color: ${({ theme, customColor }) => customColor ?? theme.colors.fontColor};
   opacity: ${({ opacity = 1 }) => opacity};
   display: flex;
   gap: 10px;
@@ -300,4 +308,15 @@ export const TileInfoSectionWrapper = styled.div`
   align-items: center;
   width: 100%;
   margin: 24px 0;
+`;
+
+export const CenteredContainer = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

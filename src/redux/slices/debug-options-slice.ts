@@ -1,11 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
-  DebugOptions,
+  type DebugOptions,
   TileColoredBy,
   BoundingVolumeColoredBy,
   BoundingVolumeType,
 } from "../../types";
-import { RootState } from "../store";
+import { type RootState } from "../store";
 
 // Define a type for the slice state
 export interface DebugOptionsState {

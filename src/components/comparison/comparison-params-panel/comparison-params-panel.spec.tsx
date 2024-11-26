@@ -11,11 +11,10 @@ describe("Comparison Params Panel", () => {
       onGeometryChange: jest.fn(),
       onTexturesChange: jest.fn(),
       onClose: jest.fn(),
-    }
+    };
 
-    const { container } = renderWithTheme(
-      <ComparisonParamsPanel {...props}/>
-    );
+    const { container } =
+      renderWithTheme(<ComparisonParamsPanel {...props} />) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.getByText("Comparison parameters")).toBeInTheDocument();

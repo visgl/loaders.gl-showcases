@@ -2,6 +2,7 @@ import { PageId } from "../types";
 import {
   convertArcGisSlidesToBookmars,
   checkBookmarksByPageId,
+  parseBookmarks,
 } from "./bookmarks-utils";
 
 jest.mock("@math.gl/proj4", () => ({
@@ -303,5 +304,24 @@ describe("Bookmarks utils", () => {
     );
 
     expect(bookmarksPageId).toEqual(PageId.debug);
+  });
+
+  test("Should return bookmarks parsed", async () => {
+    const bookmarksExpected = [
+      { id: "1", pageId: PageId.debug, imageUrl: "data" },
+      { id: "2", pageId: PageId.debug, imageUrl: "data" },
+    ];
+
+    const bookmarksString =
+      "[{\"id\":\"1\", \"pageId\":\"Debug\", \"imageUrl\":\"data\"},{\"id\":\"2\", \"pageId\":\"Debug\", \"imageUrl\":\"data\"}]";
+    const bookmarks = await parseBookmarks(bookmarksString);
+    expect(bookmarks).toEqual(bookmarksExpected);
+  });
+
+  test("Should return null if bookmarks json is invalid", async () => {
+    const bookmarksString =
+      "[{\"id\":\"1\", \"pageId\":\"Debug\"},{\"id\":\"2\", \"pageId\":\"Debug\"]";
+    const bookmarks = await parseBookmarks(bookmarksString);
+    expect(bookmarks).toEqual(null);
   });
 });

@@ -2,14 +2,22 @@ import { TileDetailsPanel } from "./tile-details-panel";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { useAppLayout } from "../../utils/hooks/layout";
-import { isTileGeometryInsideBoundingVolume, getChildrenInfo } from "../../utils/debug/tile-debug";
+import {
+  isTileGeometryInsideBoundingVolume,
+  getChildrenInfo,
+} from "../../utils/debug/tile-debug";
 import { getGeometryVsTextureMetrics } from "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics";
 import { isGeometryBoundingVolumeMoreSuitable } from "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation";
+import type { RenderResult } from "@testing-library/react";
 
 jest.mock("../../utils/hooks/layout");
 jest.mock("../../utils/debug/tile-debug");
-jest.mock("../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics");
-jest.mock("../../utils/debug/validation-utils/tile-validation/bounding-volume-validation");
+jest.mock(
+  "../../utils/debug/validation-utils/attributes-validation/geometry-vs-texture-metrics"
+);
+jest.mock(
+  "../../utils/debug/validation-utils/tile-validation/bounding-volume-validation"
+);
 
 jest.mock("./tile-metadata", () => ({
   TileMetadata: () => {
@@ -50,10 +58,13 @@ const onChangeNormalsLength = jest.fn();
 
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
-const isTileGeometryInsideBoundingVolumeMock = isTileGeometryInsideBoundingVolume as unknown as jest.Mocked<any>;
+const isTileGeometryInsideBoundingVolumeMock =
+  isTileGeometryInsideBoundingVolume as unknown as jest.Mocked<any>;
 const getChildrenInfoMock = getChildrenInfo as unknown as jest.Mocked<any>;
-const getGeometryVsTextureMetricsMock = getGeometryVsTextureMetrics as unknown as jest.Mocked<any>;
-const isGeometryBoundingVolumeMoreSuitableMock = isGeometryBoundingVolumeMoreSuitable as unknown as jest.Mocked<any>;
+const getGeometryVsTextureMetricsMock =
+  getGeometryVsTextureMetrics as unknown as jest.Mocked<any>;
+const isGeometryBoundingVolumeMoreSuitableMock =
+  isGeometryBoundingVolumeMoreSuitable as unknown as jest.Mocked<any>;
 
 const TILE = {
   id: "41510-main",
@@ -67,11 +78,11 @@ const TILE = {
   content: { vertexCount: 42759 },
 };
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <TileDetailsPanel
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       tile={TILE}
       trianglesPercentage={30}
       normalsLength={20}
@@ -91,9 +102,9 @@ const callRender = (renderFunc, props = {}) => {
 beforeAll(() => {
   getChildrenInfoMock.mockReturnValue({
     count: 10,
-    ids: 'one, two, three'
-  })
-})
+    ids: "one, two, three",
+  });
+});
 
 describe("Tile Details Panel", () => {
   it("Should render tile details panel", () => {
@@ -105,66 +116,69 @@ describe("Tile Details Panel", () => {
     expect(getByTestId("normals-component")).toBeDefined();
   });
 
-  it("Should be able to validate tile", () => {
+  it("Should be able to validate tile", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isTileGeometryInsideBoundingVolumeMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to validate geometry inside bounding volume in good way", () => {
+  it("Should be able to validate geometry inside bounding volume in good way", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     isTileGeometryInsideBoundingVolumeMock.mockReturnValue(true);
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isTileGeometryInsideBoundingVolumeMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to validate geometry inside bounding volume in bad way", () => {
+  it("Should be able to validate geometry inside bounding volume in bad way", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     isTileGeometryInsideBoundingVolumeMock.mockReturnValue(false);
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isTileGeometryInsideBoundingVolumeMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to validate geometry inside bounding volume in string error way", () => {
+  it("Should be able to validate geometry inside bounding volume in string error way", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    isTileGeometryInsideBoundingVolumeMock.mockImplementation(() => { throw 'test error' });
+    isTileGeometryInsideBoundingVolumeMock.mockImplementation(() => {
+      throw new Error("test error");
+    });
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isTileGeometryInsideBoundingVolumeMock).toHaveBeenCalledWith(TILE);
   });
 
-
-  it("Should be able to validate geometry inside bounding volume in error way", () => {
+  it("Should be able to validate geometry inside bounding volume in error way", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    isTileGeometryInsideBoundingVolumeMock.mockImplementation(() => { throw new Error('test') });
+    isTileGeometryInsideBoundingVolumeMock.mockImplementation(() => {
+      throw new Error("test");
+    });
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isTileGeometryInsideBoundingVolumeMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to validate geometry vs textures in good way if there are positive triangle values", () => {
+  it("Should be able to validate geometry vs textures in good way if there are positive triangle values", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     getGeometryVsTextureMetricsMock.mockReturnValue({
       triangles: 10,
@@ -177,12 +191,12 @@ describe("Tile Details Panel", () => {
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(getGeometryVsTextureMetricsMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to validate geometry vs textures in good way if there are empty triangle values", () => {
+  it("Should be able to validate geometry vs textures in good way if there are empty triangle values", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     getGeometryVsTextureMetricsMock.mockReturnValue({
       triangles: 0,
@@ -195,78 +209,89 @@ describe("Tile Details Panel", () => {
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(getGeometryVsTextureMetricsMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to compare bounding volume vs geometry bounding volume in good way if geometry bounding volume more sutable", () => {
+  it("Should be able to compare bounding volume vs geometry bounding volume in good way if geometry bounding volume more sutable", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     isGeometryBoundingVolumeMoreSuitableMock.mockReturnValue(true);
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isGeometryBoundingVolumeMoreSuitableMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to compare bounding volume vs geometry bounding volume in bad way for string error", () => {
+  it("Should be able to compare bounding volume vs geometry bounding volume in bad way for string error", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    isGeometryBoundingVolumeMoreSuitableMock.mockImplementation(() => { throw 'test error' });
+    isGeometryBoundingVolumeMoreSuitableMock.mockImplementation(() => {
+      throw new Error("test error");
+    });
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isGeometryBoundingVolumeMoreSuitableMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to compare bounding volume vs geometry bounding volume in bad way for not string error", () => {
+  it("Should be able to compare bounding volume vs geometry bounding volume in bad way for not string error", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    isGeometryBoundingVolumeMoreSuitableMock.mockImplementation(() => { throw new Error('test error') });
+    isGeometryBoundingVolumeMoreSuitableMock.mockImplementation(() => {
+      throw new Error("test error");
+    });
 
     const { getByText } = callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
     expect(isGeometryBoundingVolumeMoreSuitableMock).toHaveBeenCalledWith(TILE);
   });
 
-  it("Should be able to close tile debug panel for desktop", () => {
+  it("Should be able to close tile debug panel for desktop", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getByText } = callRender(renderWithTheme);
     const title = getByText("Tile Info: 41510-main");
-    const closeButton = title.nextSibling;
-    userEvent.click(closeButton);
+    const closeButton = title.nextElementSibling;
+    expect(closeButton).not.toBeNull();
+    if (closeButton) {
+      await userEvent.click(closeButton);
+    }
     expect(handleClosePanel).toHaveBeenCalledTimes(1);
   });
 
-  it("Should be able to close tile debug panel for mobile", () => {
+  it("Should be able to close tile debug panel for mobile", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getByText } = callRender(renderWithTheme);
     const title = getByText("Tile Info: 41510-main");
-    const closeButton = title.nextSibling;
-    userEvent.click(closeButton);
+    const closeButton = title.nextElementSibling;
+    expect(closeButton).not.toBeNull();
+    if (closeButton) {
+      await userEvent.click(closeButton);
+    }
     expect(handleClosePanel).toHaveBeenCalledTimes(1);
     expect(activeDebugPanel).toHaveBeenCalledTimes(1);
   });
 
-  it("Should be able to click on back button in validate tile mode", () => {
+  it("Should be able to click on back button in validate tile mode", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
-    const { getByText, getByTestId, queryByTestId } = callRender(renderWithTheme);
+    const { getByText, getByTestId, queryByTestId } =
+      callRender(renderWithTheme);
     const validateButton = getByText("Validate Tile");
 
-    userEvent.click(validateButton);
+    await userEvent.click(validateButton);
 
-    const backButton = getByTestId('tile-details-back-button');
+    const backButton = getByTestId("tile-details-back-button");
 
-    userEvent.click(backButton);
+    await userEvent.click(backButton);
 
-    expect(queryByTestId('tile-details-back-button')).toBeNull();
+    expect(queryByTestId("tile-details-back-button")).toBeNull();
   });
 
   it("Should deactivate debug panel", () => {

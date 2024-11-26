@@ -18,7 +18,7 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Mobile Tools Panel", () => {
-  it("Should render for viewer", () => {
+  it("Should render for viewer", async () => {
     const { container } = callRender(renderWithTheme);
 
     const mapButton = screen.getByText("Map");
@@ -28,17 +28,17 @@ describe("Mobile Tools Panel", () => {
     expect(mapButton).toBeInTheDocument();
     expect(memoryButton).toBeInTheDocument();
 
-    userEvent.click(mapButton);
+    await userEvent.click(mapButton);
     expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.options);
 
-    userEvent.click(memoryButton);
+    await userEvent.click(memoryButton);
     expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.memory);
   });
 
-  it("Should render for debug", () => {
+  it("Should render for debug", async () => {
     const { container } = callRender(renderWithTheme, {
       showDebug: true,
-      showValidator: true
+      showValidator: true,
     });
     expect(container).toBeInTheDocument();
 
@@ -53,10 +53,10 @@ describe("Mobile Tools Panel", () => {
     expect(validator).toBeInTheDocument();
     expect(debugButton).toBeInTheDocument();
 
-    userEvent.click(validator);
+    await userEvent.click(validator);
     expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.validator);
 
-    userEvent.click(debugButton);
+    await userEvent.click(debugButton);
     expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.debug);
   });
 });

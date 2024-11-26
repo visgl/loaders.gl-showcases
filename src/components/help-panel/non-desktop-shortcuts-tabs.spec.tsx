@@ -10,16 +10,17 @@ jest.mock("../../utils/hooks/layout");
 const useAppLayoutMock = useAppLayout as unknown as jest.Mocked<any>;
 
 describe("NonDesktop Shortcut Tabs", () => {
-  it("Should render Mobile NonDesktopShortcutTabs", () => {
+  it("Should render Mobile NonDesktopShortcutTabs", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
 
     const onTabSelect = jest.fn();
-    const { container } = renderWithTheme(
-      <NonDesktopShortcutTabs
-        selectedTab={HelpPanelSelectedTab.Mouse}
-        onTabSelect={onTabSelect}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <NonDesktopShortcutTabs
+          selectedTab={HelpPanelSelectedTab.Mouse}
+          onTabSelect={onTabSelect}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
 
@@ -31,13 +32,13 @@ describe("NonDesktop Shortcut Tabs", () => {
     expect(trackpadTab).toBeInTheDocument();
     expect(touchTab).toBeInTheDocument();
 
-    userEvent.click(mouseTab);
+    await userEvent.click(mouseTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);
 
-    userEvent.click(trackpadTab);
+    await userEvent.click(trackpadTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Trackpad);
 
-    userEvent.click(touchTab);
+    await userEvent.click(touchTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Touch);
 
     const mouseImage = screen.getByTestId("mobile-image-Mouse");
@@ -48,26 +49,27 @@ describe("NonDesktop Shortcut Tabs", () => {
     expect(trackpadImage).toBeInTheDocument();
     expect(touchImage).toBeInTheDocument();
 
-    userEvent.click(mouseImage);
+    await userEvent.click(mouseImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);
 
-    userEvent.click(trackpadImage);
+    await userEvent.click(trackpadImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Trackpad);
 
-    userEvent.click(touchImage);
+    await userEvent.click(touchImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Touch);
   });
 
-  it("Should render Tablet NonDesktopShortcutTabs", () => {
+  it("Should render Tablet NonDesktopShortcutTabs", async () => {
     useAppLayoutMock.mockImplementation(() => "tablet");
 
     const onTabSelect = jest.fn();
-    const { container } = renderWithTheme(
-      <NonDesktopShortcutTabs
-        selectedTab={HelpPanelSelectedTab.Mouse}
-        onTabSelect={onTabSelect}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <NonDesktopShortcutTabs
+          selectedTab={HelpPanelSelectedTab.Mouse}
+          onTabSelect={onTabSelect}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
 
@@ -79,13 +81,13 @@ describe("NonDesktop Shortcut Tabs", () => {
     expect(trackpadTab).toBeInTheDocument();
     expect(touchTab).toBeInTheDocument();
 
-    userEvent.click(mouseTab);
+    await userEvent.click(mouseTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);
 
-    userEvent.click(trackpadTab);
+    await userEvent.click(trackpadTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Trackpad);
 
-    userEvent.click(touchTab);
+    await userEvent.click(touchTab);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Touch);
 
     const mouseImage = screen.getByTestId("tablet-image-Mouse");
@@ -96,13 +98,13 @@ describe("NonDesktop Shortcut Tabs", () => {
     expect(trackpadImage).toBeInTheDocument();
     expect(touchImage).toBeInTheDocument();
 
-    userEvent.click(mouseImage);
+    await userEvent.click(mouseImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Mouse);
 
-    userEvent.click(trackpadImage);
+    await userEvent.click(trackpadImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Trackpad);
 
-    userEvent.click(touchImage);
+    await userEvent.click(touchImage);
     expect(onTabSelect).toBeCalledWith(HelpPanelSelectedTab.Touch);
   });
 });

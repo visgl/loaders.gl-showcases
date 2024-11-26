@@ -5,13 +5,17 @@ import { ExpandIcon } from "./expand-icon";
 
 describe("ExpandIcon", () => {
   let componentElement;
-  let rerenderFunc;
+  let rerenderFunc: (ui: React.ReactNode) => void;
   const onClick = jest.fn();
   beforeEach(() => {
-    const { rerender, container } = renderWithTheme(
-      <ExpandIcon expandState={ExpandState.expanded} onClick={onClick} />
-    );
-    rerenderFunc = rerender;
+    const { rerender, container } =
+      renderWithTheme(
+        <ExpandIcon expandState={ExpandState.expanded} onClick={onClick} />
+      ) ?? {};
+    if (rerender) {
+      rerenderFunc = rerender;
+    }
+
     componentElement = container;
   });
 
@@ -24,22 +28,22 @@ describe("ExpandIcon", () => {
     expect(fill).toBe("#000001");
   });
 
-  it("Should handle click event", () => {
-    userEvent.click(componentElement.firstChild);
+  it("Should handle click event", async () => {
+    await userEvent.click(componentElement.firstChild);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it("Should show collapsed state", () => {
     const svgElement = componentElement.firstChild;
     let transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( 90deg )");
+    expect(transform).toBe("rotate(\n    90deg\n  )");
 
     renderWithTheme(
       <ExpandIcon expandState={ExpandState.collapsed} onClick={onClick} />,
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( -90deg )");
+    expect(transform).toBe("rotate(\n    -90deg\n  )");
   });
 
   it("Should collapse to the bottom", () => {
@@ -53,7 +57,7 @@ describe("ExpandIcon", () => {
     );
     const svgElement = componentElement.firstChild;
     let transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( -90deg )");
+    expect(transform).toBe("rotate(\n    -90deg\n  )");
 
     renderWithTheme(
       <ExpandIcon
@@ -64,7 +68,7 @@ describe("ExpandIcon", () => {
       rerenderFunc
     );
     transform = getComputedStyle(svgElement).getPropertyValue("transform");
-    expect(transform).toBe("rotate( 90deg )");
+    expect(transform).toBe("rotate(\n    90deg\n  )");
   });
 
   it("Should fill svg with custom colors", () => {

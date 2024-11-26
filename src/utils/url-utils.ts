@@ -1,8 +1,8 @@
-import { TilesetType, ViewStateSet } from "../types";
+import { TilesetType, type ViewStateSet } from "../types";
 
 export const parseTilesetFromUrl = () => {
   const parsedUrl = new URL(window.location.href);
-  return parsedUrl.searchParams.get("tileset") || "";
+  return parsedUrl.searchParams.get("tileset") ?? "";
 };
 
 export const parseTilesetUrlParams = (url, options) => {
@@ -11,6 +11,7 @@ export const parseTilesetUrlParams = (url, options) => {
   }
 
   const parsedUrl = new URL(url);
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
   let token = options && options.token;
   const tilesetUrl =
     !options?.type || options.type === TilesetType.I3S
@@ -95,4 +96,30 @@ export const urlParamsToViewState = (viewState: ViewStateSet) => {
     }
   }
   return urlViewStateParams;
+};
+
+/**
+ * Converts the link of a webscene that can be copied from ArcGIS
+ * to the format required by i3s-explorer to insert a webscene.
+ * @param url - Url copied from ArcGIS.
+ * @returns Url converted.
+ */
+export const convertUrlToRestFormat = (url: string): string => {
+  let urlRest = "https://www.arcgis.com/sharing/rest/content/items/";
+  const urlObject = new URL(url);
+
+  let param: string | null = null;
+  for (const paramName of ["id", "webscene"]) {
+    param = urlObject.searchParams.get(paramName);
+    if (param) {
+      break;
+    }
+  }
+  if (param) {
+    urlRest += param + "/data";
+  } else {
+    // The url cannot be converted. Use it "as is".
+    return url;
+  }
+  return urlRest;
 };

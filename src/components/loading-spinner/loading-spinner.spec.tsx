@@ -4,10 +4,11 @@ import { LoadingSpinner } from "./loading-spinner";
 
 describe("Loading Spinner", () => {
   it("Should render spinner", () => {
-    const { container } = renderWithTheme(<LoadingSpinner />);
+    const { container } = renderWithTheme(<LoadingSpinner />) ?? {};
+    expect(container).not.toBeUndefined();
     const spinner = screen.getByTestId("loading-spinner");
     expect(container).toBeInTheDocument();
     expect(spinner).toBeInTheDocument();
-    expect(spinner).toHaveStyle(`animation: rotation 2s infinite linear`);
+    expect(spinner).toHaveStyle("animation: rotation 2s infinite linear");
   });
 });

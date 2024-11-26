@@ -4,7 +4,9 @@ import styled from "styled-components";
 import {
   ActionButtonVariant,
   FetchingStatus,
+  type LayoutProps,
   TilesetType,
+  BaseMapGroup,
 } from "../../../types";
 import {
   getCurrentLayoutProperty,
@@ -12,6 +14,8 @@ import {
 } from "../../../utils/hooks/layout";
 import { ActionButton } from "../../action-button/action-button";
 import { InputText } from "./input-text/input-text";
+import { InputDropdown } from "../../input-dropdown/input-dropdown";
+
 import { getTilesetType } from "../../../utils/url-utils";
 import { LoadingSpinner } from "../../loading-spinner/loading-spinner";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -23,20 +27,24 @@ import {
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
-type InsertLayerProps = {
+export interface CustomLayerData {
+  name: string;
+  url: string;
+  token?: string;
+  group?: BaseMapGroup;
+}
+
+interface InsertLayerProps {
   title: string;
-  onInsert: (object: { name: string; url: string; token?: string }) => void;
+  groups?: string[];
+  onInsert: (object: CustomLayerData) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
-};
+}
 
-type LayoutProps = {
-  layout: string;
-};
-
-type VisibilityProps = {
+interface VisibilityProps {
   visible: boolean;
-};
+}
 
 const Container = styled.div<LayoutProps>`
   position: relative;
@@ -92,10 +100,12 @@ const SpinnerContainer = styled.div<VisibilityProps>`
 
 export const InsertPanel = ({
   title,
+  groups,
   onInsert,
   onCancel,
   children = null,
 }: InsertLayerProps) => {
+  const [group, setGroup] = useState<BaseMapGroup>(BaseMapGroup.Maplibre);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [token, setToken] = useState("");
@@ -106,11 +116,12 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const validateFields = () => {
+  const validateFields = (): void => {
     let isFormValid = true;
     const type = getTilesetType(url);
 
     try {
+      // eslint-disable-next-line no-new
       new URL(url);
     } catch (_) {
       setUrlError(INVALID_URL_ERROR);
@@ -126,7 +137,12 @@ export const InsertPanel = ({
     }
 
     if (isFormValid) {
-      onInsert({ name: name || layerNames[url]?.name, url, token });
+      void onInsert({
+        name: name || layerNames[url]?.name,
+        url,
+        token,
+        group: groups ? group : undefined,
+      });
     }
   };
 
@@ -141,12 +157,12 @@ export const InsertPanel = ({
         setValidateInProgress(false);
         validateFields();
       } else if (!layerNames[url]) {
-        dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
+        void dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
       }
     }
   }, [isValidateInProgress, layerNames]);
 
-  const handleInsert = async (event) => {
+  const handleInsert = (event) => {
     event.preventDefault();
 
     if (getTilesetType(url) !== TilesetType.I3S) {
@@ -160,6 +176,10 @@ export const InsertPanel = ({
     const { name, value } = event.target;
 
     switch (name) {
+      case "BasemapProvider":
+        setGroup(value);
+        setNameError("");
+        break;
       case "Name":
         setName(value);
         setNameError("");
@@ -181,13 +201,20 @@ export const InsertPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Title>{title}</Title>
       <SpinnerContainer visible={isValidateInProgress}>
         <LoadingSpinner />
       </SpinnerContainer>
       <form className="insert-form" onSubmit={handleInsert}>
         <InputsWrapper>
+          {groups && (
+            <InputDropdown
+              label="Basemap Provider"
+              options={groups}
+              onChange={handleInputChange}
+            ></InputDropdown>
+          )}
           <InputText
             name="Name"
             label="Name"

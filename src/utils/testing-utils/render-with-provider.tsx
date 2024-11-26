@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
-import { AppStore } from "../../redux/store";
-import { PropsWithChildren } from "react";
+import type { AppStore } from "../../redux/store";
+import type { PropsWithChildren } from "react";
 import { Provider } from "react-redux";
 
 export function renderWithProvider(ui: React.ReactElement, store: AppStore) {

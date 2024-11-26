@@ -5,7 +5,9 @@ import { MemoryUsagePanel } from "./memory-usage-panel";
 
 Object.assign(window.navigator, {
   clipboard: {
-    writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+    writeText: jest.fn().mockImplementation(async () => {
+      await Promise.resolve();
+    }),
   },
 });
 
@@ -42,30 +44,34 @@ const tilesetStats: any = {
 };
 
 describe("MemoryUsagePanel", () => {
-  let componentElement;
-  let expandContainer;
-  let rerenderFunc;
+  let componentElement: Element | null;
+  let expandContainer: Element | null;
+  let rerenderFunc: (ui: React.ReactNode) => void;
   const onClose = jest.fn();
 
   beforeEach(() => {
-    const { rerender, container } = renderWithTheme(
-      <MemoryUsagePanel
-        id="test-memory-usage-panel"
-        memoryStats={memoryStats}
-        tilesetStats={tilesetStats}
-        loadingTime={1123}
-        updateNumber={1}
-        onClose={onClose}
-        activeLayers={[]}
-      />
-    );
-    componentElement = container.firstChild;
-    expandContainer = componentElement.lastChild.lastChild;
-    rerenderFunc = rerender;
+    const { rerender, container } =
+      renderWithTheme(
+        <MemoryUsagePanel
+          id="test-memory-usage-panel"
+          memoryStats={memoryStats}
+          tilesetStats={tilesetStats}
+          loadingTime={1123}
+          updateNumber={1}
+          onClose={onClose}
+          activeLayers={[]}
+        />
+      ) ?? {};
+    if (container && rerender) {
+      componentElement = container.firstElementChild;
+      expandContainer =
+        componentElement?.lastElementChild?.lastElementChild ?? null;
+      rerenderFunc = rerender;
+    }
   });
 
   it("Should render with tileset stats section", () => {
-    expect(componentElement.lastChild.childNodes.length).toBe(3);
+    expect(componentElement?.lastChild?.childNodes.length).toBe(3);
   });
 
   it("Should render without tileset stats section", () => {
@@ -81,7 +87,7 @@ describe("MemoryUsagePanel", () => {
       />,
       rerenderFunc
     );
-    expect(componentElement.lastChild.childNodes.length).toBe(2);
+    expect(componentElement?.lastChild?.childNodes.length).toBe(2);
   });
 
   it("Should render content formats", () => {
@@ -98,16 +104,20 @@ describe("MemoryUsagePanel", () => {
       />,
       rerenderFunc
     );
-    expect(componentElement.childNodes.length).toBe(5);
+    expect(componentElement?.childNodes.length).toBe(5);
 
-    const formatsTitle = componentElement.childNodes[2].firstChild.firstChild;
-    expect(formatsTitle.innerHTML).toBe("Content Formats");
+    const formatsTitle =
+      componentElement?.children?.[2].firstElementChild?.firstElementChild;
+    expect(formatsTitle?.innerHTML).toBe("Content Formats");
 
-    const formatsContainer = componentElement.childNodes[2].firstChild;
-    const formats: { [key: string]: string } = {};
+    const formatsContainer = componentElement?.children[2].firstElementChild;
+    const formats: Record<string, string> = {};
     for (let i = 1; i <= 4; i++) {
-      const element = formatsContainer.childNodes[i];
-      formats[element.firstChild.innerHTML] = element.childNodes[1].innerHTML;
+      const element = formatsContainer?.children[i];
+      if (element?.firstElementChild?.innerHTML) {
+        formats[element?.firstElementChild?.innerHTML] =
+          element?.children[1].innerHTML;
+      }
     }
     expect(formats).toEqual({
       DDS: "No",
@@ -117,12 +127,12 @@ describe("MemoryUsagePanel", () => {
     });
   });
 
-  it("Should collapse/expand", () => {
+  it("Should collapse/expand", async () => {
     const expandIcon = screen.getByText("Layer(s) Used").nextElementSibling;
 
     expect(expandContainer).toBeInTheDocument();
     expect(expandIcon).toBeInTheDocument();
-    expandIcon && userEvent.click(expandIcon);
+    expandIcon && (await userEvent.click(expandIcon));
     renderWithTheme(
       <MemoryUsagePanel
         id="test-memory-usage-panel"
@@ -135,9 +145,9 @@ describe("MemoryUsagePanel", () => {
       />,
       rerenderFunc
     );
-    expect(expandContainer.childNodes.length).toBe(1);
+    expect(expandContainer?.childNodes.length).toBe(1);
 
-    expandIcon && userEvent.click(expandIcon);
+    expandIcon && (await userEvent.click(expandIcon));
     renderWithTheme(
       <MemoryUsagePanel
         id="test-memory-usage-panel"
@@ -150,7 +160,7 @@ describe("MemoryUsagePanel", () => {
       />,
       rerenderFunc
     );
-    expect(expandContainer.childNodes.length).toBe(5);
+    expect(expandContainer?.childNodes.length).toBe(5);
   });
 
   it("Should show layer name in statistics if active layers provided", () => {
@@ -162,15 +172,17 @@ describe("MemoryUsagePanel", () => {
         loadingTime={1123}
         updateNumber={1}
         onClose={onClose}
-        activeLayers={[{
-          id: 'active-layer-id',
-          name: 'San Francisco',
-          url: 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0'
-        }]}
+        activeLayers={[
+          {
+            id: "active-layer-id",
+            name: "San Francisco",
+            url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+          },
+        ]}
       />,
       rerenderFunc
     );
-    const tilesetTitle = screen.getByText('San Francisco');
+    const tilesetTitle = screen.getByText("San Francisco");
     expect(tilesetTitle).toBeInTheDocument();
   });
 
@@ -182,22 +194,28 @@ describe("MemoryUsagePanel", () => {
         tilesetStats={tilesetStats}
         updateNumber={1}
         onClose={onClose}
-        activeLayers={[{
-          id: 'active-layer-id',
-          name: 'San Francisco',
-          url: 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0'
-        }]}
+        activeLayers={[
+          {
+            id: "active-layer-id",
+            name: "San Francisco",
+            url: "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+          },
+        ]}
       />,
       rerenderFunc
     );
-    const tilesetTitle = screen.queryByText('Loading time');
+    const tilesetTitle = screen.queryByText("Loading time");
     expect(tilesetTitle).not.toBeInTheDocument();
   });
 
-  it("Should copy to clipboard", () => {
+  it("Should copy to clipboard", async () => {
     const LINK = tilesetStats.id;
-    const copyIcon = expandContainer.childNodes[1].lastChild;
-    userEvent.click(copyIcon);
+    const copyIcon = expandContainer?.children[1].lastElementChild;
+    expect(copyIcon).not.toBeNull();
+    if (copyIcon) {
+      await userEvent.click(copyIcon);
+    }
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(window.navigator.clipboard.writeText).toHaveBeenCalledWith(LINK);
   });
 });

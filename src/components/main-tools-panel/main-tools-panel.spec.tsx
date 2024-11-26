@@ -2,11 +2,12 @@ import userEvent from "@testing-library/user-event";
 import { ActiveButton } from "../../types";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { MainToolsPanel } from "./main-tools-panel";
+import { type RenderResult } from "@testing-library/react";
 
 const onChangeMock = jest.fn();
 const onShowBookmarksChangeMock = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <MainToolsPanel
       id={""}
@@ -19,20 +20,20 @@ const callRender = (renderFunc, props = {}) => {
 };
 
 describe("Main Tools Panel", () => {
-  it("Should render Main Tools Panel and show layers options by default", () => {
+  it("Should render Main Tools Panel and show layers options by default", async () => {
     const { container } = callRender(renderWithTheme);
     expect(container).toBeInTheDocument();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const layersButton = document.querySelector('#layers-options-tab')!;
+    const layersButton = document.querySelector("#layers-options-tab")!;
 
     expect(layersButton).toBeInTheDocument();
-    userEvent.click(layersButton);
+    await userEvent.click(layersButton);
 
-    expect(onChangeMock).toBeCalledWith(ActiveButton.options);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.options);
   });
 
-  it("Should render Main Tools Panel with all possible buttons", () => {
+  it("Should render Main Tools Panel with all possible buttons", async () => {
     const { container } = callRender(renderWithTheme, {
       showComparisonSettings: true,
       showBookmarks: true,
@@ -44,37 +45,36 @@ describe("Main Tools Panel", () => {
     expect(container).toBeInTheDocument();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const layersButton = document.querySelector('#layers-options-tab')!;
+    const layersButton = document.querySelector("#layers-options-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const settingsButton = document.querySelector('#settings-tab')!;
+    const settingsButton = document.querySelector("#settings-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const memoryButton = document.querySelector('#memory-usage-tab')!;
+    const memoryButton = document.querySelector("#memory-usage-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const validatorButton = document.querySelector('#validator-tab')!;
+    const validatorButton = document.querySelector("#validator-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const debugButton = document.querySelector('#debug-panel-tab')!;
+    const debugButton = document.querySelector("#debug-panel-tab")!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const bookmarksButton = document.querySelector('#bookmarks-tab')!;
+    const bookmarksButton = document.querySelector("#bookmarks-tab")!;
 
     expect(layersButton).toBeInTheDocument();
 
-    userEvent.click(layersButton);
-    expect(onChangeMock).toBeCalledWith(ActiveButton.options);
+    await userEvent.click(layersButton);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.options);
 
-    userEvent.click(settingsButton);
-    expect(onChangeMock).toBeCalledWith(ActiveButton.settings);
+    await userEvent.click(settingsButton);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.settings);
 
-    userEvent.click(memoryButton);
-    expect(onChangeMock).toBeCalledWith(ActiveButton.memory);
+    await userEvent.click(memoryButton);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.memory);
 
-    userEvent.click(validatorButton);
-    expect(onChangeMock).toBeCalledWith(ActiveButton.validator);
+    await userEvent.click(validatorButton);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.validator);
 
-    userEvent.click(debugButton);
-    expect(onChangeMock).toBeCalledWith(ActiveButton.debug);
+    await userEvent.click(debugButton);
+    expect(onChangeMock).toHaveBeenCalledWith(ActiveButton.debug);
 
-    userEvent.click(bookmarksButton);
+    await userEvent.click(bookmarksButton);
     expect(onShowBookmarksChangeMock).toHaveBeenCalled();
   });
-
 });

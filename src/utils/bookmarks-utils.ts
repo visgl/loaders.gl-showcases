@@ -2,9 +2,17 @@ import type { ArcGISWebScene } from "@loaders.gl/i3s/src/types";
 import { Proj4Projection } from "@math.gl/proj4";
 import { WebMercatorViewport } from "@deck.gl/core";
 
-import { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
+import type { Bookmark, PageId, LayerExample, LayerViewState } from "../types";
 import { getLonLatWithElevationOffset } from "./elevation-utils";
 import { flattenLayerIds } from "./layer-utils";
+
+import {
+  bookmarksSchemaId,
+  bookmarksSchemaJson,
+} from "../constants/json-schemas/bookmarks";
+
+import JsonSchema from "@hyperjump/json-schema";
+import type { Result, SchemaDocument, Validator } from "@hyperjump/json-schema";
 
 const PSEUDO_MERCATOR_CRS_WKIDS = [102100, 3857];
 
@@ -132,20 +140,22 @@ const convertArcGisCameraPositionToBookmarkViewState = (
     const [, , zValue] = viewport.unproject([0, 0, -1]);
     const zoom = Math.log2(zValue / altitude);
 
-    return {
+    const resultViewState = {
       longitude: pLongitude,
       latitude: pLatitude,
       zoom,
       bearing: heading < 180 ? heading : heading - 360,
       pitch: tilt,
-    } as LayerViewState;
+    };
+
+    return resultViewState as LayerViewState;
   }
 
   return null;
 };
 
 /**
- * Try to find bookmars in boomarks list which is not aplicable to current page
+ * Try to find bookmars in bookmarks list which is not aplicable to current page
  * If page ids of all bookmarks are the same as current page id return current pageId if not return pageId of bookmark.
  * @param bookmarks
  * @param pageId
@@ -161,4 +171,27 @@ export const checkBookmarksByPageId = (
   }
 
   return pageId;
+};
+
+/**
+ * Parses json string containing bookmarks according to the schema.
+ * @param bookmarks
+ * @returns Array of bookmarks or null if the json string is invalid.
+ */
+export const parseBookmarks = async (
+  bookmarks: string
+): Promise<Bookmark[] | null> => {
+  JsonSchema.add(bookmarksSchemaJson);
+  const schema: SchemaDocument = await JsonSchema.get(bookmarksSchemaId);
+  try {
+    const validator: Validator = await JsonSchema.validate(schema);
+    const bookmarksParsed: Bookmark[] = JSON.parse(bookmarks);
+    const validationResult: Result = validator(bookmarksParsed);
+    if (validationResult.valid) {
+      return bookmarksParsed;
+    }
+  } catch (error) {
+    console.log("Invalid bookmark json");
+  }
+  return null;
 };

@@ -1,4 +1,4 @@
-import { Stats, Stat } from "@probe.gl/stats";
+import { type Stats, type Stat } from "@probe.gl/stats";
 import styled, { useTheme } from "styled-components";
 import {
   PanelContainer,
@@ -10,7 +10,12 @@ import {
 } from "../common";
 import { CloseButton } from "../close-button/close-button";
 import { ExpandIcon } from "../expand-icon/expand-icon";
-import { ExpandState, CollapseDirection, ContentFormats, LayerExample } from "../../types";
+import {
+  ExpandState,
+  CollapseDirection,
+  type ContentFormats,
+  type LayerExample,
+} from "../../types";
 import LinkIcon from "../../../public/icons/link.svg";
 import { useExpand } from "../../utils/hooks/use-expand";
 import { useAppLayout } from "../../utils/hooks/layout";
@@ -33,7 +38,7 @@ const StatSection = styled.div`
 
 const StatTitle = styled(Title)`
   color: ${({ theme }) => theme.colors.mainDimColorInverted};
-  overflow: hidden; 
+  overflow: hidden;
   white-space: nowrap;
   max-width: 90%;
   text-overflow: ellipsis;
@@ -57,7 +62,7 @@ const StatTimeContainer = styled.div`
   margin-top: 14px;
 `;
 
-type MemoryUsageProps = {
+interface MemoryUsageProps {
   id: string;
   memoryStats: Stats | null;
   activeLayers: LayerExample[];
@@ -66,7 +71,7 @@ type MemoryUsageProps = {
   loadingTime?: number;
   updateNumber: number;
   onClose: () => void;
-};
+}
 
 export const MemoryUsagePanel = ({
   id,
@@ -82,16 +87,16 @@ export const MemoryUsagePanel = ({
   const layout = useAppLayout();
 
   return (
-    <PanelContainer id={id} layout={layout}>
-      <PanelHeader panel={Panels.MemoryUsage}>
-        <Title left={16}>Memory</Title>
+    <PanelContainer id={id} $layout={layout}>
+      <PanelHeader $panel={Panels.MemoryUsage}>
+        <Title $left={16}>Memory</Title>
         <CloseButton id="memory-usage-panel-close-button" onClick={onClose} />
       </PanelHeader>
-      <PanelHorizontalLine top={10} />
+      <PanelHorizontalLine $top={10} />
       <PanelContent>
         {contentFormats && (
           <StatSection>
-            <Title bottom={12}>Content Formats</Title>
+            <Title $bottom={12}>Content Formats</Title>
             {Object.entries(contentFormats).map(([formatName, isPresented]) => (
               <StatContainer key={formatName}>
                 <StatTitle>{contentFormatsMap[formatName]}</StatTitle>
@@ -102,18 +107,18 @@ export const MemoryUsagePanel = ({
         )}
       </PanelContent>
 
-      <PanelHorizontalLine top={0} />
+      <PanelHorizontalLine $top={0} />
 
       <PanelContent>
         {loadingTime !== undefined && (
           <StatTimeContainer>
             <StatTitle>Loading time: </StatTitle>
-            <Title left={6}>{`${loadingTime} ms`}</Title>
+            <Title $left={6}>{`${loadingTime} ms`}</Title>
           </StatTimeContainer>
         )}
         {memoryStats && (
           <StatSection>
-            <Title bottom={12}>Memory Usage</Title>
+            <Title $bottom={12}>Memory Usage</Title>
             {Object.values(memoryStats.stats).map((stat: Stat) => (
               <StatContainer key={stat.name}>
                 <StatTitle>{stat.name}</StatTitle>
@@ -135,25 +140,27 @@ export const MemoryUsagePanel = ({
             </StatContainer>
             {expandState === ExpandState.expanded && (
               <>
-                {
-                  tilesetStats.id.split('<-tileset->').map(tilesetUrl => {
-                    const activeLayer = activeLayers.find(layer => layer.url === tilesetUrl);
-                    const activeLayerName = activeLayer?.name || tilesetUrl;
+                {tilesetStats.id.split("<-tileset->").map((tilesetUrl) => {
+                  const activeLayer = activeLayers.find(
+                    (layer) => layer.url === tilesetUrl
+                  );
+                  const activeLayerName = activeLayer?.name ?? tilesetUrl;
 
-                    return activeLayerName && (
+                  return (
+                    activeLayerName && (
                       <StatContainer bottom={12} key={tilesetUrl}>
                         <StatTitle>{activeLayerName}</StatTitle>
                         <LinkIcon
                           fill={theme.colors.fontColor}
                           style={{ cursor: "pointer" }}
                           onClick={() => {
-                            navigator.clipboard.writeText(tilesetUrl);
+                            void navigator.clipboard.writeText(tilesetUrl);
                           }}
                         />
                       </StatContainer>
-                    );
-                  })
-                }
+                    )
+                  );
+                })}
                 {Object.values(tilesetStats.stats).map((stat: Stat) => (
                   <StatContainer key={stat.name}>
                     <StatTitle>{stat.name}</StatTitle>

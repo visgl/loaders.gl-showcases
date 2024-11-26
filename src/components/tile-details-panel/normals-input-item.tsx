@@ -16,13 +16,13 @@ const NormalsInput = styled.input`
   text-align: center;
 `;
 
-type NormalsProps = {
+interface NormalsProps {
   id: string;
   title: string;
   value: number;
   maxValue?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
 export const NormalsInputItem = ({
   id,
@@ -33,7 +33,7 @@ export const NormalsInputItem = ({
 }: NormalsProps) => {
   return (
     <TileInfoSectionWrapper>
-      <NormalsLabel as={"label"} htmlFor={id} left={16}>
+      <NormalsLabel as={"label"} htmlFor={id} $left={16}>
         {title}
       </NormalsLabel>
       <NormalsInput

@@ -23,10 +23,9 @@ describe("Checkbox", () => {
 
     const checkbox = screen.getByTestId("checkbox-test-id");
 
-    userEvent.hover(checkbox);
-    userEvent.click(checkbox);
+    await userEvent.hover(checkbox);
+    await userEvent.click(checkbox);
     expect(handleCheckboxClickMock).toHaveBeenCalled();
-
   });
 
   it("Should show checked Checkbox", async () => {

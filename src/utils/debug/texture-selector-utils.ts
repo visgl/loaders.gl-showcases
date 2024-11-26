@@ -1,18 +1,28 @@
+import type { Tile3D, Tileset3D } from "@loaders.gl/tiles";
+
 // TODO Need to separate multiple export functions from file and split logic for better testing
 
 // The tiles list in the tileset mutates continually.
 // We need to store tiles when we replace texture
-const tiles = {};
+const tiles: Record<string, Tile3D> = {};
 
-export function selectDebugTextureForTileset(tileset, uvDebugTexture) {
+/**
+ * Replaces original textures in the tileset with uvDebug texture
+ * @param tileset Tileset where textures should be replaced
+ * @param uvDebugTexture uvDebug texture
+ */
+export async function selectDebugTextureForTileset(
+  tileset: Tileset3D,
+  uvDebugTexture: ImageBitmap | null
+): Promise<void> {
   if (!uvDebugTexture) {
     return;
   }
   for (const tile of tileset.tiles) {
-    selectDebugTextureForTile(tile, uvDebugTexture);
+    await selectDebugTextureForTile(tile as Tile3D, uvDebugTexture);
   }
   for (const tileId in tiles) {
-    selectDebugTextureForTile(tiles[tileId], uvDebugTexture);
+    await selectDebugTextureForTile(tiles[tileId], uvDebugTexture);
   }
 }
 
@@ -22,38 +32,94 @@ export function selectOriginalTextureForTileset() {
   }
 }
 
-export function selectDebugTextureForTile(tile, uvDebugTexture) {
+/**
+ * Crops the texture with the specified width and height
+ * @param texture - Texture to crop
+ * @param width - width of the cropped texture
+ * @param height - height of the cropped texture
+ * @returns cropped texture
+ */
+const cropTexture = async (
+  texture: ImageBitmap,
+  width: number,
+  height: number
+) => {
+  if (!width || !height) {
+    return texture;
+  }
+  const bitmap = await createImageBitmap(texture);
+
+  const coeffWidth = texture.width / width;
+  const coeffHeight = texture.height / height;
+  const coeff = coeffWidth < coeffHeight ? coeffWidth : coeffHeight;
+  const sw = width * coeff;
+  const sh = height * coeff;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = sw;
+  canvas.height = sh;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  ctx.drawImage(bitmap, 0, 0, sw, sh);
+  return canvas;
+};
+
+/**
+ * Replaces original textures in the tile with uvDebug texture
+ * @param tile - Tile where textures should be replaced
+ * @param uvDebugTexture uvDebug texture
+ */
+export async function selectDebugTextureForTile(
+  tile: Tile3D,
+  uvDebugTexture: ImageBitmap | null
+) {
   tiles[tile.id] = tile;
   if (!uvDebugTexture) {
     return;
   }
   const { texture, material } = tile.content || {};
   if (material) {
-    if (
-      !(
-        material &&
-        material.pbrMetallicRoughness &&
-        material.pbrMetallicRoughness.baseColorTexture
-      )
-    ) {
+    if (!material.pbrMetallicRoughness?.baseColorTexture) {
       return;
     }
     if (!tile.userData.originalTexture) {
       tile.userData.originalTexture =
         material.pbrMetallicRoughness.baseColorTexture.texture.source.image;
     }
+    const width = tile.userData.originalTexture.width;
+    const height = tile.userData.originalTexture.height;
+    const uvDebugTextureCropped = await cropTexture(
+      uvDebugTexture,
+      width,
+      height
+    );
     material.pbrMetallicRoughness.baseColorTexture.texture.source.image =
-      uvDebugTexture;
+      uvDebugTextureCropped;
     tile.content.material = { ...tile.content.material };
   } else if (texture) {
     if (!tile.userData.originalTexture) {
       tile.userData.originalTexture = texture;
     }
-    tile.content.texture = uvDebugTexture;
+
+    const width = texture.width;
+    const height = texture.height;
+    const uvDebugTextureCropped = await cropTexture(
+      uvDebugTexture,
+      width,
+      height
+    );
+    tile.content.texture = uvDebugTextureCropped;
   }
 }
 
-export function selectOriginalTextureForTile(tile) {
+/**
+ * Replaces uvDebug texture in the tile back with original ones
+ * @param tile - Tile where textures should be replaced
+ */
+export function selectOriginalTextureForTile(tile: Tile3D) {
   tiles[tile.id] = tile;
   const {
     content,
@@ -64,13 +130,7 @@ export function selectOriginalTextureForTile(tile) {
     return;
   }
   if (material) {
-    if (
-      !(
-        material &&
-        material.pbrMetallicRoughness &&
-        material.pbrMetallicRoughness.baseColorTexture
-      )
-    ) {
+    if (!material.pbrMetallicRoughness?.baseColorTexture) {
       return;
     }
     material.pbrMetallicRoughness.baseColorTexture.texture.source.image =

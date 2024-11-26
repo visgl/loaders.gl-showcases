@@ -5,19 +5,20 @@ import { v4 as uuidv4 } from "uuid";
 import { color_brand_primary } from "../../constants/colors";
 import {
   ComparisonMode,
-  LayerExample,
-  ViewStateSet,
+  type LayerExample,
   DragMode,
   ComparisonSideMode,
   CompareButtonMode,
-  StatsMap,
-  Bookmark,
-  LayerViewState,
-  StatsData,
+  type StatsMap,
+  type Bookmark,
+  type LayerViewState,
+  type StatsData,
   PageId,
+  BaseMapGroup,
+  type LayoutProps,
 } from "../../types";
 
-import { MapControllPanel } from "../../components/map-control-panel/map-control-panel";
+import { MapControlPanel } from "../../components/map-control-panel/map-control-panel";
 import { CompareButton } from "../../components/comparison/compare-button/compare-button";
 import { ComparisonSide } from "../../components/comparison/comparison-side/comparison-side";
 import { ComparisonLoadManager } from "../../utils/comparison-load-manager";
@@ -27,25 +28,22 @@ import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { downloadJsonFile } from "../../utils/files-utils";
 import { checkBookmarksByPageId } from "../../utils/bookmarks-utils";
 import { Layout } from "../../utils/enums";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setDragMode } from "../../redux/slices/drag-mode-slice";
 import { setColorsByAttrubute } from "../../redux/slices/symbolization-slice";
 import {
-  deleteBaseMaps,
-  setInitialBaseMaps,
+  selectSelectedBaseMap,
 } from "../../redux/slices/base-maps-slice";
-
-type ComparisonPageProps = {
-  mode: ComparisonMode;
-};
-
-type LayoutProps = {
-  layout: string;
-};
+import {
+  selectViewState,
+  setViewState,
+} from "../../redux/slices/view-state-slice";
+import { WarningPanel } from "../../components/layers-panel/warning/warning-panel";
+import { CenteredContainer } from "../../components/common";
 
 const INITIAL_VIEW_STATE = {
   main: {
@@ -89,19 +87,24 @@ const Devider = styled.div<LayoutProps>`
   background-color: ${color_brand_primary};
 `;
 
+interface ComparisonPageProps {
+  mode: ComparisonMode;
+}
+
 export const Comparison = ({ mode }: ComparisonPageProps) => {
   const loadManagerRef = useRef<ComparisonLoadManager>(
     new ComparisonLoadManager()
   );
 
-  const [viewState, setViewState] = useState<ViewStateSet>(INITIAL_VIEW_STATE);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
+  const globalViewState = useAppSelector(selectViewState);
   const [layersLeftSide, setLayersLeftSide] = useState<LayerExample[]>([]);
   const [layersRightSide, setLayersRightSide] = useState<LayerExample[]>([]);
   const [activeLayersIdsLeftSide, setActiveLayersIdsLeftSide] = useState<
-    string[]
+  string[]
   >([]);
   const [activeLayersIdsRightSide, setActiveLayersIdsRightSide] = useState<
-    string[]
+  string[]
   >([]);
   const [comparisonStats, setComparisonStats] = useState<StatsData[]>([]);
 
@@ -114,17 +117,14 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   );
   compareButtonModeRef.current = compareButtonMode;
 
-  const [disableButton, setDisableButton] = useState<Array<boolean>>([
-    true,
-    true,
-  ]);
+  const [disableButton, setDisableButton] = useState<boolean[]>([true, true]);
   const [leftSideLoaded, setLeftSideLoaded] = useState<boolean>(true);
   const [hasBeenCompared, setHasBeenCompared] = useState<boolean>(false);
   const [showBookmarksPanel, setShowBookmarksPanel] = useState<boolean>(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [preventTransitions, setPreventTransitions] = useState<boolean>(true);
   const [sublayersLeftSide, setSublayersLeftSide] = useState<
-    null | ActiveSublayer[]
+  null | ActiveSublayer[]
   >(null);
   const [loadNumber, setLoadNumber] = useState<number>(0);
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string>("");
@@ -132,6 +132,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     useState<boolean>(false);
   const [buildingExplorerOpenedRight, setBuildingExplorerOpenedRight] =
     useState<boolean>(false);
+  const [wrongBookmarkPageId, setWrongBookmarkPageId] = useState<PageId | null>(
+    null
+  );
   const dispatch = useAppDispatch();
 
   const layout = useAppLayout();
@@ -143,10 +146,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     setBookmarks([]);
     dispatch(setColorsByAttrubute(null));
     dispatch(setDragMode(DragMode.pan));
-    dispatch(deleteBaseMaps("Terrain"));
-    return () => {
-      dispatch(setInitialBaseMaps());
-    };
+    dispatch(setViewState(INITIAL_VIEW_STATE));
   }, [mode]);
 
   useEffect(() => {
@@ -175,7 +175,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         );
 
         const data: StatsData = {
-          viewState: viewState.main,
+          viewState: globalViewState.main,
           datasets: [
             {
               ...leftSideStats,
@@ -208,72 +208,71 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     return () => {
       loadManagerRef.current.removeEventListener("loaded", loadedHandler);
     };
-  }, [selectedBookmarkId, bookmarks, viewState.main]);
+  }, [selectedBookmarkId, bookmarks, globalViewState]);
 
-  const onViewStateChange = (viewStateSet: ViewStateSet) => {
-    setViewState(viewStateSet);
+  useEffect(() => {
     if (hasBeenCompared) {
       loadManagerRef.current.leftLoadingTime = 0;
       loadManagerRef.current.rightLoadingTime = 0;
     }
-  };
+  }, [globalViewState]);
 
-  const pointToTileset = useCallback((layerViewState?: LayerViewState) => {
-    if (layerViewState) {
-      setViewState((viewStatePrev) => {
+  const pointToTileset = useCallback(
+    (layerViewState?: LayerViewState) => {
+      if (layerViewState) {
         const { zoom, longitude, latitude } = layerViewState;
-        return {
+        const newViewState = {
           main: {
-            ...viewStatePrev.main,
+            ...globalViewState.main,
             zoom: zoom + 2.5,
             longitude,
             latitude,
             transitionDuration: 1000,
           },
         };
-      });
-    }
-  }, []);
+        dispatch(setViewState(newViewState));
+      }
+    },
+    [globalViewState]
+  );
 
   const onZoomIn = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, maxZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === maxZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const { zoom, maxZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === maxZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? maxZoom : zoom + 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onZoomOut = useCallback(() => {
-    setViewState((viewStatePrev) => {
-      const { zoom, minZoom } = viewStatePrev.main;
-      const zoomEqualityCondition = zoom === minZoom;
-
-      return {
-        main: {
-          ...viewStatePrev.main,
-          zoom: zoomEqualityCondition ? minZoom : zoom - 1,
-          transitionDuration: zoomEqualityCondition ? 0 : 1000,
-        },
-      };
-    });
-  }, []);
+    const { zoom, minZoom } = globalViewState.main;
+    const zoomEqualityCondition = zoom === minZoom;
+    const newViewState = {
+      main: {
+        ...globalViewState.main,
+        zoom: zoomEqualityCondition ? minZoom : zoom - 1,
+        transitionDuration: zoomEqualityCondition ? 0 : 1000,
+      },
+    };
+    dispatch(setViewState(newViewState));
+  }, [globalViewState]);
 
   const onCompassClick = useCallback(() => {
-    setViewState((viewStatePrev) => ({
-      main: {
-        ...viewStatePrev.main,
-        bearing: 0,
-        transitionDuration: 1000,
-      },
-    }));
-  }, []);
+    dispatch(
+      setViewState({
+        main: {
+          ...globalViewState.main,
+          bearing: 0,
+          transitionDuration: 1000,
+        },
+      })
+    );
+  }, [globalViewState]);
 
   const toggleCompareButtonMode = () => {
     setCompareButtonMode((prev) => {
@@ -284,6 +283,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         if (bookmarks.length) {
           onSelectBookmarkHandler(bookmarks[0].id);
         }
+        setPreventTransitions(true);
         return CompareButtonMode.Comparing;
       }
       loadManagerRef.current.stopLoading();
@@ -292,7 +292,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   const downloadClickHandler = () => {
-    downloadJsonFile(comparisonStats, "bookmarks-stats.json");
+    downloadJsonFile(comparisonStats, "comparison-results-stats.json");
   };
 
   const onBookmarksUploadedHandler = (bookmarks: Bookmark[]) => {
@@ -305,9 +305,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       setBookmarks(bookmarks);
       onSelectBookmarkHandler(bookmarks[0].id, bookmarks);
     } else {
-      console.warn(
-        `Can't add bookmars with ${bookmarksPageId} pageId to the comparison app`
-      );
+      setWrongBookmarkPageId(bookmarksPageId);
     }
   };
 
@@ -365,29 +363,33 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
 
   const addBookmarkHandler = () => {
     const newBookmarkId = uuidv4();
-    setSelectedBookmarkId(newBookmarkId);
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) => [
-        ...prev,
-        {
-          id: newBookmarkId,
-          pageId: PageId.comparison,
-          imageUrl,
-          viewState,
-          layersLeftSide,
-          layersRightSide,
-          activeLayersIdsLeftSide: [...activeLayersIdsLeftSide],
-          activeLayersIdsRightSide: [...activeLayersIdsRightSide],
-        },
-      ]);
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) => [
+          ...prev,
+          {
+            id: newBookmarkId,
+            pageId: PageId.comparison,
+            imageUrl,
+            viewState: globalViewState,
+            layersLeftSide,
+            layersRightSide,
+            activeLayersIdsLeftSide: [...activeLayersIdsLeftSide],
+            activeLayersIdsRightSide: [...activeLayersIdsRightSide],
+          },
+        ]);
+        setSelectedBookmarkId(newBookmarkId);
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const onSelectBookmarkHandler = (
     bookmarkId: string,
     newBookmarks?: Bookmark[]
   ) => {
-    const bookmark = (newBookmarks || bookmarks).find(
+    const bookmark = (newBookmarks ?? bookmarks).find(
       ({ id }) => id === bookmarkId
     );
     if (!bookmark) {
@@ -395,7 +397,7 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
     }
     setSelectedBookmarkId(bookmark.id);
     setPreventTransitions(true);
-    setViewState(bookmark.viewState);
+    dispatch(setViewState(bookmark.viewState));
     setLayersLeftSide(bookmark.layersLeftSide);
     setLayersRightSide(bookmark.layersRightSide);
     setActiveLayersIdsLeftSide(bookmark.activeLayersIdsLeftSide);
@@ -409,23 +411,27 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   }, []);
 
   const onEditBookmarkHandler = (bookmarkId: string) => {
-    makeScreenshot().then((imageUrl) => {
-      setBookmarks((prev) =>
-        prev.map((bookmark) =>
-          bookmark.id === bookmarkId
-            ? {
-                ...bookmark,
-                imageUrl,
-                viewState,
-                layersLeftSide,
-                layersRightSide,
-                activeLayersIdsLeftSide,
-                activeLayersIdsRightSide,
-              }
-            : bookmark
-        )
-      );
-    });
+    makeScreenshot()
+      .then((imageUrl) => {
+        setBookmarks((prev) =>
+          prev.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? {
+                  ...bookmark,
+                  imageUrl,
+                  viewState: globalViewState,
+                  layersLeftSide,
+                  layersRightSide,
+                  activeLayersIdsLeftSide,
+                  activeLayersIdsRightSide,
+                }
+              : bookmark
+          )
+        );
+      })
+      .catch(() => {
+        console.error("Make screenshot operation has failed");
+      });
   };
 
   const updateBookmarks = (bookmarks: Bookmark[]) => {
@@ -434,11 +440,10 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
   };
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.leftLoadingTime}
         hasBeenCompared={hasBeenCompared}
@@ -450,24 +455,25 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
         showBookmarks={showBookmarksPanel}
         loadNumber={loadNumber}
         buildingExplorerOpened={buildingExplorerOpenedLeft}
-        onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers, activeIds) =>
-          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left)
-        }
+        onChangeLayers={(layers, activeIds) => {
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.left);
+        }}
         onLoadingStateChange={disableButtonHandlerLeft}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveLeftSide(stats);
           setLeftSideLoaded(true);
         }}
-        onBuildingExplorerOpened={(opened) =>
-          setBuildingExplorerOpenedLeft(opened)
-        }
+        onBuildingExplorerOpened={(opened) => {
+          setBuildingExplorerOpenedLeft(opened);
+        }}
         onShowBookmarksChange={onBookmarkClick}
         onInsertBookmarks={updateBookmarks}
-        onUpdateSublayers={(sublayers) => setSublayersLeftSide(sublayers)}
+        onUpdateSublayers={(sublayers) => {
+          setSublayersLeftSide(sublayers);
+        }}
       />
-      <Devider layout={layout} />
+      <Devider $layout={layout} />
       <CompareButton
         compareButtonMode={compareButtonMode}
         downloadStats={
@@ -492,7 +498,9 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           onSelectBookmark={onSelectBookmarkHandler}
           onCollapsed={onCloseBookmarkPanel}
           onDownloadBookmarks={onDownloadBookmarksHandler}
-          onClearBookmarks={() => setBookmarks([])}
+          onClearBookmarks={() => {
+            setBookmarks([]);
+          }}
           onBookmarksUploaded={onBookmarksUploadedHandler}
           onDeleteBookmark={onDeleteBookmarkHandler}
           onEditBookmark={onEditBookmarkHandler}
@@ -502,12 +510,11 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
       <ComparisonSide
         mode={mode}
         side={ComparisonSideMode.right}
-        viewState={viewState}
         compareButtonMode={compareButtonMode}
         loadingTime={loadManagerRef.current.rightLoadingTime}
         loadTileset={leftSideLoaded}
         hasBeenCompared={hasBeenCompared}
-        showLayerOptions={mode === ComparisonMode.acrossLayers ? true : false}
+        showLayerOptions={mode === ComparisonMode.acrossLayers}
         showComparisonSettings={mode === ComparisonMode.withinLayer}
         staticLayers={
           mode === ComparisonMode.withinLayer ? layersLeftSide : layersRightSide
@@ -527,29 +534,39 @@ export const Comparison = ({ mode }: ComparisonPageProps) => {
           buildingExplorerOpenedRight ||
           (mode === ComparisonMode.withinLayer && buildingExplorerOpenedLeft)
         }
-        onViewStateChange={onViewStateChange}
         pointToTileset={pointToTileset}
-        onChangeLayers={(layers, activeIds) =>
-          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right)
-        }
+        onChangeLayers={(layers, activeIds) => {
+          onChangeLayersHandler(layers, activeIds, ComparisonSideMode.right);
+        }}
         onLoadingStateChange={disableButtonHandlerRight}
         onTilesetLoaded={(stats: StatsMap) => {
           loadManagerRef.current.resolveRightSide(stats);
         }}
-        onBuildingExplorerOpened={(opened) =>
-          setBuildingExplorerOpenedRight(opened)
-        }
+        onBuildingExplorerOpened={(opened) => {
+          setBuildingExplorerOpenedRight(opened);
+        }}
         onShowBookmarksChange={onBookmarkClick}
       />
 
       {compareButtonMode === CompareButtonMode.Start && (
-        <MapControllPanel
-          bearing={viewState.main.bearing}
+        <MapControlPanel
+          bearing={globalViewState.main.bearing}
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}
           onCompassClick={onCompassClick}
           bottom={layout === Layout.Mobile ? 8 : 16}
+          isDragModeVisible={selectedBaseMap?.group !== BaseMapGroup.ArcGIS}
         />
+      )}
+      {wrongBookmarkPageId && (
+        <CenteredContainer>
+          <WarningPanel
+            title={`This bookmark is only suitable for ${wrongBookmarkPageId} mode`}
+            onConfirm={() => {
+              setWrongBookmarkPageId(null);
+            }}
+          />
+        </CenteredContainer>
       )}
     </Container>
   );

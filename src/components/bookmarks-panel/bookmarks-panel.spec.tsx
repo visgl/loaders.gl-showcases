@@ -3,9 +3,13 @@ import { PageId } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { renderWithTheme } from "../../utils/testing-utils/render-with-theme";
 import { BookmarksPanel } from "./bookmarks-panel";
-import { dragAndDropText } from "./upload-panel";
+import { act } from "react-dom/test-utils";
+import type { RenderResult } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 jest.mock("../../utils/hooks/layout");
+
+const dragAndDropText = "Drag and drop your json file here";
 
 const TEST_BOOKMARKS = [
   {
@@ -52,7 +56,7 @@ const onDeleteBookmark = jest.fn();
 const onDownloadBookmarks = jest.fn();
 const onBookmarksUploaded = jest.fn();
 
-const callRender = (renderFunc, props = {}) => {
+const callRender = (renderFunc, props = {}): RenderResult => {
   return renderFunc(
     <BookmarksPanel
       id="test-bookmarks"
@@ -87,79 +91,107 @@ describe("BookmarksPanel", () => {
     expect(getByText("Bookmarks list is empty")).toBeInTheDocument();
   });
 
-  it("Should open option menu", () => {
+  it("Should open option menu", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
     const editOption = getByText("Edit Bookmark");
-    userEvent.click(editOption);
+    await act(async () => {
+      await userEvent.click(editOption);
+    });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 0.4");
   });
 
-  it("Should render clear bookmarks dekstop content", () => {
+  it("Should render clear bookmarks dekstop content", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async() => {
+      await userEvent.click(optionButton);
+    });
     expect(getAllByRole("button").length).toBe(4);
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    await act(async () => {
+      await userEvent.click(clearOption);
+    });
     expect(getAllByRole("button").length).toBe(5);
   });
 
-  it("Should cancel clear bookmarks", () => {
+  it("Should cancel clear bookmarks", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    await act(async () => {
+      await userEvent.click(clearOption);
+    });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 0.4");
     const cancelClear = getAllByRole("button")[4];
-    userEvent.click(cancelClear);
+    await act(async () => {
+      await userEvent.click(cancelClear);
+    });
     expect(getAllByRole("button")[0]).toHaveStyle("opacity: 1");
   });
 
-  it("Should clear bookmarks", () => {
+  it("Should clear bookmarks", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    await act(async () => {
+      await userEvent.click(clearOption);
+    });
     const confirmButton = getAllByRole("button")[3];
-    userEvent.click(confirmButton);
+    await act(async () => {
+      await userEvent.click(confirmButton);
+    });
     expect(onClearBookmarks).toHaveBeenCalled();
   });
 
-  it("Should render clear bookmarks mobile content", () => {
+  it("Should render clear bookmarks mobile content", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    await act(async () => {
+      await userEvent.click(clearOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     expect(body.childNodes[1]).toContainHTML(
       "Are you sure you  want to clear all  bookmarks?"
     );
   });
 
-  it("Should render bookmarks unsaved warning content", () => {
+  it("Should render bookmarks unsaved warning content", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    await act(async () => {
+      await userEvent.click(uploadOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     expect(popover).toContainHTML(
@@ -167,67 +199,93 @@ describe("BookmarksPanel", () => {
     );
   });
 
-  it("Should render bookmarks upload content", () => {
+  it("Should render bookmarks upload content", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    await act(async () => {
+      await userEvent.click(uploadOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
-    const uploadButton = getByText("Upload");
-    userEvent.click(uploadButton);
+    const uploadButton = getByText("Next");
+    await act(async () => {
+      await userEvent.click(uploadButton);
+    });
     expect(popover).toContainHTML(dragAndDropText);
   });
 
-  it("Should close unsaved content", () => {
+  it("Should close unsaved content", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    await act(async () => {
+      await userEvent.click(uploadOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const cancelButton = getByText("Cancel");
-    userEvent.click(cancelButton);
+    await act(async () => {
+      await userEvent.click(cancelButton);
+    });
     expect(popover).not.toContainHTML("Cancel");
   });
 
-  it("Should close upload content", () => {
+  it("Should close upload content", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const uploadOption = getByText("Upload bookmarks");
-    userEvent.click(uploadOption);
+    await act(async () => {
+      await userEvent.click(uploadOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
-    const uploadButton = getByText("Upload");
-    userEvent.click(uploadButton);
+    const uploadButton = getByText("Next");
+    await act(async () => {
+      await userEvent.click(uploadButton);
+    });
     const cancelButton = getByText("Cancel");
-    userEvent.click(cancelButton);
+    await act(async () => {
+      await userEvent.click(cancelButton);
+    });
     expect(popover).not.toContainHTML(dragAndDropText);
   });
 
-  it("Should render confirm deleting mobile", () => {
+  it("Should render confirm deleting mobile", async () => {
     useAppLayoutMock.mockImplementation(() => "mobile");
     const { getAllByRole, getByText } = callRender(renderWithTheme);
     const buttons = getAllByRole("button");
     const optionButton = buttons[buttons.length - 1];
-    userEvent.click(optionButton);
+    await act(async () => {
+      await userEvent.click(optionButton);
+    });
     const clearOption = getByText("Clear bookmarks");
-    userEvent.click(clearOption);
+    await act(async () => {
+      await userEvent.click(clearOption);
+    });
     const body = document.getElementsByTagName("body")[0];
     const popover = body.childNodes[1];
     const warning = "Are you sure you  want to clear all  bookmarks?";
     expect(popover).toContainHTML(warning);
     const cancelButton = getByText("No, Keep");
-    userEvent.click(cancelButton);
+    await act(async () => {
+      await userEvent.click(cancelButton);
+    });
     expect(popover).not.toContainHTML(warning);
   });
 });

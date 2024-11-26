@@ -3,12 +3,12 @@ import styled, { css, useTheme } from "styled-components";
 import { Slider } from "../../slider/slider";
 import Floor from "../../../../public/images/floor-image-inactive.svg";
 import FloorActive from "../../../../public/images/floor-image-active.svg";
-import { ComparisonSideMode, SliderType } from "../../../types";
+import { type ComparisonSideMode, SliderType } from "../../../types";
 import { useAppDispatch } from "../../../redux/hooks";
 import { setFiltersByAttrubute } from "../../../redux/slices/symbolization-slice";
 import { selectFieldValues } from "../../../redux/slices/i3s-stats-slice";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
+import { type RootState } from "../../../redux/store";
 
 const FiltrationContainer = styled.div`
   display: flex;
@@ -94,12 +94,12 @@ export const FiltrationSection = ({ side }: { side?: ComparisonSideMode }) => {
 
   const floors = bldgLevels
     ? bldgLevels.mostFrequentValues
-        .slice()
-        .sort((a, b) => a - b)
-        .map((level, index) => ({
-          id: `level${index}`,
-          floorNumber: level,
-        }))
+      .slice()
+      .sort((a, b) => a - b)
+      .map((level, index) => ({
+        id: `level${index}`,
+        floorNumber: level,
+      }))
     : [];
 
   const theme = useTheme();
@@ -157,14 +157,16 @@ export const FiltrationSection = ({ side }: { side?: ComparisonSideMode }) => {
                 zIndex={index}
               >
                 <FloorsImage>
-                  {isFloorActive ? (
+                  {isFloorActive
+                    ? (
                     <FloorActive />
-                  ) : (
+                      )
+                    : (
                     <Floor
                       fill={theme.colors.mainAttributeHighlightColor}
                       stroke={theme.colors.filtrationImage}
                     />
-                  )}
+                      )}
                 </FloorsImage>
               </FloorsItem>
             );

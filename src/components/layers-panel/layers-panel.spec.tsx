@@ -1,4 +1,9 @@
-import { act, screen, waitFor } from "@testing-library/react";
+import {
+  type RenderResult,
+  act,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithThemeProviders } from "../../utils/testing-utils/render-with-theme";
 import { LayersPanel } from "./layers-panel";
@@ -6,20 +11,18 @@ import { LayersPanel } from "./layers-panel";
 // Mocked compnents
 import { LayersControlPanel } from "./layers-control-panel";
 import { MapOptionPanel } from "./map-options-panel";
-import { InsertPanel } from "./insert-panel/insert-panel";
+import { InsertPanel, type CustomLayerData } from "./insert-panel/insert-panel";
 import { WarningPanel } from "./warning/warning-panel";
 import { LayerSettingsPanel } from "./layer-settings-panel";
 import { load } from "@loaders.gl/core";
-import { PageId } from "../../types";
+import { BaseMapGroup, PageId } from "../../types";
 import { setupStore } from "../../redux/store";
-import {
-  selectSelectedBaseMapId,
-} from "../../redux/slices/base-maps-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
+import "@testing-library/jest-dom";
 
 jest.mock("@loaders.gl/core", () => ({
   load: jest.fn(),
 }));
-
 jest.mock("@loaders.gl/i3s", () => ({
   ArcGisWebSceneLoader: jest.fn(),
 }));
@@ -38,7 +41,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../close-button/close-button", () => ({
-  CloseButton: ({ onClick }) => {
+  CloseButton: ({ onClick }: { onClick: () => void }) => {
     const CloseButtonMock = "close-button-mock";
 
     return (
@@ -81,7 +84,11 @@ const onCloseMock = jest.fn();
 const onPointToLayerMock = jest.fn();
 const onBuildingExplorerOpened = jest.fn();
 
-const callRender = (renderFunc, props = {}, store = setupStore()) => {
+const callRender = (
+  renderFunc,
+  props = {},
+  store = setupStore()
+): RenderResult => {
   return renderFunc(
     <LayersPanel
       id={""}
@@ -104,7 +111,7 @@ const callRender = (renderFunc, props = {}, store = setupStore()) => {
 };
 
 describe("Layers Panel", () => {
-  it("Should render LayersPanel", () => {
+  it("Should render LayersPanel", async () => {
     const store = setupStore();
     const { container } = callRender(
       renderWithThemeProviders,
@@ -119,7 +126,7 @@ describe("Layers Panel", () => {
 
     // Check Mocked Close Button
     expect(screen.getByText("Close")).toBeInTheDocument();
-    userEvent.click(screen.getByText("Close"));
+    await userEvent.click(screen.getByText("Close"));
     expect(onCloseMock).toHaveBeenCalled();
 
     // Check Layers Control Panel is open and Map Options Panel doesn't
@@ -127,12 +134,12 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Map Options Panel")).not.toBeInTheDocument();
 
     // Check Map Options Panel is open if click to Map Options Tab.
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
     expect(screen.getByText("Map Options Panel")).toBeInTheDocument();
     expect(screen.queryByText("Layers Control Panel")).not.toBeInTheDocument();
 
     // Check switching back to Layers Tab.
-    userEvent.click(screen.getByText("Layers"));
+    await userEvent.click(screen.getByText("Layers"));
     expect(screen.getByText("Layers Control Panel")).toBeInTheDocument();
     expect(screen.queryByText("Map Options Panel")).not.toBeInTheDocument();
   });
@@ -227,7 +234,7 @@ describe("Layers Panel", () => {
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
-  it("Should close duplication warining on click outside", () => {
+  it("Should close duplication warining on click outside", async () => {
     const store = setupStore();
     callRender(
       renderWithThemeProviders,
@@ -248,16 +255,16 @@ describe("Layers Panel", () => {
     expect(screen.getByText("Warning Panel")).toBeInTheDocument();
 
     // Click outside
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     expect(screen.queryByText("Warning Panel")).not.toBeInTheDocument();
   });
 
-  it("Should be able to insert baseMap", () => {
+  it("Should be able to insert baseMap", async () => {
     const store = setupStore();
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     // Call insert baseMap to show insert panel
     const { insertBaseMap } = MapOptionPanelMock.mock.lastCall[0];
@@ -268,24 +275,26 @@ describe("Layers Panel", () => {
 
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
     // Click insert baseMap
-    act(() => {
-      onInsert({
+    await act(async () => {
+      const customMap: CustomLayerData = {
         name: "test-basemap",
         url: "https://test-base-map.url",
         token: "",
-      });
+        group: BaseMapGroup.Maplibre,
+      };
+      await onInsert(customMap);
     });
 
     const state = store.getState();
-    const baseMapId =   selectSelectedBaseMapId(state);
+    const baseMapId = selectSelectedBaseMap(state)?.id;
     expect(baseMapId).toEqual("https://test-base-map.url");
   });
 
-  it("Should be able to cancel insert baseMap", () => {
+  it("Should be able to cancel insert baseMap", async () => {
     const store = setupStore();
     callRender(renderWithThemeProviders, undefined, store);
     // Switch to the MapOptions Tab
-    userEvent.click(screen.getByText("Map Options"));
+    await userEvent.click(screen.getByText("Map Options"));
 
     // Call insert baseMap to show insert panel
     const { insertBaseMap } = MapOptionPanelMock.mock.lastCall[0];
@@ -332,17 +341,18 @@ describe("Layers Panel", () => {
   });
 
   it("Should be able to insert new Scene", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -382,21 +392,24 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).toHaveBeenCalled();
+    });
   });
 
   it("Should be able to cancel insert new Scene", () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -427,17 +440,18 @@ describe("Layers Panel", () => {
   });
 
   it("Should show duplication scene error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {},
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://test.url",
-          },
-        ],
-      })
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {},
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://test.url",
+            },
+          ],
+        })
     );
     const store = setupStore();
     callRender(
@@ -476,7 +490,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
@@ -492,8 +508,9 @@ describe("Layers Panel", () => {
   });
 
   it("Should show not supported layers error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.reject(new Error("NO_AVAILABLE_SUPPORTED_LAYERS_ERROR"))
     );
 
     const store = setupStore();
@@ -516,8 +533,8 @@ describe("Layers Panel", () => {
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
 
     // Click insert scene
-    act(() => {
-      onInsert({
+    await act(async () => {
+      await onInsert({
         id: "https://test.url",
         name: "Scene",
         url: "https://test-another.url",
@@ -526,9 +543,11 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
-    // Should close Insert Lyaer Panel
+    // Should close Insert Layer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
     expect(screen.getByText("Warning Panel")).toBeInTheDocument();
 
@@ -542,8 +561,8 @@ describe("Layers Panel", () => {
   });
 
   it("Should show not supported crs error in Insert Panel", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
+    loadMock.mockImplementation(
+      async () => await Promise.reject(new Error("NOT_SUPPORTED_CRS_ERROR"))
     );
 
     const store = setupStore();
@@ -566,8 +585,8 @@ describe("Layers Panel", () => {
     const { onInsert } = InsertPanelMock.mock.lastCall[0];
 
     // Click insert scene
-    act(() => {
-      onInsert({
+    await act(async () => {
+      await onInsert({
         id: "https://test.url",
         name: "Scene",
         url: "https://test-another.url",
@@ -576,7 +595,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).not.toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).not.toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();
@@ -592,21 +613,22 @@ describe("Layers Panel", () => {
   });
 
   it("Should show 'Webscene slides cannot be loaded in Across Layers mode' warning", async () => {
-    loadMock.mockImplementation(() =>
-      Promise.resolve({
-        header: {
-          presentation: {
-            slides: [{ id: "slide-1" }, { id: "slide-2" }],
+    loadMock.mockImplementation(
+      async () =>
+        await Promise.resolve({
+          header: {
+            presentation: {
+              slides: [{ id: "slide-1" }, { id: "slide-2" }],
+            },
           },
-        },
-        layers: [
-          {
-            id: "child-layer-id",
-            title: "child-test",
-            url: "https://child-test.url",
-          },
-        ],
-      })
+          layers: [
+            {
+              id: "child-layer-id",
+              title: "child-test",
+              url: "https://child-test.url",
+            },
+          ],
+        })
     );
 
     const store = setupStore();
@@ -640,7 +662,9 @@ describe("Layers Panel", () => {
       });
     });
 
-    await waitFor(() => expect(layerInsertMock).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(layerInsertMock).toHaveBeenCalled();
+    });
 
     // Should close Insert Lyaer Panel
     expect(screen.queryByText("Insert Options Panel")).not.toBeInTheDocument();

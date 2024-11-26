@@ -1,13 +1,24 @@
-import { ReactEventHandler } from "react";
+import { type ReactEventHandler, useState } from "react";
 import styled from "styled-components";
-
+import { addIconItem } from "../../redux/slices/icon-list-slice";
 import {
+  type IIconItem,
+  IconListSetName,
+  BaseMapGroup,
+  ButtonSize,
+  FileType,
+  type FileUploaded,
   BoundingVolumeColoredBy,
   BoundingVolumeType,
   ListItemType,
   SelectionState,
   TileColoredBy,
 } from "../../types";
+import md5 from "md5";
+import { IconListPanel } from "../icon-list-panel/icon-list-panel";
+import { ActionIconButton } from "../action-icon-button/action-icon-button";
+import PlusIcon from "../../../public/icons/plus.svg";
+import { UploadPanel } from "../upload-panel/upload-panel";
 import { useAppLayout } from "../../utils/hooks/layout";
 import { CloseButton } from "../close-button/close-button";
 import {
@@ -24,6 +35,9 @@ import {
   setDebugOptions,
   selectDebugOptions,
 } from "../../redux/slices/debug-options-slice";
+import { selectSelectedBaseMap } from "../../redux/slices/base-maps-slice";
+
+export const TEXTURE_ICON_SIZE = 54;
 
 const CloseButtonWrapper = styled.div`
   position: absolute;
@@ -56,34 +70,83 @@ const RadioButtonWrapper = styled.div`
   margin: 0 16px;
 `;
 
-type DebugPanelProps = {
+const TextureControlPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  margin: 0px 16px 0px 16px;
+`;
+
+const UploadPanelContainer = styled.div`
+  position: absolute;
+  top: 24px;
+  // Make upload panel centered related to debug panel.
+  // 168px is half upload panel width.
+  left: calc(50% - 168px);
+`;
+
+interface DebugPanelProps {
   onClose: ReactEventHandler;
-};
+}
 
 export const DebugPanel = ({ onClose }: DebugPanelProps) => {
   const layout = useAppLayout();
   const dispatch = useAppDispatch();
+  const [showFileUploadPanel, setShowFileUploadPanel] = useState(false);
   const debugOptions = useAppSelector(selectDebugOptions);
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
+  const minimapDisabled = selectedBaseMap?.group === BaseMapGroup.ArcGIS;
+  if (minimapDisabled && debugOptions.minimap) {
+    dispatch(setDebugOptions({ minimap: false }));
+  }
+
+  const onTextureInsertClick = () => {
+    setShowFileUploadPanel(true);
+  };
+
+  const onFileUploadedHandler = async ({ fileContent, info }: FileUploaded) => {
+    setShowFileUploadPanel(false);
+    const url = info.url as string;
+    const hash = md5(url);
+    const blob = new Blob([fileContent as ArrayBuffer]);
+    const objectURL = URL.createObjectURL(blob);
+
+    const texture: IIconItem = {
+      id: `${hash}`,
+      icon: objectURL,
+      extData: { imageUrl: fileContent },
+      custom: true,
+    };
+    dispatch(
+      addIconItem({
+        iconListSetName: IconListSetName.uvDebugTexture,
+        iconItem: texture,
+        setCurrent: true,
+      })
+    );
+  };
 
   return (
-    <PanelContainer layout={layout}>
-      <PanelHeader panel={Panels.Debug}>
-        <Title id="debug-panel-title" left={16}>
+    <PanelContainer $layout={layout}>
+      <PanelHeader $panel={Panels.Debug}>
+        <Title id="debug-panel-title" $left={16}>
           Debug Panel
         </Title>
       </PanelHeader>
       <CloseButtonWrapper>
         <CloseButton id="debug-panel-close-button" onClick={onClose} />
       </CloseButtonWrapper>
-      <PanelHorizontalLine top={10} />
-      <ToggleOptionsContainer>
+      <PanelHorizontalLine $top={10} />
+      <ToggleOptionsContainer id={"debug--toggle-options-container"}>
         <ItemContainer>
-          <Title left={16} id={"toggle-minimap-title"}>
+          <Title $left={16} id={"toggle-minimap-title"}>
             Minimap
           </Title>
           <ToggleSwitch
             id={"toggle-minimap"}
             checked={debugOptions.minimap}
+            disabled={minimapDisabled}
             onChange={() =>
               dispatch(setDebugOptions({ minimap: !debugOptions.minimap }))
             }
@@ -91,7 +154,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         </ItemContainer>
         {debugOptions.minimap && (
           <NestedItemContainer>
-            <Title left={16} id={"toggle-different-viewports-title"}>
+            <Title $left={16} id={"toggle-different-viewports-title"}>
               Use different Viewports
             </Title>
             <ToggleSwitch
@@ -108,7 +171,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           </NestedItemContainer>
         )}
         <ItemContainer>
-          <Title left={16} id={"toggle-loading-tiles-title"}>
+          <Title $left={16} id={"toggle-loading-tiles-title"}>
             Loading Tiles
           </Title>
           <ToggleSwitch
@@ -120,7 +183,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-picking-title"}>
+          <Title $left={16} id={"toggle-picking-title"}>
             Enable picking
           </Title>
           <ToggleSwitch
@@ -132,7 +195,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-wireframe-title"}>
+          <Title $left={16} id={"toggle-wireframe-title"}>
             Wireframe mode
           </Title>
           <ToggleSwitch
@@ -144,7 +207,7 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
           />
         </ItemContainer>
         <ItemContainer>
-          <Title left={16} id={"toggle-texture-uv-title"}>
+          <Title $left={16} id={"toggle-texture-uv-title"}>
             Texture UVs
           </Title>
           <ToggleSwitch
@@ -159,7 +222,38 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             }
           />
         </ItemContainer>
-        <Title top={8} left={16} bottom={16} id={"color-section-title"}>
+        {debugOptions.showUVDebugTexture && (
+          <TextureControlPanel>
+            <IconListPanel
+              iconListSetName={IconListSetName.uvDebugTexture}
+              iconSize={TEXTURE_ICON_SIZE}
+            />
+            <ActionIconButton
+              Icon={PlusIcon}
+              size={ButtonSize.Small}
+              onClick={onTextureInsertClick}
+            >
+              Insert Texture
+            </ActionIconButton>
+          </TextureControlPanel>
+        )}
+
+        {showFileUploadPanel && (
+          <UploadPanelContainer>
+            <UploadPanel
+              title={"Upload Texture"}
+              dragAndDropText={"Drag and drop your texture file here"}
+              fileType={FileType.binary}
+              multipleFiles
+              onCancel={() => {
+                setShowFileUploadPanel(false);
+              }}
+              onFileUploaded={onFileUploadedHandler}
+            />
+          </UploadPanelContainer>
+        )}
+
+        <Title $left={16} $bottom={16} id={"color-section-title"}>
           Color
         </Title>
         <RadioButtonWrapper>
@@ -184,9 +278,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
             );
           })}
         </RadioButtonWrapper>
-        <PanelHorizontalLine top={10} />
+        <PanelHorizontalLine $top={10} />
         <ItemContainer>
-          <Title left={16} id={"bounding-volumes-section-title"}>
+          <Title $left={16} id={"bounding-volumes-section-title"}>
             Bounding Volumes
           </Title>
           <ToggleSwitch
@@ -204,9 +298,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
         {debugOptions.boundingVolume && (
           <>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-type-title"}
             >
               Type
@@ -236,9 +330,9 @@ export const DebugPanel = ({ onClose }: DebugPanelProps) => {
               })}
             </RadioButtonWrapper>
             <Title
-              top={8}
-              left={16}
-              bottom={16}
+              $top={8}
+              $left={16}
+              $bottom={16}
               id={"bounding-volume-color-title"}
             >
               Color

@@ -18,7 +18,49 @@ import { MemoryUsagePanel } from "../../memory-usage-panel/memory-usage-panel";
 import { setupStore } from "../../../redux/store";
 import { setDragMode } from "../../../redux/slices/drag-mode-slice";
 
-jest.mock("@loaders.gl/core");
+jest.mock("react-map-gl/maplibre", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/arcgis", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/core", () => {
+  return {
+    load: jest.fn(),
+  };
+});
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@loaders.gl/3d-tiles", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock("@deck.gl/geo-layers", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
+jest.mock(
+  "@deck.gl-community/layers/src/data-driven-tile-3d-layer/data-driven-tile-3d-layer",
+  () => {
+    return {
+      DataDrivenTile3DLayer: jest.fn(),
+    };
+  }
+);
 jest.mock("../../deck-gl-wrapper/deck-gl-wrapper");
 jest.mock("../../main-tools-panel/main-tools-panel");
 jest.mock("../../layers-panel/layers-panel");
@@ -75,7 +117,6 @@ jest.mock("../../../constants/i3s-examples", () => ({
   ],
 }));
 
-const onViewStateChangeMock = jest.fn();
 const pointToTilesetMock = jest.fn();
 const onChangeLayersMock = jest.fn();
 const onTilesetLoaded = jest.fn();
@@ -94,15 +135,12 @@ const parseTilesetUrlParamsMock =
   parseTilesetUrlParams as unknown as jest.Mocked<any>;
 
 describe("ComparisonSide", () => {
-  let viewState;
-
   const callRender = (renderFunc, props = {}, store = setupStore()) => {
     return renderFunc(
       <ComparisonSide
         activeLayersIds={[]}
         mode={ComparisonMode.acrossLayers}
         side={ComparisonSideMode.left}
-        viewState={viewState}
         showLayerOptions
         showComparisonSettings
         loadingTime={1123}
@@ -113,7 +151,6 @@ describe("ComparisonSide", () => {
         buildingExplorerOpened={true}
         onShowBookmarksChange={onShowBookmarksChange}
         compareButtonMode={CompareButtonMode.Start}
-        onViewStateChange={onViewStateChangeMock}
         pointToTileset={pointToTilesetMock}
         onChangeLayers={onChangeLayersMock}
         onLoadingStateChange={onLoadingStateChange}
@@ -137,23 +174,6 @@ describe("ComparisonSide", () => {
     });
   });
 
-  beforeEach(() => {
-    viewState = {
-      main: {
-        longitude: 0,
-        latitude: 0,
-        pitch: 45,
-        maxPitch: 90,
-        bearing: 0,
-        minZoom: 2,
-        maxZoom: 24,
-        zoom: 2,
-        transitionDuration: 0,
-        transitionInterpolator: null,
-      },
-    };
-  });
-
   it("Should render left side", () => {
     const { rerender, container } = callRender(renderWithThemeProviders);
     expect(container).toBeInTheDocument();
@@ -172,19 +192,19 @@ describe("ComparisonSide", () => {
     const store = setupStore();
     store.dispatch(setDragMode(DragMode.pan));
     const { rerender } = callRender(renderWithThemeProviders, undefined, store);
-    expect(LayersPanelMock.mock.calls.length).toBe(2);
+    expect(LayersPanelMock.mock.calls.length).toBe(3);
 
     callRender(rerender, {
       mode: ComparisonMode.withinLayer,
       showLayerOptions: false,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(3);
+    expect(LayersPanelMock.mock.calls.length).toBe(4);
 
     callRender(rerender, {
       mode: ComparisonMode.acrossLayers,
       showLayerOptions: true,
     });
-    expect(LayersPanelMock.mock.calls.length).toBe(5);
+    expect(LayersPanelMock.mock.calls.length).toBe(7);
   });
 
   it("Should handle staticLayers", () => {
@@ -227,23 +247,23 @@ describe("ComparisonSide", () => {
     expect(loadMock.mock.calls.length).toBe(2);
   });
 
-  it("DeckGlI3s", () => {
+  it("DeckGlI3s", async () => {
     callRender(renderWithThemeProviders);
 
     const { onPointToLayer } = LayersPanelMock.mock.lastCall[0];
-    act(() => onPointToLayer());
+    await act(() => onPointToLayer());
     expect(pointToTilesetMock).toHaveBeenCalledTimes(1);
     expect(pointToTilesetMock).toHaveBeenCalledWith(undefined);
     pointToTilesetMock.mockReset();
 
     const { onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
-    act(() =>
+    await act(() =>
       onTilesetLoad({ url: "http://tileset-1.url", setProps: () => undefined })
     );
 
     const { onPointToLayer: onPointToLayer2 } =
       LayersPanelMock.mock.lastCall[0];
-    act(() =>
+    await act(() =>
       onPointToLayer2({
         latitude: 122,
         longitude: 41,
@@ -258,12 +278,12 @@ describe("ComparisonSide", () => {
     });
   });
 
-  it("Should handle tileset load", () => {
+  it("Should handle tileset load", async () => {
     jest.useFakeTimers();
     callRender(renderWithThemeProviders);
 
     const { onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
-    act(() =>
+    await act(() =>
       onTilesetLoad({
         url: "http://tileset.url",
         isLoaded: () => true,
@@ -276,7 +296,7 @@ describe("ComparisonSide", () => {
     expect(onTilesetLoaded).toHaveBeenCalled();
   });
 
-  it("Should handle tile load", () => {
+  it("Should handle tile load", async () => {
     jest.useFakeTimers();
     callRender(renderWithThemeProviders);
 
@@ -286,8 +306,8 @@ describe("ComparisonSide", () => {
       setProps: () => undefined,
     };
     const { onTileLoad, onTilesetLoad } = DeckGlWrapperMock.mock.lastCall[0];
-    act(() => onTilesetLoad(tilesetStub));
-    act(() =>
+    await act(() => onTilesetLoad(tilesetStub));
+    await act(() =>
       onTileLoad({
         tileset: tilesetStub,
       })
@@ -301,16 +321,16 @@ describe("ComparisonSide", () => {
   describe("LayersPanel", () => {
     it("Should render", () => {
       callRender(renderWithThemeProviders);
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
     });
 
-    it("Should call onLayerInsert", () => {
+    it("Should call onLayerInsert", async () => {
       callRender(renderWithThemeProviders);
       const mock = LayersPanelMock.mock;
       const { layers, onLayerInsert } = mock.lastCall[0];
       expect(layers.length).toBe(4);
       expect(loadMock.mock.calls.length).toBe(0);
-      act(() =>
+      await act(() =>
         onLayerInsert({
           id: "new-layer",
           name: "New Layer",
@@ -325,13 +345,13 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerInsert for group layers", () => {
+    it("Should call onLayerInsert for group layers", async () => {
       callRender(renderWithThemeProviders);
       const mock = LayersPanelMock.mock;
       const { layers, onLayerInsert } = mock.lastCall[0];
       expect(layers.length).toBe(4);
       expect(loadMock.mock.calls.length).toBe(0);
-      act(() =>
+      await act(() =>
         onLayerInsert({
           id: "new-layer",
           name: "New Layer",
@@ -353,11 +373,11 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for unit layer", () => {
+    it("Should call onLayerSelect for unit layer", async () => {
       callRender(renderWithThemeProviders);
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect({
           id: "tileset-1",
           name: "tileset-1",
@@ -371,11 +391,11 @@ describe("ComparisonSide", () => {
       expect(newActiveLayersIds).toStrictEqual(["tileset-1"]);
     });
 
-    it("Should call onLayerSelect for root group layer", () => {
+    it("Should call onLayerSelect for root group layer", async () => {
       callRender(renderWithThemeProviders);
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Group layer
           {
@@ -419,12 +439,12 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for non root group layer", () => {
+    it("Should call onLayerSelect for non root group layer", async () => {
       callRender(renderWithThemeProviders);
 
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Non root group layer
           {
@@ -483,7 +503,7 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for non root group layer and one separate layer is selected", () => {
+    it("Should call onLayerSelect for non root group layer and one separate layer is selected", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -497,7 +517,7 @@ describe("ComparisonSide", () => {
 
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Non root group layer
           {
@@ -555,7 +575,7 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for non root group layer and one layer in root group already selected", () => {
+    it("Should call onLayerSelect for non root group layer and one layer in root group already selected", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -569,7 +589,7 @@ describe("ComparisonSide", () => {
 
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Non root group layer
           {
@@ -615,11 +635,11 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for leaf layer with parent", () => {
+    it("Should call onLayerSelect for leaf layer with parent", async () => {
       callRender(renderWithThemeProviders);
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Leaf layer
           {
@@ -665,7 +685,7 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should call onLayerSelect for leaf layer with parent and one leaf already selected", () => {
+    it("Should call onLayerSelect for leaf layer with parent and one leaf already selected", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -678,7 +698,7 @@ describe("ComparisonSide", () => {
       });
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Leaf layer
           {
@@ -724,7 +744,7 @@ describe("ComparisonSide", () => {
       expect(onChangeLayersMock).toHaveBeenCalledTimes(1);
     });
 
-    it("Should not be able to unselect unit layer", () => {
+    it("Should not be able to unselect unit layer", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -737,7 +757,7 @@ describe("ComparisonSide", () => {
       });
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect({
           id: "tileset-1",
           name: "tileset-1",
@@ -751,7 +771,7 @@ describe("ComparisonSide", () => {
       expect(newActiveLayersIds).toStrictEqual(["tileset-1"]);
     });
 
-    it("Should be able to unselect non root group layer", () => {
+    it("Should be able to unselect non root group layer", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -769,7 +789,7 @@ describe("ComparisonSide", () => {
       });
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Selected layer
           {
@@ -828,7 +848,7 @@ describe("ComparisonSide", () => {
       expect(newActiveLayersIds).toStrictEqual([]);
     });
 
-    it("Should be able to unselect leaf layer", () => {
+    it("Should be able to unselect leaf layer", async () => {
       callRender(renderWithThemeProviders, {
         staticLayers: [
           {
@@ -841,7 +861,7 @@ describe("ComparisonSide", () => {
       });
       const { onLayerSelect } = LayersPanelMock.mock.lastCall[0];
 
-      act(() =>
+      await act(() =>
         onLayerSelect(
           // Selected layer
           {
@@ -888,93 +908,95 @@ describe("ComparisonSide", () => {
       expect(newActiveLayersIds).toStrictEqual([]);
     });
 
-    it("Should call onLayerDelete", () => {
+    it("Should call onLayerDelete", async () => {
       callRender(renderWithThemeProviders);
       const { layers, onLayerDelete } = LayersPanelMock.mock.lastCall[0];
       expect(layers.length).toBe(4);
 
-      act(() => onLayerDelete("tileset-1"));
+      await act(() => onLayerDelete("tileset-1"));
       const { layers: layers2 } = LayersPanelMock.mock.lastCall[0];
       expect(layers2.length).toBe(3);
     });
 
-    it("Should call onLayerDelete for group layer", () => {
+    it("Should call onLayerDelete for group layer", async () => {
       callRender(renderWithThemeProviders);
       const { layers, onLayerDelete } = LayersPanelMock.mock.lastCall[0];
       expect(layers.length).toBe(4);
 
-      act(() => onLayerDelete("tileset-4"));
+      await act(() => onLayerDelete("tileset-4"));
       const { layers: layers2 } = LayersPanelMock.mock.lastCall[0];
       expect(layers2.length).toBe(3);
     });
 
-    it("Should call onUpdateSublayerVisibilityHandler", () => {
+    it("Should call onUpdateSublayerVisibilityHandler", async () => {
       callRender(renderWithThemeProviders);
       const { onUpdateSublayerVisibility } = LayersPanelMock.mock.lastCall[0];
-      act(() => onUpdateSublayerVisibility({ layerType: "3DObject" }));
-      act(() => onUpdateSublayerVisibility({ layerType: "Unknown type" }));
+      await act(() => onUpdateSublayerVisibility({ layerType: "3DObject" }));
+      await act(() =>
+        onUpdateSublayerVisibility({ layerType: "Unknown type" })
+      );
       // No checks. Can't change `flattenedSublayers` due to async loading
     });
 
-    it("Should close", () => {
+    it("Should close", async () => {
       callRender(renderWithThemeProviders);
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
       const { onClose } = LayersPanelMock.mock.lastCall[0];
-      act(() => onClose());
-      expect(LayersPanelMock.mock.calls.length).toBe(2);
+      await act(() => onClose());
+      expect(LayersPanelMock.mock.calls.length).toBe(3);
     });
   });
 
   describe("SettingsPanel", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       callRender(renderWithThemeProviders);
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(0);
       const { onChange } = MainToolsPanelMock.mock.lastCall[0];
-      act(() => onChange(ActiveButton.settings));
+      await act(() => onChange(ActiveButton.settings));
     });
 
     it("Should render", () => {
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
     });
 
-    it("Should call onGeometryChange", () => {
+    it("Should call onGeometryChange", async () => {
       const { useDracoGeometry } = DeckGlWrapperMock.mock.lastCall[0];
       expect(useDracoGeometry).toBeTruthy();
 
       const { onGeometryChange } = ComparisonParamsPanelMock.mock.lastCall[0];
-      act(() => onGeometryChange());
+      await act(() => onGeometryChange());
 
       const { useDracoGeometry: newUseDracoGeometry } =
         DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseDracoGeometry).toBeFalsy();
     });
 
-    it("Should call onTexturesChange", () => {
+    it("Should call onTexturesChange", async () => {
       const { useCompressedTextures } = DeckGlWrapperMock.mock.lastCall[0];
       expect(useCompressedTextures).toBeTruthy();
 
       const { onTexturesChange } = ComparisonParamsPanelMock.mock.lastCall[0];
-      act(() => onTexturesChange());
+      await act(() => onTexturesChange());
 
       const { useCompressedTextures: newUseCompressedTextures } =
         DeckGlWrapperMock.mock.lastCall[0];
       expect(newUseCompressedTextures).toBeFalsy();
     });
 
-    it("Should close", () => {
+    it("Should close", async () => {
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
       const { onClose } = ComparisonParamsPanelMock.mock.lastCall[0];
-      act(() => onClose());
+      await act(() => onClose());
       expect(ComparisonParamsPanelMock.mock.calls.length).toBe(1);
     });
   });
 
   describe("MemoryUsagePanel", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       callRender(renderWithThemeProviders);
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(0);
       const { onChange } = MainToolsPanelMock.mock.lastCall[0];
-      act(() => onChange(ActiveButton.memory));
+      await act(() => onChange(ActiveButton.memory));
     });
 
     it("Should render", () => {
@@ -988,10 +1010,10 @@ describe("ComparisonSide", () => {
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
     });
 
-    it("Should close", () => {
+    it("Should close", async () => {
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
       const { onClose } = MemoryUsagePanelMock.mock.lastCall[0];
-      act(() => onClose());
+      await act(() => onClose());
       expect(MemoryUsagePanelMock.mock.calls.length).toBe(1);
     });
   });

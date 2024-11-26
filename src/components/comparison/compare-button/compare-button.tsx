@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, type RefObject, useRef } from "react";
 import styled, { css } from "styled-components";
-import { CompareButtonMode, Layout, LayoutProps } from "../../../types";
+import { CompareButtonMode, Layout, type LayoutProps } from "../../../types";
 import { Title } from "../../common";
 import StartIcon from "../../../../public/icons/start.svg";
 import StopIcon from "../../../../public/icons/stop.svg";
@@ -18,7 +18,7 @@ const Container = styled.div<LayoutProps & { disableButton: boolean }>`
     mobile: "top: 50%",
   })};
   left: ${getCurrentLayoutProperty({
-    desktop: "calc(50% - 95px)",
+    desktop: "calc(50% - 89px)",
     tablet: "calc(50% - 85px)",
     mobile: "calc(50% - 85px)",
   })};
@@ -43,7 +43,7 @@ const Container = styled.div<LayoutProps & { disableButton: boolean }>`
 `;
 
 const Button = styled.button<
-  LayoutProps & { disabled: boolean; isMobile?: boolean }
+LayoutProps & { disabled: boolean; isMobile?: boolean }
 >`
   display: flex;
   color: ${({ theme }) => theme.colors.mainHiglightColorInverted};
@@ -71,10 +71,26 @@ const Button = styled.button<
   }
 `;
 
-const Tooltip = styled.div<{ isMobile: boolean }>`
-  position: absolute;
-  top: 70px;
-  left: calc(50% - 200px);
+const WrapperContainer = styled.div<{
+  isMobile: boolean | undefined;
+  centerX: number;
+  centerY: number;
+}>`
+  position: fixed;
+  top: calc(${({ centerY }) => centerY}px + 22px);
+  left: ${({ centerX }) => centerX}px;
+  transform: translate(-50%, 0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+`;
+
+const TooltipDiv = styled.div<{
+  isMobile: boolean | undefined;
+}>`
+  position: relative;
   background-color: ${({ theme }) => theme.colors.mainHiglightColor};
   border-radius: 8px;
   padding: 8px;
@@ -89,19 +105,16 @@ const Tooltip = styled.div<{ isMobile: boolean }>`
   ${({ isMobile }) =>
     isMobile &&
     css`
-      height: 38px;
-      width: 250px;
-      left: calc(50% - 130px);
-      top: 65px;
       white-space: normal;
       text-align: center;
+      max-width: 250px;
     `}
 
   &:before {
     content: "";
     position: absolute;
     bottom: 95%;
-    left: calc(50% - 15px);
+    left: calc(50% - 9px);
     border: 9px solid transparent;
     border-bottom-color: ${({ theme }) => theme.colors.mainHiglightColor};
   }
@@ -113,13 +126,39 @@ const ButtonTitle = styled(Title)`
   color: inherit;
 `;
 
-type CompareButtonProps = {
+interface CompareButtonProps {
   compareButtonMode: CompareButtonMode;
   downloadStats: boolean;
   disableButton: boolean;
   disableDownloadButton: boolean;
   onCompareModeToggle: () => void;
   onDownloadClick: () => void;
+}
+
+interface TooltipProps {
+  refElement: RefObject<HTMLElement>;
+  isMobileLayout: boolean;
+  children: React.ReactNode;
+}
+
+const Tooltip = ({ refElement, isMobileLayout, children }: TooltipProps) => {
+  let centerX = 0;
+  let centerY = 0;
+
+  if (refElement.current) {
+    const rect = refElement.current.getBoundingClientRect();
+    centerX = rect.left + rect.width / 2.0;
+    centerY = rect.top + rect.height;
+  }
+  return (
+    <WrapperContainer
+      isMobile={isMobileLayout}
+      centerX={centerX}
+      centerY={centerY}
+    >
+      <TooltipDiv isMobile={isMobileLayout}>{children}</TooltipDiv>
+    </WrapperContainer>
+  );
 };
 
 export const CompareButton = ({
@@ -131,11 +170,13 @@ export const CompareButton = ({
   onDownloadClick,
 }: CompareButtonProps) => {
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [isHoveringDownload, setIsHoveringDownload] = useState<boolean>(false);
 
   const layout = useAppLayout();
   const isMobileLayout = layout !== Layout.Desktop;
 
-  const showTooltip = (isHovering || isMobileLayout) && disableButton;
+  const refCompare = useRef(null);
+  const refDownload = useRef(null);
 
   const onPointerEnter = () => {
     setIsHovering(true);
@@ -145,14 +186,36 @@ export const CompareButton = ({
     setIsHovering(false);
   };
 
+  const onPointerEnterDownload = () => {
+    setIsHoveringDownload(true);
+  };
+
+  const onPointerLeaveDownload = () => {
+    setIsHoveringDownload(false);
+  };
+
+  let showTooltip = false;
+  let refElement;
+  let content;
+  if ((isHovering || isMobileLayout) && disableButton) {
+    showTooltip = true;
+    refElement = refCompare;
+    content = "You can start comparison when all tiles are fully loaded";
+  } else if ((isHoveringDownload || isMobileLayout) && downloadStats) {
+    showTooltip = true;
+    refElement = refDownload;
+    content = "Download comparison results";
+  }
+
   return (
     <Container
       id="compare-button"
-      layout={layout}
+      $layout={layout}
       disableButton={disableButton}
     >
       <Button
-        layout={layout}
+        ref={refCompare}
+        $layout={layout}
         isMobile={isMobileLayout}
         disabled={disableButton}
         onClick={onCompareModeToggle}
@@ -174,16 +237,20 @@ export const CompareButton = ({
       </Button>
       {downloadStats && (
         <Button
-          layout={layout}
+          ref={refDownload}
+          $layout={layout}
           disabled={disableDownloadButton}
           onClick={onDownloadClick}
+          onPointerEnter={onPointerEnterDownload}
+          onPointerLeave={onPointerLeaveDownload}
         >
           <DownloadIcon />
         </Button>
       )}
+
       {showTooltip && (
-        <Tooltip isMobile={isMobileLayout}>
-          You can start comparison when all tiles are fully loaded
+        <Tooltip refElement={refElement} isMobileLayout={isMobileLayout}>
+          {content}
         </Tooltip>
       )}
     </Container>

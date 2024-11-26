@@ -14,20 +14,23 @@ import MouseImageTablet from "../../../public/images/mouseTabTablet.svg";
 import TouchImageTablet from "../../../public/images/touchTabTablet.svg";
 
 import { useState } from "react";
-import { getCurrentLayoutProperty, useAppLayout } from "../../utils/hooks/layout";
+import {
+  getCurrentLayoutProperty,
+  useAppLayout,
+} from "../../utils/hooks/layout";
 
-type ContainerProps = {
-  layout: string;
-};
+interface ContainerProps {
+  $layout: string;
+}
 
-type ShortcutTabsProps = {
+interface ShortcutTabsProps {
   selectedTab: HelpPanelSelectedTab;
   onTabSelect: (tab: HelpPanelSelectedTab) => void;
-};
+}
 
-type TabProps = {
+interface TabProps {
   active: boolean;
-};
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -169,7 +172,7 @@ export const NonDesktopShortcutTabs = ({
     <Tab
       key={`tab-${tab}`}
       active={selectedTab === tab}
-      onClick={() => handleSelectTab(tab)}
+      onClick={() => { handleSelectTab(tab); }}
     >
       {tab}
     </Tab>
@@ -180,7 +183,7 @@ export const NonDesktopShortcutTabs = ({
       {tabOrder.map((tabData) => (
         <MobileImageWrapper
           data-testid={`mobile-image-${tabData}`}
-          onClick={() => handleSelectTab(tabData)}
+          onClick={() => { handleSelectTab(tabData); }}
           key={`image-${tabData}`}
         >
           {shortcutImagesMobile[tabData]}
@@ -194,7 +197,7 @@ export const NonDesktopShortcutTabs = ({
       {tabOrder.map((tabData) => (
         <TabletImageWrapper
           data-testid={`tablet-image-${tabData}`}
-          onClick={() => handleSelectTab(tabData)}
+          onClick={() => { handleSelectTab(tabData); }}
           key={`image-${tabData}`}
         >
           {shortcutImagesTablet[tabData]}
@@ -204,7 +207,7 @@ export const NonDesktopShortcutTabs = ({
   );
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <ShortcutsBlock>
         {tabOrder.map((tabData) => renderTab(tabData, selectedTab))}
       </ShortcutsBlock>

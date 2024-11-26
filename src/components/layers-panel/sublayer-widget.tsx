@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled, { css } from "styled-components";
 import { SelectionState, ExpandState, ListItemType } from "../../types";
-import { ActiveSublayer } from "../../utils/active-sublayer";
+import { type ActiveSublayer } from "../../utils/active-sublayer";
 import { ListItem } from "./list-item/list-item";
 
 const GroupContainer = styled.div<{ needIndentation: boolean }>`
@@ -13,50 +13,49 @@ const GroupContainer = styled.div<{ needIndentation: boolean }>`
 `;
 
 export interface SublayerWidgetProps {
-    sublayer: ActiveSublayer,
-    hasParent?: boolean,
-    onUpdateSublayerVisibility: (sublayer: ActiveSublayer) => void,
-    onUpdate?: () => void
+  sublayer: ActiveSublayer;
+  hasParent?: boolean;
+  onUpdateSublayerVisibility: (sublayer: ActiveSublayer) => void;
+  onUpdate?: () => void;
 }
 
 export const SublayerWidget = ({ sublayer, hasParent = false, onUpdateSublayerVisibility, onUpdate }: SublayerWidgetProps) => {
-    const childLayers = sublayer.sublayers || [];
+  const childLayers = sublayer.sublayers || [];
 
-    const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-    const toggleSublayer = () => {
-        const leafsToUpdate = sublayer.setVisibility(!(sublayer.visibility ?? false))
-        onUpdate?.()
-        leafsToUpdate.forEach(leaf => onUpdateSublayerVisibility(leaf))
-    };
+  const toggleSublayer = () => {
+    const leafsToUpdate = sublayer.setVisibility(!(sublayer.visibility ?? false));
+    onUpdate?.();
+    leafsToUpdate.forEach(leaf => { onUpdateSublayerVisibility(leaf); });
+  };
 
-    const onChildUpdated = () => {
-        sublayer.onChildVisibilityChange()
-        onUpdate?.()
+  const onChildUpdated = () => {
+    sublayer.onChildVisibilityChange();
+    onUpdate?.();
+  };
+
+  const getSelectedState = (sublayer: ActiveSublayer): SelectionState => {
+    if (sublayer.isLeaf()) {
+      return sublayer.visibility ? SelectionState.selected : SelectionState.unselected;
     }
 
-    const getSelectedState = (sublayer: ActiveSublayer): SelectionState => {
-
-        if (sublayer.isLeaf()) {
-            return sublayer.visibility ? SelectionState.selected : SelectionState.unselected;
-        }
-
-        if (sublayer.visibility) {
-            return SelectionState.selected;
-        }
-
-        const hasAnyChildSelectedSublayer = sublayer.sublayers.some(sublayer => sublayer.visibility);
-
-        if (hasAnyChildSelectedSublayer) {
-            return SelectionState.indeterminate;
-        }
-
-        return SelectionState.unselected;
+    if (sublayer.visibility) {
+      return SelectionState.selected;
     }
 
-    const selected = getSelectedState(sublayer);
+    const hasAnyChildSelectedSublayer = sublayer.sublayers.some(sublayer => sublayer.visibility);
 
-    return (
+    if (hasAnyChildSelectedSublayer) {
+      return SelectionState.indeterminate;
+    }
+
+    return SelectionState.unselected;
+  };
+
+  const selected = getSelectedState(sublayer);
+
+  return (
         <GroupContainer key={sublayer.id} needIndentation={hasParent}>
             <ListItem
                 id={sublayer.id.toString()}
@@ -64,8 +63,8 @@ export const SublayerWidget = ({ sublayer, hasParent = false, onUpdateSublayerVi
                 type={ListItemType.Checkbox}
                 selected={selected}
                 expandState={childLayers.length ? expanded ? ExpandState.expanded : ExpandState.collapsed : undefined}
-                onChange={() => toggleSublayer()}
-                onExpandClick={() => setExpanded(!expanded)}
+                onChange={() => { toggleSublayer(); }}
+                onExpandClick={() => { setExpanded(!expanded); }}
             />
             {expanded && childLayers.map(layer =>
                 <SublayerWidget
@@ -76,5 +75,5 @@ export const SublayerWidget = ({ sublayer, hasParent = false, onUpdateSublayerVi
                     onUpdate={onChildUpdated}
                 />)}
         </GroupContainer>
-    );
+  );
 };

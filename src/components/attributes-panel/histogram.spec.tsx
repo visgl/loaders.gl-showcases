@@ -30,16 +30,17 @@ jest.mock("recharts", () => ({
 
 describe("HistogramChart", () => {
   it("Should render HistogramChart", () => {
-    const { container } = renderWithTheme(
-      <HistogramChart
-        attributeName={""}
-        histogramData={{
-          minimum: 0,
-          maximum: 0,
-          counts: [1, 2, 3, 4, 5],
-        }}
-      />
-    );
+    const { container } =
+      renderWithTheme(
+        <HistogramChart
+          attributeName={""}
+          histogramData={{
+            minimum: 0,
+            maximum: 0,
+            counts: [1, 2, 3, 4, 5],
+          }}
+        />
+      ) ?? {};
 
     expect(container).toBeInTheDocument();
     expect(screen.queryByText("Tooltip")).toBeInTheDocument();

@@ -1,17 +1,17 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import styled, { css } from "styled-components";
 import ChevronIcon from "../../../public/icons/chevron.svg";
 import { SliderListItem } from "./slider-list-item";
-import { Bookmark, LayoutProps, SliderType } from "../../types";
+import { type Bookmark, type LayoutProps, SliderType } from "../../types";
 import {
   getCurrentLayoutProperty,
   useAppLayout,
 } from "../../utils/hooks/layout";
 
 const SliderItemsList = styled.div<
-  LayoutProps & {
-    sliderType: SliderType;
-  }
+LayoutProps & {
+  sliderType: SliderType;
+}
 >`
   display: flex;
   ${({ sliderType }) => {
@@ -51,7 +51,7 @@ const SliderItemsList = styled.div<
 `;
 
 const ArrowIconLeft = styled.button<
-  LayoutProps & { disabled: boolean; isFloorSlider: boolean }
+LayoutProps & { disabled: boolean; isFloorSlider: boolean }
 >`
   cursor: pointer;
   fill: ${({ theme }) => theme.colors.fontColor};
@@ -79,23 +79,20 @@ const ArrowIconLeft = styled.button<
 `;
 
 const ArrowIconRight = styled(ArrowIconLeft)<
-  LayoutProps & { isFloorSlider: boolean }
+LayoutProps & { isFloorSlider: boolean }
 >`
   transform: ${({ isFloorSlider }) =>
     isFloorSlider ? "rotate(90deg)" : "rotate(-180deg)"};
 `;
 
-type SliderProps = {
+interface SliderProps {
   data: Bookmark[] | any;
   sliderType: SliderType;
   editingMode?: boolean;
   selectedItemId: string;
   onSelect: (id: string) => void;
   onDelete?: (id: string) => void;
-};
-
-const BOOKMARKS_OFFSET = 150;
-const OFFSET = 54;
+}
 
 export const Slider = ({
   data,
@@ -114,6 +111,74 @@ export const Slider = ({
     }
   };
 
+  const handleLeftArrowClick = () => {
+    const currentSelectedIndex = data.findIndex(
+      (item) => item.id === selectedItemId
+    );
+    const prevItemId = data[currentSelectedIndex - 1]?.id;
+    onSelectHandler(prevItemId);
+  };
+
+  const handleRightArrowClick = () => {
+    const currentSelectedIndex = data.findIndex(
+      (item) => item.id === selectedItemId
+    );
+    const nextItemId = data[currentSelectedIndex + 1]?.id;
+    onSelectHandler(nextItemId);
+  };
+
+  const onSelectHandler = (id: string): void => {
+    if (id) {
+      scrollItemIntoView(id);
+      onSelect(id);
+    }
+  };
+
+  const isItemVisible = (item: HTMLDivElement | undefined): boolean => {
+    const listElement = sliderItemsListRef?.current;
+    if (!item || !listElement) {
+      return false;
+    }
+    const listLeft = listElement.offsetLeft;
+    const listTop = listElement.offsetTop;
+    const listRight = listLeft + listElement.offsetWidth;
+    const listBottom = listTop + listElement.offsetHeight;
+
+    const itemLeft = item.offsetLeft - listElement.scrollLeft;
+    const itemTop = item.offsetTop - listElement.scrollTop;
+    const itemRight = itemLeft + item.offsetWidth;
+    const itemBottom = itemTop + item.offsetHeight;
+
+    const isVisible =
+      itemLeft >= listLeft &&
+      itemRight <= listRight &&
+      itemTop >= listTop &&
+      itemBottom <= listBottom;
+    return isVisible;
+  };
+
+  const scrollItemIntoView = (id: string): void => {
+    if (!id) {
+      return;
+    }
+    const listItem = listItems.current?.find(
+      (item: HTMLDivElement) => item.id === id
+    );
+
+    const isVisible = isItemVisible(listItem);
+    if (!isVisible) {
+      if (isBookmarkSlider || isPhaseSlider) {
+        listItem?.scrollIntoView({ behavior: "smooth", inline: "nearest" });
+      } else {
+        listItem?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    scrollItemIntoView(selectedItemId);
+  }, [selectedItemId]);
+
   const disableLeftArrow = selectedItemId === data[0]?.id || !selectedItemId;
   const disableRightArrow =
     selectedItemId === data[data.length - 1]?.id || !selectedItemId;
@@ -124,51 +189,10 @@ export const Slider = ({
 
   const layout = useAppLayout();
 
-  const handleLeftArrowClick = () => {
-    const currentSelectedIndex = data.findIndex(
-      (item) => item.id === selectedItemId
-    );
-    const prevItemId = data[currentSelectedIndex - 1].id;
-    onSelect(prevItemId);
-
-    sliderItemsListRef?.current?.scrollBy({
-      top: isFloorsSlider ? OFFSET : 0,
-      left: isBookmarkSlider ? -BOOKMARKS_OFFSET : isPhaseSlider ? -OFFSET : 0,
-      behavior: "smooth",
-    });
-  };
-
-  const handleRightArrowClick = () => {
-    const currentSelectedIndex = data.findIndex(
-      (item) => item.id === selectedItemId
-    );
-    const nextItemId = data[currentSelectedIndex + 1].id;
-    onSelect(nextItemId);
-
-    sliderItemsListRef?.current?.scrollBy({
-      top: isFloorsSlider ? -OFFSET : 0,
-      left: isBookmarkSlider ? BOOKMARKS_OFFSET : isPhaseSlider ? OFFSET : 0,
-      behavior: "smooth",
-    });
-  };
-
-  const onSelectHandler = (id: string): void => {
-    onSelect(id);
-    const listItem = listItems.current?.find(
-      (item: HTMLDivElement) => item.id === id
-    );
-
-    if (isBookmarkSlider || isPhaseSlider) {
-      listItem?.scrollIntoView({ behavior: "smooth", inline: "center" });
-    } else {
-      listItem?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
-
   return (
     <>
       <ArrowIconLeft
-        layout={layout}
+        $layout={layout}
         isFloorSlider={isFloorsSlider}
         disabled={disableLeftArrow}
         onClick={handleLeftArrowClick}
@@ -179,7 +203,7 @@ export const Slider = ({
         id={`slider-${sliderType}`}
         ref={sliderItemsListRef}
         sliderType={sliderType}
-        layout={layout}
+        $layout={layout}
       >
         {data.map((item) => {
           const sliderItemSelected = item.id === selectedItemId;
@@ -195,8 +219,12 @@ export const Slider = ({
               sliderType={sliderType}
               url={item.imageUrl}
               editingMode={editingMode}
-              onSelect={() => onSelectHandler(item.id)}
-              onDelete={() => onDelete && onDelete(item.id)}
+              onSelect={() => {
+                onSelectHandler(item.id);
+              }}
+              onDelete={() => {
+                onDelete && onDelete(item.id);
+              }}
             />
           );
         })}
@@ -204,7 +232,7 @@ export const Slider = ({
       <ArrowIconRight
         isFloorSlider={isFloorsSlider}
         disabled={disableRightArrow}
-        layout={layout}
+        $layout={layout}
         onClick={handleRightArrowClick}
       >
         <ChevronIcon />

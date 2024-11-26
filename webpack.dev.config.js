@@ -2,6 +2,10 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 require("dotenv").config({ path: "./.env" });
+const createStyledComponentsTransformer =
+  require("typescript-plugin-styled-components").default;
+
+const styledComponentsTransformer = createStyledComponentsTransformer();
 
 const LOADERS_LOCAL_DEPENDENCY = "loaders";
 const DECK_LOCAL_DEPENDENCY = "deck";
@@ -91,7 +95,7 @@ module.exports = (env) => {
     entry: [
       // Need to run loaders.gl locally
       "regenerator-runtime/runtime.js",
-      path.join(__dirname, "src", "index.js"),
+      path.join(__dirname, "src", "index.tsx"),
     ],
     output: {
       path: path.resolve(__dirname, "build"),
@@ -100,6 +104,7 @@ module.exports = (env) => {
     devServer: {
       open: true,
       port: 3000,
+      server: "https",
       client: {
         overlay: {
           errors: true,
@@ -109,7 +114,7 @@ module.exports = (env) => {
       historyApiFallback: true,
       // For testing workers from local loaders.gl repo
       static: {
-        directory: path.join(__dirname, '../loaders.gl'),
+        directory: path.join(__dirname, "../loaders.gl"),
       },
     },
     module: {
@@ -136,12 +141,15 @@ module.exports = (env) => {
         },
         {
           test: /\.ts(x?)$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: "ts-loader",
               options: {
                 transpileOnly,
+                getCustomTransformers: () => ({
+                  before: [styledComponentsTransformer],
+                }),
+                allowTsInNodeModules: true,
               },
             },
           ],
@@ -174,6 +182,10 @@ module.exports = (env) => {
           use: "file-loader?name=videos/[name].[ext]",
         },
       ],
+    },
+    optimization: {
+      // Default value is "development" but styled-components works with bugs in this mode
+      nodeEnv: "production",
     },
     resolve: {
       extensions: [".tsx", ".ts", ".js", ".mjs"],

@@ -1,9 +1,12 @@
-import { BuildingSceneSublayer, StatsInfo } from "@loaders.gl/i3s/src/types";
+import type {
+  BuildingSceneSublayer,
+  StatsInfo,
+} from "@loaders.gl/i3s/src/types";
 import type { OrientedBoundingBox, BoundingSphere } from "@math.gl/culling";
-import { DefaultTheme } from "styled-components";
-import { Vector3, Matrix4 } from "@math.gl/core";
-import { ViewState } from "@deck.gl/core";
-import { Stats } from "@probe.gl/stats";
+import type { DefaultTheme } from "styled-components";
+import type { Vector3, Matrix4 } from "@math.gl/core";
+import type { ViewState } from "@deck.gl/core";
+import type { Stats } from "@probe.gl/stats";
 
 export enum Theme {
   Dark,
@@ -107,30 +110,30 @@ export enum ValidatedDataType {
   Ok = "ok",
 }
 
-export type ValidatedTile = {
+export interface ValidatedTile {
   key: string;
   title: string;
-};
+}
 
-export type TileWarning = {
+export interface TileWarning {
   type: string;
   title: string;
   tileId?: string;
-};
+}
 
-export type TileValidationData = {
+export interface TileValidationData {
   positions: Float32Array;
   boundingType: string;
   boundingVolume: OrientedBoundingBox | BoundingSphere;
-};
+}
 
-export type ObbData = {
+export interface ObbData {
   center: number[];
   halfSize: number[];
   quaternion: number[];
-};
+}
 
-export type GeometryVSTextureMetrics = {
+export interface GeometryVSTextureMetrics {
   triangles: number;
   geometryNullTriangleCount: number;
   geometrySmallTriangleCount: number;
@@ -139,21 +142,21 @@ export type GeometryVSTextureMetrics = {
   minGeometryArea: number;
   minTexCoordArea: number;
   pixelArea: number;
-};
+}
 
-export type LayoutProperties = {
+export interface LayoutProperties {
   desktop: string | number;
   tablet: string | number;
   mobile: string | number;
-};
+}
 
-export type AppThemes = {
+export interface AppThemes {
   [Theme.Dark]: DefaultTheme;
   [Theme.Light]: DefaultTheme;
-};
+}
 
 /** I3S Layer, I3S WebScene or 3DTiles Tileset */
-export type LayerExample = {
+export interface LayerExample {
   /** Layer's unique id */
   id: string;
   /** Layer's human readable name */
@@ -175,13 +178,13 @@ export type LayerExample = {
   type?: TilesetType;
   /** Information about where layer was taken from */
   mapInfo?: string;
-};
+}
 
-export type LayerViewState = {
+export interface LayerViewState {
   longitude: number;
   latitude: number;
   zoom: number;
-};
+}
 
 export interface Sublayer extends BuildingSceneSublayer {
   expanded: boolean;
@@ -189,85 +192,92 @@ export interface Sublayer extends BuildingSceneSublayer {
   sublayers: Sublayer[];
 }
 
-export type BaseMap = {
+export enum BaseMapGroup {
+  Maplibre = "Maplibre",
+  ArcGIS = "ArcGIS",
+  Terrain = "Terrain",
+}
+
+export interface BaseMap {
   id: string;
   name: string;
   mapUrl: string;
   token?: string;
   custom?: boolean;
-};
+  group: BaseMapGroup;
+  iconId: string;
+}
 
-export type NormalsDebugData = {
+export interface PositionsData {
   src: {
-    normals: Uint32Array;
-    positions: Uint32Array;
+    positions: Float32Array;
+    normals: Float32Array;
   };
+}
+
+export interface NormalsDebugData extends PositionsData {
   length: number;
   modelMatrix: Matrix4;
   cartographicModelMatrix: Matrix4;
   cartographicOrigin: Vector3;
-};
+}
 
-export type ViewStateSet = {
+export interface ViewStateSet {
   main?: ViewState;
   minimap?: ViewState;
-};
+}
 
-export type HelpShortcutItem = {
+export interface HelpShortcutItem {
   id: string;
   icon: JSX.Element | null;
   title: string;
   text: string;
   video: string;
-};
+}
 
-export type HelpShortcutsData = {
+export interface HelpShortcutsData {
   [HelpPanelSelectedTab.Mouse]: HelpShortcutItem[];
   [HelpPanelSelectedTab.Trackpad]: HelpShortcutItem[];
   [HelpPanelSelectedTab.Touch]: HelpShortcutItem[];
-};
+}
 
-export type ContentFormats = {
+export interface ContentFormats {
   draco: boolean;
   meshopt: boolean;
   dds: boolean;
   ktx2: boolean;
-};
+}
 
-export type StatsMap = {
+export interface StatsMap {
   url: string;
   tilesetStats: Stats;
   memoryStats: Stats | null;
   contentFormats: ContentFormats;
   isCompressedGeometry: boolean;
   isCompressedTextures: boolean;
-};
+}
 
-export type FeatureAttributes = {
-  [key: string]: string;
-};
+export type FeatureAttributes = Record<string, string>;
 
-export type StatisticsMap = {
-  [key: string]: StatsInfo;
-};
+export type StatisticsMap = Record<string, StatsInfo>;
 
 export type COLOR = [number, number, number, number];
 
-export type ColorsByAttribute = {
+export interface ColorsByAttribute {
   attributeName: string;
   minValue: number;
   maxValue: number;
   minColor: COLOR;
   maxColor: COLOR;
   mode: string;
-};
+}
 
-export type FiltersByAttribute = {
+export interface FiltersByAttribute {
   attributeName: string;
   value: number;
-};
+}
 
-export type LoadOptions = {
+export interface LoadOptions {
   i3s: {
     coordinateSystem: number;
     useDracoGeometry: boolean;
@@ -275,9 +285,9 @@ export type LoadOptions = {
     token?: string;
     colorsByAttribute?: ColorsByAttribute | null;
   };
-};
+}
 
-export type Bookmark = {
+export interface Bookmark {
   id: string;
   pageId: PageId;
   imageUrl: string;
@@ -287,7 +297,7 @@ export type Bookmark = {
   activeLayersIdsLeftSide: string[];
   layersRightSide: LayerExample[];
   activeLayersIdsRightSide: string[];
-};
+}
 
 export enum PageId {
   viewer = "Viewer",
@@ -305,14 +315,14 @@ type Dataset = StatsMap & {
   elapsedTime: number;
 };
 
-export type StatsData = {
+export interface StatsData {
   viewState: ViewStateSet;
   datasets: Dataset[];
-};
+}
 
-export type LayoutProps = {
-  layout: string;
-};
+export interface LayoutProps {
+  $layout?: string;
+}
 
 export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
   token?: string;
@@ -331,7 +341,7 @@ export enum BoundingVolumeColoredBy {
   tile = "By tile",
 }
 
-export type DebugOptions = {
+export interface DebugOptions {
   minimap: boolean;
   minimapViewport: boolean;
   boundingVolume: boolean;
@@ -342,33 +352,77 @@ export type DebugOptions = {
   loadTiles: boolean;
   showUVDebugTexture: boolean;
   wireframe: boolean;
-};
+}
 
-export type TileInfo = {
+export interface TileInfo {
   title: string;
   value: any;
-};
+}
 
-export type MinimapPosition = {
+export interface MinimapPosition {
   x: string;
   y: string;
-};
+}
 
-export type TileSelectedColor = {
+export interface TileSelectedColor {
   r: number;
   g: number;
   b: number;
-};
+}
 
-export type TilesetMetadata = {
+export interface TilesetMetadata {
   id: string;
   url: string;
   token?: string;
   hasChildren: boolean;
   type?: TilesetType;
-};
+}
+
+export interface IArcGisContent {
+  id: string;
+  url: string;
+  name: string;
+  title: string;
+  token?: string;
+  created: number;
+  createdFormatted: string;
+}
+
+export type ArcGisContentColumnName = keyof IArcGisContent;
 
 export enum FetchingStatus {
   pending = "pending",
   ready = "ready",
+}
+
+export enum IconListSetName {
+  uvDebugTexture = "uvDebugTexture",
+  baseMap = "baseMap",
+}
+
+export interface IIconItem {
+  /** Unique id of the item */
+  id: string;
+  /** Icon image that can be a URL or a blob converted to a object URL */
+  icon: string;
+  /** Name of a group like "Maplibre", "ArcGIS".
+   * The icon-list-panel can use it to group icon items into separate panels
+   */
+  group?: string;
+  /** Name (title) of the icon */
+  name?: string;
+  /** Predefined or custom (loaded by a user) icon. */
+  custom?: boolean;
+  /** Additional data linked with the icon like a texture, basemap */
+  extData?: Record<string, string | number | ArrayBuffer>;
+}
+
+export enum FileType {
+  binary = "binary",
+  text = "text",
+}
+
+export interface FileUploaded {
+  fileContent: string | ArrayBuffer;
+  info: Record<string, unknown>;
 }

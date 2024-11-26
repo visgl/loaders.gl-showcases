@@ -23,13 +23,13 @@ describe("ConfirmDeletingPanel", () => {
     getByText("Test title");
   });
 
-  it("Should cancel or confirm deleting", () => {
+  it("Should cancel or confirm deleting", async () => {
     const { getByText } = callRender(renderWithTheme);
     const cancelButton = getByText("No, Keep");
     const uploadButton = getByText("Yes, Delete");
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(onCancel).toHaveBeenCalled();
-    userEvent.click(uploadButton);
+    await userEvent.click(uploadButton);
     expect(onConfirm).toHaveBeenCalled();
   });
 });

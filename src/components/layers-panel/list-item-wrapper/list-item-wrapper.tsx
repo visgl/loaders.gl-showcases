@@ -1,11 +1,11 @@
-import { SyntheticEvent } from "react";
+import { type SyntheticEvent } from "react";
 import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
-import { SelectionState, ExpandState } from "../../../types";
+import { SelectionState, type ExpandState } from "../../../types";
 import { ExpandIcon } from "../../expand-icon/expand-icon";
 import { OptionsIcon, Panels } from "../../common";
 
-type BaseMapsItemProps = {
+interface BaseMapsItemProps {
   children: React.ReactNode;
   id: string;
   optionsContent?: JSX.Element;
@@ -16,11 +16,11 @@ type BaseMapsItemProps = {
   onOptionsClick?: (id: string) => void;
   onExpandClick?: () => void;
   onClickOutside?: () => void;
-};
+}
 
-type ContainerProps = {
-  checked: boolean;
-};
+interface ContainerProps {
+  $checked: boolean;
+}
 
 const Container = styled.div<ContainerProps>`
   display: flex;
@@ -30,8 +30,8 @@ const Container = styled.div<ContainerProps>`
   background: transparent;
   cursor: pointer;
   margin-bottom: 8px;
-  ${({ checked }) =>
-    checked &&
+  ${({ $checked }) =>
+    $checked &&
     css`
       background: ${({ theme }) => theme.colors.mainHiglightColor};
       box-shadow: 0px 17px 80px rgba(0, 0, 0, 0.1);
@@ -77,7 +77,10 @@ export const ListItemWrapper = ({
   };
 
   return (
-    <Container checked={selected === SelectionState.selected} onClick={onClick}>
+    <Container
+      $checked={selected === SelectionState.selected}
+      onClick={onClick}
+    >
       <ItemContentWrapper>{children}</ItemContentWrapper>
       {optionsContent && onOptionsClick && (
         <Popover
@@ -97,7 +100,7 @@ export const ListItemWrapper = ({
               onOptionsClick(id);
             }}
           >
-            <OptionsIcon panel={Panels.Layers} />
+            <OptionsIcon $panel={Panels.Layers} />
           </OptionsButton>
         </Popover>
       )}

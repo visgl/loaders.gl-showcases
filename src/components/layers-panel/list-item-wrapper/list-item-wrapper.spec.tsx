@@ -8,7 +8,7 @@ describe("List Item Wrapper", () => {
   const onOptionsClick = jest.fn();
   const onExpandClick = jest.fn();
 
-  it("Should render list item wrapper", () => {
+  it("Should render list item wrapper", async () => {
     renderWithTheme(
       <ListItemWrapper
         id="test-id"
@@ -19,16 +19,16 @@ describe("List Item Wrapper", () => {
         onClick={onChange}
         optionsContent={<div>{"Hello world"}</div>}
       >
-        San Francisco v1.6
+        San Francisco v1.8
       </ListItemWrapper>
     );
     const optionsIcon = document.querySelector("#test-id");
     const expandIcon = document.querySelector("#test-id ~ div");
     expect(expandIcon).not.toBeNull();
-    expandIcon && userEvent.click(expandIcon);
+    expandIcon && (await userEvent.click(expandIcon));
     expect(onExpandClick).toHaveBeenCalledTimes(1);
     expect(optionsIcon).not.toBeNull();
-    optionsIcon && userEvent.click(optionsIcon);
+    optionsIcon && (await userEvent.click(optionsIcon));
     expect(onOptionsClick).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,18 +1,20 @@
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
 
 import {
   checkLayersPanel,
-  inserAndDeleteLayer,
+  insertAndDeleteLayer,
 } from "../../utils/testing-utils/e2e-layers-panel";
 import { PageId } from "../../types";
+import { configurePage } from "../../utils/testing-utils/configure-tests";
 
 describe("Compare", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -27,8 +29,8 @@ describe("Compare", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-across-layers");
@@ -40,8 +42,8 @@ describe("Compare", () => {
     await page.waitForSelector("#left-deck-container");
     await page.waitForSelector("#right-deck-container");
 
-    expect(await page.$$("#left-deck-container")).toBeDefined();
-    expect(await page.$$("#right-deck-container")).toBeDefined();
+    expect(await page.$("#left-deck-container")).not.toBeNull();
+    expect(await page.$("#right-deck-container")).not.toBeNull();
 
     const currentUrl = page.url();
     expect(currentUrl).toBe("http://localhost:3000/compare-within-layer");
@@ -50,11 +52,12 @@ describe("Compare", () => {
 
 describe("Compare - Main tools panel Across Layers mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -66,9 +69,15 @@ describe("Compare - Main tools panel Across Layers mode", () => {
   it("Left panel should be present", async () => {
     await page.waitForSelector("#left-tools-panel");
 
-    expect(await page.$$("#left-tools-panel")).toBeDefined();
+    expect(await page.$("#left-tools-panel")).not.toBeNull();
 
     const panel = await page.$("#left-tools-panel");
+    expect(panel).not.toBeNull();
+
+    if (!panel) {
+      return;
+    }
+
     const panelChildren = await panel.$$(":scope > *");
 
     expect(panelChildren.length).toEqual(3);
@@ -76,9 +85,13 @@ describe("Compare - Main tools panel Across Layers mode", () => {
 
   it("Right panel should be present", async () => {
     await page.waitForSelector("#right-tools-panel");
-    expect(await page.$$("#right-tools-panel")).toBeDefined();
-
     const panel = await page.$("#right-tools-panel");
+    expect(panel).not.toBeNull();
+
+    if (!panel) {
+      return;
+    }
+
     const panelChildren = await panel.$$(":scope > *");
 
     expect(panelChildren.length).toEqual(3);
@@ -87,11 +100,12 @@ describe("Compare - Main tools panel Across Layers mode", () => {
 
 describe("Compare - Main tools panel Within Layer mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
   });
 
   beforeEach(async () => {
@@ -103,9 +117,13 @@ describe("Compare - Main tools panel Within Layer mode", () => {
   it("Left panel should be present", async () => {
     await page.waitForSelector("#left-tools-panel");
 
-    expect(await page.$$("#left-tools-panel")).toBeDefined();
-
     const panel = await page.$("#left-tools-panel");
+    expect(panel).not.toBeNull();
+
+    if (!panel) {
+      return;
+    }
+
     const panelChildren = await panel.$$(":scope > *");
 
     expect(panelChildren.length).toEqual(4);
@@ -113,9 +131,13 @@ describe("Compare - Main tools panel Within Layer mode", () => {
 
   it("Right panel should be present", async () => {
     await page.waitForSelector("#right-tools-panel");
-    expect(await page.$$("#right-tools-panel")).toBeDefined();
 
     const panel = await page.$("#right-tools-panel");
+    expect(panel).not.toBeNull();
+
+    if (!panel) {
+      return;
+    }
     const panelChildren = await panel.$$(":scope > *");
 
     expect(panelChildren.length).toEqual(3);
@@ -124,11 +146,12 @@ describe("Compare - Main tools panel Within Layer mode", () => {
 
 describe("Compare - Layers Panel Across Layers mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -141,49 +164,61 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   it("Should show left layers panel", async () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Should show right layers panel", async () => {
     const panelId = "#right-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
   it("Should select layers", async () => {
     // Select San Francisco v1.7 on left side
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)"
     );
+    expect(sfLayer).not.toBeNull();
+
+    if (!sfLayer) {
+      return;
+    }
+
     await sfLayer.click();
     const selectedLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayer).not.toBeNull();
     let selectedLayerRight = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayerRight).toBeNull();
     const sfLayerInputChecked = await page.$eval(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2) input`,
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
 
     // Select Building on right side
     const buldingLayer = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4)"
     );
+    expect(buldingLayer).not.toBeNull();
+
+    if (!buldingLayer) {
+      return;
+    }
+
     await buldingLayer.hover();
     await buldingLayer.click();
     selectedLayerRight = await page.$(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayerRight).not.toBeNull();
     const buldingLayerInputChecked = await page.$eval(
-      `#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4) input`,
+      "#right-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(4) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
@@ -191,13 +226,13 @@ describe("Compare - Layers Panel Across Layers mode", () => {
   });
 
   it("Should insert and delete layer", async () => {
-    await inserAndDeleteLayer(
+    await insertAndDeleteLayer(
       page,
       "#left-layers-panel",
       "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Rancho_Mesh_mesh_v17_1/SceneServer/layers/0"
     );
 
-    await inserAndDeleteLayer(
+    await insertAndDeleteLayer(
       page,
       "#right-layers-panel",
       "https://fake.layer.url"
@@ -207,11 +242,12 @@ describe("Compare - Layers Panel Across Layers mode", () => {
 
 describe("Compare - Layers Panel Within Layer mode", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -224,7 +260,7 @@ describe("Compare - Layers Panel Within Layer mode", () => {
   it("Should show left layers panel", async () => {
     const panelId = "#left-layers-panel";
     await page.waitForSelector(panelId);
-    expect(await page.$$(panelId)).toBeDefined();
+    expect(await page.$(panelId)).not.toBeNull();
     await checkLayersPanel(page, panelId, undefined, PageId.comparison);
   });
 
@@ -236,15 +272,21 @@ describe("Compare - Layers Panel Within Layer mode", () => {
   it("Should select layer", async () => {
     // Select New York on left side
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3)"
     );
+    expect(sfLayer).not.toBeNull();
+
+    if (!sfLayer) {
+      return;
+    }
+
     await sfLayer.click();
     const selectedLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child input:checked"
     );
     expect(selectedLayer).not.toBeNull();
     const sfLayerInputChecked = await page.$eval(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3) input`,
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(3) input",
       (node) => node.checked
     );
     expect(sfLayerInputChecked).toBe(true);
@@ -252,23 +294,24 @@ describe("Compare - Layers Panel Within Layer mode", () => {
 });
 
 const chevronSvgHtml =
-  '<path d="M.58 6c0-.215.083-.43.247-.594l5.16-5.16a.84.84 0 1 1 1.188 1.189L2.609 6l4.566 4.566a.84.84 0 0 1-1.189 1.188l-5.16-5.16A.838.838 0 0 1 .581 6Z"></path>';
-const plusSvgHtml = '<path d="M14 8H8v6H6V8H0V6h6V0h2v6h6v2Z"></path>';
-const minusSvgHtml = '<path d="M14 2H0V0h14v2Z"></path>';
+  "<path d=\"M.58 6c0-.215.083-.43.247-.594l5.16-5.16a.84.84 0 1 1 1.188 1.189L2.609 6l4.566 4.566a.84.84 0 0 1-1.189 1.188l-5.16-5.16A.84.84 0 0 1 .581 6\"></path>";
+const plusSvgHtml = "<path d=\"M14 8H8v6H6V8H0V6h6V0h2v6h6z\"></path>";
+const minusSvgHtml = "<path d=\"M14 2H0V0h14z\"></path>";
 const panSvgHtml =
-  '<path d="M10 .5 6 5h8L10 .5ZM5 6 .5 10 5 14V6Zm10 0v8l4.5-4L15 6Zm-5 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-4 7 4 4.5 4-4.5H6Z"></path>';
+  "<path d=\"M10 .5 6 5h8zM5 6 .5 10 5 14zm10 0v8l4.5-4zm-5 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-4 7 4 4.5 4-4.5z\"></path>";
 const orbitSvgHtml =
-  '<path d="M0 9a9 9 0 0 0 9 9c2.39 0 4.68-.94 6.4-2.6l-1.5-1.5A6.706 6.706 0 0 1 9 16C2.76 16-.36 8.46 4.05 4.05 8.46-.36 16 2.77 16 9h-3l4 4h.1L21 9h-3A9 9 0 0 0 0 9Z"></path>';
+  "<path d=\"M0 9a9 9 0 0 0 9 9c2.39 0 4.68-.94 6.4-2.6l-1.5-1.5A6.7 6.7 0 0 1 9 16C2.76 16-.36 8.46 4.05 4.05S16 2.77 16 9h-3l4 4h.1L21 9h-3A9 9 0 0 0 0 9\"></path>";
 const compasSvgHtml =
-  '<path d="M0 12 6 0l6 12H0Z" fill="#F95050"></path><path d="M12 12 6 24 0 12h12Z"></path>';
+  "<path fill=\"#F95050\" d=\"M0 12 6 0l6 12z\"></path><path d=\"M12 12 6 24 0 12z\"></path>";
 
 describe("Compare - Map Control Panel", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -283,7 +326,7 @@ describe("Compare - Map Control Panel", () => {
 
     // Dropdown button
     const dropdownButton = await page.$eval(
-      `${panelId} > :first-child > svg`,
+      `${panelId} > :first-child > :first-child > svg`,
       (node) => node.innerHTML
     );
     expect(dropdownButton).toBe(chevronSvgHtml);
@@ -305,11 +348,12 @@ describe("Compare - Map Control Panel", () => {
 
 describe("Compare - Comparison Params Panel", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -319,11 +363,11 @@ describe("Compare - Comparison Params Panel", () => {
 
   afterAll(() => browser.close());
 
-  const checkComparisonParamsPanel = async (panelId: string) => {
+  const checkComparisonParamsPanel = async (panelId: string): Promise<void> => {
     // Header
     const headerText = await page.$eval(
       `${panelId} > :first-child > :first-child`,
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(headerText).toBe("Comparison parameters");
 
@@ -331,18 +375,27 @@ describe("Compare - Comparison Params Panel", () => {
     const closeButtonIcon = await page.$(
       `${panelId} > :first-child > :nth-child(2) > :first-child`
     );
+    expect(closeButtonIcon).not.toBeNull();
+
+    if (!closeButtonIcon) {
+      return;
+    }
+
     expect(await closeButtonIcon.$(":scope::after")).toBeDefined();
     expect(await closeButtonIcon.$(":scope::before")).toBeDefined();
 
     // Horizontal Line
     expect(
-      await page.$eval(`${panelId} > :nth-child(2)`, (node) => node.innerText)
+      await page.$eval(
+        `${panelId} > :nth-child(2)`,
+        (node) => (node as HTMLElement).innerText
+      )
     ).toBe("");
 
     // Draco
     const dracoParamText = await page.$eval(
       `${panelId} > :nth-child(3) > :first-child`,
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(dracoParamText).toBe("Draco compressed geometry");
     const dracoInputValue = await page.$eval(
@@ -354,7 +407,7 @@ describe("Compare - Comparison Params Panel", () => {
     // Compressed textures
     const compressedTexturesParamText = await page.$eval(
       `${panelId} > :nth-child(4) > :first-child`,
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(compressedTexturesParamText).toBe("Compressed textures");
     const compressedTexturesInputValue = await page.$eval(
@@ -369,6 +422,10 @@ describe("Compare - Comparison Params Panel", () => {
     const comparisonParamsButton = await page.$(
       `${mainToolsPanelId} > button:nth-child(2)`
     );
+    expect(comparisonParamsButton).not.toBeNull();
+    if (!comparisonParamsButton) {
+      return;
+    }
     await comparisonParamsButton.click();
     await checkComparisonParamsPanel("#left-comparison-params-panel");
   });
@@ -378,6 +435,10 @@ describe("Compare - Comparison Params Panel", () => {
     const comparisonParamsButton = await page.$(
       `${mainToolsPanelId} > button:nth-child(1)`
     );
+    expect(comparisonParamsButton).not.toBeNull();
+    if (!comparisonParamsButton) {
+      return;
+    }
     await comparisonParamsButton.click();
     await checkComparisonParamsPanel("#right-comparison-params-panel");
   });
@@ -385,11 +446,12 @@ describe("Compare - Comparison Params Panel", () => {
 
 describe("Compare - Statistics", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -399,11 +461,11 @@ describe("Compare - Statistics", () => {
 
   afterAll(() => browser.close());
 
-  const checkStatsticsPanel = async (panelId) => {
+  const checkStatsticsPanel = async (panelId): Promise<void> => {
     // Header
     const headerText = await page.$eval(
       `${panelId} > :first-child > :first-child`,
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(headerText).toBe("Memory");
 
@@ -411,12 +473,19 @@ describe("Compare - Statistics", () => {
     const closeButtonIcon = await page.$(
       `${panelId} > :first-child > :nth-child(2) > :first-child`
     );
+    expect(closeButtonIcon).not.toBeNull();
+    if (!closeButtonIcon) {
+      return;
+    }
     expect(await closeButtonIcon.$(":scope::after")).toBeDefined();
     expect(await closeButtonIcon.$(":scope::before")).toBeDefined();
 
     // Horizontal Line
     expect(
-      await page.$eval(`${panelId} > :nth-child(2)`, (node) => node.innerText)
+      await page.$eval(
+        `${panelId} > :nth-child(2)`,
+        (node) => (node as HTMLElement).innerText
+      )
     ).toBe("");
   };
 
@@ -425,6 +494,10 @@ describe("Compare - Statistics", () => {
     const comparisonParamsButton = await page.$(
       `${mainToolsPanelId} > button:nth-child(3)`
     );
+    expect(comparisonParamsButton).not.toBeNull();
+    if (!comparisonParamsButton) {
+      return;
+    }
     await comparisonParamsButton.click();
     await checkStatsticsPanel("#left-memory-usage-panel");
   });
@@ -434,6 +507,10 @@ describe("Compare - Statistics", () => {
     const comparisonParamsButton = await page.$(
       `${mainToolsPanelId} > button:nth-child(2)`
     );
+    expect(comparisonParamsButton).not.toBeNull();
+    if (!comparisonParamsButton) {
+      return;
+    }
     await comparisonParamsButton.click();
     await checkStatsticsPanel("#right-memory-usage-panel");
   });
@@ -441,11 +518,12 @@ describe("Compare - Statistics", () => {
 
 describe("Compare - Compare button", () => {
   let browser;
-  let page;
+  let page: Page;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    await configurePage(page);
     await page.setViewport({ width: 1366, height: 768 });
   });
 
@@ -457,11 +535,11 @@ describe("Compare - Compare button", () => {
 
   it("Compare button should be present", async () => {
     await page.waitForSelector("#compare-button");
-    expect(await page.$$("#compare-button")).toBeDefined();
+    expect(await page.$("#compare-button")).not.toBeNull();
 
     const compareButtonText = await page.$eval(
       "#compare-button > :first-child",
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     const comapreButtonDisabled = await page.$eval(
       "#compare-button > button",
@@ -478,18 +556,28 @@ describe("Compare - Compare button", () => {
   it.skip("Compare button should change mode", async () => {
     await page.waitForSelector("#compare-button");
     const sfLayer = await page.$(
-      `#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)`
+      "#left-layers-panel > :nth-child(4) > :first-child > :first-child > :nth-child(2)"
     );
+    expect(sfLayer).not.toBeNull();
+    if (!sfLayer) {
+      return;
+    }
     await sfLayer.click();
     await page.waitForSelector("#compare-button > button:not([disabled])");
     const compareButton = await page.$(
       "#compare-button > button:not([disabled])"
     );
+    expect(compareButton).not.toBeNull();
+
+    if (!compareButton) {
+      return;
+    }
+
     await compareButton.click();
 
     const compareButtonText = await page.$eval(
       "#compare-button > :first-child",
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(compareButtonText).toEqual("Stop comparing");
 
@@ -507,17 +595,14 @@ describe("Compare - Compare button", () => {
     await page.click("#compare-default-button");
     await page.hover("a[href='/compare-across-layers']");
     await page.click("a[href='/compare-across-layers']");
+    await page.waitForSelector("#right-layers-panel");
 
-    const compareButton = await page.$("#compare-button > :first-child");
-    const compareButtonText = await compareButton.$eval(
-      "#compare-button > :first-child > :last-child",
-      (node) => node.innerText
-    );
-    expect(compareButtonText).toBe("Start comparing");
-    await compareButton.click();
+    await expect(page).toClick("#compare-button button", {
+      text: "Start comparing",
+    });
     const compareButtonText2 = await page.$eval(
       "#compare-button > :first-child > :last-child",
-      (node) => node.innerText
+      (node) => (node as HTMLElement).innerText
     );
     expect(compareButtonText2).toBe("Start comparing");
   });

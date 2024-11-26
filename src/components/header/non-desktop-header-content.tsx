@@ -7,10 +7,10 @@ import GitHubIconLight from "../../../public/icons/github-icon-light.png";
 import BurgerIcon from "../../../public/icons/burger.svg";
 import CloseIcon from "../../../public/icons/close.svg";
 import {
-  ActiveProps,
-  CompareButtonProps,
+  type ActiveProps,
+  type CompareButtonProps,
   GithubImage,
-  MenuProps,
+  type MenuProps,
 } from "./common";
 import { GITHUB_LINK } from "../../constants/common";
 import { color_brand_secondary } from "../../constants/colors";
@@ -66,7 +66,7 @@ const CompareButton = styled.div<CompareButtonProps>`
   margin: 20px 0;
   height: 19px;
   color: ${(props) =>
-    props.active ? color_brand_secondary : props.theme.colors.fontColor};
+    props.$active ? color_brand_secondary : props.theme.colors.fontColor};
   width: calc(100vw - 60px);
 
   &::before,
@@ -74,7 +74,7 @@ const CompareButton = styled.div<CompareButtonProps>`
     content: "";
     position: absolute;
     background: ${(props) =>
-      props.active ? color_brand_secondary : props.theme.colors.fontColor};
+      props.$active ? color_brand_secondary : props.theme.colors.fontColor};
     border-radius: 2px;
     display: block;
     height: 7px;
@@ -83,28 +83,28 @@ const CompareButton = styled.div<CompareButtonProps>`
 
   &::before {
     transform: ${(props) =>
-      props.open ? "rotate(-45deg)" : "rotate(-135deg)"};
+      props.$open ? "rotate(-45deg)" : "rotate(-135deg)"};
     left: calc(100% + 16px);
   }
 
   &::after {
-    transform: ${(props) => (props.open ? "rotate(45deg)" : "rotate(135deg)")};
+    transform: ${(props) => (props.$open ? "rotate(45deg)" : "rotate(135deg)")};
     right: -14px;
   }
 
   &:hover {
     color: ${(props) =>
-      props.active ? color_brand_secondary : props.theme.colors.fontColor};
+      props.$active ? color_brand_secondary : props.theme.colors.fontColor};
     border: none;
     &::after,
     &::before {
       background: ${(props) =>
-        props.active ? color_brand_secondary : props.theme.colors.fontColor};
+        props.$active ? color_brand_secondary : props.theme.colors.fontColor};
     }
   }
 
-  ${({ active }) =>
-    active &&
+  ${({ $active }) =>
+    $active &&
     css`
       &:after,
       &:before {
@@ -155,7 +155,13 @@ const ToggleItem = styled(ListButton)`
   margin-top: 12px;
 `;
 
-const Header = ({ isOpen, setIsOpen }) => {
+const Header = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+}) => {
   const theme = useTheme();
   return (
     <>
@@ -163,7 +169,9 @@ const Header = ({ isOpen, setIsOpen }) => {
         <Button
           id="burger-menu"
           data-testid="burger-menu-non-desktop"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+          }}
         >
           <BurgerIcon fill={theme.colors.fontColor} />
         </Button>
@@ -172,7 +180,9 @@ const Header = ({ isOpen, setIsOpen }) => {
         <Button
           id="close-header-menu"
           data-testid="close-header-menu-non-desktop"
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            setIsOpen(false);
+          }}
         >
           <CloseIcon fill={theme.colors.fontColor} />
         </Button>
@@ -211,12 +221,14 @@ const Menu = ({
           </MenuLink>
           <CompareButton
             id="compare-tablet-or-mobile-button"
-            active={
+            $active={
               pathname === "/compare-across-layers" ||
               pathname === "/compare-within-layer"
             }
-            open={isCompareMenuOpen}
-            onClick={() => setIsCompareMenuOpen((prevValue) => !prevValue)}
+            $open={isCompareMenuOpen}
+            onClick={() => {
+              setIsCompareMenuOpen((prevValue) => !prevValue);
+            }}
           >
             Compare
           </CompareButton>

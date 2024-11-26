@@ -16,9 +16,14 @@ import {
   selectBoundingVolumeType,
 } from "../../redux/slices/debug-options-slice";
 
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../../utils/hooks/layout");
 jest.mock("../close-button/close-button", () => ({
-  CloseButton: ({ onClick }) => {
+  CloseButton: ({ onClick }: { onClick: () => void }) => {
     const CloseButtonMock = "close-button-mock";
     return (
       // @ts-expect-error - mock component
@@ -73,22 +78,22 @@ const toggles = {
   },
 };
 
-const checkToggleTitleAndEvent = (
+const checkToggleTitleAndEvent = async (
   { toggleId, titleText, calledWith },
   store
 ) => {
   const title = screen.getByText(titleText);
   expect(title).toBeInTheDocument();
 
-  const toggle = document.querySelector(`#${toggleId}`) || null;
+  const toggle = document.querySelector(`#${toggleId}`) ?? null;
   if (toggle) {
-    userEvent.click(toggle);
+    await userEvent.click(toggle);
   }
   expect(store.getState().debugOptions[calledWith[0]]).toEqual(calledWith[1]);
 };
 
 describe("Debug panel", () => {
-  it("Should render debug panel", () => {
+  it("Should render debug panel", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const store = setupStore();
@@ -114,13 +119,13 @@ describe("Debug panel", () => {
 
     // Check close Button
     const closeButton = screen.getByTestId("close-button");
-    userEvent.click(closeButton);
+    await userEvent.click(closeButton);
     expect(onCloseMock).toHaveBeenCalled();
 
     // Check all toggles
     for (const key of Object.keys(toggles)) {
       const toggleData = toggles[key];
-      checkToggleTitleAndEvent(toggleData, store);
+      await checkToggleTitleAndEvent(toggleData, store);
     }
   });
 
@@ -149,7 +154,7 @@ describe("Debug panel", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Should be able to select different mesh color", () => {
+  it("Should be able to select different mesh color", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const colorItems = [
@@ -176,14 +181,14 @@ describe("Debug panel", () => {
     callRender(renderWithThemeProviders, undefined, store);
     for (const colorItem of colorItems) {
       const button = screen.getByText(colorItem.buttonText);
-      userEvent.click(button);
+      await userEvent.click(button);
       const state = store.getState();
       const tileColorMode = selectTileColorMode(state);
       expect(tileColorMode).toEqual(colorItem.tileColorMode);
     }
   });
 
-  it("Should be able to select bounding volume color and type", () => {
+  it("Should be able to select bounding volume color and type", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const store = setupStore();
@@ -206,18 +211,18 @@ describe("Debug panel", () => {
     const boundingVolumeColorMode = selectBoundingVolumeColorMode(state);
     expect(boundingVolumeColorMode).toEqual(BoundingVolumeColoredBy.original);
     const OBBButton = screen.getByText("OBB");
-    userEvent.click(OBBButton);
+    await userEvent.click(OBBButton);
     const stateObb = store.getState();
     const boundingVolumeTypeObb = selectBoundingVolumeType(stateObb);
     expect(boundingVolumeTypeObb).toEqual(BoundingVolumeType.obb);
     const MBSButton = screen.getByText("MBS");
-    userEvent.click(MBSButton);
+    await userEvent.click(MBSButton);
     const stateMbs = store.getState();
     const boundingVolumeTypeMbs = selectBoundingVolumeType(stateMbs);
     expect(boundingVolumeTypeMbs).toEqual(BoundingVolumeType.mbs);
   });
 
-  it("Should be able to select bounding volume color and type. Other items", () => {
+  it("Should be able to select bounding volume color and type. Other items", async () => {
     useAppLayoutMock.mockImplementation(() => "desktop");
 
     const store = setupStore();
@@ -242,7 +247,7 @@ describe("Debug panel", () => {
     const boundingVolumeType = selectBoundingVolumeType(state);
     expect(boundingVolumeType).toEqual(BoundingVolumeType.obb);
     const tileButton = screen.getByText("By tile");
-    userEvent.click(tileButton);
+    await userEvent.click(tileButton);
     const stateTile = store.getState();
     const boundingVolumeColorModeTile =
       selectBoundingVolumeColorMode(stateTile);

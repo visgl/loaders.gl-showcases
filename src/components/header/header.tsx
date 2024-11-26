@@ -1,4 +1,4 @@
-import { MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
@@ -15,16 +15,16 @@ import {
   useAppLayout,
 } from "../../utils/hooks/layout";
 
-type HeaderProps = {
+interface HeaderProps {
   theme: Theme;
   showHelp: boolean;
   setTheme: (theme: Theme) => void;
   onHelpClick: () => void;
-};
+}
 
-type PropsWithLayout = {
-  layout: string;
-};
+interface PropsWithLayout {
+  $layout: string;
+}
 
 const HeaderContainer = styled.div<PropsWithLayout>`
   position: fixed;
@@ -86,9 +86,9 @@ export const Header = ({
   };
 
   return (
-    <HeaderContainer id="header-container" layout={layout}>
+    <HeaderContainer id="header-container" $layout={layout}>
       <HeaderLogo
-        layout={layout}
+        $layout={layout}
         id="header-logo"
         to="/"
         onClick={redirectHandler}
@@ -96,7 +96,8 @@ export const Header = ({
         <LogoImage />
         I3S Explorer
       </HeaderLogo>
-      {isDesktopLayout ? (
+      {isDesktopLayout
+        ? (
         <DesktopHeaderContent
           pathname={pathname}
           theme={theme}
@@ -105,7 +106,8 @@ export const Header = ({
           showHelp={showHelp}
           onHelpClick={onHelpClick}
         />
-      ) : (
+          )
+        : (
         <NonDesktopHeaderContent
           theme={theme}
           setTheme={setTheme}
@@ -114,7 +116,7 @@ export const Header = ({
           showHelp={showHelp}
           onHelpClick={onHelpClick}
         />
-      )}
+          )}
     </HeaderContainer>
   );
 };

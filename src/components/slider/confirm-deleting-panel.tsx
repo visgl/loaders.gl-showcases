@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ActionButton } from "../action-button/action-button";
-import { ActionButtonVariant, LayoutProps } from "../../types";
+import { ActionButtonVariant, type LayoutProps } from "../../types";
 import { useAppLayout } from "../../utils/hooks/layout";
 
 const Container = styled.div<LayoutProps>`
@@ -37,11 +37,11 @@ const ButtonsContainer = styled.div`
   margin-top: 28px;
 `;
 
-type UploadPanelItemProps = {
+interface UploadPanelItemProps {
   title: string;
   onCancel: () => void;
   onConfirm: () => void;
-};
+}
 
 export const ConfirmDeletingPanel = ({
   title,
@@ -51,7 +51,7 @@ export const ConfirmDeletingPanel = ({
   const layout = useAppLayout();
 
   return (
-    <Container layout={layout}>
+    <Container $layout={layout}>
       <Content>
         <Title>{title}</Title>
         <ButtonsContainer>

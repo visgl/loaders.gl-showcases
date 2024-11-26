@@ -1,7 +1,7 @@
 import { ComparisonSideMode } from "../../types";
 import { setupStore } from "../store";
 import reducer, {
-  SymbolizationState,
+  type SymbolizationState,
   selectColorsByAttribute,
   selectFiltersByAttribute,
   setColorsByAttrubute,
@@ -10,7 +10,7 @@ import reducer, {
 
 describe("slice: symbolization", () => {
   it("Reducer should return the initial state", () => {
-    expect(reducer(undefined, { type: undefined })).toEqual({
+    expect(reducer(undefined, { type: "none" })).toEqual({
       colorsByAttribute: null,
       filtersByAttribute: {
         single: null,

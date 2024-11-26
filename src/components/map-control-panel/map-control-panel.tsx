@@ -3,7 +3,7 @@ import {
   CollapseDirection,
   ExpandState,
   DragMode,
-  LayoutProps,
+  type LayoutProps,
 } from "../../types";
 import { ExpandIcon } from "../expand-icon/expand-icon";
 
@@ -39,20 +39,20 @@ const Container = styled.div<LayoutProps & { bottom?: number; right?: number }>`
 
   right: ${({ right }) =>
     getCurrentLayoutProperty({
-      desktop: `${right || 24}px`,
-      tablet: `${right || 24}px`,
-      mobile: `${right || 8}px`,
+      desktop: `${right ?? 24}px`,
+      tablet: `${right ?? 24}px`,
+      mobile: `${right ?? 8}px`,
     })};
 
   bottom: ${({ bottom }) =>
     getCurrentLayoutProperty({
-      desktop: `${bottom || 24}px`,
-      tablet: `${bottom || 80}px`,
-      mobile: `${bottom || 80}px`,
+      desktop: `${bottom ?? 24}px`,
+      tablet: `${bottom ?? 80}px`,
+      mobile: `${bottom ?? 80}px`,
     })};
 `;
 
-const Button = styled.button<{ active?: boolean }>`
+const Button = styled.button<{ $active?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -61,37 +61,40 @@ const Button = styled.button<{ active?: boolean }>`
   padding: 0;
   height: 44px;
   cursor: pointer;
-  background-color: ${({ theme, active = false }) =>
-    active ? color_brand_tertiary : theme.colors.mainColor};
+  background-color: ${({ theme, $active = false }) =>
+    $active ? color_brand_tertiary : theme.colors.mainColor};
   background-position: center;
   border: none;
-  fill: ${({ theme, active }) =>
-    active ? color_canvas_primary_inverted : theme.colors.buttonIconColor};
+  fill: ${({ theme, $active }) =>
+    $active ? color_canvas_primary_inverted : theme.colors.buttonIconColor};
 
   &:hover {
-    fill: ${({ theme, active }) =>
-      active ? color_canvas_primary_inverted : theme.colors.buttonDimIconColor};
-    background-color: ${({ theme, active = false }) =>
-      active ? color_brand_tertiary : theme.colors.buttonDimColor};
+    fill: ${({ theme, $active }) =>
+      $active
+        ? color_canvas_primary_inverted
+        : theme.colors.buttonDimIconColor};
+    background-color: ${({ theme, $active = false }) =>
+      $active ? color_brand_tertiary : theme.colors.buttonDimColor};
   }
 `;
 
-type MapControlPanelProps = {
+interface MapControlPanelProps {
   bearing: number;
   bottom?: number;
   right?: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onCompassClick: () => void;
-};
+  isDragModeVisible?: boolean;
+}
 
-type CompassProps = {
-  degrees: number;
-};
+interface CompassProps {
+  $degrees: number;
+}
 
-const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
+const CompassWrapper = styled.div.attrs<CompassProps>(({ $degrees }) => ({
   style: {
-    transform: `rotate(${-degrees || 0}deg)`,
+    transform: `rotate(${-$degrees || 0}deg)`,
   },
 }))<CompassProps>`
   display: flex;
@@ -99,13 +102,14 @@ const CompassWrapper = styled.div.attrs<CompassProps>(({ degrees }) => ({
   align-items: center;
 `;
 
-export const MapControllPanel = ({
+export const MapControlPanel = ({
   bearing,
   bottom,
   right,
   onZoomIn,
   onZoomOut,
   onCompassClick,
+  isDragModeVisible = true,
 }: MapControlPanelProps) => {
   const [expandState, expand] = useExpand(ExpandState.expanded);
   const dragMode = useAppSelector(selectDragMode);
@@ -125,7 +129,7 @@ export const MapControllPanel = ({
   return (
     <Container
       id="map-control-panel"
-      layout={layout}
+      $layout={layout}
       bottom={bottom}
       right={right}
     >
@@ -144,22 +148,26 @@ export const MapControllPanel = ({
           <Button onClick={onZoomOut}>
             <MinusIcon />
           </Button>
-          <Button
-            active={dragMode === DragMode.pan}
-            onClick={handleDragModeToggle}
-          >
-            <PanIcon />
-          </Button>
-          <Button
-            active={dragMode === DragMode.rotate}
-            onClick={handleDragModeToggle}
-          >
-            <OrbitIcon />
-          </Button>
+          {isDragModeVisible && (
+            <>
+              <Button
+                $active={dragMode === DragMode.pan}
+                onClick={handleDragModeToggle}
+              >
+                <PanIcon />
+              </Button>
+              <Button
+                $active={dragMode === DragMode.rotate}
+                onClick={handleDragModeToggle}
+              >
+                <OrbitIcon />
+              </Button>
+            </>
+          )}
         </>
       )}
       <Button onClick={onCompassClick}>
-        <CompassWrapper degrees={bearing}>
+        <CompassWrapper $degrees={bearing}>
           <CompassIcon />
         </CompassWrapper>
       </Button>

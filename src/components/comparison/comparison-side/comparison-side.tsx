@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
-import { Tileset3D, Tile3D } from "@loaders.gl/tiles";
-import { Stats } from "@probe.gl/stats";
+import { type Tileset3D, type Tile3D } from "@loaders.gl/tiles";
+import { type Stats } from "@probe.gl/stats";
 import { lumaStats } from "@luma.gl/core";
 
 import {
   ActiveButton,
   ComparisonMode,
   ComparisonSideMode,
-  LayerExample,
+  type LayerExample,
   ListItemType,
-  Sublayer,
-  ViewStateSet,
+  type Sublayer,
   CompareButtonMode,
-  StatsMap,
+  type StatsMap,
   TilesetType,
-  LayerViewState,
-  Bookmark,
+  type LayerViewState,
+  type Bookmark,
   PageId,
-  TilesetMetadata,
+  type TilesetMetadata,
+  type LayoutProps,
+  BaseMapGroup,
 } from "../../../types";
 import { DeckGlWrapper } from "../../deck-gl-wrapper/deck-gl-wrapper";
 import { MainToolsPanel } from "../../main-tools-panel/main-tools-panel";
@@ -58,12 +59,11 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { getBSLStatisticsSummary } from "../../../redux/slices/i3s-stats-slice";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
+import { type RootState } from "../../../redux/store";
 import { selectFiltersByAttribute } from "../../../redux/slices/symbolization-slice";
-
-type LayoutProps = {
-  layout: string;
-};
+import { selectViewState } from "../../../redux/slices/view-state-slice";
+import { selectSelectedBaseMap } from "../../../redux/slices/base-maps-slice";
+import { ArcgisWrapper } from "../../../components/arcgis-wrapper/arcgis-wrapper";
 
 const Container = styled.div<LayoutProps>`
   width: ${getCurrentLayoutProperty({
@@ -75,10 +75,9 @@ const Container = styled.div<LayoutProps>`
   position: relative;
 `;
 
-type ComparisonSideProps = {
+interface ComparisonSideProps {
   mode: ComparisonMode;
   side: ComparisonSideMode;
-  viewState: ViewStateSet;
   showLayerOptions: boolean;
   showComparisonSettings: boolean;
   staticLayers?: LayerExample[];
@@ -93,7 +92,6 @@ type ComparisonSideProps = {
   forcedSublayers?: ActiveSublayer[] | null;
   buildingExplorerOpened: boolean;
   onBuildingExplorerOpened: (opened: boolean) => void;
-  onViewStateChange: (viewStateSet: ViewStateSet) => void;
   pointToTileset: (viewState?: LayerViewState) => void;
   onChangeLayers?: (layer: LayerExample[], activeIds: string[]) => void;
   onInsertBookmarks?: (bookmarks: Bookmark[]) => void;
@@ -102,12 +100,11 @@ type ComparisonSideProps = {
   onShowBookmarksChange: () => void;
   onAfterDeckGlRender?: () => void;
   onUpdateSublayers?: (sublayers: ActiveSublayer[]) => void;
-};
+}
 
 export const ComparisonSide = ({
   mode,
   side,
-  viewState,
   showLayerOptions,
   showComparisonSettings,
   staticLayers,
@@ -122,7 +119,6 @@ export const ComparisonSide = ({
   forcedSublayers,
   buildingExplorerOpened,
   onBuildingExplorerOpened,
-  onViewStateChange,
   pointToTileset,
   onChangeLayers,
   onLoadingStateChange,
@@ -143,6 +139,11 @@ export const ComparisonSide = ({
       ? selectLeftSublayers
       : selectRightSublayers
   );
+  const selectedBaseMap = useAppSelector(selectSelectedBaseMap);
+  const MapWrapper =
+    selectedBaseMap?.group === BaseMapGroup.ArcGIS
+      ? ArcgisWrapper
+      : DeckGlWrapper;
   const [isCompressedGeometry, setIsCompressedGeometry] =
     useState<boolean>(true);
   const [isCompressedTextures, setIsCompressedTextures] =
@@ -165,6 +166,7 @@ export const ComparisonSide = ({
       mode === ComparisonMode.withinLayer ? ComparisonSideMode.left : side
     )
   );
+  const globalViewState = useAppSelector(selectViewState);
 
   const selectedLayerIds = useMemo(
     () => activeLayers.map((layer) => layer.id),
@@ -244,7 +246,7 @@ export const ComparisonSide = ({
       });
     }
 
-    dispatch(
+    void dispatch(
       getFlattenedSublayers({
         tilesetsData,
         buildingExplorerOpened,
@@ -252,7 +254,7 @@ export const ComparisonSide = ({
       })
     );
     if (buildingExplorerOpened && tilesetsData[0]) {
-      dispatch(
+      void dispatch(
         getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url, side })
       );
     }
@@ -311,7 +313,7 @@ export const ComparisonSide = ({
         id: sublayer.id,
         url: sublayer.url,
         token: sublayer.token,
-        type: sublayer.type || TilesetType.I3S,
+        type: sublayer.type ?? TilesetType.I3S,
       }));
   };
 
@@ -438,7 +440,7 @@ export const ComparisonSide = ({
       if (index >= 0 && flattenedSublayers[index]) {
         dispatch(
           updateLayerVisibility({
-            index: index,
+            index,
             visibility: sublayer.visibility,
             side,
           })
@@ -462,33 +464,26 @@ export const ComparisonSide = ({
   };
 
   return (
-    <Container layout={layout}>
-      <DeckGlWrapper
+    <Container $layout={layout}>
+      <MapWrapper
         id={sideId}
-        parentViewState={{
-          ...viewState,
-          main: {
-            ...viewState.main,
-          },
-        }}
         disableController={compareButtonMode === CompareButtonMode.Comparing}
         layers3d={getLayers3d()}
         loadNumber={loadNumber}
-        lastLayerSelectedId={tilesetRef.current?.url || ""}
+        lastLayerSelectedId={tilesetRef.current?.url ?? ""}
         useDracoGeometry={isCompressedGeometry}
         useCompressedTextures={isCompressedTextures}
         preventTransitions={preventTransitions}
         filtersByAttribute={filtersByAttribute}
-        onViewStateChange={onViewStateChange}
         onWebGLInitialized={onWebGLInitialized}
-        onTilesetLoad={(tileset: Tileset3D) => onTilesetLoadHandler(tileset)}
+        onTilesetLoad={onTilesetLoadHandler}
         onTileLoad={onTileLoad}
         onTraversalComplete={onTraversalCompleteHandler}
         onAfterRender={handleOnAfterRender}
       />
       {compareButtonMode === CompareButtonMode.Start && (
         <>
-          <ToolsPanelWrapper layout={layout}>
+          <ToolsPanelWrapper $layout={layout}>
             <MainToolsPanel
               id={`${side}-tools-panel`}
               activeButton={activeButton}
@@ -501,14 +496,14 @@ export const ComparisonSide = ({
             />
           </ToolsPanelWrapper>
           {activeButton === ActiveButton.options && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <LayersPanel
                 id={`${side}-layers-panel`}
                 pageId={PageId.comparison}
                 layers={examples}
                 selectedLayerIds={selectedLayerIds}
-                viewWidth={viewState?.main?.width}
-                viewHeight={viewState?.main?.height}
+                viewWidth={globalViewState?.main?.width}
+                viewHeight={globalViewState?.main?.height}
                 side={
                   mode === ComparisonMode.withinLayer
                     ? ComparisonSideMode.left
@@ -516,39 +511,43 @@ export const ComparisonSide = ({
                 }
                 onLayerInsert={onLayerInsertHandler}
                 onLayerSelect={onLayerSelectHandler}
-                onLayerDelete={(id) => onLayerDeleteHandler(id)}
-                onPointToLayer={(viewState) => pointToTileset(viewState)}
+                onLayerDelete={(id) => {
+                  onLayerDeleteHandler(id);
+                }}
+                onPointToLayer={(viewState) => {
+                  pointToTileset(viewState);
+                }}
                 type={ListItemType.Radio}
                 sublayers={sublayers}
                 onUpdateSublayerVisibility={onUpdateSublayerVisibilityHandler}
-                onClose={() =>
-                  onChangeMainToolsPanelHandler(ActiveButton.options)
-                }
+                onClose={() => {
+                  onChangeMainToolsPanelHandler(ActiveButton.options);
+                }}
                 onBuildingExplorerOpened={onBuildingExplorerOpened}
                 isAddingBookmarksAllowed={mode === ComparisonMode.withinLayer}
               />
             </OptionsPanelWrapper>
           )}
           {activeButton === ActiveButton.settings && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <ComparisonParamsPanel
                 id={`${side}-comparison-params-panel`}
                 isCompressedGeometry={isCompressedGeometry}
                 isCompressedTextures={isCompressedTextures}
-                onGeometryChange={() =>
-                  setIsCompressedGeometry((prevValue) => !prevValue)
-                }
-                onTexturesChange={() =>
-                  setIsCompressedTextures((prevValue) => !prevValue)
-                }
-                onClose={() =>
-                  onChangeMainToolsPanelHandler(ActiveButton.settings)
-                }
+                onGeometryChange={() => {
+                  setIsCompressedGeometry((prevValue) => !prevValue);
+                }}
+                onTexturesChange={() => {
+                  setIsCompressedTextures((prevValue) => !prevValue);
+                }}
+                onClose={() => {
+                  onChangeMainToolsPanelHandler(ActiveButton.settings);
+                }}
               />
             </OptionsPanelWrapper>
           )}
           {activeButton === ActiveButton.memory && (
-            <OptionsPanelWrapper layout={layout}>
+            <OptionsPanelWrapper $layout={layout}>
               <MemoryUsagePanel
                 id={`${side}-memory-usage-panel`}
                 memoryStats={memoryStats}
@@ -557,9 +556,9 @@ export const ComparisonSide = ({
                 contentFormats={tilesetRef.current?.contentFormats}
                 loadingTime={loadingTime}
                 updateNumber={updateStatsNumber}
-                onClose={() =>
-                  onChangeMainToolsPanelHandler(ActiveButton.memory)
-                }
+                onClose={() => {
+                  onChangeMainToolsPanelHandler(ActiveButton.memory);
+                }}
               />
             </OptionsPanelWrapper>
           )}

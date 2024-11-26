@@ -7,16 +7,21 @@ import { fetchFile } from "@loaders.gl/core";
 import { capitalize } from "../../../utils/format/capitalize";
 import { setupStore } from "../../../redux/store";
 import { setColorsByAttrubute } from "../../../redux/slices/symbolization-slice";
+import { type StatsInfo } from "@loaders.gl/i3s";
 
 jest.mock("@loaders.gl/core");
-
+jest.mock("@loaders.gl/i3s", () => {
+  return jest.fn().mockImplementation(() => {
+    return null;
+  });
+});
 jest.mock("../histogram", () => ({
   HistogramChart: jest.fn().mockImplementation(() => <div>HistogramChart</div>),
 }));
 
 const fetchMock = fetchFile as unknown as jest.Mocked<any>;
 
-const stats = {
+const stats: StatsInfo = {
   totalValuesCount: 1,
   min: 0,
   max: 100,
@@ -42,8 +47,8 @@ const stats = {
   ],
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 jest.mock("../../toogle-switch/toggle-switch", () => ({
@@ -61,8 +66,8 @@ jest.mock("../../loading-spinner/loading-spinner", () => ({
 describe("Attribute Stats Error test", () => {
   it("Should no render Attribute Stats if loading statistics error", async () => {
     fetchMock.mockImplementationOnce(
-      () =>
-        new Promise((resolve, reject) =>
+      async () =>
+        await new Promise((resolve, reject) =>
           setTimeout(() => {
             reject(new Error("Test Error"));
           }, 50)
@@ -106,8 +111,8 @@ describe("Attribute Stats Error test", () => {
 describe("AttributeStats", () => {
   beforeEach(() => {
     fetchMock.mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
+      async () =>
+        await new Promise((resolve) =>
           setTimeout(() => {
             resolve({
               text: async () =>
@@ -163,13 +168,13 @@ describe("AttributeStats", () => {
 
     const histogramIcon = screen.getByText("Histogram").firstElementChild;
 
-    histogramIcon && userEvent.click(histogramIcon);
+    histogramIcon && (await userEvent.click(histogramIcon));
 
     expect(
       screen.queryByTestId("histogram-split-line")
     ).not.toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -246,7 +251,7 @@ describe("AttributeStats", () => {
     await sleep(100);
     expect(screen.queryByTestId("colorsByAttributeFadeContainer")).toBeNull();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -292,7 +297,7 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttribute")).getByText("ToggleSwitch")
     );
 
@@ -328,7 +333,7 @@ describe("AttributeStats", () => {
     });
     await sleep(100);
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttributeMode")).getByText(
         "ToggleSwitch"
       )
@@ -376,7 +381,7 @@ describe("AttributeStats", () => {
       screen.getByTestId("colorsByAttributeFadeContainer")
     ).toBeInTheDocument();
 
-    userEvent.click(
+    await userEvent.click(
       within(screen.getByRole("colorizeByAttributeMode")).getByText(
         "ToggleSwitch"
       )

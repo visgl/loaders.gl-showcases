@@ -1,4 +1,4 @@
-import { ReactEventHandler } from "react";
+import { type ReactEventHandler } from "react";
 import styled from "styled-components";
 
 const CloseIcon = styled.div`

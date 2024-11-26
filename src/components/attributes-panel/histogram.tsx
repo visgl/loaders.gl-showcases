@@ -22,10 +22,10 @@ const ChartContainer = styled.div`
   }
 `;
 
-type HistrogramProps = {
+interface HistrogramProps {
   attributeName: string;
   histogramData: Histogram;
-};
+}
 
 export const HistogramChart = ({
   histogramData,
@@ -33,8 +33,8 @@ export const HistogramChart = ({
 }: HistrogramProps) => {
   const theme = useTheme();
 
-  const prepareChartData = (): { count: number }[] => {
-    const data: { xAxisData: number; count: number }[] = [];
+  const prepareChartData = (): Array<{ count: number }> => {
+    const data: Array<{ xAxisData: number; count: number }> = [];
     let min = histogramData.minimum;
     const binSize =
       (histogramData.maximum - histogramData.minimum) /

@@ -1,5 +1,8 @@
 import html2canvas from "html2canvas";
-import { createComparisonBookmarkThumbnail, createViewerBookmarkThumbnail } from "./deck-thumbnail-utils";
+import {
+  createComparisonBookmarkThumbnail,
+  createViewerBookmarkThumbnail,
+} from "./deck-thumbnail-utils";
 
 jest.mock("html2canvas");
 const html2canvasMock = html2canvas as unknown as jest.Mocked<any>;
@@ -16,9 +19,9 @@ describe("Deck.gl thumbnails", () => {
     HTMLCanvasElement.prototype.toDataURL = jest
       .fn()
       .mockReturnValue(BASE64_IMAGE);
-    html2canvasMock.mockImplementation(() => {
+    html2canvasMock.mockImplementation(async () => {
       const canvas = document.createElement("canvas");
-      return Promise.resolve(canvas);
+      return await Promise.resolve(canvas);
     });
   });
 
@@ -46,15 +49,15 @@ describe("Deck.gl thumbnails", () => {
       "#container2"
     );
     expect(thumbnail).toBe(BASE64_IMAGE);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledTimes(3);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledTimes(1);
     expect(mockDrawImage).toHaveBeenCalledTimes(4);
   });
 
   test("createViewerBookmarkThumbnail: should return null", async () => {
-    const thumbnail = await createViewerBookmarkThumbnail(
-      "#container3",
-    );
+    const thumbnail = await createViewerBookmarkThumbnail("#container3");
     expect(thumbnail).toBeNull();
   });
 });
