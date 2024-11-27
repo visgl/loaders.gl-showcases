@@ -5,7 +5,7 @@ module.exports = {
   },
   parser: "@typescript-eslint/parser",
   extends: ["standard-with-typescript", "plugin:react/recommended"],
-  // ignorePatterns: ["**/*.html"],
+  ignorePatterns: ["**/*.slpk"],
   overrides: [
     {
       env: {
