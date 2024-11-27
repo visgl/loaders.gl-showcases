@@ -62,6 +62,7 @@ import { useAppLayout } from "../../utils/hooks/layout";
 import {
   findExampleAndUpdateWithViewState,
   getActiveLayersByIds,
+  getLayerUrl,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -218,9 +219,7 @@ export const DebugApp = () => {
    * Hook for start using tilesets stats.
    */
   useEffect(() => {
-    const activeLayerPath = (typeof activeLayers[0]?.url === "string" || typeof activeLayers[0]?.url === "undefined")
-      ? activeLayers[0]?.url
-      : activeLayers[0]?.url.name;
+    const activeLayerPath = activeLayers[0] ? getLayerUrl(activeLayers[0].url) : undefined;
     const tilesetsStats = initStats(activeLayerPath);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
@@ -235,9 +234,11 @@ export const DebugApp = () => {
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      let params = { tilesetUrl: "", token: "" };
+      let params = { tilesetUrl: "" as string | File, token: "" };
       if (typeof layer.url === "string") {
         params = parseTilesetUrlParams(layer.url, layer);
+      } else {
+        params.tilesetUrl = layer.url;
       }
 
       const { tilesetUrl, token } = params;

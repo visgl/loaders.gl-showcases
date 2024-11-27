@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { type RootState } from "../store";
 import { FetchingStatus, type TilesetType } from "../../types";
 import { parseTilesetUrlParams } from "../../utils/url-utils";
+import { getLayerUrl } from "../../utils/layer-utils";
 
 // Define a type for the slice state
 interface LayerNamesState {
@@ -27,7 +28,7 @@ const layerNamesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getLayerNameInfo.pending, (state, action) => {
-        const layerName = typeof action.meta.arg.layerUrl === "string" ? action.meta.arg.layerUrl : action.meta.arg.layerUrl.name;
+        const layerName = getLayerUrl(action.meta.arg.layerUrl);
         state.map[layerName] = {
           name: "",
           status: FetchingStatus.pending,
@@ -40,7 +41,7 @@ const layerNamesSlice = createSlice({
         };
       })
       .addCase(getLayerNameInfo.rejected, (state, action) => {
-        const layerName = typeof action.meta.arg.layerUrl === "string" ? action.meta.arg.layerUrl : action.meta.arg.layerUrl.name;
+        const layerName = getLayerUrl(action.meta.arg.layerUrl);
         state.map[layerName] = {
           name: "",
           status: FetchingStatus.ready,

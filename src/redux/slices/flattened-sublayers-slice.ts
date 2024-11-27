@@ -162,7 +162,7 @@ const getLayersAndSublayers = async (
       const fileSystem = new ZipFileSystem(archive);
       options.fetch = fileSystem.fetch.bind(fileSystem) as (filename: string) => Promise<Response>;
     } catch (e) {
-      console.log("error", e);
+      console.log(e);
     }
   }
   try {

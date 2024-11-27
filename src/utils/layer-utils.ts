@@ -194,3 +194,12 @@ const handleSelectLeafLayer = (
 
   return [...activeLayersInRootGroup, layer];
 };
+
+/**
+ * returns string identifier for the layer
+ * @param layer - layer to define
+ * @returns layer identifier
+ */
+export const getLayerUrl = (layer: string | File): string => {
+  return (!layer || typeof layer === "string") ? layer : layer.name;
+};

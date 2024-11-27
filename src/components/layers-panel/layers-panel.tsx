@@ -39,6 +39,7 @@ import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
+import { getLayerUrl } from "../../utils/layer-utils";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -164,7 +165,7 @@ interface LayersPanelProps {
   onBuildingExplorerOpened: (opened: boolean) => void;
 }
 
-const getPath = (url: string | File) => typeof url === "string" ? url : url.name;
+const getPath = (url: string | File) => getLayerUrl(url);
 
 export const LayersPanel = ({
   id,

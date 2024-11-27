@@ -49,6 +49,7 @@ import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
   findExampleAndUpdateWithViewState,
   getActiveLayersByIds,
+  getLayerUrl,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -203,9 +204,7 @@ export const ViewerApp = () => {
    * Hook for start using tilesets stats.
    */
   useEffect(() => {
-    const activeLayerPath = (typeof activeLayers[0]?.url === "string" || typeof activeLayers[0]?.url === "undefined")
-      ? activeLayers[0]?.url
-      : activeLayers[0]?.url.name;
+    const activeLayerPath = activeLayers[0] ? getLayerUrl(activeLayers[0].url) : undefined;
     const tilesetsStats = initStats(activeLayerPath);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
@@ -248,7 +247,7 @@ export const ViewerApp = () => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
     if (buildingExplorerOpened && tilesetsData[0]) {
-      const tilesetDataUrl = typeof tilesetsData[0].url === "string" ? tilesetsData[0].url : tilesetsData[0].url.name;
+      const tilesetDataUrl = getLayerUrl(tilesetsData[0].url);
       void dispatch(
         getBSLStatisticsSummary({ statSummaryUrl: tilesetDataUrl })
       );

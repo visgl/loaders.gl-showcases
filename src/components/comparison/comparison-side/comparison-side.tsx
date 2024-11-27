@@ -36,6 +36,7 @@ import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import {
   findExampleAndUpdateWithViewState,
   getActiveLayersByIds,
+  getLayerUrl,
   handleSelectAllLeafsInGroup,
   selectNestedLayers,
 } from "../../../utils/layer-utils";
@@ -234,9 +235,11 @@ export const ComparisonSide = ({
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      let params = { tilesetUrl: "", token: "" };
+      let params = { tilesetUrl: "" as string | File, token: "" };
       if (typeof layer.url === "string") {
         params = parseTilesetUrlParams(layer.url, layer);
+      } else {
+        params.tilesetUrl = layer.url;
       }
 
       const { tilesetUrl, token } = params;
@@ -258,7 +261,7 @@ export const ComparisonSide = ({
       })
     );
     if (buildingExplorerOpened && tilesetsData[0]) {
-      const tilesetDataUrl = typeof tilesetsData[0].url === "string" ? tilesetsData[0].url : tilesetsData[0].url.name;
+      const tilesetDataUrl = getLayerUrl(tilesetsData[0].url);
       void dispatch(
         getBSLStatisticsSummary({ statSummaryUrl: tilesetDataUrl, side })
       );
@@ -284,7 +287,7 @@ export const ComparisonSide = ({
 
     if (loadedTilesetsCount && activeLayersCount) {
       const isBSL = loadedTilesetsCount > activeLayersCount;
-      let statsName = typeof activeLayers[0].url === "string" ? activeLayers[0].url : activeLayers[0].url.name;
+      let statsName = getLayerUrl(activeLayers[0].url);
 
       if (!isBSL) {
         statsName = loadedTilesets
