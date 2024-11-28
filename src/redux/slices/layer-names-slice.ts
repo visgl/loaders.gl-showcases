@@ -55,7 +55,7 @@ export const getLayerNameInfo = createAsyncThunk<
 { layerUrl: string | File; type: TilesetType; token: string }
 >("getLayerNameInfo", async ({ layerUrl, type, token }) => {
   if (typeof layerUrl !== "string") {
-    return { name: layerUrl.name, layerUrl: "layerUrl" };
+    return { name: '', layerUrl: layerUrl.name };
   }
   const params = parseTilesetUrlParams(layerUrl, { type, token });
   let url = params.tilesetUrl;

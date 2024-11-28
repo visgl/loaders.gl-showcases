@@ -1,13 +1,11 @@
 import styled from "styled-components";
 import { ActionButton } from "../action-button/action-button";
 import { ActionButtonVariant, type LayoutProps } from "../../types";
-import WarningIcon from "../../../public/icons/warning.svg";
 import { useAppLayout } from "../../utils/hooks/layout";
 
-const Container = styled.div<LayoutProps>`
+const Container = styled.div<LayoutProps & { noPadding?: boolean }>`
   width: 295px;
-  height: 329px;
-  padding: 16px;
+  padding: ${({ noPadding }) => noPadding ? "0px" : "16px"};
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.mainColor};
 `;
@@ -25,6 +23,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 16px;
   line-height: 19px;
+  margin-bottom: 44px;
   color: ${({ theme }) => theme.colors.fontColor};
 `;
 
@@ -32,37 +31,40 @@ const ButtonsContainer = styled.div<{ justify: string }>`
   display: flex;
   flex-direction: row;
   justify-content: ${(props) => props.justify};
+  margin-top: 44px;
 `;
 
 interface UploadPanelItemProps {
   title?: string;
   children: React.ReactNode;
-  onCancel: () => void;
+  noPadding?: boolean;
+  onCancel?: () => void;
   onConfirm?: () => void;
 }
 
 export const UploadPanelItem = ({
   title,
   children,
+  noPadding,
   onCancel,
   onConfirm,
 }: UploadPanelItemProps) => {
   const layout = useAppLayout();
 
   return (
-    <Container $layout={layout}>
+    <Container $layout={layout} noPadding={noPadding}>
       <Content>
-        <Title>{title ?? <WarningIcon />}</Title>
+        {title && <Title>{title}</Title>}
         {children}
-        <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
-          <ActionButton
+        {(onConfirm || onCancel) && <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
+          {onCancel && <ActionButton
             variant={ActionButtonVariant.secondary}
             onClick={onCancel}
           >
             Cancel
-          </ActionButton>
+          </ActionButton>}
           {onConfirm && <ActionButton onClick={onConfirm}>Next</ActionButton>}
-        </ButtonsContainer>
+        </ButtonsContainer>}
       </Content>
     </Container>
   );
