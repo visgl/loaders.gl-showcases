@@ -56,7 +56,7 @@ export const UploadPanelItem = ({
       <Content>
         {title && <Title>{title}</Title>}
         {children}
-        {(onConfirm || onCancel) && <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
+        {(onConfirm ?? onCancel) && <ButtonsContainer justify={onConfirm ? "space-between" : "center"}>
           {onCancel && <ActionButton
             variant={ActionButtonVariant.secondary}
             onClick={onCancel}

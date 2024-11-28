@@ -89,7 +89,7 @@ export const UploadPanel = ({
         const info: Record<string, unknown> = {
           url: file.name,
         };
-        onFileUploaded({ fileContent: event?.target?.result, info });
+        await onFileUploaded({ fileContent: event?.target?.result, info });
       };
       if (fileType === FileType.binary) {
         reader.readAsArrayBuffer(file);
@@ -114,7 +114,7 @@ export const UploadPanel = ({
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files?.[0]) {
-      setFileUploaded(e.dataTransfer.files[0].name)
+      setFileUploaded(e.dataTransfer.files[0].name);
       readFile(e.dataTransfer.files).catch(() => {
         console.error("Read uploaded file operation error");
       });
@@ -126,7 +126,7 @@ export const UploadPanel = ({
   ) {
     e.preventDefault();
     if (e.target.files?.[0]) {
-      setFileUploaded(e.target.files[0].name)
+      setFileUploaded(e.target.files[0].name);
       readFile(e.target.files).catch(() => {
         console.error("Read uploaded file operation error");
       });

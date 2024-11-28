@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useState } from "react";
+import { type useEffect, useState } from "react";
 import styled from "styled-components";
 
 import {
@@ -119,7 +119,7 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
-  const getNewLayerUrl = () => getLayerUrl(url)
+  const getNewLayerUrl = () => getLayerUrl(url);
 
   const validateFields = (): void => {
     let isFormValid = true;
