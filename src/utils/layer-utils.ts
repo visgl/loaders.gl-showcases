@@ -95,7 +95,7 @@ export const findExampleAndUpdateWithViewState = (
 
   for (const example of examplesCopy) {
     // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
-    if (tileset.url.includes(example.url) && !example.viewState) {
+    if (tileset.url.includes(getLayerUrl(example.url)) && !example.viewState) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter ?? [];
       example.viewState = { zoom, latitude, longitude };
@@ -193,4 +193,13 @@ const handleSelectLeafLayer = (
   );
 
   return [...activeLayersInRootGroup, layer];
+};
+
+/**
+ * returns string identifier for the layer
+ * @param layer - layer to define
+ * @returns layer identifier
+ */
+export const getLayerUrl = (layer: string | File): string => {
+  return (!layer || typeof layer === "string") ? layer : layer.name;
 };

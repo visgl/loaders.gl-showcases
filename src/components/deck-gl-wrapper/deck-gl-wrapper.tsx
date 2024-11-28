@@ -62,6 +62,7 @@ interface DeckGlI3sProps {
   layers3d: Array<{
     id?: number;
     url?: string;
+    fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
     token?: string | null;
     type: TilesetType;
   }>;

@@ -39,6 +39,7 @@ import { getTilesetType, convertUrlToRestFormat } from "../../utils/url-utils";
 import { convertArcGisSlidesToBookmars } from "../../utils/bookmarks-utils";
 import { useAppDispatch } from "../../redux/hooks";
 import { addBaseMap } from "../../redux/slices/base-maps-slice";
+import { getLayerUrl } from "../../utils/layer-utils";
 
 const EXISTING_AREA_ERROR = "You are trying to add an existing area to the map";
 
@@ -164,6 +165,8 @@ interface LayersPanelProps {
   onBuildingExplorerOpened: (opened: boolean) => void;
 }
 
+const getPath = (url: string | File) => getLayerUrl(url);
+
 export const LayersPanel = ({
   id,
   pageId,
@@ -208,7 +211,7 @@ export const LayersPanel = ({
 
   const handleInsertLayer = (layer: CustomLayerData) => {
     const existedLayer = layers.some(
-      (exisLayer) => exisLayer.url.trim() === layer.url.trim()
+      (exisLayer) => getPath(exisLayer.url).trim() === getPath(layer.url).trim()
     );
 
     if (existedLayer) {
@@ -216,12 +219,13 @@ export const LayersPanel = ({
       return;
     }
 
-    const id = layer.url.replace(/" "/g, "-");
+    const id = getPath(layer.url).replace(/" "/g, "-");
     const newLayer: LayerExample = {
       ...layer,
+      url: layer.url,
       id,
       custom: true,
-      type: getTilesetType(layer.url),
+      type: getTilesetType(getPath(layer.url)),
     };
 
     onLayerInsert(newLayer);
@@ -250,7 +254,7 @@ export const LayersPanel = ({
     return layersList;
   };
 
-  const saveLayerTypes = (layers) => {
+  const saveLayerTypes = (layers: OperationalLayer[]) => {
     const layerTypes: string[] = [];
     if (layers) {
       for (const layer of layers) {
@@ -264,10 +268,10 @@ export const LayersPanel = ({
 
   // TODO Add loader to show webscene loading
   const handleInsertScene = async (scene: CustomLayerData): Promise<void> => {
-    scene.url = convertUrlToRestFormat(scene.url);
+    scene.url = convertUrlToRestFormat(getPath(scene.url));
 
     const existedScene = layers.some(
-      (exisLayer) => exisLayer.url.trim() === scene.url.trim()
+      (exisLayer) => getPath(exisLayer.url).trim() === getPath(scene.url).trim()
     );
 
     if (existedScene) {
@@ -291,7 +295,8 @@ export const LayersPanel = ({
 
       const newLayer: LayerExample = {
         ...scene,
-        id: scene.url,
+        url: getPath(scene.url),
+        id: getPath(scene.url),
         custom: true,
         layers: webSceneLayerExamples,
         type: getTilesetType(scene.url),
@@ -322,7 +327,7 @@ export const LayersPanel = ({
         switch (error.message) {
           case "NO_AVAILABLE_SUPPORTED_LAYERS_ERROR": {
             const layers = (error as LayerError).details;
-            saveLayerTypes(layers);
+            saveLayerTypes(layers as OperationalLayer[]);
             setShowNoSupportedLayersInSceneError(true);
             break;
           }
@@ -341,11 +346,11 @@ export const LayersPanel = ({
   };
 
   const handleInsertMap = (map: CustomLayerData): void => {
-    const id = map.url.replace(/" "/g, "-");
+    const id = getPath(map.url).replace(/" "/g, "-");
     if (map.group !== undefined) {
       const newMap: BaseMap = {
         id,
-        mapUrl: map.url,
+        mapUrl: getPath(map.url),
         name: map.name,
         token: map.token,
         iconId: "Custom",

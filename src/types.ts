@@ -162,7 +162,7 @@ export interface LayerExample {
   /** Layer's human readable name */
   name: string;
   /** Layer's URL */
-  url: string;
+  url: string | File;
   /** Layers's authorization token */
   token?: string;
   /** Is layer custom (added by user during application usage)
@@ -285,6 +285,7 @@ export interface LoadOptions {
     token?: string;
     colorsByAttribute?: ColorsByAttribute | null;
   };
+  fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
 }
 
 export interface Bookmark {
@@ -327,6 +328,7 @@ export interface LayoutProps {
 export type BuildingSceneSublayerExtended = BuildingSceneSublayer & {
   token?: string;
   type?: TilesetType;
+  fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
 };
 
 export enum TileColoredBy {
@@ -372,7 +374,7 @@ export interface TileSelectedColor {
 
 export interface TilesetMetadata {
   id: string;
-  url: string;
+  url: string | File;
   token?: string;
   hasChildren: boolean;
   type?: TilesetType;

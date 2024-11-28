@@ -95,6 +95,7 @@ const renderI3SLayer = (
   layer: {
     id?: number | undefined;
     url?: string | undefined;
+    fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
     token?: string | null | undefined;
     type: TilesetType;
   },
@@ -123,9 +124,10 @@ const renderI3SLayer = (
       useDracoGeometry,
       useCompressedTextures,
     },
+    fetch: layer.fetch,
   };
   let url = layer.url;
-  if (layer.token && url) {
+  if (layer.token && url && typeof url === "string") {
     loadOptions.i3s.token = layer.token;
     const urlObject = new URL(url);
     urlObject.searchParams.append("token", layer.token);
@@ -134,7 +136,6 @@ const renderI3SLayer = (
   return new DataDrivenTile3DLayer({
     id: `tile-layer-${layer.id}-draco-${useDracoGeometry}-compressed-textures-${useCompressedTextures}--${loadNumber}`,
     data: url,
-    // @ts-expect-error loader
     loader: I3SLoader,
     colorsByAttribute,
     customizeColors: colorizeTile,
@@ -160,6 +161,7 @@ const renderI3SLayer = (
       : layer.url === selectedTilesetBasePath
         ? selectedIndex
         : -1,
+    fetch: layer.fetch,
   });
 };
 
@@ -295,6 +297,7 @@ export const renderLayers = (params: {
   layers3d: Array<{
     id?: number;
     url?: string;
+    fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
     token?: string | null;
     type: TilesetType;
   }>;
