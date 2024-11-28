@@ -95,7 +95,7 @@ export const findExampleAndUpdateWithViewState = (
 
   for (const example of examplesCopy) {
     // We can't compare by tileset.url === example.url because BSL and Scene examples url is not loaded as tileset.
-    if (tileset.url.includes(typeof example.url === "string" ? example.url : example.url.name) && !example.viewState) {
+    if (tileset.url.includes(getLayerUrl(example.url)) && !example.viewState) {
       const { zoom, cartographicCenter } = tileset;
       const [longitude, latitude] = cartographicCenter ?? [];
       example.viewState = { zoom, latitude, longitude };
