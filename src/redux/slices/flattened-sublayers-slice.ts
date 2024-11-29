@@ -201,8 +201,9 @@ const getLayersAndSublayers = async (
       layers: [
         {
           id: tilesetData.id,
-          url: tilesetData.url,
+          url: typeof tilesetData.url === "string" ? tilesetData.url : tilesetData.id,
           visibility: true,
+          fetch: options.fetch,
           token: tilesetData.token,
           type: tilesetData.type,
         },

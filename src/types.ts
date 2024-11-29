@@ -286,6 +286,7 @@ export interface LoadOptions {
     colorsByAttribute?: ColorsByAttribute | null;
   };
   fetch?: ((input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>);
+  worker?: boolean;
 }
 
 export interface Bookmark {

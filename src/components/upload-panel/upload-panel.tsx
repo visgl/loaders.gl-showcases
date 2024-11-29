@@ -62,7 +62,8 @@ interface UploadProps {
   multipleFiles?: boolean;
   noPadding?: boolean;
   onCancel?: () => void;
-  onFileUploaded: (fileUploaded: FileUploaded) => Promise<void> | void;
+  onFileUploaded?: (fileUploaded: FileUploaded) => Promise<void> | void;
+  onFileEvent?: (files: FileList) => Promise<void> | void;
 }
 
 export const UploadPanel = ({
@@ -73,6 +74,7 @@ export const UploadPanel = ({
   noPadding,
   onCancel,
   onFileUploaded,
+  onFileEvent
 }: UploadProps) => {
   const layout = useAppLayout();
   const [dragActive, setDragActive] = useState(false);
@@ -89,7 +91,7 @@ export const UploadPanel = ({
         const info: Record<string, unknown> = {
           url: file.name,
         };
-        await onFileUploaded({ fileContent: event?.target?.result, info });
+        await onFileUploaded?.({ fileContent: event?.target?.result, info });
       };
       if (fileType === FileType.binary) {
         reader.readAsArrayBuffer(file);
@@ -115,6 +117,7 @@ export const UploadPanel = ({
     setDragActive(false);
     if (e.dataTransfer.files?.[0]) {
       setFileUploaded(e.dataTransfer.files[0].name);
+      onFileEvent?.(e.dataTransfer.files);
       readFile(e.dataTransfer.files).catch(() => {
         console.error("Read uploaded file operation error");
       });
@@ -127,6 +130,7 @@ export const UploadPanel = ({
     e.preventDefault();
     if (e.target.files?.[0]) {
       setFileUploaded(e.target.files[0].name);
+      onFileEvent?.(e.target.files);
       readFile(e.target.files).catch(() => {
         console.error("Read uploaded file operation error");
       });

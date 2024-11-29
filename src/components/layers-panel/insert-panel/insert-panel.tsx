@@ -193,7 +193,6 @@ export const InsertPanel = ({
         break;
       case "URL":
         if (files) {
-          files[0].name = crypto.randomUUID();
           setUrl(files[0]);
         } else {
           setUrl(value);
@@ -250,7 +249,7 @@ export const InsertPanel = ({
           <UploadPanel
             dragAndDropText={"Drag and drop your json file here"}
             noPadding={true}
-            onFileUploaded={(file) => { handleInputChange({ target: { files: [file.fileContent as any], name: "URL" } }); }}
+            onFileEvent={(files) => { handleInputChange({ target: { files, name: "URL" } }); }}
             fileType={FileType.binary}
           />
         </InputsWrapper>
