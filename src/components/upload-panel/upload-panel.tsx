@@ -63,7 +63,7 @@ interface UploadProps {
   noPadding?: boolean;
   onCancel?: () => void;
   onFileUploaded?: (fileUploaded: FileUploaded) => Promise<void> | void;
-  onFileEvent?: (files: FileList) => Promise<void> | void;
+  onFileEvent?: (files: FileList) => void;
 }
 
 export const UploadPanel = ({
@@ -74,7 +74,7 @@ export const UploadPanel = ({
   noPadding,
   onCancel,
   onFileUploaded,
-  onFileEvent
+  onFileEvent,
 }: UploadProps) => {
   const layout = useAppLayout();
   const [dragActive, setDragActive] = useState(false);
