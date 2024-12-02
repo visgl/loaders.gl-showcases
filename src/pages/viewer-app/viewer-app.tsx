@@ -49,6 +49,7 @@ import { LayersPanel } from "../../components/layers-panel/layers-panel";
 import {
   findExampleAndUpdateWithViewState,
   getActiveLayersByIds,
+  getLayerUrl,
   handleSelectAllLeafsInGroup,
   initActiveLayer,
   selectNestedLayers,
@@ -173,6 +174,7 @@ export const ViewerApp = () => {
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
+        fetch: sublayer.fetch,
         token: sublayer.token,
         type: sublayer.type ?? TilesetType.I3S,
       }));
@@ -202,7 +204,8 @@ export const ViewerApp = () => {
    * Hook for start using tilesets stats.
    */
   useEffect(() => {
-    const tilesetsStats = initStats(activeLayers[0]?.url);
+    const activeLayerPath = activeLayers[0] ? getLayerUrl(activeLayers[0].url) : undefined;
+    const tilesetsStats = initStats(activeLayerPath);
     setTilesetsStats(tilesetsStats);
   }, [loadedTilesets]);
 
@@ -216,7 +219,13 @@ export const ViewerApp = () => {
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      const params = parseTilesetUrlParams(layer.url, layer);
+      let params = { tilesetUrl: "" as string | File, token: "" };
+      if (typeof layer.url === "string") {
+        params = parseTilesetUrlParams(layer.url, layer);
+      } else {
+        params.tilesetUrl = layer.url;
+      }
+
       const { tilesetUrl, token } = params;
 
       tilesetsData.push({
@@ -238,8 +247,9 @@ export const ViewerApp = () => {
     setSelectedFeatureAttributes(null);
     setSelectedFeatureIndex(-1);
     if (buildingExplorerOpened && tilesetsData[0]) {
+      const tilesetDataUrl = getLayerUrl(tilesetsData[0].url);
       void dispatch(
-        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url })
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetDataUrl })
       );
     }
   }, [activeLayers, buildingExplorerOpened]);

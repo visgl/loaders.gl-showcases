@@ -23,13 +23,10 @@ import {
   wslExpectedLayers,
   wslTestTileset,
 } from "./test-data/fluttened-sublayers-slice-test-data";
+import { readFile } from "node:fs/promises";
 
 jest.mock("@loaders.gl/core");
-jest.mock("@loaders.gl/i3s", () => {
-  return jest.fn().mockImplementation(() => {
-    return null;
-  });
-});
+jest.mock("@loaders.gl/i3s");
 
 const previousState: FlattenedSublayersState = {
   single: {
@@ -300,6 +297,36 @@ describe("slice: flattened-sublayers", () => {
 
     const newSingleState = store.getState();
     expect(selectLayers(newSingleState)).toEqual(expectedOverviewLayers);
+    expect(selectSublayers(newSingleState)).toEqual(expectedOverviewSubLayers);
+    expect(newSingleState.flattenedSublayers.single.layerCounter).toEqual(1);
+  });
+
+  it("getFlattenedSublayers should call mocked layers loading for SLPK tileset", async () => {
+    (load as unknown as jest.Mock<any>).mockReturnValue(
+      Promise.resolve(bslTestTileset)
+    );
+
+    const store = setupStore();
+    const state = store.getState();
+    expect(selectLayers(state)).toEqual([]);
+
+    const slpkBinary = (await readFile("src/redux/slices/test-data/Admin_Building_v18.slpk")).buffer as any;
+    slpkBinary.size = slpkBinary.byteLength;
+
+    const tilesetsData = [
+      {
+        hasChildren: false,
+        id: "testSLPK_id",
+        type: TilesetType.I3S,
+        url: slpkBinary,
+      },
+    ];
+
+    await store.dispatch(
+      getFlattenedSublayers({ tilesetsData, buildingExplorerOpened: false })
+    );
+
+    const newSingleState = store.getState();
     expect(selectSublayers(newSingleState)).toEqual(expectedOverviewSubLayers);
     expect(newSingleState.flattenedSublayers.single.layerCounter).toEqual(1);
   });

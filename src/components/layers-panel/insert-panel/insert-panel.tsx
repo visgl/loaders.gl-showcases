@@ -7,6 +7,7 @@ import {
   type LayoutProps,
   TilesetType,
   BaseMapGroup,
+  FileType,
 } from "../../../types";
 import {
   getCurrentLayoutProperty,
@@ -23,13 +24,15 @@ import {
   getLayerNameInfo,
   selectLayerNames,
 } from "../../../redux/slices/layer-names-slice";
+import { UploadPanel } from "../../upload-panel/upload-panel";
+import { getLayerUrl } from "../../../utils/layer-utils";
 
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
 export interface CustomLayerData {
   name: string;
-  url: string;
+  url: string | File;
   token?: string;
   group?: BaseMapGroup;
 }
@@ -107,7 +110,7 @@ export const InsertPanel = ({
 }: InsertLayerProps) => {
   const [group, setGroup] = useState<BaseMapGroup>(BaseMapGroup.Maplibre);
   const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState<string | File>("");
   const [token, setToken] = useState("");
 
   const [nameError, setNameError] = useState("");
@@ -116,21 +119,25 @@ export const InsertPanel = ({
   const layerNames = useAppSelector(selectLayerNames);
   const dispatch = useAppDispatch();
 
+  const getNewLayerUrl = () => getLayerUrl(url);
+
   const validateFields = (): void => {
     let isFormValid = true;
-    const type = getTilesetType(url);
+    const type = getTilesetType(typeof url === "string" ? url : url.name);
 
-    try {
-      // eslint-disable-next-line no-new
-      new URL(url);
-    } catch (_) {
-      setUrlError(INVALID_URL_ERROR);
-      isFormValid = false;
+    if (typeof url === "string") {
+      try {
+        // eslint-disable-next-line no-new
+        new URL(url);
+      } catch (_) {
+        setUrlError(INVALID_URL_ERROR);
+        isFormValid = false;
+      }
     }
 
     if (
       (type !== TilesetType.I3S && !name) ||
-      (type === TilesetType.I3S && !name && !layerNames[url]?.name)
+      (type === TilesetType.I3S && !name && !layerNames[getNewLayerUrl()]?.name)
     ) {
       setNameError(NO_NAME_ERROR);
       isFormValid = false;
@@ -138,7 +145,7 @@ export const InsertPanel = ({
 
     if (isFormValid) {
       void onInsert({
-        name: name || layerNames[url]?.name,
+        name: name || layerNames[getNewLayerUrl()]?.name,
         url,
         token,
         group: groups ? group : undefined,
@@ -147,16 +154,16 @@ export const InsertPanel = ({
   };
 
   useEffect(() => {
-    const type = getTilesetType(url);
+    const type = getTilesetType(getNewLayerUrl());
     if (isValidateInProgress && type === TilesetType.I3S) {
       if (
-        (layerNames[url] !== undefined &&
-          layerNames[url].status === FetchingStatus.ready) ||
+        (layerNames[getNewLayerUrl()] !== undefined &&
+          layerNames[getNewLayerUrl()].status === FetchingStatus.ready) ||
         name.length > 0
       ) {
         setValidateInProgress(false);
         validateFields();
-      } else if (!layerNames[url]) {
+      } else if (!layerNames[getNewLayerUrl()]) {
         void dispatch(getLayerNameInfo({ layerUrl: url, token, type }));
       }
     }
@@ -165,7 +172,7 @@ export const InsertPanel = ({
   const handleInsert = (event) => {
     event.preventDefault();
 
-    if (getTilesetType(url) !== TilesetType.I3S) {
+    if (getTilesetType(getNewLayerUrl()) !== TilesetType.I3S) {
       validateFields();
     } else {
       setValidateInProgress(true);
@@ -173,11 +180,11 @@ export const InsertPanel = ({
   };
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, files } = event.target;
 
     switch (name) {
       case "BasemapProvider":
-        setGroup(value);
+        setGroup(value as BaseMapGroup);
         setNameError("");
         break;
       case "Name":
@@ -185,7 +192,11 @@ export const InsertPanel = ({
         setNameError("");
         break;
       case "URL":
-        setUrl(value);
+        if (files) {
+          setUrl(files[0]);
+        } else {
+          setUrl(value);
+        }
         setUrlError("");
         break;
       case "Token":
@@ -225,7 +236,7 @@ export const InsertPanel = ({
           <InputText
             name="URL"
             label="URL"
-            value={url}
+            value={typeof url === "string" ? url : ""}
             error={urlError}
             onChange={handleInputChange}
           />
@@ -234,6 +245,12 @@ export const InsertPanel = ({
             label="Token"
             value={token}
             onChange={handleInputChange}
+          />
+          <UploadPanel
+            dragAndDropText={"Drag and drop your SLPK file here"}
+            noPadding={true}
+            onFileEvent={(files) => { handleInputChange({ target: { files, name: "URL" } }); }}
+            fileType={FileType.binary}
           />
         </InputsWrapper>
         <ButtonsWrapper>

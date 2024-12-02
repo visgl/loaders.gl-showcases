@@ -5,7 +5,7 @@ export const parseTilesetFromUrl = () => {
   return parsedUrl.searchParams.get("tileset") ?? "";
 };
 
-export const parseTilesetUrlParams = (url, options) => {
+export const parseTilesetUrlParams = (url: string, options) => {
   if (!url) {
     return { ...options, tilesetUrl: "", token: "", metadataUrl: "" };
   }
@@ -44,7 +44,7 @@ export const getTilesetType = (url = ""): TilesetType => {
   }
 };
 
-const prepareTilesetUrl = (parsedUrl) => {
+const prepareTilesetUrl = (parsedUrl: URL) => {
   // Try to find particular layer in url.
   const layer = parsedUrl.pathname.match(/layers\/\d/);
 

@@ -40,10 +40,11 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@hyperjump/json-schema": "^0.23.2",
-    "@loaders.gl/3d-tiles": "^4.1.0-alpha.11",
-    "@loaders.gl/core": "^4.1.0-alpha.11",
-    "@loaders.gl/i3s": "^4.1.0-alpha.11",
-    "@loaders.gl/tiles": "^4.1.0-alpha.11",
+    "@loaders.gl/loader-utils": "^4.3.3",
+    "@loaders.gl/3d-tiles": "^4.3.3",
+    "@loaders.gl/core": "^4.3.3",
+    "@loaders.gl/i3s": "^4.3.3",
+    "@loaders.gl/tiles": "^4.3.3",
     "@luma.gl/core": "^8.5.14",
     "@math.gl/core": "^3.6.0",
     "@math.gl/proj4": "^3.6.3",
@@ -113,7 +114,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "resolutions": {
-    "@loaders.gl/tiles": "^4.1.0-alpha.11"
+    "@loaders.gl/tiles": "^4.3.3"
   },
   "volta": {
     "node": "18.18.2",

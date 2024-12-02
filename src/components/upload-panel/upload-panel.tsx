@@ -43,6 +43,7 @@ const FileTextItem = styled.div`
 
 const DragAndDropFileText = styled(FileTextItem)`
   color: ${({ theme }) => theme.colors.fontColor};
+  word-break: break-all;
 `;
 
 const BrosweFileText = styled(FileTextItem)`
@@ -56,12 +57,14 @@ const UploadInput = styled.input`
 `;
 
 interface UploadProps {
-  title: string;
+  title?: string;
   dragAndDropText: string;
   fileType: FileType;
   multipleFiles?: boolean;
-  onCancel: () => void;
-  onFileUploaded: (fileUploaded: FileUploaded) => Promise<void>;
+  noPadding?: boolean;
+  onCancel?: () => void;
+  onFileUploaded?: (fileUploaded: FileUploaded) => Promise<void> | void;
+  onFileEvent?: (files: FileList) => void;
 }
 
 export const UploadPanel = ({
@@ -69,11 +72,14 @@ export const UploadPanel = ({
   dragAndDropText,
   fileType,
   multipleFiles,
+  noPadding,
   onCancel,
   onFileUploaded,
+  onFileEvent,
 }: UploadProps) => {
   const layout = useAppLayout();
   const [dragActive, setDragActive] = useState(false);
+  const [fileUploaded, setFileUploaded] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const readFile = async (files: FileList) => {
@@ -86,7 +92,7 @@ export const UploadPanel = ({
         const info: Record<string, unknown> = {
           url: file.name,
         };
-        void onFileUploaded({ fileContent: event?.target?.result, info });
+        await onFileUploaded?.({ fileContent: event?.target?.result, info });
       };
       if (fileType === FileType.binary) {
         reader.readAsArrayBuffer(file);
@@ -111,6 +117,8 @@ export const UploadPanel = ({
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files?.[0]) {
+      setFileUploaded(e.dataTransfer.files[0].name);
+      onFileEvent?.(e.dataTransfer.files);
       readFile(e.dataTransfer.files).catch(() => {
         console.error("Read uploaded file operation error");
       });
@@ -122,6 +130,8 @@ export const UploadPanel = ({
   ) {
     e.preventDefault();
     if (e.target.files?.[0]) {
+      setFileUploaded(e.target.files[0].name);
+      onFileEvent?.(e.target.files);
       readFile(e.target.files).catch(() => {
         console.error("Read uploaded file operation error");
       });
@@ -129,7 +139,7 @@ export const UploadPanel = ({
   };
 
   return (
-    <UploadPanelItem title={title} onCancel={onCancel}>
+    <UploadPanelItem title={title} onCancel={onCancel} noPadding={noPadding}>
       <UploadInput
         ref={inputRef}
         id={UPLOAD_INPUT_ID}
@@ -142,22 +152,32 @@ export const UploadPanel = ({
         htmlFor={UPLOAD_INPUT_ID}
         onDragEnter={onDragHandler}
       >
-        <UploadIcon style={{ marginBottom: "10" }} />
-        {layout === Layout.Desktop && (
+        {!fileUploaded && (
           <>
-            <DragAndDropFileText>{dragAndDropText}</DragAndDropFileText>
-            <BrosweFileText>or</BrosweFileText>
+            <UploadIcon style={{ marginBottom: "10" }} />
+            {layout === Layout.Desktop && (
+              <>
+                <DragAndDropFileText>{dragAndDropText}</DragAndDropFileText>
+                <BrosweFileText>or</BrosweFileText>
+              </>
+            )}
+            <BrosweFileLink>browse file</BrosweFileLink>
+            {dragActive && (
+              <DragAndDropOverlay
+                data-testid="dnd-overlay"
+                onDragEnter={onDragHandler}
+                onDragLeave={onDragHandler}
+                onDragOver={onDragHandler}
+                onDrop={onDropHandler}
+              ></DragAndDropOverlay>
+            )}
           </>
         )}
-        <BrosweFileLink>browse file</BrosweFileLink>
-        {dragActive && (
-          <DragAndDropOverlay
-            data-testid="dnd-overlay"
-            onDragEnter={onDragHandler}
-            onDragLeave={onDragHandler}
-            onDragOver={onDragHandler}
-            onDrop={onDropHandler}
-          ></DragAndDropOverlay>
+        {fileUploaded && (
+          <>
+            <UploadIcon style={{ marginBottom: "10" }} />
+            <DragAndDropFileText>{fileUploaded}</DragAndDropFileText>
+          </>
         )}
       </FileInteractionContainer>
     </UploadPanelItem>
