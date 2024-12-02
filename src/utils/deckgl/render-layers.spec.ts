@@ -300,6 +300,7 @@ describe("Render Tile3DLayer", () => {
     expect(data).toBe(tilesetUrl);
     expect(loader).toBe(I3SLoader);
     expect(loadOptions).toEqual({
+      worker: true,
       i3s: {
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
         useCompressedTextures: true,
@@ -447,6 +448,7 @@ describe("Render Tile3DLayer", () => {
         useDracoGeometry: true,
         token: "<abcdefg123456>",
       },
+      worker: true,
     });
   });
 

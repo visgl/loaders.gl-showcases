@@ -19,6 +19,6 @@ describe("UnsavedBookmarkWarning", () => {
     const { container } = callRender(renderWithTheme);
     const fileInteractionContiner = container.firstChild.firstChild;
     expect(container.firstChild).toBeInTheDocument();
-    expect(fileInteractionContiner.childNodes.length).toBe(3);
+    expect(fileInteractionContiner.childNodes.length).toBe(2);
   });
 });

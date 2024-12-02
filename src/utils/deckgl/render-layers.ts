@@ -125,6 +125,7 @@ const renderI3SLayer = (
       useCompressedTextures,
     },
     fetch: layer.fetch,
+    worker: !layer.fetch,
   };
   let url = layer.url;
   if (layer.token && url && typeof url === "string") {
