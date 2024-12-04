@@ -288,8 +288,7 @@ export const BookmarksPanel = ({
               setPopoverType(
                 bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
               );
-            },1)
-            
+            }, 1);
           }}
           onDownloadBookmarks={onDownloadBookmarks}
           onCollapsed={onCollapsed}
