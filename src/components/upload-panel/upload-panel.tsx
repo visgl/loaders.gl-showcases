@@ -66,6 +66,7 @@ interface UploadProps {
   fileType: FileType;
   multipleFiles?: boolean;
   noPadding?: boolean;
+  accept?: string;
   onCancel?: () => void;
   onFileUploaded?: (fileUploaded: FileUploaded) => Promise<void> | void;
   onFileEvent?: (files: FileList) => void;
@@ -77,6 +78,7 @@ export const UploadPanel = ({
   fileType,
   multipleFiles,
   noPadding,
+  accept,
   onCancel,
   onFileUploaded,
   onFileEvent,
@@ -121,6 +123,9 @@ export const UploadPanel = ({
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files?.[0]) {
+      if (accept && !e.dataTransfer.files?.[0].name.endsWith(accept)) {
+        return;
+      }
       setFileUploaded(e.dataTransfer.files[0].name);
       onFileEvent?.(e.dataTransfer.files);
       readFile(e.dataTransfer.files).catch(() => {
@@ -150,6 +155,7 @@ export const UploadPanel = ({
         type="file"
         multiple={multipleFiles ?? undefined}
         onChange={onUploadChangeHandler}
+        accept={accept}
       />
       <FileInteractionContainer
         data-testid="upload-file-label"
