@@ -284,9 +284,12 @@ export const BookmarksPanel = ({
           onEditBookmarks={onEditBookmarksClickHandler}
           onClearBookmarks={onClearBookmarksClickHandler}
           onUploadBookmarks={() => {
-            setPopoverType(
-              bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
-            );
+            setTimeout(() => {
+              setPopoverType(
+                bookmarks.length ? PopoverType.uploadWarning : PopoverType.upload
+              );
+            },1)
+            
           }}
           onDownloadBookmarks={onDownloadBookmarks}
           onCollapsed={onCollapsed}
