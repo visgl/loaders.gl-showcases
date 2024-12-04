@@ -43,6 +43,10 @@ const FileTextItem = styled.div`
 
 const DragAndDropFileText = styled(FileTextItem)`
   color: ${({ theme }) => theme.colors.fontColor};
+`;
+
+const UploadedFileText = styled(FileTextItem)`
+  color: ${({ theme }) => theme.colors.fontColor};
   word-break: break-all;
 `;
 
@@ -176,7 +180,7 @@ export const UploadPanel = ({
         {fileUploaded && (
           <>
             <UploadIcon style={{ marginBottom: "10" }} />
-            <DragAndDropFileText>{fileUploaded}</DragAndDropFileText>
+            <UploadedFileText>{fileUploaded}</UploadedFileText>
           </>
         )}
       </FileInteractionContainer>
