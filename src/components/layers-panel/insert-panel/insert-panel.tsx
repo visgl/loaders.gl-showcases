@@ -247,8 +247,9 @@ export const InsertPanel = ({
             onChange={handleInputChange}
           />
           <UploadPanel
-            dragAndDropText={"Drag and drop your SLPK file here"}
+            dragAndDropText={"Drag and drop your .slpk file here"}
             noPadding={true}
+            accept=".slpk"
             onFileEvent={(files) => { handleInputChange({ target: { files, name: "URL" } }); }}
             fileType={FileType.binary}
           />
