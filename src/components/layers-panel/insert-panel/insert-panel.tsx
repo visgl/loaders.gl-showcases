@@ -180,9 +180,9 @@ export const InsertPanel = ({
   };
 
   const handleInputChange = (event) => {
-    const { name, value, files } = event.target;
+    const { name: fieldName, value, files } = event.target;
 
-    switch (name) {
+    switch (fieldName) {
       case "BasemapProvider":
         setGroup(value as BaseMapGroup);
         setNameError("");
@@ -194,6 +194,9 @@ export const InsertPanel = ({
       case "URL":
         if (files) {
           setUrl(files[0]);
+          if (!name) {
+            setName(files[0].name.substring(0, files[0].name.length - 5));
+          }
         } else {
           setUrl(value);
         }
