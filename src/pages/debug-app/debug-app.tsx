@@ -192,6 +192,7 @@ export const DebugApp = () => {
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
+        fetch: sublayer.fetch,
         token: sublayer.token,
         type: sublayer.type ?? TilesetType.I3S,
       }));
