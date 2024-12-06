@@ -40,6 +40,7 @@ export interface CustomLayerData {
 interface InsertLayerProps {
   title: string;
   groups?: string[];
+  noFile?: boolean;
   onInsert: (object: CustomLayerData) => Promise<void> | void;
   onCancel: () => void;
   children?: React.ReactNode;
@@ -104,6 +105,7 @@ const SpinnerContainer = styled.div<VisibilityProps>`
 export const InsertPanel = ({
   title,
   groups,
+  noFile,
   onInsert,
   onCancel,
   children = null,
@@ -249,13 +251,13 @@ export const InsertPanel = ({
             value={token}
             onChange={handleInputChange}
           />
-          <UploadPanel
+          {!noFile && <UploadPanel
             dragAndDropText={"Drag and drop your .slpk file here"}
             noPadding={true}
             accept=".slpk"
             onFileEvent={(files) => { handleInputChange({ target: { files, name: "URL" } }); }}
             fileType={FileType.binary}
-          />
+          />}
         </InputsWrapper>
         <ButtonsWrapper>
           <ActionButton

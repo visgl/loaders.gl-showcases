@@ -518,6 +518,7 @@ export const LayersPanel = ({
             <PanelWrapper>
               <InsertPanel
                 title={"Insert Scene"}
+                noFile={true}
                 onInsert={async (scene) => {
                   await handleInsertScene(scene);
                 }}
@@ -547,6 +548,7 @@ export const LayersPanel = ({
           <InsertPanel
             title={"Insert Base Map"}
             groups={[BaseMapGroup.Maplibre]}
+            noFile={true}
             onInsert={(map) => {
               handleInsertMap(map);
             }}
