@@ -5,10 +5,8 @@ import { UploadPanelItem } from "./upload-panel-item";
 
 import UploadIcon from "../../../public/icons/upload.svg";
 import { Layout } from "../../utils/enums";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useAppLayout } from "../../utils/hooks/layout";
-
-const UPLOAD_INPUT_ID = "upload-file-input";
 
 const FileInteractionContainer = styled.label`
   box-sizing: border-box;
@@ -83,6 +81,8 @@ export const UploadPanel = ({
   onFileUploaded,
   onFileEvent,
 }: UploadProps) => {
+  const UPLOAD_INPUT_ID = useMemo(() => `upload-file-input${crypto.randomUUID()}`, []);
+
   const layout = useAppLayout();
   const [dragActive, setDragActive] = useState(false);
   const [fileUploaded, setFileUploaded] = useState("");
