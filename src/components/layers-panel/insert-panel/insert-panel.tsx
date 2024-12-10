@@ -27,6 +27,12 @@ import {
 import { UploadPanel } from "../../upload-panel/upload-panel";
 import { getLayerUrl } from "../../../utils/layer-utils";
 
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => "",
+  },
+});
+
 const NO_NAME_ERROR = "Please enter name";
 const INVALID_URL_ERROR = "Invalid URL";
 
