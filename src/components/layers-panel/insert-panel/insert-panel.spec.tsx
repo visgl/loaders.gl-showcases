@@ -16,7 +16,6 @@ Object.defineProperty(globalThis, "crypto", {
   },
 });
 
-
 const callRender = (
   renderFunc,
   props = {},
