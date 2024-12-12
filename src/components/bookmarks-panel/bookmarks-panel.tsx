@@ -42,12 +42,6 @@ enum PopoverType {
   none,
 }
 
-Object.defineProperty(globalThis, "crypto", {
-  value: {
-    randomUUID: () => "",
-  },
-});
-
 const Container = styled.div<LayoutProps>`
   position: absolute;
   background: ${({ theme }) => theme.colors.mainCanvasColor};
