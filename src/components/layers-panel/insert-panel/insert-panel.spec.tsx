@@ -10,6 +10,12 @@ import "@testing-library/jest-dom";
 const onInsertMock = jest.fn();
 const onCancelMock = jest.fn();
 
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => "",
+  },
+});
+
 const callRender = (
   renderFunc,
   props = {},
