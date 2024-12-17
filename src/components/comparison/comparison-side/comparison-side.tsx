@@ -36,6 +36,7 @@ import { parseTilesetUrlParams } from "../../../utils/url-utils";
 import {
   findExampleAndUpdateWithViewState,
   getActiveLayersByIds,
+  getLayerUrl,
   handleSelectAllLeafsInGroup,
   selectNestedLayers,
 } from "../../../utils/layer-utils";
@@ -234,7 +235,13 @@ export const ComparisonSide = ({
     const tilesetsData: TilesetMetadata[] = [];
 
     for (const layer of activeLayers) {
-      const params = parseTilesetUrlParams(layer.url, layer);
+      let params = { tilesetUrl: "" as string | File, token: "" };
+      if (typeof layer.url === "string") {
+        params = parseTilesetUrlParams(layer.url, layer);
+      } else {
+        params.tilesetUrl = layer.url;
+      }
+
       const { tilesetUrl, token } = params;
 
       tilesetsData.push({
@@ -254,8 +261,9 @@ export const ComparisonSide = ({
       })
     );
     if (buildingExplorerOpened && tilesetsData[0]) {
+      const tilesetDataUrl = getLayerUrl(tilesetsData[0].url);
       void dispatch(
-        getBSLStatisticsSummary({ statSummaryUrl: tilesetsData[0].url, side })
+        getBSLStatisticsSummary({ statSummaryUrl: tilesetDataUrl, side })
       );
     }
   }, [activeLayers, buildingExplorerOpened]);
@@ -279,7 +287,7 @@ export const ComparisonSide = ({
 
     if (loadedTilesetsCount && activeLayersCount) {
       const isBSL = loadedTilesetsCount > activeLayersCount;
-      let statsName = activeLayers[0].url;
+      let statsName = getLayerUrl(activeLayers[0].url);
 
       if (!isBSL) {
         statsName = loadedTilesets
@@ -312,12 +320,13 @@ export const ComparisonSide = ({
       .map((sublayer) => ({
         id: sublayer.id,
         url: sublayer.url,
+        fetch: sublayer.fetch,
         token: sublayer.token,
         type: sublayer.type ?? TilesetType.I3S,
       }));
   };
 
-  const onTraversalCompleteHandler = (selectedTiles) => {
+  const onTraversalCompleteHandler = (selectedTiles: Tile3D[]) => {
     // A parent tileset of selected tiles
     const aTileset = selectedTiles?.[0]?.tileset;
     // Make sure that the actual tileset has been traversed traversed

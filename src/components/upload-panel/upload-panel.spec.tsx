@@ -15,6 +15,12 @@ jest.mock("@hyperjump/json-schema", () => ({
   ),
 }));
 
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => "",
+  },
+});
+
 const onCancel = jest.fn();
 const onFileUploaded = jest.fn();
 

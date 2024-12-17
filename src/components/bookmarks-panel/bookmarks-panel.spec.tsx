@@ -11,6 +11,12 @@ jest.mock("../../utils/hooks/layout");
 
 const dragAndDropText = "Drag and drop your json file here";
 
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => "",
+  },
+});
+
 const TEST_BOOKMARKS = [
   {
     id: "testId1",
