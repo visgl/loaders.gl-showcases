@@ -17,8 +17,6 @@ const MapOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow: auto;
-  position: relative;
   gap: 16px;
   margin-bottom: 8px;
 `;
