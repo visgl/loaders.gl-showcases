@@ -94,6 +94,12 @@ const Tab = styled.div<TabProps>`
     `}
 `;
 
+
+export const LoginPanelContent = styled(PanelContent)`
+  overflow-y: hidden;
+  min-height: 60px;
+`;
+
 const PanelWrapper = styled.div`
   position: absolute;
   top: 24px;
@@ -423,9 +429,9 @@ export const LayersPanel = ({
 
           <PanelHorizontalLine $top={0} $bottom={0} />
 
-          <PanelContent>
+          <LoginPanelContent>
             <ArcGisControlPanel onArcGisImportClick={handleInsertLayer} />
-          </PanelContent>
+          </LoginPanelContent>
 
           {showExistedError && (
             <PanelWrapper
