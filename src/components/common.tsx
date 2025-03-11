@@ -306,8 +306,8 @@ export const TileInfoSectionWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin: 24px 0;
+  gap: 5px;
+  margin: 18px 0px;
 `;
 
 export const CenteredContainer = styled.div`
